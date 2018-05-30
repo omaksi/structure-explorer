@@ -2,14 +2,14 @@
   "name": "prieskumnik-struktur",
   "version": "1.0.0",
   "description": "Prieskumnik struktur v prvoradovej logike ako pomocka pri vyucbe predmetu Matematika (4) na FMFI UK",
-  "homepage": "http://www.st.fmph.uniba.sk/~cifra9/prieskumnik",
+  "homepage": "https://fmfi-uk-1-ain-412.github.io/structure-explorer",
   "author": {
     "name": "Milan Cifra",
     "email": "milan3362@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mcifra/prieskumnik-struktur.git"
+    "url": "https://github.com/FMFI-UK-1-AIN-412/structure-explorer.git"
   },
   "private": true,
   "dependencies": {

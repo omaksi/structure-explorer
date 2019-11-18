@@ -9,9 +9,9 @@ import Expression from "../Expression";
  */
 class Term extends Expression {
 
-  constructor() {
+  /*constructor() {
     super();
-  }
+  }*/
 
   toString() {
     return '';

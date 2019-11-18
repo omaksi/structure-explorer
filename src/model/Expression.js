@@ -6,9 +6,9 @@
  */
 class Expression {
 
-  constructor() {
+  /*constructor() {
 
-  }
+  }*/
 
   toString() {
 

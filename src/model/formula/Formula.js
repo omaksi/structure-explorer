@@ -9,9 +9,9 @@ import Expression from "../Expression";
  */
 class Formula extends Expression {
 
-  constructor() {
+  /*constructor() {
     super();
-  }
+  }*/
 
   toString() {
     return '';

@@ -1,19 +1,21 @@
+import './App.css';
 import React from 'react';
 import {Col, Row, Modal, Button, ButtonToolbar} from 'react-bootstrap';
 import {createStore} from 'redux';
-import reducer from '../reducers/root';
+import reducer from './reducers';
 import {Provider} from 'react-redux';
-import ExpressionsContainer from '../containers/ExpressionsContainer';
-import VariablesValueContainer from "../containers/VariablesValueContainer";
-import LanguageContainer from '../containers/LanguageContainer';
-import StructureContainer from '../containers/StructureContainer';
-import DownloadButton from './lib/DownloadButton';
-import {toggleTeacherMode} from "../actions/index";
+import ExpressionsContainer from './containers/ExpressionsContainer';
+import VariablesValueContainer from "./containers/VariablesValueContainer";
+import LanguageContainer from './containers/LanguageContainer';
+import StructureContainer from './containers/StructureContainer';
+import DownloadButton from './components/lib/DownloadButton';
+import {toggleTeacherMode} from "./actions";
 import Toggle from 'react-toggle';
-import {importAppState} from "../actions/index";
-import {DEFAULT_FILE_NAME} from "../constants/index";
-import ButtonToolbarElement from "./buttons/ButtonToolbarElement";
+import FontAwesome from 'react-fontawesome';
+import {importAppState} from "./actions";
+import {DEFAULT_FILE_NAME} from "./constants";
 
+// @ts-ignore
 const store = createStore(reducer);
 
 // po kazdej zmene stavu sa vypise
@@ -23,7 +25,7 @@ store.subscribe(() => {
 });
 
 class App extends React.Component {
-  constructor(props) {
+  constructor(props:any) {
     super(props);
     this.state = {
       modalShow: false,
@@ -41,35 +43,52 @@ class App extends React.Component {
       structure: state.structure,
       expressions: state.expressions
     });
+    // @ts-ignore
     if (this.state.exerciseName.length === 0) {
+      // @ts-ignore
       this.state.exerciseName = DEFAULT_FILE_NAME;
     }
     return {
       mime: 'application/json',
+      // @ts-ignore
       filename: this.state.exerciseName + '.json',
       contents: json
     }
   }
-
-  importState(e) {
+  importState(e:any) {
     let file = e.target.files[0];
     let fr = new FileReader();
     fr.onload = function (e) {
+      // @ts-ignore
       store.dispatch(importAppState(e.target.result));
     };
     fr.readAsText(file);
   }
 
-
-
   render() {
+    // @ts-ignore
     return (
         <Provider store={store}>
           <div className='app'>
             <Row>
               <div className='toolbar'>
                 <div className='col-xs-7 toolbar-import-export'>
-                  <ButtonToolbarElement onClick={() => this.setState({modalShow: true})}  onChange={e => this.importState(e)}  hidden={true} style={{display: 'none'}} />
+                  <ButtonToolbar>
+                    <button className='btn btn-lock' onClick={() => this.setState({modalShow: true})}>
+                      <FontAwesome name='download'/>
+                      <span className='toolbar-btn-label-1'>Uložiť</span>
+                      <span className='toolbar-btn-label-2'>cvičenie</span>
+                    </button>
+                    <label className="btn btn-lock">
+                      <FontAwesome name='upload'/>
+                      <span className='toolbar-btn-label-1'>Importovať</span>
+                      <span className='toolbar-btn-label-2'>cvičenie</span>
+                      <input type="file" name='jsonFile'
+                             onChange={e => this.importState(e)}
+                             hidden={true}
+                             style={{display: 'none'}}/>
+                    </label>
+                  </ButtonToolbar>
                 </div>
                 <div className='col-xs-5 toolbar-mode-toggle'>
                   <label className='teacher-mode'>
@@ -79,7 +98,7 @@ class App extends React.Component {
                     <span className='teacher-mode-span'>Učiteľský mód</span>
                   </label>
                 </div>
-                <Modal show={this.state.modalShow} onHide={() => this.setState({modalShow: false})}>
+               <Modal /*show={this.state.modalShow}*/ onHide={() => this.setState({modalShow: false})}>
                   <Modal.Header>
                     <Modal.Title>Uložiť štruktúru</Modal.Title>
                   </Modal.Header>

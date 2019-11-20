@@ -24,16 +24,31 @@ store.subscribe(() => {
   console.log('STATE:', state);
 });
 
-class App extends React.Component {
-  constructor(props:any) {
+interface IProps{
+
+}
+
+interface IState {
+  modalShow:boolean;
+  exerciseName:string;
+
+}
+
+
+class App extends React.Component<IProps,IState> {
+
+  constructor(props:IProps) {
     super(props);
+
     this.state = {
       modalShow: false,
-      exerciseName: ''
+      exerciseName:''
     };
+
     this.exportState = this.exportState.bind(this);
     this.importState = this.importState.bind(this);
   }
+
 
   exportState() {
     let state = store.getState();
@@ -43,18 +58,22 @@ class App extends React.Component {
       structure: state.structure,
       expressions: state.expressions
     });
-    // @ts-ignore
+
     if (this.state.exerciseName.length === 0) {
-      // @ts-ignore
+      //@ts-ignore
+      //this.setState({exerciseName:DEFAULT_FILE_NAME}); //neupdajtne hned
       this.state.exerciseName = DEFAULT_FILE_NAME;
+
     }
-    return {
-      mime: 'application/json',
-      // @ts-ignore
-      filename: this.state.exerciseName + '.json',
-      contents: json
+
+      return {
+        mime: 'application/json',
+        // @ts-ignore
+        filename: this.state.exerciseName + '.json',
+        contents: json
+      }
     }
-  }
+
   importState(e:any) {
     let file = e.target.files[0];
     let fr = new FileReader();
@@ -66,7 +85,6 @@ class App extends React.Component {
   }
 
   render() {
-    // @ts-ignore
     return (
         <Provider store={store}>
           <div className='app'>
@@ -98,7 +116,7 @@ class App extends React.Component {
                     <span className='teacher-mode-span'>Učiteľský mód</span>
                   </label>
                 </div>
-               <Modal /*show={this.state.modalShow}*/ onHide={() => this.setState({modalShow: false})}>
+               <Modal show={this.state.modalShow} onHide={() => this.setState({modalShow: false})}>
                   <Modal.Header>
                     <Modal.Title>Uložiť štruktúru</Modal.Title>
                   </Modal.Header>

@@ -7,7 +7,7 @@ import Domain from "./elements/Domain";
 import ConstantInterpretation from "./elements/ConstantInterpretation";
 import PredicateInterpretation from "./elements/PredicateInterpretation";
 import FunctionInterpretation from "./elements/FunctionInterpretation";
-import DatabaseTable from "./DatabaseTable";
+import DatabaseTable from "./elements/DatabaseTable";
 
 const help = (
    <div className="collapse" id="help-structure">
@@ -59,7 +59,9 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
             </Row>
          )}
 
-           <DatabaseTable structureObject={structureObject} structure={structure} setConstantValue={setConstantValue}/>
+         <Row>
+           <DatabaseTable domain={domain} toggleTable={toggleTable} teacherMode={teacherMode} structure={structure} structureObject={structureObject} functions={functions} lockFunctionValue={lockFunctionValue} setFunctionValueTable={setFunctionValueTable} setFunctionValueText={setFunctionValueText} lengthOfCol={12}/>
+         </Row>
        </Panel.Body>
      </Panel>
 

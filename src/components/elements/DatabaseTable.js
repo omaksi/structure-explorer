@@ -1,0 +1,43 @@
+import {Col, FormGroup, HelpBlock} from "react-bootstrap";
+import {FUNCTION} from "../../constants";
+import DatabaseFunction from "./DatabaseFunctionTable";
+import React from "react";
+
+function DatabaseTable({functions,structure,setFunctionValueText,lockFunctionValue,teacherMode,toggleTable,domain,structureObject,setFunctionValueTable,lengthOfCol}) {
+    return (
+        <Col lg={lengthOfCol}>
+            <fieldset>
+                {/*structure.functions[name].tableEnabled*/}
+                <legend>Databázová interpretácia funkčných symbolov</legend>
+                {functions.map((name) =>
+                    <FormGroup
+                        validationState={structure.functions[name].errorMessage.length > 0 ? 'error' : null}>
+                        {/*<TextInput onChange={(e) => setFunctionValueText(e.target.value, name)}
+                                   onLock={() => lockFunctionValue(name)}
+                                   textData={structure.functions[name]}
+                                   label={<span><var>i</var>({name.split('/')[0]}) = &#123;</span>}
+                                   teacherMode={teacherMode}
+                                   id={'function-' + name}
+                                   toggleTable={() => toggleTable(FUNCTION, name)}
+                                   arity={parseInt(name.split('/')[1])}
+                                   domain={domain}
+                                   placeholder='(1,2), (2,2), (3,1), ...'/>*/}
+                        {domain.length > 0 ? (
+                            <DatabaseFunction name={name} domain={structureObject.domain}
+                                              arity={structureObject.language.getFunction(name.split('/')[0])}
+                                              value={structureObject.iFunction.has(name) ? structureObject.iFunction.get(name) : {}}
+                                              onInputChange={setFunctionValueTable}
+                                              disabled={structure.functions[name].locked}
+                                              type={FUNCTION}/>
+                        ) : null}
+                        <HelpBlock>{structure.functions[name].errorMessage}</HelpBlock>
+                    </FormGroup>
+                )}
+            </fieldset>
+        </Col>
+    )
+
+
+}
+
+export default DatabaseTable;

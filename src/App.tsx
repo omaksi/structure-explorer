@@ -68,7 +68,6 @@ class App extends React.Component<IProps,IState> {
 
       return {
         mime: 'application/json',
-        // @ts-ignore
         filename: this.state.exerciseName + '.json',
         contents: json
       }

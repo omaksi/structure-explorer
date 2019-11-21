@@ -2,14 +2,12 @@ import {Col, FormGroup, HelpBlock, InputGroup} from "react-bootstrap";
 import LockButton from "../buttons/LockButton";
 import React from "react";
 
-function ConstantInterpretation({structure,constants,setConstantValue,structureObject,teacherMode,lockConstantValue,lengthOfCol}){
+function ConstantInterpretation({structure,setConstantValue,structureObject,teacherMode,lockConstantValue}){
     return(
-    <Col lg={lengthOfCol}>
+    <Col lg={12}>
         <fieldset>
             <legend>Interpretácia symbolov konštánt</legend>
-            {Object.entries(constants).map((a,b) => console.log(a))};
-
-            {constants.map((constant) =>
+            {Object.keys(structure.constants).map((constant) =>
                 <FormGroup
                     validationState={structure.constants[constant].errorMessage.length > 0 ? 'error' : null}>
                     <InputGroup>

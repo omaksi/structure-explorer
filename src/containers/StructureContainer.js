@@ -5,7 +5,7 @@ import {
   setFunctionValueTable,
   setFunctionValueText,
   setPredicateValueTable,
-  setPredicateValueText,
+  setPredicateValueText, toggleDatabase,
   toggleTable
 } from "../actions/index";
 import Structure from '../components/Structure';
@@ -27,6 +27,7 @@ const mapDispatchToProps = {
   setFunctionValueText: setFunctionValueText,
   setFunctionValueTable: setFunctionValueTable,
   toggleTable: toggleTable,
+  toggleDatabase:toggleDatabase,
   lockDomain: lockDomain,
   lockConstantValue: lockConstantValue,
   lockPredicateValue: lockPredicateValue,

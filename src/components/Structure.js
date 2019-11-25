@@ -3,11 +3,11 @@ import {
   Panel,
   Row
 } from "react-bootstrap";
-import Domain from "./elements/Domain";
-import ConstantInterpretation from "./elements/ConstantInterpretation";
-import PredicateInterpretation from "./elements/PredicateInterpretation";
-import FunctionInterpretation from "./elements/FunctionInterpretation";
-import DatabaseTable from "./elements/DatabaseTable";
+import Domain from "./structure/Domain";
+import {ConstantInterpretation} from "./structure/";
+import PredicateInterpretation from "./structure/PredicateInterpretation";
+import FunctionInterpretation from "./structure/FunctionInterpretation";
+import DatabaseTable from "./structure/DatabaseTable";
 
 const help = (
    <div className="collapse" id="help-structure">
@@ -23,7 +23,7 @@ const help = (
    </div>
 );
 
-function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,structureObject,lockConstantValue,setPredicateValueText,lockPredicateValue,toggleTable,domain,setPredicateValueTable,setFunctionValueText,lockFunctionValue,setFunctionValueTable}) {
+function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,structureObject,lockConstantValue,setPredicateValueText,lockPredicateValue,toggleTable,toggleDatabase,domain,setPredicateValueTable,setFunctionValueText,lockFunctionValue,setFunctionValueTable}) {
 
     //nechat alebo dat do kazdej skupiny? takto to je mozno menej performance heavy
     let constants = Object.keys(structure.constants);
@@ -55,12 +55,12 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
          )}
          {functions.length === 0 ? null : (
             <Row>
-                <FunctionInterpretation toggleTable={toggleTable} domain={domain} teacherMode={teacherMode} structure={structure} structureObject={structureObject} functions={functions} lockFunctionValue={lockFunctionValue} setFunctionValueTable={setFunctionValueTable} setFunctionValueText={setFunctionValueText} lengthOfCol={12}/>
+                <FunctionInterpretation toggleTable={toggleTable} toggleDatabase={toggleDatabase} domain={domain} teacherMode={teacherMode} structure={structure} structureObject={structureObject} functions={functions} lockFunctionValue={lockFunctionValue} setFunctionValueTable={setFunctionValueTable} setFunctionValueText={setFunctionValueText} lengthOfCol={12}/>
             </Row>
          )}
 
          <Row>
-           <DatabaseTable domain={domain} toggleTable={toggleTable} teacherMode={teacherMode} structure={structure} structureObject={structureObject} functions={functions} lockFunctionValue={lockFunctionValue} setFunctionValueTable={setFunctionValueTable} setFunctionValueText={setFunctionValueText} lengthOfCol={12}/>
+             {/*<DatabaseTable domain={domain} toggleTable={toggleTable} teacherMode={teacherMode} structure={structure} structureObject={structureObject} functions={functions} lockFunctionValue={lockFunctionValue} setFunctionValueTable={setFunctionValueTable} setFunctionValueText={setFunctionValueText} predicates={predicates} setPredicateValueTable={setPredicateValueTable} setPredicateValueText={setPredicateValueText} lengthOfCol={12}/>*/}
          </Row>
        </Panel.Body>
      </Panel>

@@ -4,7 +4,7 @@ import {
   SET_CONSTANT_VALUE, SET_CONSTANTS, SET_DOMAIN, SET_FUNCTION_VALUE_TABLE, SET_FUNCTION_VALUE_TEXT, SET_FUNCTIONS,
   SET_PREDICATE_VALUE_TABLE,
   SET_PREDICATE_VALUE_TEXT,
-  SET_PREDICATES, SET_VARIABLES_VALUE, TOGGLE_EDIT_TABLE
+  SET_PREDICATES, SET_VARIABLES_VALUE, TOGGLE_EDIT_TABLE, TOGGLE_EDIT_DATABASE
 } from "../constants/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -24,7 +24,9 @@ let structure = null;
 function structureReducer(s, action, struct) {
   state = copyState(s);
   structure = struct;
+  let input = action.itemType === PREDICATE ? state.predicates[action.name] : state.functions[action.name];
   switch (action.type) {
+
     case SET_CONSTANTS:
     case SET_PREDICATES:
     case SET_FUNCTIONS:
@@ -78,11 +80,22 @@ function structureReducer(s, action, struct) {
       setVariables();
       return state;
     case TOGGLE_EDIT_TABLE:
-      let input = action.itemType === PREDICATE ? state.predicates[action.name] : state.functions[action.name];
       if (input) {
         input.tableEnabled = !input.tableEnabled;
+        if(input.tableEnabled){
+          input.databaseEnabled=false;
+        }
       }
       return state;
+    case TOGGLE_EDIT_DATABASE:
+      if (input) {
+        input.databaseEnabled = !input.databaseEnabled;
+        if(input.databaseEnabled){
+          input.tableEnabled=false;
+        }
+      }
+      return state;
+
     case LOCK_DOMAIN:
       state.domain.locked = !state.domain.locked;
       return state;

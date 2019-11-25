@@ -127,6 +127,12 @@ export const toggleTable = (itemType, name) => ({
   name
 });
 
+export const toggleDatabase = (itemType, name) => ({
+  type: 'TOGGLE_EDIT_DATABASE',
+  itemType,
+  name
+});
+
 export const setVariablesValue = (value) => ({
   type: 'SET_VARIABLES_VALUE',
   value

@@ -2,8 +2,8 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {Button} from "react-bootstrap";
 
-const TableButton = ({onClick}) => (
-   <Button onClick={() => onClick()}>
+const TableButton = ({onClick,enabled}) => (
+   <Button onClick={() => onClick()} style={enabled?{background:"black"}:{background:"#dddddd",color:"black"}}>
      <FontAwesome name='table'/>
    </Button>
 );

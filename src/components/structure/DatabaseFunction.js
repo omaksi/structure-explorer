@@ -1,7 +1,5 @@
 import React from 'react';
 import {Table} from 'react-bootstrap';
-import {PREDICATE} from "../../constants";
-
 
 function renderFunctionValueSelect(functionName, functionValues, params, domain, onChange, disabled) {
     let value = functionValues[JSON.stringify(params)];
@@ -43,18 +41,13 @@ function permutateWithRepetitions(permutationOptions,permutationLength) {
 }
 
 
-function DatabasePredicate(props) {
+function DatabaseFunction(props) {
     let domain = [...props.domain];
-    let domainValueArray = [Object.values(domain)];
+    let domainValueArray = Object.values(domain);
 
-    console.log("domain",props.domain);
-    console.log("preditaces",props.predicates);
-    console.log("predicate",props.predicate);
-    console.log("language predicates",props.language.predicates);
-
-    let element = (
+    let mainElement = (
         <tbody>
-        {permutateWithRepetitions(domainValueArray[0],props.arity).map((arrayValues) =>
+        {permutateWithRepetitions(domainValueArray,props.arity).map((arrayValues) =>
             <tr>
                 {arrayValues.map((value) =>
                     <td>
@@ -65,19 +58,33 @@ function DatabasePredicate(props) {
                     {renderFunctionValueSelect(props.name, props.value, [...arrayValues], domain, props.onInputChange, props.disabled)}
                 </td>
             </tr>
-        )}
+                    )}
         </tbody>
+        );
+
+    let headElements = (
+        <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}><var>
+            {"f("}
+        {[...Array(props.arity-1)].map((x, count) =>
+            <var>{"x"}<sub>{count}</sub>{", "}</var>
+         )}
+            <var>{"x"}<sub>{props.arity-1}</sub></var>
+            {")"}
+        </var></th>
     );
 
     return (
         <Table bordered responsive>
             <thead>
             <tr>
-                <th colSpan={domain.length+1} style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}>{props.name}</th>
+                {[...Array(props.arity)].map((x, count) =>
+                    <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}><var>{"x"}<sub>{count}</sub></var></th>
+                )}
+                {headElements}
             </tr>
             </thead>
-            {element}
+            {mainElement}
         </Table>
     );
 }
-export default DatabasePredicate;
+export default DatabaseFunction;

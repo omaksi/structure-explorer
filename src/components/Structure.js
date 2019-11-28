@@ -7,7 +7,6 @@ import Domain from "./structure/Domain";
 import {ConstantInterpretation} from "./structure/";
 import PredicateInterpretation from "./structure/PredicateInterpretation";
 import FunctionInterpretation from "./structure/FunctionInterpretation";
-import DatabaseTable from "./structure/DatabaseTable";
 
 const help = (
    <div className="collapse" id="help-structure">
@@ -24,8 +23,6 @@ const help = (
 );
 
 function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,structureObject,lockConstantValue,setPredicateValueText,lockPredicateValue,toggleTable,toggleDatabase,domain,setPredicateValueTable,setFunctionValueText,lockFunctionValue,setFunctionValueTable}) {
-
-    //nechat alebo dat do kazdej skupiny? takto to je mozno menej performance heavy
     let constants = Object.keys(structure.constants);
     let predicates = Object.keys(structure.predicates);
     let functions = Object.keys(structure.functions);
@@ -50,7 +47,7 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
          )}
          {predicates.length === 0 ? null : (
             <Row>
-                <PredicateInterpretation structureObject={structureObject} structure={structure} teacherMode={teacherMode} domain={domain} lockPredicateValue={lockPredicateValue} predicates={predicates} setPredicateValueTable={setPredicateValueTable} setPredicateValueText={setPredicateValueText} toggleTable={toggleTable} lengthOfCol={12}/>
+                <PredicateInterpretation structureObject={structureObject} structure={structure} toggleDatabase={toggleDatabase} teacherMode={teacherMode} domain={domain} lockPredicateValue={lockPredicateValue} predicates={predicates} setPredicateValueTable={setPredicateValueTable} setPredicateValueText={setPredicateValueText} toggleTable={toggleTable} lengthOfCol={12}/>
             </Row>
          )}
          {functions.length === 0 ? null : (
@@ -58,10 +55,6 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
                 <FunctionInterpretation toggleTable={toggleTable} toggleDatabase={toggleDatabase} domain={domain} teacherMode={teacherMode} structure={structure} structureObject={structureObject} functions={functions} lockFunctionValue={lockFunctionValue} setFunctionValueTable={setFunctionValueTable} setFunctionValueText={setFunctionValueText} lengthOfCol={12}/>
             </Row>
          )}
-
-         <Row>
-             {/*<DatabaseTable domain={domain} toggleTable={toggleTable} teacherMode={teacherMode} structure={structure} structureObject={structureObject} functions={functions} lockFunctionValue={lockFunctionValue} setFunctionValueTable={setFunctionValueTable} setFunctionValueText={setFunctionValueText} predicates={predicates} setPredicateValueTable={setPredicateValueTable} setPredicateValueText={setPredicateValueText} lengthOfCol={12}/>*/}
-         </Row>
        </Panel.Body>
      </Panel>
 

@@ -3,7 +3,7 @@ import TextInput from "../inputs/TextInput";
 import {FUNCTION} from "../../constants";
 import RelationalTable from "../RelationalTable";
 import React from "react";
-import DatabaseFunction from "./DatabaseFunctionTable";
+import DatabaseFunction from "./DatabaseFunction";
 
 function FunctionInterpretation({functions,structure,setFunctionValueText,lockFunctionValue,toggleTable,toggleDatabase,teacherMode,domain,structureObject,setFunctionValueTable,lengthOfCol}){
     return(

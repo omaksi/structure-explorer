@@ -63,14 +63,14 @@ function DatabaseFunction(props) {
         );
 
     let headElements = (
-        <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}><var>
-            {"f("}
+        <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}>
+            {props.symbol+"("}
         {[...Array(props.arity-1)].map((x, count) =>
-            <var>{"x"}<sub>{count}</sub>{", "}</var>
+            <span><var>{"m"}</var><sub>{count+1}</sub>{", "}</span>
          )}
-            <var>{"x"}<sub>{props.arity-1}</sub></var>
+            <span><var>{"m"}</var><sub>{props.arity}</sub></span>
             {")"}
-        </var></th>
+        </th>
     );
 
     return (
@@ -78,7 +78,7 @@ function DatabaseFunction(props) {
             <thead>
             <tr>
                 {[...Array(props.arity)].map((x, count) =>
-                    <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}><var>{"x"}<sub>{count}</sub></var></th>
+                    <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}><var>{"m"}</var><sub>{count+1}</sub></th>
                 )}
                 {headElements}
             </tr>

@@ -37,9 +37,11 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
                         {structure.functions[name].databaseEnabled && domain.length > 0 ? (
                             <DatabaseFunction name={name} domain={structureObject.domain}
                                               arity={structureObject.language.getFunction(name.split('/')[0])}
+                                              symbol={name.split('/')[0]}
                                               value={structureObject.iFunction.has(name) ? structureObject.iFunction.get(name) : {}}
                                               onInputChange={setFunctionValueTable}
                                               disabled={structure.functions[name].locked}
+
                                               type={FUNCTION}/>
                         ) : null}
 

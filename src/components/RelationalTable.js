@@ -62,7 +62,7 @@ export function RelationalTable(props) {
             </tr>
             </thead>
             <tbody>
-            {props.arity === 1 ? arity1 : arity2}
+            {parseInt(props.arity) === 1 ? arity1 : arity2}
             </tbody>
         </Table>
     )

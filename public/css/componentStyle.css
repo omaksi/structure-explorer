@@ -1,0 +1,25 @@
+.selectComponent {
+    display: block;
+    margin: 0 auto;
+}
+
+.interpretationHead{
+    text-Align:center;
+    padding:0.4em;
+    font-size:1.2em;
+}
+
+.buttonSelected{
+    background:black;
+}
+
+.buttonNotSelected{
+    background:#dddddd;
+    color:black;
+    border-color:#dddddd;
+}
+
+.errorRedBorderFix{
+    z-index: 10;
+    position: inherit;
+}

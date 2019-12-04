@@ -7,7 +7,7 @@ function renderFunctionValueSelect(functionName, functionValues, params, domain,
         value = '';
     }
     return (
-        <select onChange={(e) => onChange(params.concat([e.target.value]), functionName)} value={value}>
+        <select className="selectComponent" onChange={(e) => onChange(params.concat([e.target.value]), functionName)} value={value}>
             <option value=''>{''}</option>
             {domain.map(item =>
                 <option disabled={disabled} value={item}>{item}</option>
@@ -63,7 +63,7 @@ function DatabaseFunction(props) {
         );
 
     let headElements = (
-        <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}>
+        <th className="interpretationHead">
             {props.symbol+"("}
         {[...Array(props.arity-1)].map((x, count) =>
             <span><var>{"m"}</var><sub>{count+1}</sub>{", "}</span>
@@ -78,7 +78,7 @@ function DatabaseFunction(props) {
             <thead>
             <tr>
                 {[...Array(props.arity)].map((x, count) =>
-                    <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}><var>{"m"}</var><sub>{count+1}</sub></th>
+                    <th className="interpretationHead"><var>{"m"}</var><sub>{count+1}</sub></th>
                 )}
                 {headElements}
             </tr>

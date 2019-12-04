@@ -6,8 +6,7 @@ import DatabaseButton from "../buttons/DatabaseButton";
 
 const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTable, toggleDatabase, arity, domain, placeholder,databaseEnabled,tableEnabled}) => (
     <InputGroup>
-     <label className='input-group-addon'
-            htmlFor={id}>{label}</label>
+        <label className='input-group-addon' htmlFor={id}>{label}</label>
      <FormControl id={id}
                   type='text'
                   onChange={(e) => onChange(e)}

@@ -4,7 +4,7 @@ import {SelectComponent} from "./SelectComponent";
 
 function renderPredicateValueSelect(predicateName, predicateValues, params, domain, onInputChange, disabled,value,index) {
     return (
-        <select onChange={(e) => changeValue(onInputChange,e.target.value,params,index,predicateName)} value={value}>
+        <select className="selectComponent" onChange={(e) => changeValue(onInputChange,e.target.value,params,index,predicateName)} value={value}>
             <option value=''>{''}</option>
             {domain.map(item =>
                 <option disabled={disabled} value={item}>{item}</option>
@@ -60,7 +60,7 @@ function DatabasePredicate(props) {
         <thead>
         <tr>
             {[...Array(parseInt(props.arity))].map((x, count) =>
-                <th style={{textAlign:"center",padding:"0.4em",fontSize:"1.2em"}}><var>{"m"}</var><sub>{count+1}</sub></th>
+                <th className="interpretationHead"><var>{"m"}</var><sub>{count+1}</sub></th>
             )}
             {headElements}
         </tr>

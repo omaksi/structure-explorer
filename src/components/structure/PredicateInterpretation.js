@@ -4,7 +4,6 @@ import {FUNCTION, PREDICATE} from "../../constants";
 import RelationalTable from "../RelationalTable";
 import React from "react";
 import DatabasePredicate from "./DatabasePredicate";
-import {setFunctionValueTable} from "../../actions";
 
 function PredicateInterpretation({structure,predicates,setPredicateValueText,lockPredicateValue,toggleTable,toggleDatabase,domain,setPredicateValueTable,structureObject,teacherMode,lengthOfCol}){
     return(

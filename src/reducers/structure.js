@@ -47,6 +47,7 @@ function structureReducer(s, action, struct) {
         removePredicateValue(action.predicateName, action.value);
       }
       let predicateValue = structure.getPredicateValue(action.predicateName);
+      console.log("value is",predicateValue);
       state.predicates[action.predicateName].parsed = predicateValue;
       state.predicates[action.predicateName].value = predicateValueToString(predicateValue);
       return state;

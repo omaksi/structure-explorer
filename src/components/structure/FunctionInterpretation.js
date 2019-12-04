@@ -1,9 +1,9 @@
 import {Col, FormGroup, HelpBlock, Row} from "react-bootstrap";
 import TextInput from "../inputs/TextInput";
 import {FUNCTION} from "../../constants";
-import RelationalTable from "../RelationalTable";
 import React from "react";
 import DatabaseFunction from "./DatabaseFunction";
+import {RelationalTable} from './index'
 
 function FunctionInterpretation({functions,structure,setFunctionValueText,lockFunctionValue,toggleTable,toggleDatabase,teacherMode,domain,structureObject,setFunctionValueTable,lengthOfCol}){
     return(

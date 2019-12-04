@@ -50,7 +50,7 @@ function DatabaseFunction(props) {
         {permutateWithRepetitions(domainValueArray,props.arity).map((arrayValues) =>
             <tr>
                 {arrayValues.map((value) =>
-                    <td>
+                    <td className="centerItems">
                         {value}
                     </td>
                 )}

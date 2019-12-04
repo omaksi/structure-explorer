@@ -23,7 +23,7 @@ function changeValue(onInputChange,value,params,index,predicateName){
     }
 }
 
-function DatabasePredicate(props) {
+export function DatabasePredicate(props) {
     let domain = [...props.domain];
 
     if(props.selectionElement===undefined){
@@ -86,4 +86,3 @@ function DatabasePredicate(props) {
         )
     }
 }
-export default DatabasePredicate;

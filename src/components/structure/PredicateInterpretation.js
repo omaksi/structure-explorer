@@ -1,9 +1,8 @@
 import {Col, FormGroup, HelpBlock} from "react-bootstrap";
-import TextInput from "../inputs/TextInput";
-import {FUNCTION, PREDICATE} from "../../constants";
-import RelationalTable from "../RelationalTable";
+import {PREDICATE} from "../../constants";
 import React from "react";
-import DatabasePredicate from "./DatabasePredicate";
+import {RelationalTable,DatabasePredicate} from './index'
+import TextInput from "../inputs/TextInput";
 
 function PredicateInterpretation({structure,predicates,setPredicateValueText,lockPredicateValue,toggleTable,toggleDatabase,domain,setPredicateValueTable,structureObject,teacherMode,lengthOfCol}){
     return(

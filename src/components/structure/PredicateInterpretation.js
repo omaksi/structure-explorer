@@ -21,7 +21,7 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
                                    teacherMode={teacherMode}
                                    id={'predicate-' + name}
                                    toggleTable={() => toggleTable(PREDICATE, name)}
-                                   toggleDatabase={/*structureObject.iPredicate.has(name) && structureObject.iPredicate.get(name).length>0?*/() => toggleDatabase(PREDICATE, name)/*:false*/}
+                                   toggleDatabase={() => toggleDatabase(PREDICATE, name)/*:false*/}
                                    databaseEnabled={structure.predicates[name].databaseEnabled}
                                    tableEnabled={structure.predicates[name].tableEnabled}
                                    arity={parseInt(name.split('/')[1])}
@@ -35,7 +35,7 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
                                              type={PREDICATE}
                                              disabled={structure.predicates[name].locked}/>
                         ) : null}
-                        {structure.predicates[name].databaseEnabled && domain.length > 0 /*&& structureObject.iPredicate.has(name)*/ ? (
+                        {structure.predicates[name].databaseEnabled && domain.length > 0? (
                             <DatabasePredicate name={name} domain={structureObject.domain}
                                               arity={structureObject.language.getPredicate(name.split('/')[0])}
                                               value={structureObject.iPredicate.has(name) ? structureObject.iPredicate.get(name) : {}}

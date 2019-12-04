@@ -6,8 +6,6 @@ function renderFunctionValueSelect(functionName, functionValues, params, domain,
     if (!value) {
         value = '';
     }
-
-    console.log("value:",params);
     return (
         <select onChange={(e) => onChange(params.concat([e.target.value]), functionName)} value={value}>
             <option value=''>{''}</option>

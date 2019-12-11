@@ -25,6 +25,7 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
                                    arity={parseInt(name.split('/')[1])}
                                    domain={domain}
                                    placeholder='(1,2), (2,2), (3,1), ...'/>
+                        <HelpBlock>{structure.predicates[name].errorMessage}</HelpBlock>
                         {structure.predicates[name].tableEnabled && domain.length > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
                                              arity={structureObject.language.getPredicate(name.split('/')[0])}
@@ -41,8 +42,6 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
                                               disabled={structure.predicates[name].locked}
                                               type={PREDICATE}/>
                         ) : null}
-
-                        <HelpBlock>{structure.predicates[name].errorMessage}</HelpBlock>
                     </FormGroup>
                 )}
             </fieldset>

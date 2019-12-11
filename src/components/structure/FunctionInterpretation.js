@@ -26,6 +26,7 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
                                    arity={parseInt(name.split('/')[1])}
                                    domain={domain}
                                    placeholder='(1,2), (2,2), (3,1), ...'/>
+                        <HelpBlock>{structure.functions[name].errorMessage}</HelpBlock>
                         {structure.functions[name].tableEnabled && domain.length > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
                                              arity={structureObject.language.getFunction(name.split('/')[0])}
@@ -44,8 +45,6 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
 
                                               type={FUNCTION}/>
                         ) : null}
-
-                        <HelpBlock>{structure.functions[name].errorMessage}</HelpBlock>
                     </FormGroup>
                 )}
             </fieldset>

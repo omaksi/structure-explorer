@@ -5,8 +5,8 @@
 /.pnp
 .pnp.js
 /.idea
-/react_diagrams/node_modules
-/react_diagrams/.idea
+/reactDiagram/node_modules
+/reactDiagram/.idea
 
 # testing
 /coverage

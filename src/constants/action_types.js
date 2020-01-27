@@ -1,6 +1,7 @@
 export const SET_CONSTANTS = 'SET_CONSTANTS';
 export const SET_PREDICATES = 'SET_PREDICATES';
 export const SET_FUNCTIONS = 'SET_FUNCTIONS';
+export const SET_DIAGRAM = 'SET_DIAGRAM';
 
 export const LOCK_CONSTANTS = 'LOCK_CONSTANTS';
 export const LOCK_PREDICATES = 'LOCK_PREDICATES';

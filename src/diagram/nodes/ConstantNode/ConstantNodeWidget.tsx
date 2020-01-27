@@ -59,11 +59,13 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps>
 		if(port.options.name!=="+") {
 			return (
 				//<ConstantPortLabelWidget engine={this.props.engine} port={port} width={this.props.node.getOptions().name.length*10}/>
+				// @ts-ignore
 				<PortWidget engine={this.props.engine} port={this.props.node.getPort(port.options.name)}>
 					<Port onClick={() => {
 						this.props.node.removePort(port);
 						this.props.engine.repaintCanvas();
 					}
+						// @ts-ignore
 					} height={20} width={this.props.node.getOptions().name.length * 10}>{port.options.name}</Port>
 				</PortWidget>
 			)
@@ -75,17 +77,20 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps>
 			<Node
 				data-basic-node-name={this.props.name}
 				selected={this.props.node.isSelected()}
+				// @ts-ignore
 				background={this.props.node.getOptions().color}>
 				<Title>
 					<TitleName>{this.props.node.getOptions().name}</TitleName>
 				</Title>
 				<Ports>
 					<PortsContainer>{_.map(this.props.node.getPorts(), this.generatePort)}
+						// @ts-ignore
 						<PortWidget engine={this.props.engine} port={this.props.node.getPort("+")}>
 							<Port onClick={() => {
 								this.props.node.addNewPort(`Port${this.props.node.numberOfPorts}`);
 								this.props.engine.repaintCanvas();
 							}}
+								// @ts-ignore
 								  height={20} width={this.props.node.getOptions().name.length * 10}>+</Port>
 						</PortWidget>
 					</PortsContainer>

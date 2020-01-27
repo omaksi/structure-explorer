@@ -7,6 +7,8 @@ import teacherModeReducer from "./teacherMode";
 import {IMPORT_APP} from "../constants/action_types";
 import {defaultInputData} from "../constants";
 import {EMPTY_DOMAIN} from "../constants/messages";
+import {DiagramModel} from "@projectstorm/react-diagrams";
+import diagramReducer from "./diagram";
 
 const defaultState = {
     structureObject: new Structure(new Language()),
@@ -26,9 +28,12 @@ const defaultState = {
         domain: {...defaultInputData(), errorMessage: EMPTY_DOMAIN},
     },
     expressions: {
+        // @ts-ignore
         formulas: [],
+        // @ts-ignore
         terms: []
-    }
+    },
+    diagramModel: new DiagramModel(),
 };
 
 function checkImportedState(state:any) {
@@ -51,17 +56,21 @@ function root(state = defaultState, action:any) {
         } catch (e) {
             console.error(e);
         }
+        state.diagramModel = new DiagramModel();
     }
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action, state.structureObject);
     let structure = structureReducer(state.structure, action, state.structureObject);
     let expressions = expressionsReducer(state.expressions, action, state.structureObject, state.structure.variables.object);
+    let diagramModel = diagramReducer(state.diagramModel,action);
+
     return {
         structureObject: state.structureObject,
         common: common,
         language: language,
         structure: structure,
-        expressions: expressions
+        expressions: expressions,
+        diagramModel:diagramModel
     }
 }
 

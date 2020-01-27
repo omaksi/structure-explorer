@@ -3,17 +3,17 @@ import {DiamondNodeModel} from "./nodes/DiamondNode/DiamondNodeModel";
 import { SimplePortFactory } from './nodes/DiamondNode/SimplePortFactory';
 import { DiamondPortModel } from './nodes/DiamondNode/DiamondPortModel';
 import {DiamondNodeFactory} from "./nodes/DiamondNode/DiamondNodeFactory";
-import {PortModelAlignment } from '@projectstorm/react-diagrams';
+import {PortModelAlignment, DiagramModel } from '@projectstorm/react-diagrams';
 import {UnBinaryNodeFactory} from "./nodes/UnBinaryNode/UnBinaryNodeFactory";
 import {UnBinaryNodeModel} from "./nodes/UnBinaryNode/UnBinaryNodeModel";
 
 export class Application {
-	protected activeModel: SRD.DiagramModel;
+	protected activeModel: DiagramModel;
 	protected diagramEngine: SRD.DiagramEngine;
 
-	constructor() {
+	constructor(diagramModel:DiagramModel) {
 		this.diagramEngine = SRD.default();
-		this.newModel();
+		this.newModel(diagramModel);
 
 		this.diagramEngine
 			.getPortFactories()
@@ -26,10 +26,13 @@ export class Application {
 	}
 
 
-	public newModel() {
-		this.activeModel = new SRD.DiagramModel();
-		this.diagramEngine.setModel(this.activeModel);
+	public newModel(diagramModel:DiagramModel) {
+		/*this.activeModel = new SRD.DiagramModel();
+		this.diagramEngine.setModel(this.activeModel);*/
 
+		this.diagramEngine.setModel(diagramModel);
+
+		/*
 		//3-A) create a default node
 		var node1 = new SRD.DefaultNodeModel('Node 1', 'rgb(0,192,255)');
 		let port = node1.addOutPort('Out');
@@ -53,6 +56,8 @@ export class Application {
 		node4.setPosition(450,150);
 
 		this.activeModel.addAll(node1, node2,node3,node4, link1);
+		 */
+
 
 		this.getDiagramEngine().setMaxNumberPointsPerLink(0); //aby fungoval hned select linkov a nevytvaraju sa body
 	}

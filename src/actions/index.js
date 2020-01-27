@@ -43,6 +43,11 @@ export const setFunctionValueText = (value, functionName) => ({
   functionName
 });
 
+export const setDiagramModel = (model) => ({
+  type: 'SET_MODEL',
+  model
+});
+
 export const setFunctionValueTable = (value, functionName) => ({
   type: 'SET_FUNCTION_VALUE_TABLE',
   value,

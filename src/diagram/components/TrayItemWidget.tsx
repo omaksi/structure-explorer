@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 
 export interface TrayItemWidgetProps {
 	model: any;
-	color?: string;
+	color?: string | undefined;
 	name: string;
 	element:any;
 	clickFunction:any;
@@ -23,8 +23,10 @@ export const Tray = styled.div<{ color: string }>`
 
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
+
 		return (
 			<Tray
+				// @ts-ignore
 				color={this.props.color}
 				draggable={true}
 				onDragStart={event => {

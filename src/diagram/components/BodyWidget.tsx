@@ -90,12 +90,15 @@ export interface BodyWidgetProps {
 	}
 
 export class BodyWidget extends React.Component<BodyWidgetProps> {
+		constructor(props:any){
+			super(props);
+		}
 	render() {
 		return (
 			<Body>
-				<Header>
+				{/*<Header>
 					<div className="title">Unárne a binárne vzťahy</div>
-				</Header>
+				</Header>*/}
 				<Content>
 					<TrayWidget>
 						<TrayItemWidget model={{ type: 'in' }} clickFunction={createNode} element={this} name="Pridaj vrchol" color="rgb(192,255,0)" />

@@ -14,6 +14,9 @@ import Toggle from 'react-toggle';
 import FontAwesome from 'react-fontawesome';
 import {importAppState} from "./actions";
 import {DEFAULT_FILE_NAME} from "./constants";
+import {Application} from "./diagram/Application";
+import {BodyWidget} from "./diagram/components/BodyWidget";
+import DiagramModelContainer from "./containers/DiagramModelContainer";
 
 // @ts-ignore
 const store = createStore(reducer);
@@ -22,6 +25,7 @@ const store = createStore(reducer);
 store.subscribe(() => {
   let state = store.getState();
   console.log('STATE:', state);
+  console.log('DIAGRAM:', state.diagramModel);
 });
 
 interface IProps{
@@ -152,7 +156,11 @@ class App extends React.Component<IProps,IState> {
                     <Col sm={6}>
                       <StructureContainer/>
                     </Col>
-                  </Row>):null}
+                  </Row>):
+                    <Col sm={12} className='reactDiagram'>
+                      <DiagramModelContainer app={new Application(store.getState().diagramModel)}/>
+                    </Col>
+              }
             <Row>
               <Col sm={12}>
                 <ExpressionsContainer/>

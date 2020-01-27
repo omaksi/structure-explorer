@@ -30,8 +30,8 @@ interface IProps{
 
 interface IState {
   modalShow:boolean;
+  firstTab:boolean;
   exerciseName:string;
-
 }
 
 
@@ -42,6 +42,7 @@ class App extends React.Component<IProps,IState> {
 
     this.state = {
       modalShow: false,
+      firstTab: true,
       exerciseName:''
     };
 
@@ -105,6 +106,10 @@ class App extends React.Component<IProps,IState> {
                              hidden={true}
                              style={{display: 'none'}}/>
                     </label>
+                    <button className='btn btn-lock' onClick={() => this.setState({firstTab: !this.state.firstTab})}>
+                      <FontAwesome name='download'/>
+                      <span className='toolbar-btn-label-1'>Toggle Diagram</span>
+                    </button>
                   </ButtonToolbar>
                 </div>
                 <div className='col-xs-5 toolbar-mode-toggle'>
@@ -137,15 +142,17 @@ class App extends React.Component<IProps,IState> {
                 </Modal>
               </div>
             </Row>
-            <Row>
-              <Col sm={6}>
-                <LanguageContainer/>
-                <VariablesValueContainer/>
-              </Col>
-              <Col sm={6}>
-                <StructureContainer/>
-              </Col>
-            </Row>
+
+              {this.state.firstTab? (
+                  <Row>
+                    <Col sm={6}>
+                      <LanguageContainer/>
+                      <VariablesValueContainer/>
+                    </Col>
+                    <Col sm={6}>
+                      <StructureContainer/>
+                    </Col>
+                  </Row>):null}
             <Row>
               <Col sm={12}>
                 <ExpressionsContainer/>

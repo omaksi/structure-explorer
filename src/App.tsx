@@ -15,7 +15,6 @@ import FontAwesome from 'react-fontawesome';
 import {importAppState} from "./actions";
 import {DEFAULT_FILE_NAME} from "./constants";
 import {Application} from "./diagram/Application";
-import {BodyWidget} from "./diagram/components/BodyWidget";
 import DiagramModelContainer from "./containers/DiagramModelContainer";
 
 // @ts-ignore
@@ -34,7 +33,7 @@ interface IProps{
 
 interface IState {
   modalShow:boolean;
-  firstTab:boolean;
+  diagramToggled:boolean;
   exerciseName:string;
 }
 
@@ -46,7 +45,7 @@ class App extends React.Component<IProps,IState> {
 
     this.state = {
       modalShow: false,
-      firstTab: true,
+      diagramToggled:true,
       exerciseName:''
     };
 
@@ -66,9 +65,7 @@ class App extends React.Component<IProps,IState> {
 
     if (this.state.exerciseName.length === 0) {
       //@ts-ignore
-      //this.setState({exerciseName:DEFAULT_FILE_NAME}); //neupdajtne hned
       this.state.exerciseName = DEFAULT_FILE_NAME;
-
     }
 
       return {
@@ -96,11 +93,20 @@ class App extends React.Component<IProps,IState> {
               <div className='toolbar'>
                 <div className='col-xs-7 toolbar-import-export'>
                   <ButtonToolbar>
+                    <button className='btn btn-lock' onClick={() => this.setState({diagramToggled: false})}>
+                      <FontAwesome name='bars'/>
+                    </button>
+
+                    <button className='btn btn-lock' onClick={() =>this.setState({diagramToggled: true})}>
+                      <FontAwesome name='sitemap'/>
+                    </button>
+
                     <button className='btn btn-lock' onClick={() => this.setState({modalShow: true})}>
                       <FontAwesome name='download'/>
                       <span className='toolbar-btn-label-1'>Uložiť</span>
                       <span className='toolbar-btn-label-2'>cvičenie</span>
                     </button>
+
                     <label className="btn btn-lock">
                       <FontAwesome name='upload'/>
                       <span className='toolbar-btn-label-1'>Importovať</span>
@@ -110,10 +116,6 @@ class App extends React.Component<IProps,IState> {
                              hidden={true}
                              style={{display: 'none'}}/>
                     </label>
-                    <button className='btn btn-lock' onClick={() => this.setState({firstTab: !this.state.firstTab})}>
-                      <FontAwesome name='download'/>
-                      <span className='toolbar-btn-label-1'>Toggle Diagram</span>
-                    </button>
                   </ButtonToolbar>
                 </div>
                 <div className='col-xs-5 toolbar-mode-toggle'>
@@ -147,7 +149,7 @@ class App extends React.Component<IProps,IState> {
               </div>
             </Row>
 
-              {this.state.firstTab? (
+              {!this.state.diagramToggled? (
                   <Row>
                     <Col sm={6}>
                       <LanguageContainer/>

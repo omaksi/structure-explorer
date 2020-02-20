@@ -1,4 +1,4 @@
-import {NodeModel, NodeModelGenerics, PortModel} from '@projectstorm/react-diagrams';
+import {NodeModel, NodeModelGenerics} from '@projectstorm/react-diagrams';
 import {UnBinaryPortModel} from './UnBinaryPortModel';
 import { BasePositionModelOptions } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
@@ -10,19 +10,23 @@ export interface UnBinaryNodeModelGenerics {
 
 export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
+	previousName?:string;
 	color?: string;
+	setDomain?:any;
 }
 
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
 	numberOfPorts: number;
 
-	constructor(name: string, color: string);
+	constructor(name: string, color: string,setDomain:any);
 	constructor(options?: UnBinaryNodeModelOptions);
-	constructor(options: any = {}, color?: string) {
+	constructor(options: any = {}, color?: string, setDomain?:any) {
 		if (typeof options === 'string') {
 			options = {
 				name: options,
-				color: color
+				previousName:options,
+				color: color,
+				setDomain:setDomain
 			};
 		}
 		super({
@@ -34,6 +38,8 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.addNewPort("+");
 		this.getPort("+").setMaximumLinks(0);
 		this.numberOfPorts = 0;
+
+		setDomain(this.options.name);
 	}
 
 	addNewPort(name: string) {
@@ -41,6 +47,23 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.numberOfPorts += 1;
 		this.addPort(port);
 		return port;
+	}
+
+
+	getNodeName(){
+		return this.options.name;
+	}
+
+	getPreviousNodeName(){
+		return this.options.previousName;
+	}
+
+	renameNode(name:string){
+		this.options.name = name;
+	}
+
+	renamePreviousNode(name:string){
+		this.options.previousName = name;
 	}
 
 	removePort(port: UnBinaryPortModel): void {

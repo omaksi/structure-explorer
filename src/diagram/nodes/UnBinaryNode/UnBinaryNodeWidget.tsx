@@ -8,15 +8,22 @@ import { Port } from "./UnBinaryPortLabelWidget";
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
 	engine: DiagramEngine;
+	setDomain:any;
 	name?:string;
 	size?: number;
+}
+
+interface UnBinaryNodeWidgetState {
+	renameActive?:boolean;
+	titleChanged?:boolean;
+	nodeName?:string;
 }
 
 export const Node = styled.div<{ background: string; selected: boolean }>`
 		background-color: ${p => p.background};
 		border-radius: 5px;
 		font-family: sans-serif;
-		color: white;
+		color: black;
 		border: solid 2px black;
 		overflow: visible;
 		font-size: 11px;
@@ -35,7 +42,7 @@ export const TitleName = styled.div`
 		padding: 5px 5px;
 				
 		&:hover {
-			background: green;
+			background: red;
 		}
 	`;
 
@@ -58,10 +65,18 @@ export const PortsContainer = styled.div`
 		}
 	`;
 
-export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps> {
-	protected renameActive:boolean = false;
-	protected titleChanged:boolean = false;
+export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
+	constructor(props:UnBinaryNodeWidgetProps){
+		super(props);
 
+		console.log(this.props);
+
+		this.state={
+			renameActive:false,
+			titleChanged:false,
+			nodeName:this.props.node.getOptions().name
+		}
+	}
 
 	generatePort = (port:any) =>{
 		if(port.options.name!=="+") {
@@ -77,19 +92,20 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps>
 		}
 	};
 
-	updated = () => {
-		this.props.engine.repaintCanvas();
-		//console.log("called");
-		if(this.titleChanged){
-
-
-			this.titleChanged = false;
+	componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
+		if(this.state.renameActive){
+			this.props.node.setLocked(true);
 		}
-	};
+		else{
+			this.props.node.setLocked(false);
+			console.log(this.state.nodeName +" "+this.props.node.getNodeName());
 
-	componentUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<{}>, snapshot?: any): void {
-		console.log("updateing");
-		this.updated();
+			if(this.state.nodeName!==this.props.node.getNodeName()){
+				//call redux store
+				this.props.node.renameNode(this.state.nodeName);
+				this.props.setDomain(this.state.nodeName);
+			}
+		}
 	}
 
 	render() {
@@ -100,12 +116,10 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps>
 				background={this.props.node.getOptions().color}>
 				<Title>
 					<TitleName onDoubleClick={() => {
-						this.renameActive = !this.renameActive; //dat to ako state
-						this.titleChanged = true;
-						this.forceUpdate();
+						this.setState({renameActive: !this.state.renameActive});
 					}}>
-						{!this.renameActive ? this.props.node.getOptions().name :
-							<input type="text" name="" value={this.props.node.getOptions().name}/>
+						{!this.state.renameActive ? this.state.nodeName :
+							<input type="text" name="" value={this.state.nodeName} onChange={e => this.setState({nodeName:e.target.value})}/>
 						}
 					</TitleName>
 				</Title>

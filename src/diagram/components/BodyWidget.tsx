@@ -9,10 +9,10 @@ import { MainCanvasWidget } from './MainCanvasWidget';
 import styled from '@emotion/styled';
 import {DiamondNodeModel} from "../nodes/DiamondNode/DiamondNodeModel";
 import {UnBinaryNodeModel} from "../nodes/UnBinaryNode/UnBinaryNodeModel";
-import {on} from "cluster";
 
 export interface BodyWidgetProps {
 	app: Application;
+	setDomain:any;
 }
 
 	export const Body = styled.div`
@@ -44,7 +44,7 @@ export interface BodyWidgetProps {
 		flex-grow: 1;
 	`;
 
-	function createNode(element:any,event:any,clicked:boolean=true){
+	function createNode(element:any,event:any,setDomain:any,clicked:boolean=true){
 		let data;
 		if(clicked){
 			data = JSON.parse(event);
@@ -65,10 +65,10 @@ export interface BodyWidgetProps {
 			node = new DiamondNodeModel();
 		}
 		else if (data.type === 'unbinary') {
-			node = new UnBinaryNodeModel('Node ' + (nodesCount + 1),'rgb(92,192,125)');
+			node = new UnBinaryNodeModel('Node' + (nodesCount + 1),'rgb(92,192,125)',setDomain);
 		}
 		else{
-			node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'rgb(0,192,255)');
+			node = new DefaultNodeModel('Node' + (nodesCount + 1), 'rgb(0,192,255)');
 			node.addOutPort('Out');
 		}
 
@@ -89,25 +89,24 @@ export interface BodyWidgetProps {
 		element.forceUpdate();
 	}
 
-export class BodyWidget extends React.Component<BodyWidgetProps> {
+
+
+export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 		constructor(props:any){
 			super(props);
 		}
 	render() {
 		return (
 			<Body>
-				{/*<Header>
-					<div className="title">Unárne a binárne vzťahy</div>
-				</Header>*/}
 				<Content>
 					<TrayWidget>
-						<UnbinaryItemWidget model={{ type: 'in' }} clickFunction={createNode} element={this} name="Pridaj vrchol" color="rgb(192,255,0)" />
-						<UnbinaryItemWidget model={{ type: 'unbinary' }} clickFunction={createNode} element={this} name="Pridaj unárny/binárny" color="rgb(125,192,125)" />
-						<DiamondItemWidget model={{ type: 'diamond' }} clickFunction={createNode} element={this} name="Pridaj diamant" color="rgb(128,96,245)" />
+						<UnbinaryItemWidget model={{ type: 'in' }} clickFunction={createNode} element={this} name="Pridaj vrchol" color="rgb(192,255,0)" setDomain={this.props.setDomain}/>
+						<UnbinaryItemWidget model={{ type: 'unbinary' }} clickFunction={createNode} element={this} name="Pridaj unárny/binárny" color="rgb(125,192,125)" setDomain={this.props.setDomain}/>
+						<DiamondItemWidget model={{ type: 'diamond' }} clickFunction={createNode} element={this} name="Pridaj diamant" color="rgb(128,96,245)" setDomain={this.props.setDomain}/>
 					</TrayWidget>
 					<Layer
 						onDrop={event => {
-							createNode(this,event,false);
+							createNode(this,event,this.props.setDomain,false);
 						}}
 						onDragOver={event => {
 							event.preventDefault();

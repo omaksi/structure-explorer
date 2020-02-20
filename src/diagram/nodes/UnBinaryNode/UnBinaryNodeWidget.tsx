@@ -33,6 +33,10 @@ export const Title = styled.div`
 export const TitleName = styled.div`
 		flex-grow: 1;
 		padding: 5px 5px;
+				
+		&:hover {
+			background: green;
+		}
 	`;
 
 export const Ports = styled.div`
@@ -55,6 +59,10 @@ export const PortsContainer = styled.div`
 	`;
 
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps> {
+	protected renameActive:boolean = false;
+	protected titleChanged:boolean = false;
+
+
 	generatePort = (port:any) =>{
 		if(port.options.name!=="+") {
 			return (
@@ -69,6 +77,21 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps>
 		}
 	};
 
+	updated = () => {
+		this.props.engine.repaintCanvas();
+		//console.log("called");
+		if(this.titleChanged){
+
+
+			this.titleChanged = false;
+		}
+	};
+
+	componentUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<{}>, snapshot?: any): void {
+		console.log("updateing");
+		this.updated();
+	}
+
 	render() {
 		return (
 			<Node
@@ -76,7 +99,15 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps>
 				selected={this.props.node.isSelected()}
 				background={this.props.node.getOptions().color}>
 				<Title>
-					<TitleName>{this.props.node.getOptions().name}</TitleName>
+					<TitleName onDoubleClick={() => {
+						this.renameActive = !this.renameActive; //dat to ako state
+						this.titleChanged = true;
+						this.forceUpdate();
+					}}>
+						{!this.renameActive ? this.props.node.getOptions().name :
+							<input type="text" name="" value={this.props.node.getOptions().name}/>
+						}
+					</TitleName>
 				</Title>
 				<Ports>
 					<PortsContainer>{_.map(this.props.node.getPorts(), this.generatePort)}

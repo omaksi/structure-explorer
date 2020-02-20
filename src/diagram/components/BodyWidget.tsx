@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import { TrayWidget } from './TrayWidget';
 import { Application } from '../Application';
-import { TrayItemWidget } from './TrayItemWidget';
+import {DiamondItemWidget, UnbinaryItemWidget} from './TrayItemWidget';
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { MainCanvasWidget } from './MainCanvasWidget';
@@ -101,9 +101,9 @@ export class BodyWidget extends React.Component<BodyWidgetProps> {
 				</Header>*/}
 				<Content>
 					<TrayWidget>
-						<TrayItemWidget model={{ type: 'in' }} clickFunction={createNode} element={this} name="Pridaj vrchol" color="rgb(192,255,0)" />
-						<TrayItemWidget model={{ type: 'unbinary' }} clickFunction={createNode} element={this} name="Pridaj unárny/binárny" color="rgb(125,192,125)" />
-						<TrayItemWidget model={{ type: 'diamond' }} clickFunction={createNode} element={this} name="Pridaj diamant" color="rgb(128,96,245)" />
+						<UnbinaryItemWidget model={{ type: 'in' }} clickFunction={createNode} element={this} name="Pridaj vrchol" color="rgb(192,255,0)" />
+						<UnbinaryItemWidget model={{ type: 'unbinary' }} clickFunction={createNode} element={this} name="Pridaj unárny/binárny" color="rgb(125,192,125)" />
+						<DiamondItemWidget model={{ type: 'diamond' }} clickFunction={createNode} element={this} name="Pridaj diamant" color="rgb(128,96,245)" />
 					</TrayWidget>
 					<Layer
 						onDrop={event => {

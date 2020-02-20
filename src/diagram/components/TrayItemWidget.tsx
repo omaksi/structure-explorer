@@ -1,5 +1,6 @@
 import * as React from 'react';
-import styled from '@emotion/styled';
+import {Diamond, Unbinary} from "./TrayItemWidgetIcon";
+import styled from "@emotion/styled";
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -9,24 +10,37 @@ export interface TrayItemWidgetProps {
 	clickFunction:any;
 }
 
-export const Tray = styled.div<{ color: string }>`
-		color: white;
-		font-family: Helvetica, Arial;
-		padding: 5px;
-		margin: 10px 10px;
-		border: solid 3px ${p => p.color};
-		border-radius: 10px;
-		margin-bottom: 2px;
+export const BasicTray = styled.div`
 		cursor: pointer;
-		text-align:center;
 	`;
 
-export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
+export class UnbinaryItemWidget extends React.Component<TrayItemWidgetProps> {
+
 	render() {
 
 		return (
-			<Tray
-				// @ts-ignore
+			<BasicTray
+				color={this.props.color}
+				draggable={true}
+				onDragStart={event => {
+					event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
+				}}
+				onClick={e => {
+					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model));
+				}}
+				className="tray-item">
+				<Unbinary/>
+			</BasicTray>
+		);
+	}
+}
+
+export class DiamondItemWidget extends React.Component<TrayItemWidgetProps> {
+
+	render() {
+
+		return (
+			<BasicTray
 				color={this.props.color}
 				draggable={true}
 				onDragStart={event => {
@@ -37,7 +51,8 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 				}}
 				className="tray-item">
 				{this.props.name}
-			</Tray>
+			</BasicTray>
 		);
 	}
 }
+

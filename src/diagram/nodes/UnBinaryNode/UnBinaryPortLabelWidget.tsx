@@ -28,7 +28,7 @@ export interface DefaultPortLabelProps {
 		text-align:center;
 
 		&:hover {
-			background: white;
+			background: #66CDAAn;
 		}
 	`;
 

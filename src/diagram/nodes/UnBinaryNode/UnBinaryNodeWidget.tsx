@@ -28,7 +28,7 @@ export const Node = styled.div<{ background: string; selected: boolean }>`
 		border: solid 2px black;
 		overflow: visible;
 		font-size: 11px;
-		border: solid 2px ${p => (p.selected ? 'rgb(0,192,255)' : 'black')};
+		border: solid 2.5px ${p => (p.selected ? 'rgb(0,192,255)' : 'black')};
 	`;
 
 export const Title = styled.div`
@@ -36,6 +36,7 @@ export const Title = styled.div`
 		display: flex;
 		white-space: nowrap;
 		justify-items: center;
+		text-align:center;
 	`;
 
 export const TitleName = styled.div`
@@ -43,7 +44,7 @@ export const TitleName = styled.div`
 		padding: 5px 5px;
 				
 		&:hover {
-			background: red;
+			background: #90EE90;
 		}
 	`;
 

@@ -42,9 +42,9 @@ export class DiamondNodeWidget extends React.Component<DiamondNodeWidgetProps> {
           <g id="Layer_1">
           </g>
           <g id="Layer_2">
-            <polygon fill="mediumpurple" stroke="${
-							this.props.node.isSelected() ? 'white' : '#000000'
-						}" stroke-width="3" stroke-miterlimit="10" points="10,` +
+            <polygon fill="rgb(92,192,125)" stroke="${
+							this.props.node.isSelected() ? 'rgb(0,192,255)' : '#000000'
+						}" stroke-width="2.5" stroke-miterlimit="10" points="10,` +
 							this.props.size / 2 +
 							` ` +
 							this.props.size / 2 +

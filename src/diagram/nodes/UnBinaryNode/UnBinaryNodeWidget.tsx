@@ -9,6 +9,7 @@ export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
 	engine: DiagramEngine;
 	setDomain:any;
+	changeDomain:any;
 	name?:string;
 	size?: number;
 }
@@ -102,8 +103,9 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 			if(this.state.nodeName!==this.props.node.getNodeName()){
 				//call redux store
+
+				let state = this.props.changeDomain(this.state.nodeName,this.props.node.getNodeName());
 				this.props.node.renameNode(this.state.nodeName);
-				this.props.setDomain(this.state.nodeName);
 			}
 		}
 	}
@@ -119,7 +121,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 						this.setState({renameActive: !this.state.renameActive});
 					}}>
 						{!this.state.renameActive ? this.state.nodeName :
-							<input type="text" name="" value={this.state.nodeName} onChange={e => this.setState({nodeName:e.target.value})}/>
+							<input autoFocus type="text" style={{width:this.props.node.getOptions().name.length * 8+"px",height:20+"px"}} name="" value={this.state.nodeName} onChange={e => this.setState({nodeName:e.target.value})}/>
 						}
 					</TitleName>
 				</Title>

@@ -18,6 +18,17 @@ export const setDomain = (value) => ({
   value
 });
 
+export const changeDomain = (value,oldValue) => ({
+  type: 'CHANGE_DOMAIN',
+  value,
+  oldValue
+});
+
+export const syncDiagram = (value) => ({
+  type: 'SYNC_DIAGRAM',
+  value
+});
+
 export const setConstantValue = (value, constantName) => ({
   type: 'SET_CONSTANT_VALUE',
   constantName,

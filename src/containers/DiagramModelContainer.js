@@ -5,23 +5,21 @@ import {
   setDiagramModel,
   setDomain, setFunctionValueTable, setFunctionValueText,
   setPredicateValueTable,
-  setPredicateValueText, toggleDatabase, toggleTable
+  setPredicateValueText, toggleDatabase, toggleTable, changeDomain, syncDiagram
 } from "../actions/index";
 import {connect} from 'react-redux';
 import {BodyWidget} from "../diagram/components/BodyWidget";
 
 const mapStateToProps = (state,ownProps) => ({
   diagramModel: state.diagramModel,
-  language: state.language,
-  structure: state.structure,
-  structureObject: state.structureObject,
-  teacherMode: state.common.teacherMode,
   domain: [...state.structureObject.domain]
 });
 
 const mapDispatchOnProps = {
   setDiagramModel:setDiagramModel,
+  syncDiagram:syncDiagram,
   setDomain: setDomain,
+  changeDomain:changeDomain,
   setConstantValue: setConstantValue,
   setPredicateValueText: setPredicateValueText,
   setPredicateValueTable: setPredicateValueTable,

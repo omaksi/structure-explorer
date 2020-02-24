@@ -11,15 +11,16 @@ import FunctionTerm from "../model/term/Term.FunctionTerm";
 import UniversalQuant from "../model/formula/Formula.UniversalQuant";
 import ExistentialQuant from "../model/formula/Formula.ExistentialQuant";
 import {
-  ADD_EXPRESSION, CHECK_SYNTAX,
+  ADD_EXPRESSION, CHANGE_DOMAIN, CHECK_SYNTAX,
   IMPORT_APP, LOCK_EXPRESSION_ANSWER, LOCK_EXPRESSION_VALUE, REMOVE_EXPRESSION,
   SET_CONSTANT_VALUE, SET_CONSTANTS, SET_DOMAIN, SET_EXPRESSION_ANSWER, SET_FUNCTION_VALUE_TABLE,
   SET_FUNCTION_VALUE_TEXT, SET_FUNCTIONS,
   SET_PREDICATE_VALUE_TABLE,
   SET_PREDICATE_VALUE_TEXT,
-  SET_PREDICATES, SET_VARIABLES_VALUE
+  SET_PREDICATES, SET_VARIABLES_VALUE, SYNC_DIAGRAM
 } from "../constants/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../constants/parser_start_rules";
+import {setDomain} from "../actions";
 
 let functions = require('./functions');
 
@@ -45,6 +46,7 @@ function expressionsReducer(state = s, action, structure2, variables) {
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
     case SET_DOMAIN:
+    case CHANGE_DOMAIN:
       syncExpressionsValue();
       return state;
     case ADD_EXPRESSION:

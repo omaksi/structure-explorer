@@ -4,7 +4,7 @@ import {
   SET_CONSTANT_VALUE, SET_CONSTANTS, SET_DOMAIN, SET_FUNCTION_VALUE_TABLE, SET_FUNCTION_VALUE_TEXT, SET_FUNCTIONS,
   SET_PREDICATE_VALUE_TABLE,
   SET_PREDICATE_VALUE_TEXT,
-  SET_PREDICATES, SET_VARIABLES_VALUE, TOGGLE_EDIT_TABLE, TOGGLE_EDIT_DATABASE
+  SET_PREDICATES, SET_VARIABLES_VALUE, TOGGLE_EDIT_TABLE, TOGGLE_EDIT_DATABASE, CHANGE_DOMAIN, SYNC_DIAGRAM
 } from "../constants/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -22,6 +22,7 @@ let state = {};
 let structure = null;
 
 function structureReducer(s, action, struct) {
+  //console.log("Sstate",s);
   state = copyState(s);
   structure = struct;
   let input = action.itemType === PREDICATE ? state.predicates[action.name] : state.functions[action.name];
@@ -71,6 +72,25 @@ function structureReducer(s, action, struct) {
       functions.parseText(action.value, state.variables, {structure: structure, startRule: RULE_VARIABLE_VALUATION});
       setVariables();
       return state;
+
+    case SYNC_DIAGRAM:
+      /*console.log("state",state.domain);
+      console.log("main state",state);*/
+
+    case CHANGE_DOMAIN:
+      /*console.log("new",action.value);
+      console.log("old",action.oldValue);*/
+      let newDomain = functions.changeDomain(action.value,action.oldValue,state.domain.value);
+      //console.log("NewDomain",newDomain);
+
+      functions.parseText(newDomain, state.domain, {startRule: RULE_DOMAIN});
+      setDomain();
+      setConstantsValues();
+      setPredicatesValues();
+      setFunctionsValues();
+      setVariables();
+      return state;
+
     case SET_DOMAIN:
       functions.parseText(action.value, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
@@ -79,6 +99,7 @@ function structureReducer(s, action, struct) {
       setFunctionsValues();
       setVariables();
       return state;
+
     case TOGGLE_EDIT_TABLE:
       if (input) {
         input.tableEnabled = !input.tableEnabled;
@@ -303,7 +324,8 @@ const copyState = (state) => ({
   predicates: {...state.predicates},
   functions: {...state.functions},
   variables: {...state.variables},
-  domain: {...state.domain}
+  domain: {...state.domain},
+
 });
 
 function tupleToString(tuple) {

@@ -1,25 +1,25 @@
 import styled from "@emotion/styled";
 import * as React from 'react';
-import _ from "lodash";
-import {PortWidget} from "@projectstorm/react-diagrams-core";
-import {Port} from "../nodes/UnBinaryNode/UnBinaryPortLabelWidget";
+import {PortModelAlignment, PortWidget} from "@projectstorm/react-diagrams";
+import {Port} from "../nodes/DiamondNode/DiamondNodeWidget";
 
 export const NodeU = styled.div`
-		background-color: black;
+		background-color: green;
 		border-radius: 5px;
 		font-family: sans-serif;
-		color: white;
+		color: black;
 		border: solid 2px black;
 		overflow: visible;
 		font-size: 11px;
-		border: solid 2px rgb(0,192,255);
+		border: solid 2px black;
 	`;
 
 export const TitleU = styled.div`
-		background: rgba(0, 0, 0, 0.3);
+    	background: rgba(0, 0, 0, 0.3);
 		display: flex;
 		white-space: nowrap;
 		justify-items: center;
+		text-align:center;
 	`;
 
 export const TitleNameU = styled.div`
@@ -31,17 +31,6 @@ export const PortsU = styled.div`
 		display: flex;
 		background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
 	`;
-
-export const PortU = styled.div`
-		height:20px;
-        width:20px;
-		background: rgba(white, 0.1);
-		color: black;
-		text-align:center;
-	`;
-
-
-
 
 export const PortsContainerU = styled.div`
 		flex-grow: 1;
@@ -57,6 +46,15 @@ export const PortsContainerU = styled.div`
 		}
 	`;
 
+export const PortU = styled.div`
+		background: rgba(white, 0.1);
+		color: black;
+		text-align:center;
+		justify-content:center;
+		width:100%;
+		height:20px;
+	`;
+
 export const Unbinary = () =>{
     return(
         <NodeU>
@@ -68,20 +66,103 @@ export const Unbinary = () =>{
 
             <PortsU>
             <PortsContainerU>
-                    <PortU>+</PortU>
+                <PortU>+</PortU>
             </PortsContainerU>
         </PortsU>
         </NodeU>
     )
-}
+};
+
+
+
+export const PortD = styled.div`
+		width: 16px;
+		height: 16px;
+		z-index: 10;
+		background: rgba(0, 0, 0, 0.5);
+		border-radius: 8px;
+		cursor: pointer;
+
+		&:hover {
+			background: rgba(0, 0, 0, 1);
+		}
+	`;
 
 export const Diamond = () => {
     return(
-        <div>
-
+        <NodeU>
+        <div
+            style={{
+                position: 'relative',
+                width: 20,
+                height: 20
+            }}>
+            <svg
+                width={20}
+                height={20}
+                dangerouslySetInnerHTML={{
+                    __html:
+                        `
+          <g id="Layer_1">
+          </g>
+          <g id="Layer_2">
+            <polygon fill="mediumpurple" stroke="'#000000'" stroke-width="3" stroke-miterlimit="10" points="10,` +
+                        20 / 2 +
+                        ` ` +
+                        20 / 2 +
+                        `,10 ` +
+                        (20 - 10) +
+                        `,` +
+                        20 / 2 +
+                        ` ` +
+                        20 / 2 +
+                        `,` +
+                        (20 - 10) +
+                        ` "/>
+          </g>
+        `
+                }}
+            />
         </div>
+        </NodeU>
     )
-}
+};
+
+
+/*<PortWidget
+    style={{
+        top: 20 / 2 - 8,
+        left: -8,
+        position: 'absolute'
+    }}
+>
+    <Port />
+</PortWidget>
+<PortWidget
+style={{
+    left: 20 / 2 - 8,
+        top: -8,
+        position: 'absolute'
+}}>
+<Port />
+</PortWidget>
+<PortWidget
+    style={{
+        left: 20 - 8,
+        top: 20 / 2 - 8,
+        position: 'absolute'
+    }}>
+    <Port />
+</PortWidget>
+<PortWidget
+style={{
+    left: 20 / 2 - 8,
+        top: 20 - 8,
+        position: 'absolute'
+}}
+>
+<Port />
+</PortWidget>*/
 
 /*export const Diamond = () =>{
     return(

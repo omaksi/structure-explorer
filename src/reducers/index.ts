@@ -33,7 +33,7 @@ const defaultState = {
         // @ts-ignore
         terms: []
     },
-    diagramModel: new DiagramModel(),
+    diagramModel: new DiagramModel()
 };
 
 function checkImportedState(state:any) {

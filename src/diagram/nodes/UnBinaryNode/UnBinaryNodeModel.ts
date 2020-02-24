@@ -13,20 +13,22 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 	previousName?:string;
 	color?: string;
 	setDomain?:any;
+	changeDomain?:any;
 }
 
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
 	numberOfPorts: number;
 
-	constructor(name: string, color: string,setDomain:any);
+	constructor(name: string, color: string,setDomain:any,changeDomain:any);
 	constructor(options?: UnBinaryNodeModelOptions);
-	constructor(options: any = {}, color?: string, setDomain?:any) {
+	constructor(options: any = {}, color?: string, setDomain?:any, changeDomain?:any) {
 		if (typeof options === 'string') {
 			options = {
 				name: options,
 				previousName:options,
 				color: color,
-				setDomain:setDomain
+				setDomain:setDomain,
+				changeDomain:changeDomain
 			};
 		}
 		super({
@@ -39,7 +41,9 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.getPort("+").setMaximumLinks(0);
 		this.numberOfPorts = 0;
 
-		setDomain(this.options.name);
+
+		//if created through DIAGRAM CLICK/DROP -> DISPATCH THIS: MAYBE I SHOULD DISPATCH IT IN CREATENODE FUNCTION NOT HERE
+		//setDomain(this.options.name);
 	}
 
 	addNewPort(name: string) {

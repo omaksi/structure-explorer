@@ -16,7 +16,8 @@ const mapStateToProps = (state) => ({
   structure: state.structure,
   structureObject: state.structureObject,
   teacherMode: state.common.teacherMode,
-  domain: [...state.structureObject.domain]
+  domain: [...state.structureObject.domain],
+  diagramModel:state.diagramModel
 });
 
 const mapDispatchToProps = {

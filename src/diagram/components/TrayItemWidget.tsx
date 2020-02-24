@@ -13,6 +13,7 @@ export interface TrayItemWidgetProps {
 
 export const BasicTray = styled.div`
 		cursor: pointer;
+		margin-bottom:0.5em;
 	`;
 
 export class UnbinaryItemWidget extends React.Component<TrayItemWidgetProps> {
@@ -40,9 +41,7 @@ export class UnbinaryItemWidget extends React.Component<TrayItemWidgetProps> {
 }
 
 export class DiamondItemWidget extends React.Component<TrayItemWidgetProps> {
-
 	render() {
-
 		return (
 			<BasicTray
 				color={this.props.color}
@@ -55,7 +54,9 @@ export class DiamondItemWidget extends React.Component<TrayItemWidgetProps> {
 				}}
 				className="tray-item">
 				{this.props.name}
+			<Diamond/>
 			</BasicTray>
+
 		);
 	}
 }

@@ -48,6 +48,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	addNewPort(name: string) {
 		let port: UnBinaryPortModel = new UnBinaryPortModel((name));
+		port.setMaximumLinks(0);
 		this.numberOfPorts += 1;
 		this.addPort(port);
 		return port;

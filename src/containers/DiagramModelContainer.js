@@ -12,7 +12,9 @@ import {BodyWidget} from "../diagram/components/BodyWidget";
 
 const mapStateToProps = (state,ownProps) => ({
   diagramModel: state.diagramModel,
-  domain: [...state.structureObject.domain]
+  domain: [...state.structureObject.domain],
+  language: state.language,
+  structure: state.structure
 });
 
 const mapDispatchOnProps = {

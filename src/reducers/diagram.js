@@ -4,11 +4,11 @@ import {ADDPORT, INPORT, OUTPORT} from "../diagram/nodes/ConstantNames";
 
 function diagramReducer(state, action) {
   switch (action.type) {
-    log
     case SET_DIAGRAM:
       console.log("CAAAALAEEED");
       return action.diagramModel;
     case SYNC_DIAGRAM:
+      console.log(action);
       syncStructure(action.value);
       syncPredicates(action.value);
       syncConstants(action.value);
@@ -25,7 +25,7 @@ function syncConstants(values){
 
 function syncPredicates(values){
   let predicatesObjects = values.structure.predicates;
-  let diagramModel = values.diagramModel;
+  let diagramModel = values.diagramNodeState.diagramModel;
   let portMap = new Map();
 
   if(predicatesObjects !== null && Object.keys(predicatesObjects).length>0) {
@@ -82,7 +82,7 @@ function clearDiagramState(values){
 function syncStructure(values) {
   console.log("values",values);
   let domain = (values.domain);
-  let diagramModel = values.diagramModel;
+  let diagramModel = values.diagramNodeState.diagramModel;
 
   let canvasWidth = values.app.getDiagramEngine().getCanvas().clientWidth;
   let canvasHeight = values.app.getDiagramEngine().getCanvas().clientHeight;
@@ -122,7 +122,7 @@ function syncStructure(values) {
      });
      node.setPosition(Math.random()*(canvasWidth-canvasWidth*0.1)+canvasWidth*0.05,Math.random()*(canvasHeight-canvasHeight*0.1)+canvasHeight*0.05);
      diagramModel.addNode(node);
-     values.addDomainNode(nodeName,node);
+     //values.addDomainNode(nodeName,node);
    }
  });
  //console.log("ACTUAL DIAGRAM",diagramModel);

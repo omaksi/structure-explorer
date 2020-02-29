@@ -160,7 +160,7 @@ class App extends React.Component<IProps,IState> {
                     </Col>
                   </Row>):
                     <Col sm={12} className='reactDiagram'>
-                      <DiagramModelContainer app={new Application(store.getState().diagramModel)}/>
+                      <DiagramModelContainer app={new Application(store.getState().diagramNodeState.diagramModel)}/>
                     </Col>
               }
             <Row>

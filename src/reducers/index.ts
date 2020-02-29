@@ -75,7 +75,7 @@ function root(state = defaultState, action:any) {
     let language = languageReducer(state.language, action, state.structureObject);
     let structure = structureReducer(state.structure, action, state.structureObject);
     let expressions = expressionsReducer(state.expressions, action, state.structureObject, state.structure.variables.object);
-    let diagram = diagramReducer(state.diagramNodeState,action);
+    let diagramNodeState = diagramReducer(state.diagramNodeState,action);
 
     return {
         structureObject: state.structureObject,
@@ -83,7 +83,7 @@ function root(state = defaultState, action:any) {
         language: language,
         structure: structure,
         expressions: expressions,
-        diagram:diagram
+        diagramNodeState:diagramNodeState
     }
 }
 

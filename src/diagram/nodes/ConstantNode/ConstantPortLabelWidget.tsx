@@ -20,17 +20,17 @@ export interface DefaultPortLabelProps {
 		flex-grow: 1;
 	`;
 
-    export const Port = styled.div<{ width: number; height: number }>`
-		width: ${p => p.width}px;
+export const Port = styled.div<{ width: number; height: number }>`
+		//width: ${p => p.width}px;
+		width:100%;
 		height: ${p => p.height}px;
 		background: rgba(white, 0.1);
 		color: black;
 		text-align:center;
 
 		&:hover {
-			background: white;
-		}
-	`;
+			background: #00ff80;
+		}`;
 
 export class ConstantPortLabelWidget extends React.Component<DefaultPortLabelProps> {
     render() {

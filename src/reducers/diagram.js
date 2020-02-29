@@ -1,24 +1,32 @@
 import {SET_DIAGRAM, SYNC_DIAGRAM} from "../constants/action_types";
 import {UnBinaryNodeModel} from "../diagram/nodes/UnBinaryNode/UnBinaryNodeModel";
+import {ADDPORT, INPORT, OUTPORT} from "../diagram/nodes/ConstantNames";
 
 function diagramReducer(state, action) {
   switch (action.type) {
+    log
     case SET_DIAGRAM:
+      console.log("CAAAALAEEED");
       return action.diagramModel;
     case SYNC_DIAGRAM:
       syncStructure(action.value);
       syncPredicates(action.value);
+      syncConstants(action.value);
       return state;
     default:
       return state;
   }
 }
 
+function syncConstants(values){
+  let constantsObjects = values.structure.constants;
+  console.log("const",constantsObjects);
+}
+
 function syncPredicates(values){
   let predicatesObjects = values.structure.predicates;
   let diagramModel = values.diagramModel;
-
-  console.log("mode",diagramModel.getNodes());
+  let portMap = new Map();
 
   if(predicatesObjects !== null && Object.keys(predicatesObjects).length>0) {
     console.log(predicatesObjects);
@@ -27,26 +35,52 @@ function syncPredicates(values){
       if(parsedNodeValues!=null){
         let keyWithoutArity = key.split('/')[0];
 
-        parsedNodeValues.map((currentNodeValue)=>{
-          console.log(currentNodeValue[0]);
-          diagramModel.getNodes().map(currentNode =>{
-            if(currentNodeValue[0] === currentNode.getOptions().name){
-              currentNode.addNewPort(keyWithoutArity);
-            }
-          })
+        parsedNodeValues.map((currentNodeVal)=>{
+          let currentNodeValue = currentNodeVal[0];
+          if(portMap.has(currentNodeValue)){
+            portMap.get(currentNodeValue).add(keyWithoutArity);
+          }
+          else{
+            portMap.set(currentNodeValue,new Set());
+            portMap.get(currentNodeValue).add(keyWithoutArity);
+          }
         });
       }
     }
+
+    diagramModel.getNodes().map((currentNodeObject)=> {
+      let currentNodeName = currentNodeObject.getOptions().name;
+      if(portMap.has(currentNodeName)){
+
+        let arrayOfNodeNames = Array.from(portMap.get(currentNodeName));
+
+        arrayOfNodeNames.map((predicatePortName) =>{
+          let existsPort = currentNodeObject.getPort(predicatePortName);
+          if(existsPort === undefined){
+            currentNodeObject.addNewPort(predicatePortName);
+          }
+        });
+
+        //DELETE LINKS TOO
+        let currentNodePorts = currentNodeObject.getPorts();
+        for(let [portName,portObject] of Object.entries(currentNodePorts)){
+          if(!arrayOfNodeNames.includes(portName) && ![ADDPORT,INPORT,OUTPORT].includes(portName)){
+            currentNodeObject.removePort(portObject);
+          }
+        }
+      }
+    });
   }
+}
 
-  /*predicatesObjects.map((predicateName) =>{
-    console.log(predicateName)
-  })*/
-
-
+function clearDiagramState(values){
+  values.diagramNodeState.domainNodes.clear();
+  values.diagramNodeState.constantNodes.clear();
+  values.diagramNodeState.functionNodes.clear();
 }
 
 function syncStructure(values) {
+  console.log("values",values);
   let domain = (values.domain);
   let diagramModel = values.diagramModel;
 
@@ -58,9 +92,11 @@ function syncStructure(values) {
   if (domain == null || domain.length === 0) {
    //console.log("IS NULL");
     diagramModel.getNodes().map(node => {
+      removeWholeNode(node,diagramModel);
       //TREBA OSETRIT PRE KONSTATNY
-      diagramModel.removeNode(node);
+      //diagramModel.removeNode(node);
     });
+    clearDiagramState(values);
     return;
   }
 
@@ -71,18 +107,33 @@ function syncStructure(values) {
      nodesNames.push(node.getOptions().name)
    }
    else{
-     diagramModel.removeNode(node);
+     removeWholeNode(node,diagramModel);
+     //diagramModel.removeNode(node);
    }
  });
 
- domain.map(elementName =>{
-   if(!nodesNames.includes(elementName)){
-     let node = new UnBinaryNodeModel(elementName,'rgb(92,192,125)',values.setDomain,values.changeDomain);
+ domain.map(nodeName =>{
+   if(!nodesNames.includes(nodeName)){
+     let node = new UnBinaryNodeModel(nodeName,'rgb(92,192,125)',{
+       "changeDomain": values.setDomain,
+       "setDomain": values.changeDomain,
+       "addDomainNode": values.addDomainNode,
+       "removeDomainNode": values.removeDomainNode
+     });
      node.setPosition(Math.random()*(canvasWidth-canvasWidth*0.1)+canvasWidth*0.05,Math.random()*(canvasHeight-canvasHeight*0.1)+canvasHeight*0.05);
      diagramModel.addNode(node);
+     values.addDomainNode(nodeName,node);
    }
  });
  //console.log("ACTUAL DIAGRAM",diagramModel);
+}
+
+function removeWholeNode(node,diagramModel){
+  for(let portObject of Object.values(node.getPorts())){
+    node.removePort(portObject); //ensures that all links are deleted
+  }
+  //sync diagramState
+  diagramModel.removeNode(node);
 }
 
 export default diagramReducer;

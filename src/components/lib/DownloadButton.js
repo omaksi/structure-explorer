@@ -37,7 +37,6 @@ class DownloadButton extends React.Component {
       loading: false,
       fileData: fileData,
     });
-    console.log(this.state, this.props);
   }
 
   _onDownload() {

@@ -24,7 +24,6 @@ exports.parseText = function (text, textData, parserOptions) {
 
 exports.changeDomain = function(newValue,oldValue,domain){
   if(domain.includes(newValue)){
-    console.log("yes");
     return domain;
   }
   console.log("before",domain);

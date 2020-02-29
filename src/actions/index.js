@@ -29,6 +29,28 @@ export const syncDiagram = (value) => ({
   value
 });
 
+export const removeConstantNode = (nodeName) => ({
+  type: 'REMOVE_CONSTANT_NODE',
+  nodeName
+});
+
+export const removeDomainNode = (nodeName) => ({
+  type: 'REMOVE_DOMAIN_NODE',
+  nodeName
+});
+
+export const addConstantNode = (nodeName,nodeObject) => ({
+  type: 'ADD_CONSTANT_NODE',
+  nodeName,
+  nodeObject
+});
+
+export const addDomainNode = (nodeName,nodeObject) => ({
+  type: 'ADD_DOMAIN_NODE',
+  nodeName,
+  nodeObject
+});
+
 export const setConstantValue = (value, constantName) => ({
   type: 'SET_CONSTANT_VALUE',
   constantName,
@@ -75,6 +97,10 @@ export const checkExpressionSyntax = (value, index, expressionType) => ({
 export const addExpression = (expressionType) => ({
   type: 'ADD_EXPRESSION',
   expressionType
+});
+
+export const resetDiagramState = () => ({
+  type: 'RESET_DIAGRAM_STATE'
 });
 
 export const removeExpression = (expressionType, index) => ({

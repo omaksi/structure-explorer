@@ -1,9 +1,8 @@
-
+import { ConstantNodeWidget } from './ConstantNodeWidget';
+import { ConstantNodeModel } from './ConstantNodeModel';
 import * as React from 'react';
 import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
 import { DiagramEngine } from '@projectstorm/react-diagrams-core';
-import { ConstantNodeWidget } from './ConstantNodeWidget';
-import { ConstantNodeModel } from './ConstantNodeModel';
 
 export class ConstantNodeFactory extends AbstractReactFactory<ConstantNodeModel, DiagramEngine> {
 	constructor() {
@@ -11,7 +10,8 @@ export class ConstantNodeFactory extends AbstractReactFactory<ConstantNodeModel,
 	}
 
 	generateReactWidget(event:any): JSX.Element {
-		return <ConstantNodeWidget engine={this.engine} size={50} node={event.model}/>;
+		let reduxFunctions = event.model.options.reduxFunctions;
+		return <ConstantNodeWidget setDomain={reduxFunctions["setDomain"]} changeDomain={reduxFunctions["changeDomain"]} engine={this.engine} size={50} node={event.model}/>;
 	}
 
 	generateModel(event:any) {

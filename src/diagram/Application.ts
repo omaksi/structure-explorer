@@ -1,11 +1,10 @@
 import * as SRD from '@projectstorm/react-diagrams';
-import {DiamondNodeModel} from "./nodes/DiamondNode/DiamondNodeModel";
 import { SimplePortFactory } from './nodes/DiamondNode/SimplePortFactory';
 import { DiamondPortModel } from './nodes/DiamondNode/DiamondPortModel';
 import {DiamondNodeFactory} from "./nodes/DiamondNode/DiamondNodeFactory";
 import {PortModelAlignment, DiagramModel } from '@projectstorm/react-diagrams';
 import {UnBinaryNodeFactory} from "./nodes/UnBinaryNode/UnBinaryNodeFactory";
-import {UnBinaryNodeModel} from "./nodes/UnBinaryNode/UnBinaryNodeModel";
+import {ConstantNodeFactory} from "./nodes/ConstantNode/ConstantNodeFactory";
 
 export class Application {
 	protected activeModel: DiagramModel;
@@ -21,8 +20,8 @@ export class Application {
 
 		//Custom nodes access
 		this.diagramEngine.getNodeFactories().registerFactory(new DiamondNodeFactory());
-
 		this.diagramEngine.getNodeFactories().registerFactory(new UnBinaryNodeFactory());
+		this.diagramEngine.getNodeFactories().registerFactory(new ConstantNodeFactory());
 	}
 
 

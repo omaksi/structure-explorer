@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { UnBinaryNodeModel } from './UnBinaryNodeModel';
-import { DiagramEngine, PortWidget, PortModel } from '@projectstorm/react-diagrams';
+import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port } from "./UnBinaryPortLabelWidget";
+import {ADDPORT, INPORT, OUTPORT} from "../ConstantNames";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -71,8 +72,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	constructor(props:UnBinaryNodeWidgetProps){
 		super(props);
 
-		console.log(this.props);
-
 		this.state={
 			renameActive:false,
 			titleChanged:false,
@@ -81,7 +80,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	}
 
 	generatePort = (port:any) =>{
-		if(port.options.name!=="+") {
+		if(![ADDPORT,INPORT,OUTPORT].includes(port.options.name)) {
 			return (
 				//<UnBinaryPortLabelWidget engine={this.props.engine} port={port} width={this.props.node.getOptions().name.length*10}/>
 				<PortWidget engine={this.props.engine} port={this.props.node.getPort(port.options.name)}>
@@ -127,13 +126,23 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					</TitleName>
 				</Title>
 				<Ports>
-					<PortsContainer>{_.map(this.props.node.getPorts(), this.generatePort)}
-						<PortWidget engine={this.props.engine} port={this.props.node.getPort("+")}>
+					<PortsContainer>
+
+					<PortWidget engine={this.props.engine} port={this.props.node.getPort(INPORT)}>
+						<Port height={20} width={this.props.node.getOptions().name.length * 10}>{INPORT}</Port>
+					</PortWidget>
+
+					<PortWidget engine={this.props.engine} port={this.props.node.getPort(OUTPORT)}>
+						<Port height={20} width={this.props.node.getOptions().name.length * 10}>{OUTPORT}</Port>
+					</PortWidget>
+
+					{_.map(this.props.node.getPorts(), this.generatePort)}
+						<PortWidget engine={this.props.engine} port={this.props.node.getPort(ADDPORT)}>
 							<Port onClick={() => {
 								this.props.node.addNewPort(`Port${this.props.node.numberOfPorts}`);
 								this.props.engine.repaintCanvas();
 							}}
-								  height={20} width={this.props.node.getOptions().name.length * 10}>+</Port>
+								  height={20} width={this.props.node.getOptions().name.length * 10}>{ADDPORT}</Port>
 						</PortWidget>
 					</PortsContainer>
 				</Ports>

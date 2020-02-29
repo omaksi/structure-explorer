@@ -10,8 +10,8 @@ export class UnBinaryNodeFactory extends AbstractReactFactory<UnBinaryNodeModel,
 	}
 
 	generateReactWidget(event:any): JSX.Element {
-		//console.log("event",event);
-		return <UnBinaryNodeWidget setDomain={event.model.options.setDomain} changeDomain={event.model.options.changeDomain} engine={this.engine} size={50} node={event.model}/>;
+		let reduxFunctions = event.model.options.reduxFunctions;
+		return <UnBinaryNodeWidget setDomain={reduxFunctions["setDomain"]} changeDomain={reduxFunctions["changeDomain"]} engine={this.engine} size={50} node={event.model}/>;
 	}
 
 	generateModel(event:any) {

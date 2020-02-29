@@ -22,7 +22,6 @@ let state = {};
 let structure = null;
 
 function structureReducer(s, action, struct) {
-  //console.log("Sstate",s);
   state = copyState(s);
   structure = struct;
   let input = action.itemType === PREDICATE ? state.predicates[action.name] : state.functions[action.name];
@@ -74,14 +73,9 @@ function structureReducer(s, action, struct) {
       return state;
 
     case SYNC_DIAGRAM:
-      /*console.log("state",state.domain);
-      console.log("main state",state);*/
 
     case CHANGE_DOMAIN:
-      /*console.log("new",action.value);
-      console.log("old",action.oldValue);*/
       let newDomain = functions.changeDomain(action.value,action.oldValue,state.domain.value);
-      //console.log("NewDomain",newDomain);
 
       functions.parseText(newDomain, state.domain, {startRule: RULE_DOMAIN});
       setDomain();

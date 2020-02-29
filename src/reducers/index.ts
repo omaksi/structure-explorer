@@ -7,8 +7,10 @@ import teacherModeReducer from "./teacherMode";
 import {IMPORT_APP} from "../constants/action_types";
 import {defaultInputData} from "../constants";
 import {EMPTY_DOMAIN} from "../constants/messages";
-import {DiagramModel} from "@projectstorm/react-diagrams";
+import {DiagramModel, NodeModel} from "@projectstorm/react-diagrams";
 import diagramReducer from "./diagram";
+import diagramStateReducer from "./diagramState";
+
 
 const defaultState = {
     structureObject: new Structure(new Language()),
@@ -33,7 +35,13 @@ const defaultState = {
         // @ts-ignore
         terms: []
     },
-    diagramModel: new DiagramModel()
+    diagramNodeState: {
+        diagramModel: new DiagramModel(),
+        domainNodes: new Map(),
+        constantNodes: new Map(),
+        functionNodes: new Map()
+    },
+
 };
 
 function checkImportedState(state:any) {
@@ -56,13 +64,18 @@ function root(state = defaultState, action:any) {
         } catch (e) {
             console.error(e);
         }
-        state.diagramModel = new DiagramModel();
+        state.diagramNodeState = {
+            diagramModel: new DiagramModel(),
+            domainNodes: new Map(),
+            constantNodes: new Map(),
+            functionNodes: new Map()
+        }
     }
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action, state.structureObject);
     let structure = structureReducer(state.structure, action, state.structureObject);
     let expressions = expressionsReducer(state.expressions, action, state.structureObject, state.structure.variables.object);
-    let diagramModel = diagramReducer(state.diagramModel,action);
+    let diagram = diagramReducer(state.diagramNodeState,action);
 
     return {
         structureObject: state.structureObject,
@@ -70,7 +83,7 @@ function root(state = defaultState, action:any) {
         language: language,
         structure: structure,
         expressions: expressions,
-        diagramModel:diagramModel
+        diagram:diagram
     }
 }
 

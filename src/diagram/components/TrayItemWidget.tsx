@@ -8,11 +8,13 @@ export interface TrayItemWidgetProps {
 	name: string;
 	element:any;
 	clickFunction:any;
-	setDomain:any;
+	reduxFunctions:any;
 }
 
 export const BasicTray = styled.div`
 		cursor: pointer;
+		width:50%;
+		margin:auto;
 		margin-bottom:0.5em;
 	`;
 
@@ -31,7 +33,7 @@ export class UnbinaryItemWidget extends React.Component<TrayItemWidgetProps> {
 					event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
 				}}
 				onClick={e => {
-					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model),this.props.setDomain);
+					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model),this.props.reduxFunctions);
 				}}
 				className="tray-item">
 				<Unbinary/>
@@ -50,7 +52,7 @@ export class DiamondItemWidget extends React.Component<TrayItemWidgetProps> {
 					event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
 				}}
 				onClick={e => {
-					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model),this.props.setDomain);
+					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model),this.props.reduxFunctions);
 				}}
 				className="tray-item">
 				{this.props.name}

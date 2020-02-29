@@ -45,7 +45,6 @@ function expressionsReducer(state = s, action, structure2, variables) {
     case SET_FUNCTION_VALUE_TEXT:
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
-    case SET_DOMAIN:
     case CHANGE_DOMAIN:
       syncExpressionsValue();
       return state;

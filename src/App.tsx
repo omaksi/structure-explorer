@@ -23,8 +23,8 @@ const store = createStore(reducer);
 // po kazdej zmene stavu sa vypise
 store.subscribe(() => {
   let state = store.getState();
-  console.log('STATE:', state);
-  console.log('DIAGRAM:', state.diagramModel);
+  //console.log('STATE:', state);
+  //console.log('DIAGRAM:', state.diagramModel);
 });
 
 interface IProps{

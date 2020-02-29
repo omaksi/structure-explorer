@@ -26,9 +26,7 @@ export class SelectComponent extends React.Component{
 }
 
 function addIntoFunctionTable(index,value,props){
-    //console.log("val",value,"index",index);
     props.selectionElement[index]=value;
-    //console.log(props.selectionElement);
 
     for(let i = 0;i<props.selectionElement.length;i++){
         if(!props.selectionElement[i].length>0){

@@ -26,8 +26,8 @@ exports.changeDomain = function(newValue,oldValue,domain){
   if(domain.includes(newValue)){
     return domain;
   }
-  console.log("before",domain);
+  //console.log("before",domain);
   domain = domain.replace(oldValue,newValue);
-  console.log("replaced",domain);
+  //console.log("replaced",domain);
   return domain;
 };

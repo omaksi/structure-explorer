@@ -2,8 +2,8 @@ import {NodeModel, NodeModelGenerics} from '@projectstorm/react-diagrams';
 import {ConstantPortModel} from './ConstantPortModel';
 import { BasePositionModelOptions } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
-import {ConstantNodeWidget} from "./ConstantNodeWidget";
-import * as React from "react";
+import {PortModel} from "@projectstorm/react-diagrams-core/dist/@types/src/entities/port/PortModel";
+import {CONSTPORT} from "../ConstantNames";
 
 export interface ConstantNodeModelGenerics {
 	PORT: ConstantPortModel;
@@ -18,8 +18,6 @@ export interface ConstantNodeModelOptions extends BasePositionModelOptions {
 }
 
 export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNodeModelGenerics> {
-	numberOfPorts: number;
-
 	constructor(name: string, color: string,reduxFunctions:any);
 	constructor(options?: ConstantNodeModelOptions);
 	constructor(options: any = {}, color?: string, reduxFunctions?:any) {
@@ -38,21 +36,28 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 			...options
 		});
 
-		this.numberOfPorts = 0;
 		this.addNewPort("*");
-		this.options.reduxFunctions["addConstantNode"](this.getNodeName(),this);
-		//if created through DIAGRAM CLICK/DROP -> DISPATCH THIS: MAYBE I SHOULD DISPATCH IT IN CREATENODE FUNCTION NOT HERE
-		//setDomain(this.options.name);
+	}
+
+	returnRepresentationNameForConstant(){
+	}
+
+	getPort(name: string): PortModel | null {
+		console.log("call this");
+		for(let [nodeName,nodeObject] of Object.entries(this.getPorts())){
+			if(name === nodeName){
+				return nodeObject;
+			}
+		}
+		return null;
 	}
 
 	addNewPort(name: string) {
-		if(this.numberOfPorts === 0){
 			let port: ConstantPortModel = new ConstantPortModel((name));
+			port.setMaximumLinks(1);
 			this.addPort(port);
-			this.numberOfPorts+=1;
 			return port;
 		}
-	}
 
 	getNodeName(){
 		return this.options.name;
@@ -70,6 +75,12 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		this.options.previousName = name;
 	}
 
+	removeAllLinks(){
+		for (let link of _.values(this.getPort(CONSTPORT).getLinks())) {
+			link.remove();
+		}
+	}
+
 	removePort(port: ConstantPortModel): void {
 		for (let link of _.values(port.getLinks())) {
 			link.remove();
@@ -79,7 +90,6 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 			this.ports[port.getName()].setParent(null);
 			delete this.ports[port.getName()];
 		}
-		this.options.reduxFunctions["removeConstantNode"](this.getNodeName());
 	}
 
 

@@ -7,9 +7,8 @@ import teacherModeReducer from "./teacherMode";
 import {IMPORT_APP} from "../constants/action_types";
 import {defaultInputData} from "../constants";
 import {EMPTY_DOMAIN} from "../constants/messages";
-import {DiagramModel, NodeModel} from "@projectstorm/react-diagrams";
+import {DiagramModel} from "@projectstorm/react-diagrams";
 import diagramReducer from "./diagram";
-import diagramStateReducer from "./diagramState";
 
 
 const defaultState = {
@@ -75,7 +74,7 @@ function root(state = defaultState, action:any) {
     let language = languageReducer(state.language, action, state.structureObject);
     let structure = structureReducer(state.structure, action, state.structureObject);
     let expressions = expressionsReducer(state.expressions, action, state.structureObject, state.structure.variables.object);
-    let diagramNodeState = diagramReducer(state.diagramNodeState,action);
+    let diagramNodeState = diagramReducer(state.diagramNodeState, action);
 
     return {
         structureObject: state.structureObject,
@@ -83,7 +82,7 @@ function root(state = defaultState, action:any) {
         language: language,
         structure: structure,
         expressions: expressions,
-        diagramNodeState:diagramNodeState
+        diagramNodeState: diagramNodeState
     }
 }
 

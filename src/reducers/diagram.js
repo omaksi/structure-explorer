@@ -7,8 +7,8 @@ import {DefaultLinkModel} from "@projectstorm/react-diagrams-defaults";
 function diagramReducer(state, action) {
   switch (action.type) {
     case SET_DIAGRAM:
-      console.log("CALLED");
-      return action.diagramModel;
+      state.diagramNodeState.diagramModel = action.diagramModel;
+      return state;
     case SYNC_DIAGRAM:
       syncDomain(action.value);
       syncPredicates(action.value);
@@ -92,6 +92,8 @@ function clearCertainNodeState(nodeState){
 
 //atm refers all predicates to have unary level
 function syncPredicates(values) {
+  console.log(values.structure);
+
   let predicatesObjects = values.structure.predicates;
   let domainState = values.diagramNodeState.domainNodes;
   let portMap = new Map();
@@ -101,33 +103,40 @@ function syncPredicates(values) {
       let parsedNodeValues = value.parsed;
       if (parsedNodeValues != null) {
         let keyWithoutArity = key.split('/')[0];
+        let arityWithoutKey = key.split('/')[1];
 
-        parsedNodeValues.map((currentNodeVal) => {
-          let currentNodeValue = currentNodeVal[0];
-          if (portMap.has(currentNodeValue)) {
-            portMap.get(currentNodeValue).add(keyWithoutArity);
-          } else {
-            portMap.set(currentNodeValue, new Set());
-            portMap.get(currentNodeValue).add(keyWithoutArity);
-          }
-        });
+        if (arityWithoutKey === 1) {
+          parsedNodeValues.map((currentNodeVal) => {
+            let currentNodeValue = currentNodeVal[0];
+            if (portMap.has(currentNodeValue)) {
+              portMap.get(currentNodeValue).add(keyWithoutArity);
+            } else {
+              portMap.set(currentNodeValue, new Set());
+              portMap.get(currentNodeValue).add(keyWithoutArity);
+            }
+          });
+        }
+
+        else{
+
+        }
       }
-    }
 
-    for (let [currentNodeName, currentNodeObject] of domainState.entries()) {
-      if (portMap.has(currentNodeName)) {
-        let arrayOfNodeNames = Array.from(portMap.get(currentNodeName));
-        arrayOfNodeNames.map((predicatePortName) => {
-          let existsPort = currentNodeObject.getPort(predicatePortName);
-          if (existsPort === undefined) {
-            currentNodeObject.addNewPort(predicatePortName);
-          }
-        });
+      for (let [currentNodeName, currentNodeObject] of domainState.entries()) {
+        if (portMap.has(currentNodeName)) {
+          let arrayOfNodeNames = Array.from(portMap.get(currentNodeName));
+          arrayOfNodeNames.map((predicatePortName) => {
+            let existsPort = currentNodeObject.getPort(predicatePortName);
+            if (existsPort === undefined) {
+              currentNodeObject.addNewPort(predicatePortName);
+            }
+          });
 
-        let currentNodePorts = currentNodeObject.getPorts();
-        for (let [portName, portObject] of Object.entries(currentNodePorts)) {
-          if (!arrayOfNodeNames.includes(portName) && ![ADDPORT, INPORT, OUTPORT].includes(portName)) {
-            currentNodeObject.removePort(portObject);
+          let currentNodePorts = currentNodeObject.getPorts();
+          for (let [portName, portObject] of Object.entries(currentNodePorts)) {
+            if (!arrayOfNodeNames.includes(portName) && ![ADDPORT, INPORT, OUTPORT].includes(portName)) {
+              currentNodeObject.removePort(portObject);
+            }
           }
         }
       }

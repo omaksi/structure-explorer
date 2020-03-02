@@ -21,6 +21,7 @@ export interface BodyWidgetProps {
 	removeDomainNode:any;
 	addConstantNode:any;
 	removeConstantNode:any;
+	diagramNodeState:any;
 }
 
 	export const Body = styled.div`
@@ -52,6 +53,19 @@ export interface BodyWidgetProps {
 		flex-grow: 1;
 	`;
 
+
+	function alreadyExistsWithGivenName(nodeType:string,diagramNodeState:any):number {
+		let nodeCount = 0;
+		let state:Map<string,object> = null;
+		if (nodeType == 'unbinary') {
+			state = diagramNodeState.domainNodes;
+			while(state.has('Node'+nodeCount)){
+				nodeCount++;
+			}
+		}
+		return nodeCount;
+	}
+
 	function createNode(element:any,event:any,reduxFunctions:any,clicked:boolean=true) {
 		let data;
 		if (clicked) {
@@ -60,23 +74,18 @@ export interface BodyWidgetProps {
 			data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
 		}
 
-		let nodesCount = _.keys(
-			element.props.app
-				.getDiagramEngine()
-				.getModel()
-				.getNodes()
-		).length;
+		let nodesCount = alreadyExistsWithGivenName(data.type,element.props.diagramNodeState);
 
 		let node: any = null;
 		if (data.type === 'diamond') {
 			node = new DiamondNodeModel();
 		} else if (data.type === 'unbinary') {
-			node = new UnBinaryNodeModel('Node' + (nodesCount + 1), 'rgb(92,192,125)', reduxFunctions);
+			node = new UnBinaryNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);
 
 		} else if (data.type === 'constant') {
-			node = new ConstantNodeModel('Node' + (nodesCount + 1), 'rgb(92,192,125)', reduxFunctions);
+			node = new ConstantNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);
 		} else {
-			node = new DefaultNodeModel('Node' + (nodesCount + 1), 'rgb(0,192,255)');
+			node = new DefaultNodeModel('Node' + nodesCount, 'rgb(0,192,255)');
 			node.addOutPort('Out');
 		}
 
@@ -110,7 +119,6 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	componentDidMount(): void {
 		this.props.syncDiagram(this.props);
 	}
-
 
 	render() {
 		let reduxFunctions = {

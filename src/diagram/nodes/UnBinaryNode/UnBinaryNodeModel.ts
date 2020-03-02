@@ -13,6 +13,7 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
 	previousName?:string;
 	color?: string;
+	reduxFunctions:any;
 	setDomain?:any;
 	changeDomain?:any;
 }
@@ -41,7 +42,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.getPort(ADDPORT).setMaximumLinks(0);
 		this.numberOfPorts = 0;
 		this.addInOutPort();
-
+		this.registerEvents();
 		//if created through DIAGRAM CLICK/DROP -> DISPATCH THIS: MAYBE I SHOULD DISPATCH IT IN CREATENODE FUNCTION NOT HERE
 		//setDomain(this.options.name);
 	}
@@ -52,6 +53,16 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.addPort(port);
 		port = new UnBinaryPortModel("out");
 		this.addPort(port);
+	}
+
+	registerEvents(){
+		let reduxFunctions = this.options.reduxFunctions;
+		let nodeName = this.options.name;
+		this.registerListener({
+			entityRemoved(event: any): void {
+				reduxFunctions["removeDomainNode"](nodeName);
+			}
+		})
 	}
 
 	addNewPort(name: string) {

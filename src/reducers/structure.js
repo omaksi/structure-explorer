@@ -1,10 +1,26 @@
 import {defaultInputData, PREDICATE} from "../constants";
 import {
-  IMPORT_APP, LOCK_CONSTANT_VALUE, LOCK_DOMAIN, LOCK_FUNCTION_VALUE, LOCK_PREDICATE_VALUE, LOCK_VARIABLES,
-  SET_CONSTANT_VALUE, SET_CONSTANTS, SET_DOMAIN, SET_FUNCTION_VALUE_TABLE, SET_FUNCTION_VALUE_TEXT, SET_FUNCTIONS,
+  IMPORT_APP,
+  LOCK_CONSTANT_VALUE,
+  LOCK_DOMAIN,
+  LOCK_FUNCTION_VALUE,
+  LOCK_PREDICATE_VALUE,
+  LOCK_VARIABLES,
+  SET_CONSTANT_VALUE,
+  SET_CONSTANTS,
+  SET_DOMAIN,
+  SET_FUNCTION_VALUE_TABLE,
+  SET_FUNCTION_VALUE_TEXT,
+  SET_FUNCTIONS,
   SET_PREDICATE_VALUE_TABLE,
   SET_PREDICATE_VALUE_TEXT,
-  SET_PREDICATES, SET_VARIABLES_VALUE, TOGGLE_EDIT_TABLE, TOGGLE_EDIT_DATABASE, CHANGE_DOMAIN, SYNC_DIAGRAM
+  SET_PREDICATES,
+  SET_VARIABLES_VALUE,
+  TOGGLE_EDIT_TABLE,
+  TOGGLE_EDIT_DATABASE,
+  CHANGE_DOMAIN,
+  SYNC_DIAGRAM,
+  ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE
 } from "../constants/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -85,8 +101,48 @@ function structureReducer(s, action, struct) {
       setVariables();
       return state;
 
+    case ADD_DOMAIN_NODE:
+      let domainState = state.domain.value;
+
+      if(domainState.charAt(domainState.length-1)==="," || state.domain.parsed.length===0){
+        domainState+=action.nodeName;
+      }
+      else{
+        domainState=domainState+","+action.nodeName;
+      }
+
+      functions.parseText(domainState, state.domain, {startRule: RULE_DOMAIN});
+      setDomain();
+      return state;
+
+    case REMOVE_DOMAIN_NODE:
+      let currentDomainState = state.domain.value;
+
+      if(state.domain.parsed.length===1){
+        currentDomainState = "";
+      }
+
+      else{
+        let nodeRegex1 = new RegExp(action.nodeName+",","g");
+        let nodeRegex2 = new RegExp(action.nodeName,"g");
+        currentDomainState = currentDomainState.replace(nodeRegex1,"");
+        currentDomainState = currentDomainState.replace(nodeRegex2,"");
+
+        if(currentDomainState.charAt(currentDomainState.length-1)===","){
+          currentDomainState = currentDomainState.substring(0,currentDomainState.length-1);
+        }
+      }
+
+      functions.parseText(currentDomainState, state.domain, {startRule: RULE_DOMAIN});
+      setDomain();
+      return state;
+
     case SET_DOMAIN:
+      console.log(action.value);
+      console.log(state.domain);
       functions.parseText(action.value, state.domain, {startRule: RULE_DOMAIN});
+      console.log("After",state.domain);
+
       setDomain();
       setConstantsValues();
       setPredicatesValues();

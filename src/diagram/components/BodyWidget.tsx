@@ -54,7 +54,7 @@ export interface BodyWidgetProps {
 	`;
 
 
-	function alreadyExistsWithGivenName(nodeType:string,diagramNodeState:any):number {
+	function getAvailableCount(nodeType:string,diagramNodeState:any):number {
 		let nodeCount = 0;
 		let state:Map<string,object> = null;
 		if (nodeType == 'unbinary') {
@@ -74,13 +74,15 @@ export interface BodyWidgetProps {
 			data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
 		}
 
-		let nodesCount = alreadyExistsWithGivenName(data.type,element.props.diagramNodeState);
+		let nodesCount = getAvailableCount(data.type,element.props.diagramNodeState);
 
 		let node: any = null;
 		if (data.type === 'diamond') {
 			node = new DiamondNodeModel();
 		} else if (data.type === 'unbinary') {
 			node = new UnBinaryNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);
+			console.log(reduxFunctions);
+			reduxFunctions.addDomainNode(node.getOptions().name,node);
 
 		} else if (data.type === 'constant') {
 			node = new ConstantNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);

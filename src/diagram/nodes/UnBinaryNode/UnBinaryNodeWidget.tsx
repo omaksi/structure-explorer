@@ -11,6 +11,7 @@ export interface UnBinaryNodeWidgetProps {
 	engine: DiagramEngine;
 	setDomain:any;
 	changeDomain:any;
+	removeDomainNode:any;
 	name?:string;
 	size?: number;
 }
@@ -110,12 +111,19 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		}
 	}
 
+	/*
+	onKeyPress={(e) => {
+					console.log(e);
+				}
+				}
+	 */
 	render() {
 		return (
 			<Node
 				data-basic-node-name={this.props.name}
 				selected={this.props.node.isSelected()}
-				background={this.props.node.getOptions().color}>
+				background={this.props.node.getOptions().color}
+			>
 				<Title>
 					<TitleName onDoubleClick={() => {
 						this.setState({renameActive: !this.state.renameActive});

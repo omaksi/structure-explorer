@@ -90,10 +90,10 @@ function structureReducer(s, action, struct) {
 
     case SYNC_DIAGRAM:
 
-    case CHANGE_DOMAIN:
-      let newDomain = functions.changeDomain(action.value,action.oldValue,state.domain.value);
+   case CHANGE_DOMAIN:
+      /*let newDomain = functions.changeDomain(action.value,action.oldValue,state.domain.value);
 
-      functions.parseText(newDomain, state.domain, {startRule: RULE_DOMAIN});
+      functions.parseText(newDomain, state.domain, {startRule: RULE_DOMAIN});*/
       setDomain();
       setConstantsValues();
       setPredicatesValues();
@@ -102,9 +102,10 @@ function structureReducer(s, action, struct) {
       return state;
 
     case ADD_DOMAIN_NODE:
+      console.log(state.domain);
       let domainState = state.domain.value;
 
-      if(domainState.charAt(domainState.length-1)==="," || state.domain.parsed.length===0){
+      if(domainState.charAt(domainState.length-1)==="," || (state.domain.parsed === undefined || state.domain.parsed.length===0)){
         domainState+=action.nodeName;
       }
       else{

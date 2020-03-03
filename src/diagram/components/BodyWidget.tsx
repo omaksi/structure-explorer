@@ -86,6 +86,7 @@ export interface BodyWidgetProps {
 
 		} else if (data.type === 'constant') {
 			node = new ConstantNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);
+			//reduxFunctions.addConstantNode(node.getOptions().name,node);
 		} else {
 			node = new DefaultNodeModel('Node' + nodesCount, 'rgb(0,192,255)');
 			node.addOutPort('Out');

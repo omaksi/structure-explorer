@@ -13,7 +13,7 @@ import {
   toggleDatabase,
   toggleTable,
   changeDomain,
-  syncDiagram, addDomainNode, removeDomainNode,
+  syncDiagram, addDomainNode, removeDomainNode, addConstantNode,
 } from "../actions/index";
 import {connect} from 'react-redux';
 import {BodyWidget} from "../diagram/components/BodyWidget";
@@ -34,6 +34,7 @@ const mapDispatchOnProps = {
   setConstantValue: setConstantValue,
   addDomainNode:addDomainNode,
   removeDomainNode:removeDomainNode,
+  addConstantNode:addConstantNode,
   setPredicateValueText: setPredicateValueText,
   setPredicateValueTable: setPredicateValueTable,
   setFunctionValueText: setFunctionValueText,

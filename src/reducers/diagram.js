@@ -1,4 +1,10 @@
-import {ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE, SET_DIAGRAM, SYNC_DIAGRAM} from "../constants/action_types";
+import {
+  ADD_CONSTANT_NODE,
+  ADD_DOMAIN_NODE,
+  REMOVE_DOMAIN_NODE,
+  SET_DIAGRAM,
+  SYNC_DIAGRAM
+} from "../constants/action_types";
 import {UnBinaryNodeModel} from "../diagram/nodes/UnBinaryNode/UnBinaryNodeModel";
 import {ADDPORT, CONSTPORT, INPORT, OUTPORT} from "../diagram/nodes/ConstantNames";
 import {ConstantNodeModel} from "../diagram/nodes/ConstantNode/ConstantNodeModel";
@@ -19,6 +25,9 @@ function diagramReducer(state, action) {
       return state;
     case REMOVE_DOMAIN_NODE:
       state.domainNodes.delete(action.nodeName);
+      return state;
+    case ADD_CONSTANT_NODE:
+      state.constantNodes.set(action.nodeName,action.nodeObject);
       return state;
     default:
       return state;

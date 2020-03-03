@@ -1,8 +1,9 @@
 import {
+  ADD_CONSTANT_NODE,
   IMPORT_APP, LOCK_CONSTANTS, LOCK_FUNCTIONS, LOCK_PREDICATES, SET_CONSTANTS, SET_FUNCTIONS,
   SET_PREDICATES, SYNC_DIAGRAM
 } from "../constants/action_types";
-import {RULE_CONSTANTS, RULE_FUNCTIONS, RULE_PREDICATES} from "../constants/parser_start_rules";
+import {RULE_CONSTANTS, RULE_DOMAIN, RULE_FUNCTIONS, RULE_PREDICATES} from "../constants/parser_start_rules";
 
 let functions = require('./functions');
 
@@ -29,6 +30,20 @@ function languageReducer(s, action, struct) {
       functions.parseText(action.value, state.functions, {startRule: RULE_FUNCTIONS});
       setFunctions();
       setPredicates();
+      setConstants();
+      return state;
+    case ADD_CONSTANT_NODE:
+      let constantState = state.constants;
+      console.log("herreee",state.constants);
+
+      if(constantState.charAt(constantState.length-1)==="," || state.constants.parsed.length===0){
+        constantState+=action.nodeName;
+      }
+      else{
+        constantState=constantState+","+action.nodeName;
+      }
+
+      functions.parseText(constantState, state.constants, {startRule: RULE_DOMAIN});
       setConstants();
       return state;
     case LOCK_CONSTANTS:

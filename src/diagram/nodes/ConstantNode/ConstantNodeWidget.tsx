@@ -26,7 +26,7 @@ export const Node = styled.div<{ background: string; selected: boolean }>`
 		font-family: sans-serif;
 		color: black;
 		border: solid 2px black;
-		overflow: visible;
+		overflow: hidden;
 		font-size: 11px;
 		border: solid 2.5px ${p => (p.selected ? 'rgb(0,192,255)' : 'black')};
 		justify-items: center;

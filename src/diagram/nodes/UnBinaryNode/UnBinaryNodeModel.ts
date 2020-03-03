@@ -11,7 +11,6 @@ export interface UnBinaryNodeModelGenerics {
 
 export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
-	previousName?:string;
 	color?: string;
 	reduxFunctions:any;
 	setDomain?:any;
@@ -27,7 +26,6 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		if (typeof options === 'string') {
 			options = {
 				name: options,
-				previousName:options,
 				color: color,
 				reduxFunctions:reduxFunctions,
 			};
@@ -78,16 +76,8 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		return this.options.name;
 	}
 
-	getPreviousNodeName(){
-		return this.options.previousName;
-	}
-
 	renameNode(name:string){
 		this.options.name = name;
-	}
-
-	renamePreviousNode(name:string){
-		this.options.previousName = name;
 	}
 
 	removePort(port: UnBinaryPortModel): void {

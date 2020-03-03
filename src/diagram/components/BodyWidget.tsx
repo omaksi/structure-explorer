@@ -97,7 +97,7 @@ export interface BodyWidgetProps {
 		if (clicked) {
 			let canvasWidth = element.props.app.getDiagramEngine().getCanvas().clientWidth;
 			let canvasHeight = element.props.app.getDiagramEngine().getCanvas().clientHeight;
-			point = {x: Math.random()*(canvasWidth-canvasWidth*0.1)+canvasWidth*0.05, y: Math.random()*(canvasHeight-canvasHeight*0.1)+canvasHeight*0.05};
+			point = {x: Math.random()*(canvasWidth-canvasWidth*0.1)+canvasWidth*0.05, y: Math.random()*(canvasHeight-canvasHeight*0.2)+canvasHeight*0.05};
 		} else {
 			point = element.props.app.getDiagramEngine().getRelativeMousePoint(event);
 		}

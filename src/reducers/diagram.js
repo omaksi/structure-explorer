@@ -1,6 +1,6 @@
 import {
   ADD_CONSTANT_NODE,
-  ADD_DOMAIN_NODE,
+  ADD_DOMAIN_NODE, REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
   SYNC_DIAGRAM
@@ -29,6 +29,9 @@ function diagramReducer(state, action) {
     case ADD_CONSTANT_NODE:
       state.constantNodes.set(action.nodeName,action.nodeObject);
       return state;
+    case REMOVE_CONSTANT_NODE:
+      state.constantNodes.delete(action.nodeName);
+      return state;
     default:
       return state;
   }
@@ -52,7 +55,7 @@ function createLink(sourcePort,targetPort,diagramModel){
 }
 
 function syncConstants(values){
-  if(values.structure.constants!== null && Object.keys(values.structure.constants).length>0){
+  if(values.structure.constants!== null){
     let constantObjects = new Map(Object.entries(values.structure.constants));
     let constantState = values.diagramNodeState.constantNodes;
     let domainState = values.diagramNodeState.domainNodes;
@@ -69,7 +72,9 @@ function syncConstants(values){
       if(!constantState.has(nodeName)) {
         let node = new ConstantNodeModel(nodeName, 'rgb(92,192,125)', {
           "changeDomain": values.setDomain,
-          "setDomain": values.changeDomain
+          "setDomain": values.changeDomain,
+          "addConstantNode":values.addDomainNode,
+          "removeConstantNode":values.removeConstantNode
         });
         createNode(node,nodeName,constantState,diagramModel,values.app);
         if(nodeProperties.value.length!==0){
@@ -120,7 +125,7 @@ function syncPredicates(values) {
         let keyWithoutArity = key.split('/')[0];
         let arityWithoutKey = key.split('/')[1];
 
-        if (arityWithoutKey === 1) {
+        if (arityWithoutKey === '1') {
           parsedNodeValues.map((currentNodeVal) => {
             let currentNodeValue = currentNodeVal[0];
             if (portMap.has(currentNodeValue)) {
@@ -187,7 +192,9 @@ function syncDomain(values) {
     if (!existingDomainNodes.includes(nodeName)) {
       let node = new UnBinaryNodeModel(nodeName, 'rgb(92,192,125)', {
         "changeDomain": values.setDomain,
-        "setDomain": values.changeDomain
+        "setDomain": values.changeDomain,
+        "addDomainNode":values.addDomainNode,
+        "removeDomainNode":values.removeDomainNode
       });
       createNode(node,nodeName,domainState,diagramModel,values.app);
     }

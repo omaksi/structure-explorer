@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, INPORT, OUTPORT} from "../ConstantNames";
+import {log} from "util";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -94,7 +95,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		}
 	};
 
-	componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
+	/*componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
 		if(this.state.renameActive){
 			this.props.node.setLocked(true);
 		}
@@ -109,14 +110,25 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				this.props.node.renameNode(this.state.nodeName);
 			}
 		}
+	}*/
+
+	cancelRenameNode(){
+		this.setState({renameActive:false,nodeName:this.props.node.getNodeName()});
 	}
 
-	/*
-	onKeyPress={(e) => {
-					console.log(e);
-				}
-				}
-	 */
+	renameNode(){
+		this.props.node.setLocked(false);
+		console.log(this.state.nodeName +" "+this.props.node.getNodeName());
+
+		if(this.state.nodeName!==this.props.node.getNodeName()){
+			//call redux store
+
+			let state = this.props.changeDomain(this.state.nodeName,this.props.node.getNodeName());
+			this.props.node.renameNode(this.state.nodeName);
+		}
+		this.setState({renameActive:false});
+	}
+
 	render() {
 		return (
 			<Node
@@ -126,28 +138,48 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			>
 				<Title>
 					<TitleName onDoubleClick={() => {
-						this.setState({renameActive: !this.state.renameActive});
+						if (!this.state.renameActive) {
+							this.setState({renameActive: true});
+							this.props.node.setLocked(true);
+						}
 					}}>
-						{!this.state.renameActive ? this.state.nodeName :
-							<input autoFocus type="text" style={{width:this.props.node.getOptions().name.length * 8+"px",height:20+"px"}} name="" value={this.state.nodeName} onChange={e => this.setState({nodeName:e.target.value})}/>
+						{!this.state.renameActive ? this.props.node.getNodeName() :
+							<input autoFocus onBlur={() => {
+								this.renameNode();
+							}
+							}
+								   onKeyDown={(e) => {
+									   if (e.key === "Escape") {
+										   this.cancelRenameNode();
+									   } else if (e.key === "Enter") {
+										   this.renameNode();
+									   }
+								   }
+								   }
+
+								   type="text" style={{
+								width: this.props.node.getOptions().name.length * 8 + "px",
+								height: 20 + "px"
+							}} name="" value={this.state.nodeName}
+								   onChange={e => this.setState({nodeName: e.target.value})}/>
 						}
 					</TitleName>
 				</Title>
 				<Ports>
 					<PortsContainer>
 
-					<PortWidget engine={this.props.engine} port={this.props.node.getPort(INPORT)}>
-						<Port height={20} width={this.props.node.getOptions().name.length * 10}>{INPORT}</Port>
-					</PortWidget>
+						<PortWidget engine={this.props.engine} port={this.props.node.getPort(INPORT)}>
+							<Port height={20} width={this.props.node.getOptions().name.length * 10}>{INPORT}</Port>
+						</PortWidget>
 
-					<PortWidget engine={this.props.engine} port={this.props.node.getPort(OUTPORT)}>
-						<Port height={20} width={this.props.node.getOptions().name.length * 10}>{OUTPORT}</Port>
-					</PortWidget>
+						<PortWidget engine={this.props.engine} port={this.props.node.getPort(OUTPORT)}>
+							<Port height={20} width={this.props.node.getOptions().name.length * 10}>{OUTPORT}</Port>
+						</PortWidget>
 
-					{_.map(this.props.node.getPorts(), this.generatePort)}
+						{_.map(this.props.node.getPorts(), this.generatePort)}
 						<PortWidget engine={this.props.engine} port={this.props.node.getPort(ADDPORT)}>
 							<Port onClick={() => {
-								this.props.node.addNewPort(`Port${this.props.node.numberOfPorts}`);
+								this.props.node.addNewPort(`Predicate${this.props.node.numberOfPorts}`);
 								this.props.engine.repaintCanvas();
 							}}
 								  height={20} width={this.props.node.getOptions().name.length * 10}>{ADDPORT}</Port>

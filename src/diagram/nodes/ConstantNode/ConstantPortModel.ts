@@ -5,7 +5,7 @@ import {ADDPORT} from "../ConstantNames";
 export class ConstantPortModel extends PortModel {
 	constructor(name: string) {
 		super({
-			type: 'Constant',
+			type: 'constant',
 			name: name,
 			alignment: PortModelAlignment.BOTTOM
 		});
@@ -21,6 +21,10 @@ export class ConstantPortModel extends PortModel {
 
 	canLinkToPort(port: PortModel): boolean {
 		if(this.getParent() === port.getParent()){
+			return false;
+		}
+
+		if(port.getParent().getOptions().type==='constant'){
 			return false;
 		}
 
@@ -75,6 +79,8 @@ export class ConstantPortModel extends PortModel {
 		}*/
 
 		this.links[link.getID()] = link;
+
+		console.log(link.getTargetPort(),link.getSourcePort());
 
 		if(link.getSourcePort()!=null) {
 			console.log("A", link.getSourcePort().getNode());

@@ -1,6 +1,6 @@
 import {
   ADD_CONSTANT_NODE,
-  IMPORT_APP, LOCK_CONSTANTS, LOCK_FUNCTIONS, LOCK_PREDICATES, SET_CONSTANTS, SET_FUNCTIONS,
+  IMPORT_APP, LOCK_CONSTANTS, LOCK_FUNCTIONS, LOCK_PREDICATES, REMOVE_CONSTANT_NODE, SET_CONSTANTS, SET_FUNCTIONS,
   SET_PREDICATES, SYNC_DIAGRAM
 } from "../constants/action_types";
 import {RULE_CONSTANTS, RULE_DOMAIN, RULE_FUNCTIONS, RULE_PREDICATES} from "../constants/parser_start_rules";
@@ -45,6 +45,30 @@ function languageReducer(s, action, struct) {
       functions.parseText(constantState, state.constants, {startRule: RULE_DOMAIN});
       setConstants();
       return state;
+
+    case REMOVE_CONSTANT_NODE:
+      let currentConstantState = state.constants.value;
+
+      if(state.constants.parsed.length===1){
+        currentConstantState = "";
+      }
+
+      else{
+        let nodeRegex1 = new RegExp(action.nodeName+",","g");
+        let nodeRegex2 = new RegExp(action.nodeName,"g");
+        currentConstantState = currentConstantState.replace(nodeRegex1,"");
+        currentConstantState = currentConstantState.replace(nodeRegex2,"");
+
+        if(currentConstantState.charAt(currentConstantState.length-1)===","){
+          currentConstantState = currentConstantState.substring(0,currentConstantState.length-1);
+        }
+      }
+
+      functions.parseText(currentConstantState, state.constants, {startRule: RULE_DOMAIN});
+      setConstants();
+      return state;
+
+
     case LOCK_CONSTANTS:
       state.constants.locked = !state.constants.locked;
       return state;

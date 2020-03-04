@@ -70,9 +70,8 @@ function syncConstants(values){
     for(let [nodeName,nodeProperties] of constantObjects.entries()) {
       if(!constantState.has(nodeName)) {
         let node = new ConstantNodeModel(nodeName, 'rgb(92,192,125)', {
-          "changeDomain": values.setDomain,
-          "setDomain": values.changeDomain,
-          "addConstantNode":values.addDomainNode,
+          "changeDomain":values.changeDomain,
+          "addConstantNode":values.addConstantNode,
           "removeConstantNode":values.removeConstantNode
         });
         createNode(node,nodeName,constantState,diagramModel,values.app);
@@ -111,8 +110,6 @@ function clearCertainNodeState(nodeState){
 
 //atm refers all predicates to have unary level
 function syncPredicates(values) {
-  console.log(values.structure);
-
   let predicatesObjects = values.structure.predicates;
   let domainState = values.diagramNodeState.domainNodes;
   let portMap = new Map();

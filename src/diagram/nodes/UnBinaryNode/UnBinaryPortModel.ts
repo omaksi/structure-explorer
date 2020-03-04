@@ -19,18 +19,35 @@ export class UnBinaryPortModel extends PortModel {
 		return new DefaultLinkModel();
 	}
 
+	removeBadLink(){
+		for (let link of _.values(this.getLinks())) {
+			if (link.getSourcePort() !== null && link.getTargetPort() === null) {
+				link.remove();
+			}
+		}
+	}
+
 	canLinkToPort(port: PortModel): boolean {
-		if(this.getParent() === port.getParent()){
+		if(port.getName() === ADDPORT){
+			this.removeBadLink();
 			return false;
+		}
+		
+		if(this.getParent() === port.getParent()){
+			return true;
+		}
+
+		if(port.getParent().getOptions().type==='constant') {
+			return true;
 		}
 
 		for (let link of _.values(this.getLinks())) {
 			if(link.getSourcePort() === this && link.getTargetPort() === port){
+				this.removeBadLink();
 				return false;
 			}
 		}
-
-		return port.getName() !== ADDPORT;
+		return true;
 	}
 
 	checkIfExists(link:LinkModel){

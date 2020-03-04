@@ -20,7 +20,7 @@ import {
   TOGGLE_EDIT_DATABASE,
   CHANGE_DOMAIN,
   SYNC_DIAGRAM,
-  ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE
+  ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE, ADD_CONSTANT_NODE, REMOVE_CONSTANT_NODE
 } from "../constants/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -46,6 +46,8 @@ function structureReducer(s, action, struct) {
     case SET_CONSTANTS:
     case SET_PREDICATES:
     case SET_FUNCTIONS:
+    case ADD_CONSTANT_NODE:
+    case REMOVE_CONSTANT_NODE:
       syncLanguageWithStructure();
       setVariables();
       return state;
@@ -138,11 +140,7 @@ function structureReducer(s, action, struct) {
       return state;
 
     case SET_DOMAIN:
-      console.log(action.value);
-      console.log(state.domain);
       functions.parseText(action.value, state.domain, {startRule: RULE_DOMAIN});
-      console.log("After",state.domain);
-
       setDomain();
       setConstantsValues();
       setPredicatesValues();

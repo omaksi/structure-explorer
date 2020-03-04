@@ -56,12 +56,21 @@ export interface BodyWidgetProps {
 
 	function getAvailableCount(nodeType:string,diagramNodeState:any):number {
 		let nodeCount = 0;
-		let state:Map<string,object> = null;
-		if (nodeType == 'unbinary') {
+		let state:Map<string,object>;
+		if (nodeType === 'unbinary') {
 			state = diagramNodeState.domainNodes;
-			while(state.has('Node'+nodeCount)){
-				nodeCount++;
 			}
+
+		else if(nodeType === 'constant'){
+			state = diagramNodeState.constantNodes;
+		}
+
+		else{
+			state = diagramNodeState.functionNodes;
+		}
+
+		while(state.has('Node'+nodeCount)){
+			nodeCount++;
 		}
 		return nodeCount;
 	}
@@ -91,6 +100,10 @@ export interface BodyWidgetProps {
 			node.addOutPort('Out');
 		}
 
+		if(node === null){
+			throw new DOMException("Node cannot be null, possible leak of unknown type");
+		}
+
 		let point;
 
 		if (clicked) {
@@ -104,9 +117,8 @@ export interface BodyWidgetProps {
 		node.setPosition(point);
 		element.props.app
 			.getDiagramEngine()
-			.getModel()
-			.addNode(node);
-		element.forceUpdate();
+			.getModel().addNode(node);
+		//element.forceUpdate();
 	}
 
 
@@ -114,8 +126,6 @@ export interface BodyWidgetProps {
 export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	constructor(props: any) {
 		super(props);
-
-
 	}
 
 	componentDidMount(): void {
@@ -125,7 +135,6 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	render() {
 		let reduxFunctions = {
 			"changeDomain": this.props.setDomain,
-			"setDomain": this.props.changeDomain,
 			"addDomainNode": this.props.addDomainNode,
 			"removeDomainNode": this.props.removeDomainNode,
 			"addConstantNode": this.props.addConstantNode,

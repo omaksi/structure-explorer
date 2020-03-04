@@ -35,7 +35,6 @@ interface IState {
   exerciseName:string;
 }
 
-
 class App extends React.Component<IProps,IState> {
 
   constructor(props:IProps) {
@@ -72,7 +71,6 @@ class App extends React.Component<IProps,IState> {
     let file = e.target.files[0];
     let fr = new FileReader();
     fr.onload = function (e) {
-      // @ts-ignore
       store.dispatch(importAppState(e.target.result));
     };
     fr.readAsText(file);

@@ -16,7 +16,37 @@ export class ConstantPortModel extends PortModel {
 			return null;
 		}
 
+		/*let link = new DefaultLinkModel();
+		this.registerEvents(link);*/
 		return new DefaultLinkModel();
+		//return link;
+	}
+
+	registerEvents(link:LinkModel){
+		/*let port = this;
+		console.log("registerd");
+		link.registerListener({
+			targetPortChanged(event: any): void {
+				console.log("changed");
+				if(link.getTargetPort() == null){
+					port.removeLink(link);
+				}
+			},
+			sourcePortChanged(event: any): void {
+				console.log(event);
+				console.log("target",link.getTargetPort());
+				console.log("source",link.getSourcePort());
+
+				if(link.getTargetPort() === null && link.getSourcePort() !== null){
+					console.log("yes");
+					//port.removeLink(link);
+				}
+			},
+			selectionChanged(event: any): void {
+				console.log("select was changed");
+			}
+
+		})*/
 	}
 
 	canLinkToPort(port: PortModel): boolean {
@@ -24,17 +54,31 @@ export class ConstantPortModel extends PortModel {
 			return false;
 		}
 
-		if(port.getParent().getOptions().type==='constant'){
+		if(port.getParent().getOptions().type==='constant') {
+			this.removeBadLink();
+			return false;
+		}
+
+		if(port.getName() === ADDPORT){
+			this.removeBadLink();
 			return false;
 		}
 
 		for (let link of _.values(this.getLinks())) {
 			if(link.getSourcePort() === this && link.getTargetPort() === port){
+				this.removeBadLink();
 				return false;
 			}
 		}
+		return true;
+	}
 
-		return port.getName() !== ADDPORT;
+	removeBadLink(){
+		for (let link of _.values(this.getLinks())) {
+			if (link.getSourcePort() !== null && link.getTargetPort() === null) {
+				link.remove();
+			}
+		}
 	}
 
 

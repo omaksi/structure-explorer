@@ -33,7 +33,6 @@ test("∀x ∀y (p(x,y,x) -> x = y)", () => {
   let s = new Structure(new Language());
   s.setDomain(['1', '2', '3']);
   s.setLanguagePredicates([{name: 'p', arity: 3}]);
-  //console.log(s.language.getPredicate('p'));
   s.setPredicateValue('p/3', ['1', '2', '3']);
   let e = new Map();
   let formula = '∀x ∀y (p(x,y,x) -> x = y)';

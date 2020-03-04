@@ -17,14 +17,12 @@ import {DEFAULT_FILE_NAME} from "./constants";
 import {Application} from "./diagram/Application";
 import DiagramModelContainer from "./containers/DiagramModelContainer";
 
+
 // @ts-ignore
 const store = createStore(reducer);
 
-// po kazdej zmene stavu sa vypise
 store.subscribe(() => {
   let state = store.getState();
-  //console.log('STATE:', state);
-  //console.log('DIAGRAM:', state.diagramModel);
 });
 
 interface IProps{
@@ -63,14 +61,9 @@ class App extends React.Component<IProps,IState> {
       expressions: state.expressions
     });
 
-    if (this.state.exerciseName.length === 0) {
-      //@ts-ignore
-      this.state.exerciseName = DEFAULT_FILE_NAME;
-    }
-
-      return {
+    return {
         mime: 'application/json',
-        filename: this.state.exerciseName + '.json',
+        filename: this.state.exerciseName.length === 0? (DEFAULT_FILE_NAME + '.json'):(this.state.exerciseName+'.json'),
         contents: json
       }
     }

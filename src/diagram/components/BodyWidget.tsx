@@ -81,12 +81,11 @@ export interface BodyWidgetProps {
 			node = new DiamondNodeModel();
 		} else if (data.type === 'unbinary') {
 			node = new UnBinaryNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);
-			console.log(reduxFunctions);
 			reduxFunctions.addDomainNode(node.getOptions().name,node);
 
 		} else if (data.type === 'constant') {
 			node = new ConstantNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);
-			//reduxFunctions.addConstantNode(node.getOptions().name,node);
+			reduxFunctions.addConstantNode(node.getOptions().name,node);
 		} else {
 			node = new DefaultNodeModel('Node' + nodesCount, 'rgb(0,192,255)');
 			node.addOutPort('Out');

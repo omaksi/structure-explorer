@@ -12,7 +12,6 @@ export interface ConstantNodeModelGenerics {
 
 export interface ConstantNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
-	previousName?:string;
 	color?: string;
 	reduxFunctions?:any;
 }
@@ -37,13 +36,20 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		});
 
 		this.addNewPort("*");
+		this.registerEvents();
 	}
 
-	returnRepresentationNameForConstant(){
+	registerEvents(){
+		let reduxFunctions = this.options.reduxFunctions;
+		let nodeName = this.options.name;
+		this.registerListener({
+			entityRemoved(event: any): void {
+				reduxFunctions["removeConstantNode"](nodeName);
+			}
+		})
 	}
 
 	getPort(name: string): PortModel | null {
-		console.log("call this");
 		for(let [nodeName,nodeObject] of Object.entries(this.getPorts())){
 			if(name === nodeName){
 				return nodeObject;
@@ -63,16 +69,8 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		return this.options.name;
 	}
 
-	getPreviousNodeName(){
-		return this.options.previousName;
-	}
-
 	renameNode(name:string){
 		this.options.name = name;
-	}
-
-	renamePreviousNode(name:string){
-		this.options.previousName = name;
 	}
 
 	removeAllLinks(){

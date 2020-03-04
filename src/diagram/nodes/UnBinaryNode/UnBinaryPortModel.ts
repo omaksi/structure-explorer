@@ -16,8 +16,6 @@ export class UnBinaryPortModel extends PortModel {
 			return null;
 		}
 
-		console.log(this.links);
-
 		return new DefaultLinkModel();
 	}
 
@@ -35,15 +33,9 @@ export class UnBinaryPortModel extends PortModel {
 		return port.getName() !== ADDPORT;
 	}
 
-	/*removeLink(link: LinkModel): void {
-		console.log("removing");
-
-	}*/
-
 	checkIfExists(link:LinkModel){
 		for (let existingLink of _.values(this.getLinks())) {
 			if(link.getSourcePort() === existingLink.getSourcePort() && link.getTargetPort() === existingLink.getTargetPort()){
-				console.log("it exists");
 			}
 		}
 	}

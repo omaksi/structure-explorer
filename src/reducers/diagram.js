@@ -50,7 +50,6 @@ function createLink(sourcePort,targetPort,diagramModel){
   let link = new DefaultLinkModel();
   link.setSourcePort(sourcePort);
   link.setTargetPort(targetPort);
-  console.log(diagramModel);
   diagramModel.addAll(link);
 }
 

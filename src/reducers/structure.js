@@ -102,10 +102,9 @@ function structureReducer(s, action, struct) {
       return state;
 
     case ADD_DOMAIN_NODE:
-      console.log(state.domain);
       let domainState = state.domain.value;
 
-      if(domainState.charAt(domainState.length-1)==="," || (state.domain.parsed === undefined || state.domain.parsed.length===0)){
+      if(domainState.charAt(domainState.length-1)==="," || state.domain.parsed === undefined || state.domain.parsed.length===0){
         domainState+=action.nodeName;
       }
       else{

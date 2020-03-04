@@ -33,10 +33,9 @@ function languageReducer(s, action, struct) {
       setConstants();
       return state;
     case ADD_CONSTANT_NODE:
-      let constantState = state.constants;
-      console.log("herreee",state.constants);
+      let constantState = state.constants.value;
 
-      if(constantState.charAt(constantState.length-1)==="," || state.constants.parsed.length===0){
+      if(constantState.charAt(constantState.length-1)==="," || state.constants.parsed === undefined || state.constants.parsed.length===0){
         constantState+=action.nodeName;
       }
       else{

@@ -95,30 +95,12 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		}
 	};
 
-	/*componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
-		if(this.state.renameActive){
-			this.props.node.setLocked(true);
-		}
-		else{
-			this.props.node.setLocked(false);
-			console.log(this.state.nodeName +" "+this.props.node.getNodeName());
-
-			if(this.state.nodeName!==this.props.node.getNodeName()){
-				//call redux store
-
-				let state = this.props.changeDomain(this.state.nodeName,this.props.node.getNodeName());
-				this.props.node.renameNode(this.state.nodeName);
-			}
-		}
-	}*/
-
 	cancelRenameNode(){
 		this.setState({renameActive:false,nodeName:this.props.node.getNodeName()});
 	}
 
 	renameNode(){
 		this.props.node.setLocked(false);
-		console.log(this.state.nodeName +" "+this.props.node.getNodeName());
 
 		if(this.state.nodeName!==this.props.node.getNodeName()){
 			//call redux store

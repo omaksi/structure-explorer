@@ -13,8 +13,6 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
 	color?: string;
 	reduxFunctions:any;
-	setDomain?:any;
-	changeDomain?:any;
 }
 
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {

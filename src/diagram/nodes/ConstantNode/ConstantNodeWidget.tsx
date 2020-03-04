@@ -10,6 +10,7 @@ export interface ConstantNodeWidgetProps {
 	engine: DiagramEngine;
 	setDomain:any;
 	changeDomain:any;
+	removeConstantNode:any;
 	name?:string;
 	size?: number;
 }

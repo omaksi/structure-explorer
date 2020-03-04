@@ -55,32 +55,20 @@ export class ConstantPortModel extends PortModel {
 		}
 
 		if(port.getParent().getOptions().type==='constant') {
-			this.removeBadLink();
 			return false;
 		}
 
 		if(port.getName() === ADDPORT){
-			this.removeBadLink();
 			return false;
 		}
 
 		for (let link of _.values(this.getLinks())) {
 			if(link.getSourcePort() === this && link.getTargetPort() === port){
-				this.removeBadLink();
 				return false;
 			}
 		}
 		return true;
 	}
-
-	removeBadLink(){
-		for (let link of _.values(this.getLinks())) {
-			if (link.getSourcePort() !== null && link.getTargetPort() === null) {
-				link.remove();
-			}
-		}
-	}
-
 
 	checkIfExists(link:LinkModel){
 		for (let existingLink of _.values(this.getLinks())) {
@@ -123,16 +111,6 @@ export class ConstantPortModel extends PortModel {
 		}*/
 
 		this.links[link.getID()] = link;
-
-		console.log(link.getTargetPort(),link.getSourcePort());
-
-		if(link.getSourcePort()!=null) {
-			console.log("A", link.getSourcePort().getNode());
-		}
-
-		if(link.getTargetPort()!=null){
-			console.log("B",link.getTargetPort().getNode());
-		}
 	}
 
 }

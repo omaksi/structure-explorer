@@ -5,42 +5,20 @@ import structureReducer from "./structure";
 import expressionsReducer from "./expressions";
 import teacherModeReducer from "./teacherMode";
 import {IMPORT_APP} from "../constants/action_types";
-import {defaultInputData} from "../constants";
-import {EMPTY_DOMAIN} from "../constants/messages";
-import {DiagramModel} from "@projectstorm/react-diagrams";
-import diagramReducer from "./diagram";
-
+import diagramReducer,{ defaultState as diagramDefaultState } from "./diagram";
+import {defaultState as expressionsDefaultState} from "./expressions";
+import {defaultState as structureDefaultState} from "./structure";
+import {defaultState as languageDefaultState} from "./language";
 
 const defaultState = {
     structureObject: new Structure(new Language()),
     common: {
         teacherMode: false
     },
-    language: {
-        constants: defaultInputData(),
-        predicates: defaultInputData(),
-        functions: defaultInputData(),
-    },
-    structure: {
-        constants: {},
-        predicates: {},
-        functions: {},
-        variables: {...defaultInputData(), object: new Map()},
-        domain: {...defaultInputData(), errorMessage: EMPTY_DOMAIN},
-    },
-    expressions: {
-        // @ts-ignore
-        formulas: [],
-        // @ts-ignore
-        terms: []
-    },
-    diagramNodeState: {
-        diagramModel: new DiagramModel(),
-        domainNodes: new Map(),
-        constantNodes: new Map(),
-        functionNodes: new Map()
-    },
-
+    language: languageDefaultState(),
+    structure: structureDefaultState(),
+    expressions: expressionsDefaultState(),
+    diagramNodeState:diagramDefaultState()
 };
 
 function checkImportedState(state:any) {
@@ -63,12 +41,7 @@ function root(state = defaultState, action:any) {
         } catch (e) {
             console.error(e);
         }
-        state.diagramNodeState = {
-            diagramModel: new DiagramModel(),
-            domainNodes: new Map(),
-            constantNodes: new Map(),
-            functionNodes: new Map()
-        }
+        state.diagramNodeState = diagramDefaultState();
     }
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action, state.structureObject);

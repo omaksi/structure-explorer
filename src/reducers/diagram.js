@@ -9,6 +9,16 @@ import {UnBinaryNodeModel} from "../diagram/nodes/UnBinaryNode/UnBinaryNodeModel
 import {ADDPORT, CONSTPORT, INPORT, OUTPORT} from "../diagram/nodes/ConstantNames";
 import {ConstantNodeModel} from "../diagram/nodes/ConstantNode/ConstantNodeModel";
 import {DefaultLinkModel} from "@projectstorm/react-diagrams-defaults";
+import {DiagramModel} from "@projectstorm/react-diagrams";
+
+export function defaultState(){
+  return{
+    diagramModel: new DiagramModel(),
+    domainNodes: new Map(),
+    constantNodes: new Map(),
+    functionNodes: new Map()
+  }
+}
 
 function diagramReducer(state, action) {
   switch (action.type) {

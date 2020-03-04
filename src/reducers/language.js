@@ -1,14 +1,23 @@
 import {
   ADD_CONSTANT_NODE,
   IMPORT_APP, LOCK_CONSTANTS, LOCK_FUNCTIONS, LOCK_PREDICATES, REMOVE_CONSTANT_NODE, SET_CONSTANTS, SET_FUNCTIONS,
-  SET_PREDICATES, SYNC_DIAGRAM
+  SET_PREDICATES
 } from "../constants/action_types";
 import {RULE_CONSTANTS, RULE_DOMAIN, RULE_FUNCTIONS, RULE_PREDICATES} from "../constants/parser_start_rules";
+import {defaultInputData} from "../constants";
 
 let functions = require('./functions');
 
 let state = {};
 let structure = null;
+
+export function defaultState(){
+  return{
+    constants: defaultInputData(),
+    predicates: defaultInputData(),
+    functions: defaultInputData()
+  }
+}
 
 function languageReducer(s, action, struct) {
   state = copyState(s);

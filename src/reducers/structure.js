@@ -37,6 +37,16 @@ const functionDefaultInput = () => predicateDefaultInput();
 let state = {};
 let structure = null;
 
+export function defaultState(){
+  return{
+    constants: {},
+    predicates: {},
+    functions: {},
+    variables: {...defaultInputData(), object: new Map()},
+    domain: {...defaultInputData(), errorMessage: EMPTY_DOMAIN}
+  }
+}
+
 function structureReducer(s, action, struct) {
   state = copyState(s);
   structure = struct;

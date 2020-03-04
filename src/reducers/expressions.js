@@ -28,6 +28,13 @@ let s = {};
 let structure = null;
 let e = new Map();
 
+export function defaultState(){
+  return {
+    formulas: [],
+    terms: []
+  }
+}
+
 function expressionsReducer(state = s, action, structure2, variables) {
   s = state;
   structure = structure2;

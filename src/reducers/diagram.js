@@ -5,9 +5,9 @@ import {
   SET_DIAGRAM,
   SYNC_DIAGRAM
 } from "../constants/action_types";
-import {UnBinaryNodeModel} from "../diagram/nodes/UnBinaryNode/UnBinaryNodeModel";
+import {UnBinaryNodeModel} from "../diagram/nodes/unbinary/UnBinaryNodeModel";
 import {ADDPORT, CONSTPORT, INPORT, OUTPORT} from "../diagram/nodes/ConstantNames";
-import {ConstantNodeModel} from "../diagram/nodes/ConstantNode/ConstantNodeModel";
+import {ConstantNodeModel} from "../diagram/nodes/constant/ConstantNodeModel";
 import {DefaultLinkModel} from "@projectstorm/react-diagrams-defaults";
 import {DiagramModel} from "@projectstorm/react-diagrams";
 

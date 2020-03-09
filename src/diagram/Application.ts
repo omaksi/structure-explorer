@@ -1,9 +1,11 @@
-import { SimplePortFactory } from './nodes/DiamondNode/SimplePortFactory';
-import { DiamondPortModel } from './nodes/DiamondNode/DiamondPortModel';
-import {DiamondNodeFactory} from "./nodes/DiamondNode/DiamondNodeFactory";
+import { DiamondPortModel } from './nodes/diamond/DiamondPortModel';
+import {DiamondNodeFactory} from "./nodes/diamond/DiamondNodeFactory";
 import createEngine,{PortModelAlignment, DiagramModel, DiagramEngine, DefaultDiagramState } from '@projectstorm/react-diagrams';
-import {UnBinaryNodeFactory} from "./nodes/UnBinaryNode/UnBinaryNodeFactory";
-import {ConstantNodeFactory} from "./nodes/ConstantNode/ConstantNodeFactory";
+import {UnBinaryNodeFactory} from "./nodes/unbinary/UnBinaryNodeFactory";
+import {ConstantNodeFactory} from "./nodes/constant/ConstantNodeFactory";
+import {BinaryLabelFactory} from "./labels/binary/BinaryLabelFactory";
+import { SimplePortFactory } from './nodes/SimplePortFactory';
+import {BinaryNodeFactory} from "./labels/binary/binaryNodeLabel/BinaryNodeFactory";
 
 export class Application {
 	protected activeModel: DiagramModel;
@@ -19,7 +21,10 @@ export class Application {
 		//Custom nodes access
 		this.diagramEngine.getNodeFactories().registerFactory(new DiamondNodeFactory());
 		this.diagramEngine.getNodeFactories().registerFactory(new UnBinaryNodeFactory());
+		this.diagramEngine.getNodeFactories().registerFactory(new BinaryNodeFactory());
 		this.diagramEngine.getNodeFactories().registerFactory(new ConstantNodeFactory());
+		//Custom labels access
+		this.diagramEngine.getLabelFactories().registerFactory(new BinaryLabelFactory());
 	}
 
 	public setState(){

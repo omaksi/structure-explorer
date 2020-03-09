@@ -7,9 +7,9 @@ import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { MainCanvasWidget } from './MainCanvasWidget';
 import styled from '@emotion/styled';
-import {DiamondNodeModel} from "../nodes/DiamondNode/DiamondNodeModel";
-import {UnBinaryNodeModel} from "../nodes/UnBinaryNode/UnBinaryNodeModel";
-import {ConstantNodeModel} from "../nodes/ConstantNode/ConstantNodeModel";
+import {DiamondNodeModel} from "../nodes/diamond/DiamondNodeModel";
+import {UnBinaryNodeModel} from "../nodes/unbinary/UnBinaryNodeModel";
+import {ConstantNodeModel} from "../nodes/constant/ConstantNodeModel";
 import {addDomainNode, removeDomainNode} from "../../actions";
 
 export interface BodyWidgetProps {

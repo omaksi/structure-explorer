@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import * as React from 'react';
 import {PortModelAlignment, PortWidget} from "@projectstorm/react-diagrams";
-import {Port} from "../nodes/DiamondNode/DiamondNodeWidget";
+import {Port} from "../nodes/diamond/DiamondNodeWidget";
 
 export const NodeU = styled.div`
 		background-color: green;

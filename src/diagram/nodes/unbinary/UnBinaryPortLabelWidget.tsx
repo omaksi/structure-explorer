@@ -13,6 +13,7 @@ export interface DefaultPortLabelProps {
 		display: flex;
 		margin-top: 1px;
 		align-items: center;
+		width:100%;
 	`;
 
     export const Label = styled.div`
@@ -21,13 +22,12 @@ export interface DefaultPortLabelProps {
 	`;
 
     export const Port = styled.div<{ width: number; height: number }>`
-		//width: ${p => p.width}px;
-		width:100%;
+        width:100%;
 		height: ${p => p.height}px;
 		background: rgba(white, 0.1);
 		color: black;
 		text-align:center;
-
+		
 		&:hover {
 			background: #00ff80;
 		}
@@ -45,7 +45,7 @@ export class UnBinaryPortLabelWidget extends React.Component<DefaultPortLabelPro
         return (
             <PortLabel>
                 {port}
-            </PortLabel>
+           </PortLabel>
         );
     }
 }

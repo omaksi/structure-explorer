@@ -1,4 +1,4 @@
-import {NodeModel, NodeModelGenerics} from '@projectstorm/react-diagrams';
+import {NodeModel, NodeModelGenerics, PortModel} from '@projectstorm/react-diagrams';
 import { BasePositionModelOptions } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 import {BinaryPortModel} from "./BinaryPortModel";
@@ -13,6 +13,7 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
 	color?: string;
 	reduxFunctions:any;
+
 }
 
 export class BinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
@@ -37,18 +38,7 @@ export class BinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeM
 		this.addNewPort(ADDPORT);
 		this.getPort(ADDPORT).setMaximumLinks(0);
 		this.numberOfPorts = 0;
-		this.addInOutPort();
-		this.registerEvents();
-		//if created through DIAGRAM CLICK/DROP -> DISPATCH THIS: MAYBE I SHOULD DISPATCH IT IN CREATENODE FUNCTION NOT HERE
-		//setDomain(this.options.name);
-	}
-
-
-	addInOutPort(){
-		let port: BinaryPortModel = new BinaryPortModel("in");
-		this.addPort(port);
-		port = new BinaryPortModel("out");
-		this.addPort(port);
+		//this.registerEvents();
 	}
 
 	registerEvents(){
@@ -68,6 +58,21 @@ export class BinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeM
 		this.numberOfPorts += 1;
 		this.addPort(port);
 		return port;
+	}
+
+	addPort(port: PortModel): PortModel {
+		port.setParent(this);
+		this.ports[port.getName()] = port;
+		return port;
+	}
+
+	remove() {
+		super.remove();
+		_.forEach(this.ports, port => {
+			_.forEach(port.getLinks(), link => {
+				link.remove();
+			});
+		});
 	}
 
 	getNodeName(){

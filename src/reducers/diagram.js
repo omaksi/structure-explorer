@@ -1,12 +1,12 @@
 import {
   ADD_CONSTANT_NODE,
-  ADD_DOMAIN_NODE, REMOVE_CONSTANT_NODE,
+  ADD_DOMAIN_NODE, CHECK_BAD_NAME, REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
   SYNC_DIAGRAM
 } from "../constants/action_types";
 import {UnBinaryNodeModel} from "../diagram/nodes/unbinary/UnBinaryNodeModel";
-import {ADDPORT, CONSTPORT, INPORT, OUTPORT} from "../diagram/nodes/ConstantNames";
+import {ADDPORT, INPORT, OUTPORT, UNBINARY} from "../diagram/nodes/ConstantNames";
 import {ConstantNodeModel} from "../diagram/nodes/constant/ConstantNodeModel";
 import {DefaultLinkModel} from "@projectstorm/react-diagrams-defaults";
 import {DiagramModel} from "@projectstorm/react-diagrams";
@@ -42,8 +42,36 @@ function diagramReducer(state, action) {
     case REMOVE_CONSTANT_NODE:
       state.constantNodes.delete(action.nodeName);
       return state;
+    case CHECK_BAD_NAME:
+      checkIfNameCanBeUsed(state,action);
+      return state;
+
     default:
       return state;
+  }
+}
+
+function checkIfNameCanBeUsed(state,action){
+  console.log(action);
+  if(action.oldName === action.newName){
+    action.nodeBadNameSetState(false);
+    return;
+  }
+
+  let nodes;
+  if(action.nodeType === UNBINARY){
+    nodes = state.domainNodes;
+  }
+  //REWORK
+  else{
+    nodes = state.constantNodes;
+  }
+
+  if(nodes.has(action.newName)){
+    action.nodeBadNameSetState(true);
+  }
+  else{
+    action.nodeBadNameSetState(false);
   }
 }
 
@@ -86,14 +114,14 @@ function syncConstants(values){
         });
         createNode(node,nodeName,constantState,diagramModel,values.app);
         if(nodeProperties.value.length!==0){
-          createLink(node.getPort(CONSTPORT),domainState.get(nodeProperties.value).getPort(INPORT),diagramModel);
+          createLink(node.getConstantPort(),domainState.get(nodeProperties.value).getPort(INPORT),diagramModel);
         }
       }
       else{
         let nodeObject = constantState.get(nodeName);
         nodeObject.removeAllLinks();
         if(nodeProperties.value.length!==0){
-          createLink(nodeObject.getPort(CONSTPORT),domainState.get(nodeProperties.value).getPort(INPORT),diagramModel);
+          createLink(nodeObject.getConstantPort(),domainState.get(nodeProperties.value).getPort(INPORT),diagramModel);
         }
       }
     }
@@ -200,7 +228,8 @@ function syncDomain(values) {
         "changeDomain": values.setDomain,
         "setDomain": values.changeDomain,
         "addDomainNode":values.addDomainNode,
-        "removeDomainNode":values.removeDomainNode
+        "removeDomainNode":values.removeDomainNode,
+        "checkBadName":values.checkBadName
       });
       createNode(node,nodeName,domainState,diagramModel,values.app);
     }

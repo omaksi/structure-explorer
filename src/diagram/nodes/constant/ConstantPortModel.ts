@@ -1,6 +1,7 @@
 import {LinkModel, DefaultLinkModel, PortModelAlignment, PortModel, DiagramEngine} from '@projectstorm/react-diagrams';
 import _ from "lodash";
 import {ADDPORT} from "../ConstantNames";
+import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
 
 export class ConstantPortModel extends PortModel {
 	constructor(name: string) {
@@ -15,38 +16,7 @@ export class ConstantPortModel extends PortModel {
 		if (this.getMaximumLinks() === 0) {
 			return null;
 		}
-
-		/*let link = new DefaultLinkModel();
-		this.registerEvents(link);*/
-		return new DefaultLinkModel();
-		//return link;
-	}
-
-	registerEvents(link:LinkModel){
-		/*let port = this;
-		console.log("registerd");
-		link.registerListener({
-			targetPortChanged(event: any): void {
-				console.log("changed");
-				if(link.getTargetPort() == null){
-					port.removeLink(link);
-				}
-			},
-			sourcePortChanged(event: any): void {
-				console.log(event);
-				console.log("target",link.getTargetPort());
-				console.log("source",link.getSourcePort());
-
-				if(link.getTargetPort() === null && link.getSourcePort() !== null){
-					console.log("yes");
-					//port.removeLink(link);
-				}
-			},
-			selectionChanged(event: any): void {
-				console.log("select was changed");
-			}
-
-		})*/
+		return new BinaryLinkModel();
 	}
 
 	canLinkToPort(port: PortModel): boolean {
@@ -77,40 +47,8 @@ export class ConstantPortModel extends PortModel {
 		}
 	}
 
-	addLink(link: LinkModel) {
-		/*if(link.getSourcePort()!=null || link.getTargetPort()!=null) {
-			if (link.getSourcePort() === link.getTargetPort()) {
-				console.log("same");
-				this.removeLink(link);
-				return;
-			}
-		}*/
-
-
-		/*
-		}
-
-		//console.log("yeeas we are here");
-		if(link.getSourcePort()!=null && link.getTargetPort()!=null){
-			for (let existingLink of _.values(this.getLinks())) {
-				if(link.getSourcePort() === existingLink.getSourcePort() && link.getTargetPort() === existingLink.getTargetPort()){
-					return;
-				}
-			}
-		}*/
-
-		/*if(link.getSourcePort()!=null || link.getTargetPort()!=null) {
-			console.log("yes zero");
-		}
-		if(link.getSourcePort()!=null){
-			link.getSourcePort().reportPosition();
-		}
-
-		if(link.getTargetPort()!=null){
-			link.getTargetPort().reportPosition();
-		}*/
-
+	/*addLink(link: LinkModel) {
 		this.links[link.getID()] = link;
-	}
+	}*/
 
 }

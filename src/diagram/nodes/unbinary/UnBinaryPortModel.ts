@@ -1,7 +1,8 @@
-import {LinkModel, DefaultLinkModel, PortModelAlignment, PortModel} from '@projectstorm/react-diagrams';
+import {LinkModel, PortModelAlignment, PortModel, DefaultLinkModel} from '@projectstorm/react-diagrams';
 import _ from "lodash";
 import {ADDPORT} from "../ConstantNames";
-import {BinaryLabelModel} from "../../labels/binary/BinaryLabelModel";
+import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
+
 
 export class UnBinaryPortModel extends PortModel {
 	constructor(name: string) {
@@ -12,14 +13,15 @@ export class UnBinaryPortModel extends PortModel {
 		});
 	}
 
+	setPortAlignment(alignment:PortModelAlignment){
+		this.options.alignment = alignment;
+	}
+
 	createLinkModel(): LinkModel {
 		if(this.getMaximumLinks()=== 0){
 			return null;
 		}
-
-		let link = new DefaultLinkModel();
-		link.addLabel(new BinaryLabelModel());
-		return link;
+		return new BinaryLinkModel();
 	}
 
 	removeBadLink(){

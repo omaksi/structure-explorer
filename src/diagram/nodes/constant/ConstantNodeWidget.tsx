@@ -4,6 +4,7 @@ import { DiagramEngine, PortWidget, PortModel } from '@projectstorm/react-diagra
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port } from "./ConstantPortLabelWidget";
+import {CONSTPORT} from "../ConstantNames";
 
 export interface ConstantNodeWidgetProps {
 	node: ConstantNodeModel;
@@ -81,17 +82,6 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 		}
 	}
 
-	generatePort = (port:any) =>{
-		if(port.options.name!=="+") {
-			return (
-				//<ConstantPortLabelWidget engine={this.props.engine} port={port} width={this.props.node.getOptions().name.length*10}/>
-				<PortWidget engine={this.props.engine} port={this.props.node.getPort(port.options.name)}>
-					<Port height={20} width={this.props.node.getOptions().name.length * 10}>{port.options.name}</Port>
-				</PortWidget>
-			)
-		}
-	};
-
 	componentDidUpdate(prevProps: Readonly<ConstantNodeWidgetProps>, prevState: Readonly<ConstantNodeWidgetState>, snapshot?: any): void {
 		if(this.state.renameActive){
 			this.props.node.setLocked(true);
@@ -124,7 +114,11 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 					</TitleName>
 				</Title>
 				<Ports>
-					<PortsContainer>{_.map(this.props.node.getPorts(), this.generatePort)}</PortsContainer>
+					<PortsContainer>
+						<PortWidget engine={this.props.engine} port={this.props.node.getConstantPort()}>
+							<Port height={20} width={this.props.node.getOptions().name.length * 10}>{CONSTPORT}</Port>
+						</PortWidget>
+					</PortsContainer>
 				</Ports>
 			</Node>)
 	}

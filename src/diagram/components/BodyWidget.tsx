@@ -10,7 +10,6 @@ import styled from '@emotion/styled';
 import {DiamondNodeModel} from "../nodes/diamond/DiamondNodeModel";
 import {UnBinaryNodeModel} from "../nodes/unbinary/UnBinaryNodeModel";
 import {ConstantNodeModel} from "../nodes/constant/ConstantNodeModel";
-import {addDomainNode, removeDomainNode} from "../../actions";
 
 export interface BodyWidgetProps {
 	app: Application;
@@ -22,6 +21,7 @@ export interface BodyWidgetProps {
 	addConstantNode:any;
 	removeConstantNode:any;
 	diagramNodeState:any;
+	checkBadName:any;
 }
 
 	export const Body = styled.div`
@@ -138,8 +138,10 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"addDomainNode": this.props.addDomainNode,
 			"removeDomainNode": this.props.removeDomainNode,
 			"addConstantNode": this.props.addConstantNode,
-			"removeConstantNode": this.props.removeConstantNode
+			"removeConstantNode": this.props.removeConstantNode,
+			"checkBadName":this.props.checkBadName
 		};
+
 		return (
 			<Body>
 				<Content>

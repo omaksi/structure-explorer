@@ -1,8 +1,8 @@
-import {NodeModel, NodeModelGenerics} from '@projectstorm/react-diagrams';
+import {NodeModel, NodeModelGenerics, PortModelAlignment} from '@projectstorm/react-diagrams';
 import {UnBinaryPortModel} from './UnBinaryPortModel';
-import { BasePositionModelOptions } from '@projectstorm/react-canvas-core';
+import {BasePositionModelOptions} from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
-import {ADDPORT} from "../ConstantNames";
+import {ADDPORT, INPORT, OUTPORT} from "../ConstantNames";
 
 export interface UnBinaryNodeModelGenerics {
 	PORT: UnBinaryPortModel;
@@ -13,10 +13,14 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
 	color?: string;
 	reduxFunctions:any;
+	domainNodeName:any;
 }
 
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
-	numberOfPorts: number;
+	portIndex: number;
+	inPort: UnBinaryPortModel;
+	outPort: UnBinaryPortModel;
+	appendPort: UnBinaryPortModel;
 
 	constructor(name: string, color: string,reduxFunctions:any);
 	constructor(options?: UnBinaryNodeModelOptions);
@@ -34,21 +38,27 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 			color: 'rgb(92,192,125)',
 			...options
 		});
-		this.addNewPort(ADDPORT);
-		this.getPort(ADDPORT).setMaximumLinks(0);
-		this.numberOfPorts = 0;
-		this.addInOutPort();
+		this.addTemplatePorts();
 		this.registerEvents();
+		this.portIndex = 0;
 		//if created through DIAGRAM CLICK/DROP -> DISPATCH THIS: MAYBE I SHOULD DISPATCH IT IN CREATENODE FUNCTION NOT HERE
 		//setDomain(this.options.name);
 	}
 
 
-	addInOutPort(){
-		let port: UnBinaryPortModel = new UnBinaryPortModel("in");
+	addTemplatePorts(){
+		let port: UnBinaryPortModel = new UnBinaryPortModel(INPORT);
+		port.setPortAlignment(PortModelAlignment.LEFT);
 		this.addPort(port);
-		port = new UnBinaryPortModel("out");
+		this.inPort = port;
+		port = new UnBinaryPortModel(OUTPORT);
+		port.setPortAlignment(PortModelAlignment.RIGHT);
 		this.addPort(port);
+		this.outPort = port;
+		port = new UnBinaryPortModel(ADDPORT);
+		port.setMaximumLinks(0);
+		this.addPort(port);
+		this.appendPort = port;
 	}
 
 	registerEvents(){
@@ -63,15 +73,26 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	addNewPort(name: string) {
 		//MAYBE EXTRACT FUNCTION IN diagram reducer that checks if port with same name already exists and move it inside UnBinaryNodeModel
-		let port: UnBinaryPortModel = new UnBinaryPortModel((name));
-		port.setMaximumLinks(0);
-		this.numberOfPorts += 1;
+		let port: UnBinaryPortModel = new UnBinaryPortModel(name);
+		this.portIndex += 1;
 		this.addPort(port);
 		return port;
 	}
 
 	getNodeName(){
 		return this.options.name;
+	}
+
+	getInPort(){
+		return this.inPort;
+	}
+
+	getOutPort(){
+		return this.outPort;
+	}
+
+	getAppendPort(){
+		return this.appendPort;
 	}
 
 	renameNode(name:string){

@@ -17,6 +17,8 @@ export interface ConstantNodeModelOptions extends BasePositionModelOptions {
 }
 
 export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNodeModelGenerics> {
+	constantPort:ConstantPortModel;
+
 	constructor(name: string, color: string,reduxFunctions:any);
 	constructor(options?: ConstantNodeModelOptions);
 	constructor(options: any = {}, color?: string, reduxFunctions?:any) {
@@ -35,8 +37,20 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 			...options
 		});
 
-		this.addNewPort("*");
+		this.constantPort = this.setUpConstantPort();
 		this.registerEvents();
+	}
+
+	setUpConstantPort(){
+		let port: ConstantPortModel = new ConstantPortModel(CONSTPORT);
+		this.addPort(port);
+		return port;
+	}
+
+	removeAllLinks(){
+		for (let link of _.values(this.getConstantPort().getLinks())) {
+			link.remove();
+		}
 	}
 
 	registerEvents(){
@@ -49,21 +63,9 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		})
 	}
 
-	getPort(name: string): PortModel | null {
-		for(let [nodeName,nodeObject] of Object.entries(this.getPorts())){
-			if(name === nodeName){
-				return nodeObject;
-			}
-		}
-		return null;
+	getConstantPort(): ConstantPortModel {
+		return this.constantPort;
 	}
-
-	addNewPort(name: string) {
-			let port: ConstantPortModel = new ConstantPortModel((name));
-			port.setMaximumLinks(1);
-			this.addPort(port);
-			return port;
-		}
 
 	getNodeName(){
 		return this.options.name;
@@ -71,12 +73,6 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 
 	renameNode(name:string){
 		this.options.name = name;
-	}
-
-	removeAllLinks(){
-		for (let link of _.values(this.getPort(CONSTPORT).getLinks())) {
-			link.remove();
-		}
 	}
 
 	removePort(port: ConstantPortModel): void {
@@ -89,6 +85,4 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 			delete this.ports[port.getName()];
 		}
 	}
-
-
 }

@@ -58,7 +58,7 @@ function languageReducer(s, action, struct) {
     case REMOVE_CONSTANT_NODE:
       let currentConstantState = state.constants.value;
 
-      if(state.constants.parsed.length===1){
+      if(!state.constants.parsed || state.constants.parsed.length===1){
         currentConstantState = "";
       }
 

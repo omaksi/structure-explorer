@@ -18,7 +18,7 @@ import {
   SET_VARIABLES_VALUE,
   TOGGLE_EDIT_TABLE,
   TOGGLE_EDIT_DATABASE,
-  CHANGE_DOMAIN,
+  RENAME_DOMAIN_NODE,
   SYNC_DIAGRAM,
   ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE, ADD_CONSTANT_NODE, REMOVE_CONSTANT_NODE
 } from "../constants/action_types";
@@ -85,7 +85,7 @@ function structureReducer(s, action, struct) {
     case SET_FUNCTION_VALUE_TABLE:
       let tuple = action.value;
       let params = tuple.slice(0, tuple.length - 1);
-      let value  = tuple[tuple.length - 1];
+      let value = tuple[tuple.length - 1];
       structure.changeFunctionValue(action.functionName, params, value);
       let fValue = structure.getFunctionValueArray(action.functionName);
       state.functions[action.functionName].parsed = fValue;
@@ -100,27 +100,47 @@ function structureReducer(s, action, struct) {
       setVariables();
       return state;
 
-    case SYNC_DIAGRAM:
+    case RENAME_DOMAIN_NODE:
+      console.log("DOMAIN BEFORE",state.domain.value);
 
-   case CHANGE_DOMAIN:
-      /*let newDomain = functions.changeDomain(action.value,action.oldValue,state.domain.value);
+      let currDomainState = state.domain.value;
 
-      functions.parseText(newDomain, state.domain, {startRule: RULE_DOMAIN});*/
+      let nodeReg1 = new RegExp(action.oldValue + "[,]{1}", "g");
+      let nodeReg2 = new RegExp("[,]{1}"+action.oldValue+"$", "g");
+      let nodeReg3 = new RegExp("^"+action.oldValue+"$", "g");
+      let nodeReg4 = new RegExp("[,]{1}"+action.oldValue+"[,]{1}", "g");
+
+      currDomainState = currDomainState.replace(nodeReg1, action.value+",");
+      currDomainState = currDomainState.replace(nodeReg2, ","+action.value);
+      currDomainState = currDomainState.replace(nodeReg3, action.value);
+      currDomainState = currDomainState.replace(nodeReg4, ","+action.value+",");
+
+      if (currDomainState.charAt(currDomainState.length - 1) === ",") {
+        currDomainState = currDomainState.substring(0, currDomainState.length - 1);
+      }
+
+      functions.parseText(currDomainState, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
+
+      Object.keys(state.constants).forEach(c => {
+        if(state.constants[c].value === action.oldValue){
+          state.constants[c].value = action.value;
+        }
+      });
       setConstantsValues();
-      setPredicatesValues();
+
+      /*setPredicatesValues();
       setFunctionsValues();
-      setVariables();
+      setVariables();*/
       return state;
 
     case ADD_DOMAIN_NODE:
       let domainState = state.domain.value;
 
-      if(domainState.charAt(domainState.length-1)==="," || state.domain.parsed === undefined || state.domain.parsed.length===0){
-        domainState+=action.nodeName;
-      }
-      else{
-        domainState=domainState+","+action.nodeName;
+     if (domainState.charAt(domainState.length - 1) === "," || !state.domain.parsed || state.domain.parsed.length === 0) {
+        domainState += action.nodeName;
+      } else {
+        domainState = domainState + "," + action.nodeName;
       }
 
       functions.parseText(domainState, state.domain, {startRule: RULE_DOMAIN});
@@ -130,20 +150,38 @@ function structureReducer(s, action, struct) {
     case REMOVE_DOMAIN_NODE:
       let currentDomainState = state.domain.value;
 
-      if(state.domain.parsed.length===1){
+      if(state.domain.parsed && state.domain.parsed.length === 1){
         currentDomainState = "";
       }
 
       else{
-        let nodeRegex1 = new RegExp(action.nodeName+",","g");
-        let nodeRegex2 = new RegExp(action.nodeName,"g");
-        currentDomainState = currentDomainState.replace(nodeRegex1,"");
-        currentDomainState = currentDomainState.replace(nodeRegex2,"");
+        let nodeRegex1 = new RegExp(action.nodeName + "[,]{1}", "g");
+        let nodeRegex2 = new RegExp(action.nodeName+"?![.]", "g");
+        currentDomainState = currentDomainState.replace(nodeRegex1, "");
+        currentDomainState = currentDomainState.replace(nodeRegex2, "");
 
-        if(currentDomainState.charAt(currentDomainState.length-1)===","){
-          currentDomainState = currentDomainState.substring(0,currentDomainState.length-1);
+        if (currentDomainState.charAt(currentDomainState.length - 1) === ",") {
+          currentDomainState = currentDomainState.substring(0, currentDomainState.length - 1);
         }
       }
+
+
+      /*if (!state.constants.parsed) {
+        currentDomainState = "";
+      } else {*/
+
+        /*let nodeRegex1 = new RegExp(action.nodeName + ",", "g");
+        let nodeRegex2 = new RegExp(action.nodeName, "g");
+        currentDomainState = currentDomainState.replace(nodeRegex1, "");
+        currentDomainState = currentDomainState.replace(nodeRegex2, "");
+
+        if (currentDomainState.charAt(currentDomainState.length - 1) === ",") {
+          currentDomainState = currentDomainState.substring(0, currentDomainState.length - 1);
+        }*/
+        /*let newParsedArray = replaceAllOccurrencesInParsedArray(state.domain.parsed,action.nodeName,"");
+        newParsedArray = newParsedArray.filter(val => val !== "");
+        currentDomainState = newParsedArray.join();
+      }*/
 
       functions.parseText(currentDomainState, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
@@ -161,16 +199,16 @@ function structureReducer(s, action, struct) {
     case TOGGLE_EDIT_TABLE:
       if (input) {
         input.tableEnabled = !input.tableEnabled;
-        if(input.tableEnabled){
-          input.databaseEnabled=false;
+        if (input.tableEnabled) {
+          input.databaseEnabled = false;
         }
       }
       return state;
     case TOGGLE_EDIT_DATABASE:
       if (input) {
         input.databaseEnabled = !input.databaseEnabled;
-        if(input.databaseEnabled){
-          input.tableEnabled=false;
+        if (input.databaseEnabled) {
+          input.tableEnabled = false;
         }
       }
       return state;
@@ -200,6 +238,15 @@ function structureReducer(s, action, struct) {
     default:
       return state;
   }
+}
+
+function replaceAllOccurrencesInParsedArray(parsedArray,oldValue,value){
+  for(let i = 0;i<parsedArray.length;i++){
+    if(parsedArray[i] === oldValue){
+      parsedArray[i] = value;
+    }
+  }
+  return parsedArray;
 }
 
 function setDomain() {

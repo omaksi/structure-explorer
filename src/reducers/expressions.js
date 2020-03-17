@@ -11,7 +11,7 @@ import FunctionTerm from "../model/term/Term.FunctionTerm";
 import UniversalQuant from "../model/formula/Formula.UniversalQuant";
 import ExistentialQuant from "../model/formula/Formula.ExistentialQuant";
 import {
-  ADD_EXPRESSION, CHANGE_DOMAIN, CHECK_SYNTAX,
+  ADD_EXPRESSION, RENAME_DOMAIN_NODE, CHECK_SYNTAX,
   IMPORT_APP, LOCK_EXPRESSION_ANSWER, LOCK_EXPRESSION_VALUE, REMOVE_EXPRESSION,
   SET_CONSTANT_VALUE, SET_CONSTANTS, SET_DOMAIN, SET_EXPRESSION_ANSWER, SET_FUNCTION_VALUE_TABLE,
   SET_FUNCTION_VALUE_TEXT, SET_FUNCTIONS,
@@ -52,7 +52,7 @@ function expressionsReducer(state = s, action, structure2, variables) {
     case SET_FUNCTION_VALUE_TEXT:
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
-    case CHANGE_DOMAIN:
+    case RENAME_DOMAIN_NODE:
       syncExpressionsValue();
       return state;
     case ADD_EXPRESSION:

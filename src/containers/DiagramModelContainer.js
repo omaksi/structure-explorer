@@ -5,14 +5,13 @@ import {
   lockPredicateValue,
   setConstantValue,
   setDiagramModel,
-  setDomain,
   setFunctionValueTable,
   setFunctionValueText,
   setPredicateValueTable,
   setPredicateValueText,
   toggleDatabase,
   toggleTable,
-  changeDomain,
+  renameDomainNode,
   syncDiagram, addDomainNode, removeDomainNode, addConstantNode, removeConstantNode, checkBadName,
 } from "../actions/index";
 import {connect} from 'react-redux';
@@ -29,8 +28,7 @@ const mapStateToProps = (state,ownProps) => ({
 const mapDispatchOnProps = {
   setDiagramModel:setDiagramModel,
   syncDiagram:syncDiagram,
-  setDomain: setDomain,
-  changeDomain:changeDomain,
+  renameDomainNode:renameDomainNode,
   setConstantValue: setConstantValue,
   checkBadName:checkBadName,
   addDomainNode:addDomainNode,

@@ -48,11 +48,11 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	addTemplatePorts(){
 		let port: UnBinaryPortModel = new UnBinaryPortModel(INPORT);
-		port.setPortAlignment(PortModelAlignment.LEFT);
+		port.setPortAlignment(PortModelAlignment.BOTTOM);
 		this.addPort(port);
 		this.inPort = port;
 		port = new UnBinaryPortModel(OUTPORT);
-		port.setPortAlignment(PortModelAlignment.RIGHT);
+		port.setPortAlignment(PortModelAlignment.BOTTOM);
 		this.addPort(port);
 		this.outPort = port;
 		port = new UnBinaryPortModel(ADDPORT);
@@ -74,6 +74,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	addNewPort(name: string) {
 		//MAYBE EXTRACT FUNCTION IN diagram reducer that checks if port with same name already exists and move it inside UnBinaryNodeModel
 		let port: UnBinaryPortModel = new UnBinaryPortModel(name);
+		port.setMaximumLinks(0);
 		this.portIndex += 1;
 		this.addPort(port);
 		return port;

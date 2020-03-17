@@ -100,11 +100,6 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 
 							console.log(constantPort);
 							//link.setSourcePort(constantPort); //calling setSource to the same port is causing strange behaviour and will unmount a link from the source port
-
-
-
-
-
 							console.log("link after target port",link.getSourcePort());
 
 							/*let newLink = new BinaryLinkModel();
@@ -113,7 +108,6 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 							return;
 						}
 					}
-
 
 					else {
 						/*link.remove();

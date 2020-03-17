@@ -1,17 +1,16 @@
 import * as React from 'react';
 import { UnBinaryNodeModel } from './UnBinaryNodeModel';
-import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
+import { DiagramEngine } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
-import { Port, PortLabel } from "./UnBinaryPortLabelWidget";
+import { Port, PortLabel, PortS } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, INPORT, OUTPORT, UNBINARY} from "../ConstantNames";
-import {PortsContainerU} from "../../components/TrayItemWidgetIcon";
+import { PortWidget } from '../../PortWidget';
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
 	engine: DiagramEngine;
-	setDomain:any;
-	changeDomain:any;
+	renameDomainNode:any;
 	removeDomainNode:any;
 	checkBadName:any;
 	name?:string;
@@ -26,14 +25,15 @@ interface UnBinaryNodeWidgetState {
 }
 
 export const Node = styled.div<{ background: string; selected: boolean }>`
+		width: 100%;
 		background-color: ${p => p.background};
 		border-radius: 5px;
 		font-family: sans-serif;
+		font-weight: bold;
 		color: black;
-		border: solid 2px black;
 		overflow: visible;
-		font-size: 11px;
-		border: solid 2.5px ${p => (p.selected ? 'rgb(0,192,255)' : 'black')};
+		font-size: 13px;
+		border: solid 2px ${p => (p.selected ? 'rgb(0,192,255)' : 'black')};
 	`;
 
 export const Title = styled.div`
@@ -59,26 +59,17 @@ export const Ports = styled.div`
 	`;
 
 export const PortsContainer = styled.div`
+		width: auto;
 		display: flex;
 		flex-direction: column;
-
-		&:first-of-type {
-			margin-right: 10px;
-		}
-
-		&:only-child {
-			margin-right: 0px;
-		}
-		
-		flex: 0 0 0;
+		flex: 1 0 0;
 	`;
 
 export const PortsContainerForAddInOut = styled.div`
 		display: flex;
-		width:100%;
+		flex-shrink: 0;
 		flex-direction: row;
-		//padding: 50px;
-		flex: 0 0 0;
+		flex: 1 1 0;
 	`;
 
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
@@ -90,7 +81,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			titleChanged:false,
 			nodeName:this.props.node.getOptions().name,
 			badName:false
-		}
+		};
 
 		this.setBadNameState = this.setBadNameState.bind(this);
 	}
@@ -110,7 +101,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	};
 
 	cancelRenameNode(){
-		this.setState({renameActive:false,nodeName:this.props.node.getNodeName()});
+		this.setState({renameActive:false,nodeName:this.props.node.getNodeName(),badName:false});
+		this.props.node.setLocked(false);
 	}
 
 	renameNode(){
@@ -118,7 +110,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 		if(this.state.nodeName!==this.props.node.getNodeName()){
 			if(!this.state.badName){
-				this.props.changeDomain(this.state.nodeName,this.props.node.getNodeName());
+				this.props.renameDomainNode(this.state.nodeName,this.props.node.getNodeName());
 				this.props.node.renameNode(this.state.nodeName);
 			}
 			else{
@@ -162,7 +154,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 								   }
 
 								   type="text" style={{
-								width: this.props.node.getOptions().name.length * 8 + "px",
+								width: this.props.node.getOptions().name.length * 9 + "px",
 								height: 20 + "px",
 								border:this.state.badName?"1px solid red":"1px solid black"
 							}} name="" value={this.state.nodeName}
@@ -180,19 +172,19 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 						<PortsContainerForAddInOut>
 							<PortWidget engine={this.props.engine} port={this.props.node.getInPort()}>
-								<Port height={20} width={this.props.node.getOptions().name.length * 10}>{INPORT}</Port>
+								<PortS height={20} width={this.props.node.getOptions().name.length * 20}>{INPORT}</PortS>
 							</PortWidget>
-
+							{" | "}
 							<PortWidget engine={this.props.engine} port={this.props.node.getAppendPort()}>
-								<Port onClick={() => {
-									this.props.node.addNewPort(`Predicate${this.props.node.portIndex}`);
+								<PortS onClick={() => {
+									this.props.node.addNewPort(`Pred${this.props.node.portIndex}`);
 									this.props.engine.repaintCanvas();
 								}}
-									  height={20} width={this.props.node.getOptions().name.length * 10}>{ADDPORT}</Port>
+									  height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</PortS>
 							</PortWidget>
-
+							{" | "}
 							<PortWidget engine={this.props.engine} port={this.props.node.getOutPort()}>
-								<Port height={20} width={this.props.node.getOptions().name.length * 10}>{OUTPORT}</Port>
+								<PortS height={20} width={this.props.node.getOptions().name.length * 20}>{OUTPORT}</PortS>
 							</PortWidget>
 						</PortsContainerForAddInOut>
 					</PortsContainer>

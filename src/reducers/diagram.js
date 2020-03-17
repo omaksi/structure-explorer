@@ -1,6 +1,6 @@
 import {
   ADD_CONSTANT_NODE,
-  ADD_DOMAIN_NODE, CHECK_BAD_NAME, REMOVE_CONSTANT_NODE,
+  ADD_DOMAIN_NODE, RENAME_DOMAIN_NODE, CHECK_BAD_NAME, REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
   SYNC_DIAGRAM
@@ -45,16 +45,28 @@ function diagramReducer(state, action) {
     case CHECK_BAD_NAME:
       checkIfNameCanBeUsed(state,action);
       return state;
-
+    case RENAME_DOMAIN_NODE:
+      state.domainNodes.set(action.value,state.domainNodes.get(action.oldValue));
+      state.domainNodes.delete(action.oldValue);
+      return state;
     default:
       return state;
   }
 }
 
 function checkIfNameCanBeUsed(state,action){
-  console.log(action);
   if(action.oldName === action.newName){
     action.nodeBadNameSetState(false);
+    return;
+  }
+
+  if(action.newName.length === 0 ){
+    action.nodeBadNameSetState(true);
+    return;
+  }
+
+  if(action.newName.includes(",")){
+    action.nodeBadNameSetState(true);
     return;
   }
 
@@ -108,7 +120,7 @@ function syncConstants(values){
     for(let [nodeName,nodeProperties] of constantObjects.entries()) {
       if(!constantState.has(nodeName)) {
         let node = new ConstantNodeModel(nodeName, 'rgb(92,192,125)', {
-          "changeDomain":values.changeDomain,
+          "renameDomainNode":values.renameDomainNode,
           "addConstantNode":values.addConstantNode,
           "removeConstantNode":values.removeConstantNode
         });
@@ -225,8 +237,8 @@ function syncDomain(values) {
   domain.map(nodeName => {
     if (!existingDomainNodes.includes(nodeName)) {
       let node = new UnBinaryNodeModel(nodeName, 'rgb(92,192,125)', {
-        "changeDomain": values.setDomain,
-        "setDomain": values.changeDomain,
+        "renameDomainNode": values.renameDomainNode,
+        "setDomain": values.renameDomainNode,
         "addDomainNode":values.addDomainNode,
         "removeDomainNode":values.removeDomainNode,
         "checkBadName":values.checkBadName

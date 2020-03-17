@@ -1,4 +1,4 @@
-import {LinkModel, PortModelAlignment, PortModel, DefaultLinkModel} from '@projectstorm/react-diagrams';
+import {LinkModel, PortModelAlignment, PortModel} from '@projectstorm/react-diagrams';
 import _ from "lodash";
 import {ADDPORT} from "../ConstantNames";
 import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
@@ -34,12 +34,12 @@ export class UnBinaryPortModel extends PortModel {
 
 	canLinkToPort(port: PortModel): boolean {
 		if(port.getName() === ADDPORT){
-			//this.removeBadLink();
 			return false;
 		}
 
 		else if(this.getParent() === port.getParent()){
 			if(this!=port){
+
 				return true;
 			}
 			else{

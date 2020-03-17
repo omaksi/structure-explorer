@@ -13,8 +13,7 @@ import {ConstantNodeModel} from "../nodes/constant/ConstantNodeModel";
 
 export interface BodyWidgetProps {
 	app: Application;
-	setDomain:any;
-	changeDomain:any;
+	renameDomainNode:any;
 	syncDiagram:any;
 	addDomainNode:any;
 	removeDomainNode:any;
@@ -134,7 +133,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 
 	render() {
 		let reduxFunctions = {
-			"changeDomain": this.props.setDomain,
+			"renameDomainNode": this.props.renameDomainNode,
 			"addDomainNode": this.props.addDomainNode,
 			"removeDomainNode": this.props.removeDomainNode,
 			"addConstantNode": this.props.addConstantNode,

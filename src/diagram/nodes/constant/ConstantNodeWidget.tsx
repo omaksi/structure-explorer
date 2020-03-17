@@ -9,8 +9,7 @@ import {CONSTPORT} from "../ConstantNames";
 export interface ConstantNodeWidgetProps {
 	node: ConstantNodeModel;
 	engine: DiagramEngine;
-	setDomain:any;
-	changeDomain:any;
+	renameDomainNode:any;
 	removeConstantNode:any;
 	name?:string;
 	size?: number;
@@ -92,7 +91,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 			if(this.state.nodeName!==this.props.node.getNodeName()){
 				//call redux store
 
-				let state = this.props.changeDomain(this.state.nodeName,this.props.node.getNodeName());
+				let state = this.props.renameDomainNode(this.state.nodeName,this.props.node.getNodeName());
 				this.props.node.renameNode(this.state.nodeName);
 			}
 		}

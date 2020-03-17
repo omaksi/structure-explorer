@@ -22,10 +22,22 @@ export interface DefaultPortLabelProps {
 	`;
 
     export const Port = styled.div<{ width: number; height: number }>`
-        width:100%;
+        font-size: 11px;
+        width: 100%;
 		height: ${p => p.height}px;
 		background: rgba(white, 0.1);
-		color: black;
+		text-align:center;
+		
+		&:hover {
+			background: #00ff80;
+		}
+	`;
+
+export const PortS = styled.div<{ width: number; height: number }>`
+        font-size: 11px;
+        flex:auto;
+		height: ${p => p.height}px;
+		background: rgba(white, 0.1);
 		text-align:center;
 		
 		&:hover {

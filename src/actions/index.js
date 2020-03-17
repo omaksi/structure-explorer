@@ -18,8 +18,8 @@ export const setDomain = (value) => ({
   value
 });
 
-export const changeDomain = (value,oldValue) => ({
-  type: 'CHANGE_DOMAIN',
+export const renameDomainNode = (value,oldValue) => ({
+  type: 'RENAME_DOMAIN_NODE',
   value,
   oldValue
 });
@@ -49,6 +49,23 @@ export const addDomainNode = (nodeName,nodeObject) => ({
   type: 'ADD_DOMAIN_NODE',
   nodeName,
   nodeObject
+});
+
+//maybe renaming should not be implemented
+export const renameNodePredicate = (predicateOldName,predicateName) => ({
+  type: 'RENAME_NODE_PREDICATE',
+  predicateOldName,
+  predicateName
+});
+
+export const addNodePredicate = (predicateName,nodeName) => ({
+  type: 'ADD_NODE_PREDICATE',
+  predicateName
+});
+
+export const removeNodePredicate = (predicateName,nodeName) => ({
+  type: 'REMOVE_NODE_PREDICATE',
+  predicateName
 });
 
 export const checkBadName = (newName,oldName,nodeBadNameSetState,nodeType) => ({

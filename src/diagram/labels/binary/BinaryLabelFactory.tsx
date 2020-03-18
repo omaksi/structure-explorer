@@ -10,7 +10,7 @@ export class BinaryLabelFactory extends AbstractReactFactory< BinaryLabelModel, 
 	}
 
 	generateReactWidget(event:any): JSX.Element {
-		return <BinaryLabelWidget model={event.model} node={event.model.node} engine={this.engine}/>;
+		return <BinaryLabelWidget model={event.model} engine={this.engine}/>;
 	}
 
 	generateModel(event:any): BinaryLabelModel {

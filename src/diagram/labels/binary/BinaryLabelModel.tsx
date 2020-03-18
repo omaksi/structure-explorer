@@ -1,11 +1,11 @@
 import { LabelModel} from '@projectstorm/react-diagrams-core';
 import { DeserializeEvent } from '@projectstorm/react-canvas-core';
-import {BinaryNodeModel} from "./binaryNodeLabel/BinaryNodeModel";
 import {BaseModelListener} from '@projectstorm/react-canvas-core';
 import { LabelModelOptions, LabelModelGenerics } from '@projectstorm/react-diagrams';
 
 export interface BinaryLabelModelOptions extends LabelModelOptions {
 	label?: string;
+	predicates?: Set<string>;
 }
 
 export interface NodeModelListener extends BaseModelListener {
@@ -18,29 +18,40 @@ export interface BinaryLabelModelGenerics extends LabelModelGenerics {
 }
 
 export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
-	node:BinaryNodeModel;
-	forceLinkFunction:any;
-
+	predicates: Set<string>;
+	predicateIndex:number;
 
 	constructor(options: BinaryLabelModelOptions = {}) {
 		super({
 			...options,
-			offsetY: options.offsetY == null ? -23 : options.offsetY,
+			offsetY: options.offsetY == null ? 0 : options.offsetY,
 			type: 'binary',
+			predicates: new Set()
 		});
-		this.setNewNode();
+
+		this.predicates = this.options.predicates;
+		this.predicateIndex = 0;
 	}
 
 	setLabel(label: string) {
 		this.options.label = label;
 	}
 
-	setNewNode(){
-		this.node = new BinaryNodeModel();
+	getPredicates():Set<string>{
+		return this.predicates;
 	}
 
-	addNewPort(name:string){
-		this.node.addNewPort(name);
+	addPredicate(name:string){
+		this.options.locked = !this.options.locked;
+		this.predicates.add(name);
+		this.predicateIndex+=1;
+	}
+
+	removePredicate(name:string){
+		if(this.predicates.has(name)){
+			this.options.locked = !this.options.locked;
+			this.predicates.delete(name);
+		}
 	}
 
 	deserialize(event: DeserializeEvent<this>) {

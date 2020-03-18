@@ -12,7 +12,6 @@ import {BinaryLabelModel} from "../../labels/binary/BinaryLabelModel";
 import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
 import {ConstantNodeModel} from "../../nodes/constant/ConstantNodeModel";
 import {ConstantPortModel} from "../../nodes/constant/ConstantPortModel";
-import { DiagramModel } from '@projectstorm/react-diagrams';
 
 export interface BinaryLinkModelListener extends LinkModelListener {
 	// @ts-ignore
@@ -20,6 +19,9 @@ export interface BinaryLinkModelListener extends LinkModelListener {
 
 	// @ts-ignore
 	widthChanged?(event: BaseEntityEvent<BinaryLinkModel> & { width: 0 | number }): void;
+
+	// @ts-ignore
+	entityRemoved?(event: BaseEntityEvent<BinaryLinkModel>): void;
 }
 
 export interface BinaryLinkModelOptions extends BaseModelOptions {
@@ -216,7 +218,8 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 	}
 
 	setWidth(width: number) {
-		this.options.width = width;
+		console.log("SET WIDTH");
+		this.options.width += width;
 		this.fireEvent({ width }, 'widthChanged');
 	}
 

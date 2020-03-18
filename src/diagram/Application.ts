@@ -38,7 +38,7 @@ export class Application {
 	public setModel(diagramModel: DiagramModel) {
 		this.diagramEngine.setModel(diagramModel);
 		//set number of links to zero, so if we will select a link it will not create a point
-		this.getDiagramEngine().setMaxNumberPointsPerLink(0);
+		//this.getDiagramEngine().setMaxNumberPointsPerLink(0);
 	}
 
 	public getActiveDiagram(): DiagramModel {

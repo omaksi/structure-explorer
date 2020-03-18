@@ -48,7 +48,7 @@ export class BinaryLinkWidget extends React.Component<BinaryLinkProps, BinaryLin
 
 	addPointToLink(event: MouseEvent, index: number) {
 		if (
-			!event.shiftKey &&
+			event.shiftKey &&
 			!this.props.link.isLocked() &&
 			this.props.link.getPoints().length - 1 <= this.props.diagramEngine.getMaxNumberPointsPerLink()
 		) {

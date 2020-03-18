@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { UnBinaryNodeModel } from './UnBinaryNodeModel';
-import { DiagramEngine } from '@projectstorm/react-diagrams';
+import { DiagramEngine, PortModel } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port, PortLabel, PortS } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, INPORT, OUTPORT, UNBINARY} from "../ConstantNames";
 import { PortWidget } from '../../PortWidget';
+import {UnBinaryPortModel} from "./UnBinaryPortModel";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;

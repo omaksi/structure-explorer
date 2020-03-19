@@ -37,7 +37,7 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		});
 
 		this.constantPort = this.setUpConstantPort();
-		//this.addPort(new QuaternaryPortModel(PortModelAlignment.BOTTOM));
+		//this.addPort(new TernaryPortModel(PortModelAlignment.BOTTOM));
 		this.registerEvents();
 	}
 

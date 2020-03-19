@@ -9,6 +9,7 @@ import styled from '@emotion/styled';
 import {UnBinaryNodeModel} from "../nodes/unbinary/UnBinaryNodeModel";
 import {ConstantNodeModel} from "../nodes/constant/ConstantNodeModel";
 import {QuaternaryNodeModel} from "../nodes/quaternary/QuaternaryNodeModel";
+import {TernaryNodeModel} from "../nodes/ternary/TernaryNodeModel";
 
 export interface BodyWidgetProps {
 	app: Application;
@@ -85,17 +86,25 @@ export interface BodyWidgetProps {
 
 		let nodesCount = getAvailableCount(data.type,element.props.diagramNodeState);
 
-		let node: any = null;
-		if (data.type === 'Quaternary') {
-			node = new QuaternaryNodeModel();
-		} else if (data.type === 'unbinary') {
+		let node: any;
+		if (data.type === 'unbinary') {
 			node = new UnBinaryNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);
 			reduxFunctions.addDomainNode(node.getOptions().name,node);
 
 		} else if (data.type === 'constant') {
 			node = new ConstantNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxFunctions);
 			reduxFunctions.addConstantNode(node.getOptions().name,node);
-		} else {
+		}
+
+		else if(data.type === 'ternary'){
+			node = new TernaryNodeModel();
+		}
+
+		else if (data.type === 'quaternary') {
+			node = new QuaternaryNodeModel();
+		}
+
+		else {
 			node = new DefaultNodeModel('Node' + nodesCount, 'rgb(0,192,255)');
 			node.addOutPort('Out');
 		}
@@ -118,7 +127,7 @@ export interface BodyWidgetProps {
 		element.props.app
 			.getDiagramEngine()
 			.getModel().addNode(node);
-		//element.forceUpdate();
+		element.forceUpdate();
 	}
 
 
@@ -157,9 +166,12 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 						<UnbinaryItemWidget model={{type: 'constant'}} clickFunction={createNode} element={this}
 											name="Pridaj unárny/binárny" color="rgb(125,192,125)"
 											reduxFunctions={reduxFunctions}/>
-						<QuaternaryItemWidget model={{type: 'Quaternary'}} clickFunction={createNode} element={this}
-										   name="Pridaj diamant" color="rgb(128,96,245)"
+						<QuaternaryItemWidget model={{type: 'quaternary'}} clickFunction={createNode} element={this}
+										   name="Pridaj stvornarny" color="rgb(128,96,245)"
 										   reduxFunctions={reduxFunctions}/>
+						<QuaternaryItemWidget model={{type: 'ternary'}} clickFunction={createNode} element={this}
+											  name="Pridaj ternary" color="rgb(128,96,245)"
+											  reduxFunctions={reduxFunctions}/>
 					</TrayWidget>
 					<Layer
 						onDrop={event => {

@@ -45,6 +45,14 @@ function languageReducer(s, action, struct) {
       let predicateState = state.predicates.value;
       let unaryPredicate = action.predicateName+"/1";
 
+      if(state.predicates.parsed){
+        for(let i = 0;i<state.predicates.parsed.length;i++){
+          if(state.predicates.parsed[i].name === action.predicateName){
+            return;
+          }
+        }
+      }
+
       if(predicateState.charAt(predicateState.length-1)==="," || state.predicates.parsed === undefined || state.predicates.parsed.length===0){
         predicateState+=unaryPredicate;
       }

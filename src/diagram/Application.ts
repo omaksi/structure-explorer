@@ -6,6 +6,7 @@ import { SimplePortFactory } from './nodes/SimplePortFactory';
 import {BinaryLinkFactory} from "./links/binary/BinaryLinkFactory";
 import {QuaternaryPortModel} from "./nodes/quaternary/QuaternaryPortModel";
 import {QuaternaryNodeFactory} from "./nodes/quaternary/QuaternaryNodeFactory";
+import {TernaryNodeFactory} from "./nodes/ternary/TernaryNodeFactory";
 
 export class Application {
 	protected activeModel: DiagramModel;
@@ -18,10 +19,12 @@ export class Application {
 
 		//Custom ports access
 		this.diagramEngine.getPortFactories().registerFactory(new SimplePortFactory('quaternary', config => new QuaternaryPortModel(PortModelAlignment.LEFT)));
+		this.diagramEngine.getPortFactories().registerFactory(new SimplePortFactory('ternary', config => new QuaternaryPortModel(PortModelAlignment.LEFT)));
 		//Custom nodes access
 		this.diagramEngine.getNodeFactories().registerFactory(new QuaternaryNodeFactory());
 		this.diagramEngine.getNodeFactories().registerFactory(new UnBinaryNodeFactory());
 		this.diagramEngine.getNodeFactories().registerFactory(new ConstantNodeFactory());
+		this.diagramEngine.getNodeFactories().registerFactory(new TernaryNodeFactory());
 		//Custom link access
 		this.diagramEngine.getLinkFactories().registerFactory(new BinaryLinkFactory());
 		//Custom labels access

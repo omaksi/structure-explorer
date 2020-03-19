@@ -6,7 +6,7 @@ import {
 import {RULE_CONSTANTS, RULE_DOMAIN, RULE_FUNCTIONS, RULE_PREDICATES} from "../constants/parser_start_rules";
 import {defaultInputData} from "../constants";
 
-let functions = require('./functions');
+let functions = require('./functions/functions');
 
 let state = {};
 let structure = null;
@@ -48,7 +48,7 @@ function languageReducer(s, action, struct) {
       if(state.predicates.parsed){
         for(let i = 0;i<state.predicates.parsed.length;i++){
           if(state.predicates.parsed[i].name === action.predicateName){
-            return;
+            return state;
           }
         }
       }

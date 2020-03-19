@@ -19,7 +19,6 @@ import {
   TOGGLE_EDIT_TABLE,
   TOGGLE_EDIT_DATABASE,
   RENAME_DOMAIN_NODE,
-  SYNC_DIAGRAM,
   ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE, ADD_CONSTANT_NODE, REMOVE_CONSTANT_NODE
 } from "../constants/action_types";
 import {
@@ -28,7 +27,7 @@ import {
 } from "../constants/messages";
 import {RULE_DOMAIN, RULE_PREDICATES_FUNCTIONS_VALUE, RULE_VARIABLE_VALUATION} from "../constants/parser_start_rules";
 
-let functions = require('./functions');
+let functions = require('./functions/functions');
 
 const constantDefaultInput = () => ({...defaultInputData(), errorMessage: EMPTY_CONSTANT_VALUE});
 const predicateDefaultInput = () => ({...defaultInputData(), tableEnabled: false});

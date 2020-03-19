@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { UnBinaryNodeModel } from './UnBinaryNodeModel';
-import { DiagramEngine, PortModel } from '@projectstorm/react-diagrams';
+import { DiagramEngine, PortModel, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port, PortLabel, PortS } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, INPORT, OUTPORT, UNBINARY} from "../ConstantNames";
-import { PortWidget } from '../../PortWidget';
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -47,7 +46,6 @@ export const Title = styled.div`
 export const TitleName = styled.div`
 		flex-grow: 1;
 		padding: 5px 5px;
-		cursor:text;
 				
 		&:hover {
 			background: #90EE90;

@@ -1,4 +1,4 @@
-let parser = require('../parser/grammar');
+let parser = require('../../parser/grammar');
 var exports = module.exports = {};
 
 exports.parseText = function (text, textData, parserOptions) {

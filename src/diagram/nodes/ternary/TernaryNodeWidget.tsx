@@ -27,7 +27,7 @@ export class TernaryNodeWidget extends React.Component<QuaternaryNodeWidgetProps
 	render() {
 		return (
 			<div
-				className={'quaternary-node'}
+				className={'ternary-node'}
 				style={{
 					position: 'relative',
 					width: this.props.size,

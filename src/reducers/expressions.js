@@ -21,7 +21,7 @@ import {
 } from "../constants/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../constants/parser_start_rules";
 
-let functions = require('./functions');
+let functions = require('./functions/functions');
 
 let s = {};
 let structure = null;

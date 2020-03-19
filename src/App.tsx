@@ -16,6 +16,8 @@ import {importAppState} from "./actions";
 import {DEFAULT_FILE_NAME} from "./constants";
 import {Application} from "./diagram/Application";
 import DiagramModelContainer from "./containers/DiagramModelContainer";
+import {MathSystem} from "./components/MathSystem";
+import MathSystemContainer from './containers/MathSystemContainer';
 
 
 // @ts-ignore
@@ -141,15 +143,8 @@ class App extends React.Component<IProps,IState> {
             </Row>
 
               {!this.state.diagramToggled? (
-                  <Row>
-                    <Col sm={6}>
-                      <LanguageContainer/>
-                      <VariablesValueContainer/>
-                    </Col>
-                    <Col sm={6}>
-                      <StructureContainer/>
-                    </Col>
-                  </Row>):
+                  <MathSystemContainer/>
+                  ):
                     <Col sm={12} className='reactDiagram'>
                       <DiagramModelContainer app={new Application(store.getState().diagramNodeState.diagramModel)}/>
                     </Col>

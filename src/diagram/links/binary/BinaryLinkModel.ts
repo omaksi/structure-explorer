@@ -40,7 +40,6 @@ export interface BinaryLinkModelGenerics extends LinkModelGenerics {
 
 export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 	label:BinaryLabelModel;
-	updated: boolean;
 
 	constructor(options: BinaryLinkModelOptions = {}) {
 		super({
@@ -48,12 +47,11 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 			width: options.width || 3,
 			color: options.color || 'gray',
 			selectedColor: options.selectedColor || 'rgb(0,192,255)',
-			curvyness: 50,
+			curvyness: 65,
 			...options
 		});
 
 		let link = this;
-		//this.label = new BinaryLabelModel();
 		// @ts-ignore
 		this.registerListener({
 			targetPortChanged(event: BaseEntityEvent<LinkModel> & { port: PortModel | null }): void {
@@ -159,10 +157,6 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 		return [0, this.options.curvyness];
 	}
 
-	changeUpdated(){
-		this.setColor("black");
-	}
-
 	getSVGPath(): string {
 		if (this.points.length == 2) {
 			const curve = new BezierCurve();
@@ -188,6 +182,16 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 			}
 			return curve.getSVGCurve();
 		}
+	}
+
+	clearLabels(){
+		for(let i = 0;i<this.getLabels().length;i++)
+		{
+			this.getLabels()[i].setParent(null);
+			console.log("cleared");
+			delete this.getLabels()[i];
+		}
+		this.labels = [];
 	}
 
 	serialize() {

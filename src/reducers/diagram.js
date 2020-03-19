@@ -3,13 +3,14 @@ import {
   ADD_DOMAIN_NODE, RENAME_DOMAIN_NODE, CHECK_BAD_NAME, REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
-  SYNC_DIAGRAM
+  SYNC_DIAGRAM, SYNC_MATH_STATE
 } from "../constants/action_types";
 import {UnBinaryNodeModel} from "../diagram/nodes/unbinary/UnBinaryNodeModel";
 import {ADDPORT, INPORT, OUTPORT, UNBINARY} from "../diagram/nodes/ConstantNames";
 import {ConstantNodeModel} from "../diagram/nodes/constant/ConstantNodeModel";
 import {DefaultLinkModel} from "@projectstorm/react-diagrams-defaults";
 import {DiagramModel} from "@projectstorm/react-diagrams";
+import {BinaryLinkModel} from "../diagram/links/binary/BinaryLinkModel";
 
 export function defaultState(){
   return{
@@ -49,8 +50,24 @@ function diagramReducer(state, action) {
       state.domainNodes.set(action.value,state.domainNodes.get(action.oldValue));
       state.domainNodes.delete(action.oldValue);
       return state;
+    case SYNC_MATH_STATE:
+      deleteAllLabels(state);
+      return state;
     default:
       return state;
+  }
+}
+
+function deleteAllLabels(action) {
+  for (let a = 0; a < action.diagramModel.getNodes().length; a++) {
+    let node = action.diagramModel.getNodes()[a];
+    for (let [portName, port] of Object.entries(node.getPorts())) {
+      for (let [linkName, link] of Object.entries(port.getLinks())) {
+        if (link instanceof BinaryLinkModel) {
+          link.clearLabels();
+        }
+      }
+    }
   }
 }
 

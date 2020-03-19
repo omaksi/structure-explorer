@@ -24,6 +24,10 @@ export const renameDomainNode = (value,oldValue) => ({
   oldValue
 });
 
+export const syncMathState = () => ({
+  type: 'SYNC_MATH_STATE'
+});
+
 export const syncDiagram = (value) => ({
   type: 'SYNC_DIAGRAM',
   value

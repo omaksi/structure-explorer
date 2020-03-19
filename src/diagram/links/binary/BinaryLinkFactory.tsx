@@ -35,7 +35,6 @@ export class BinaryLinkFactory<Link extends BinaryLinkModel = BinaryLinkModel> e
 	}
 
 	generateReactWidget(event:any): JSX.Element {
-		console.log("event",event,"event WIDTH",event.width);
 		return <BinaryLinkWidget link={event.model} diagramEngine={this.engine} />;
 	}
 

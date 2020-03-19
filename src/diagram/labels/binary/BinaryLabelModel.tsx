@@ -24,7 +24,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	constructor(options: BinaryLabelModelOptions = {}) {
 		super({
 			...options,
-			offsetY: options.offsetY == null ? 0 : options.offsetY,
+			offsetY: 0,//options.offsetY,
 			type: 'binary',
 			predicates: new Set()
 		});

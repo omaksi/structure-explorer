@@ -21,6 +21,8 @@ export interface BodyWidgetProps {
 	removeConstantNode:any;
 	diagramNodeState:any;
 	checkBadName:any;
+	addUnaryPredicate:any;
+	removeUnaryPredicate:any;
 }
 
 	export const Body = styled.div`
@@ -138,7 +140,9 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"removeDomainNode": this.props.removeDomainNode,
 			"addConstantNode": this.props.addConstantNode,
 			"removeConstantNode": this.props.removeConstantNode,
-			"checkBadName":this.props.checkBadName
+			"checkBadName":this.props.checkBadName,
+			"addUnaryPredicate":this.props.addUnaryPredicate,
+			"removeUnaryPredicate":this.props.removeUnaryPredicate
 		};
 
 		return (

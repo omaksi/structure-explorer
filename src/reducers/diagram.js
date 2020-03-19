@@ -255,10 +255,11 @@ function syncDomain(values) {
     if (!existingDomainNodes.includes(nodeName)) {
       let node = new UnBinaryNodeModel(nodeName, 'rgb(92,192,125)', {
         "renameDomainNode": values.renameDomainNode,
-        "setDomain": values.renameDomainNode,
         "addDomainNode":values.addDomainNode,
         "removeDomainNode":values.removeDomainNode,
-        "checkBadName":values.checkBadName
+        "checkBadName":values.checkBadName,
+        "addUnaryPredicate":values.addUnaryPredicate,
+        "removeUnaryPredicate":values.removeUnaryPredicate
       });
       createNode(node,nodeName,domainState,diagramModel,values.app);
     }

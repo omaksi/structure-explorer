@@ -43,6 +43,7 @@ export const PortS = styled.div<{ width: number; height: number }>`
 		&:hover {
 			background: #00ff80;
 		}
+		cursor:pointer;
 	`;
 
 export class UnBinaryPortLabelWidget extends React.Component<DefaultPortLabelProps> {

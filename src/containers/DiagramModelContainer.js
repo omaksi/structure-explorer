@@ -12,7 +12,14 @@ import {
   toggleDatabase,
   toggleTable,
   renameDomainNode,
-  syncDiagram, addDomainNode, removeDomainNode, addConstantNode, removeConstantNode, checkBadName,
+  syncDiagram,
+  addDomainNode,
+  removeDomainNode,
+  addConstantNode,
+  removeConstantNode,
+  checkBadName,
+  addUnaryPredicate,
+  removeUnaryPredicate,
 } from "../actions/index";
 import {connect} from 'react-redux';
 import {BodyWidget} from "../diagram/components/BodyWidget";
@@ -44,7 +51,9 @@ const mapDispatchOnProps = {
   lockDomain: lockDomain,
   lockConstantValue: lockConstantValue,
   lockPredicateValue: lockPredicateValue,
-  lockFunctionValue: lockFunctionValue
+  lockFunctionValue: lockFunctionValue,
+  addUnaryPredicate: addUnaryPredicate,
+  removeUnaryPredicate: removeUnaryPredicate
 };
 
 const DiagramModelContainer = connect(

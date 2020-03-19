@@ -57,19 +57,21 @@ export const addDomainNode = (nodeName,nodeObject) => ({
 
 //maybe renaming should not be implemented
 export const renameNodePredicate = (predicateOldName,predicateName) => ({
-  type: 'RENAME_NODE_PREDICATE',
+  type: 'RENAME_UNARY_PREDICATE',
   predicateOldName,
   predicateName
 });
 
-export const addNodePredicate = (predicateName,nodeName) => ({
-  type: 'ADD_NODE_PREDICATE',
-  predicateName
+export const addUnaryPredicate = (predicateName,nodeName) => ({
+  type: 'ADD_UNARY_PREDICATE',
+  predicateName,
+  nodeName
 });
 
-export const removeNodePredicate = (predicateName,nodeName) => ({
-  type: 'REMOVE_NODE_PREDICATE',
-  predicateName
+export const removeUnaryPredicate = (predicateName,nodeName) => ({
+  type: 'REMOVE_UNARY_PREDICATE',
+  predicateName,
+  nodeName
 });
 
 export const checkBadName = (newName,oldName,nodeBadNameSetState,nodeType) => ({

@@ -1,5 +1,5 @@
 import {
-  ADD_CONSTANT_NODE,
+  ADD_CONSTANT_NODE, ADD_UNARY_PREDICATE,
   IMPORT_APP, LOCK_CONSTANTS, LOCK_FUNCTIONS, LOCK_PREDICATES, REMOVE_CONSTANT_NODE, SET_CONSTANTS, SET_FUNCTIONS,
   SET_PREDICATES
 } from "../constants/action_types";
@@ -41,6 +41,20 @@ function languageReducer(s, action, struct) {
       setPredicates();
       setConstants();
       return state;
+    case ADD_UNARY_PREDICATE:
+      let predicateState = state.predicates.value;
+      let unaryPredicate = action.predicateName+"/1";
+
+      if(predicateState.charAt(predicateState.length-1)==="," || state.predicates.parsed === undefined || state.predicates.parsed.length===0){
+        predicateState+=unaryPredicate;
+      }
+      else{
+        predicateState+=","+unaryPredicate;
+      }
+
+      functions.parseText(predicateState, state.predicates, {startRule: RULE_PREDICATES});
+      setPredicates();
+      return state;
     case ADD_CONSTANT_NODE:
       let constantState = state.constants.value;
 
@@ -51,7 +65,7 @@ function languageReducer(s, action, struct) {
         constantState=constantState+","+action.nodeName;
       }
 
-      functions.parseText(constantState, state.constants, {startRule: RULE_DOMAIN});
+      functions.parseText(constantState, state.constants, {startRule: RULE_CONSTANTS});
       setConstants();
       return state;
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ConstantNodeModel } from './ConstantNodeModel';
-import { DiagramEngine, PortWidget, PortModel } from '@projectstorm/react-diagrams';
+import {DiagramEngine, PortWidget, PortModel, PortModelAlignment} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port } from "./ConstantPortLabelWidget";
@@ -70,6 +70,19 @@ export const PortsContainer = styled.div`
 		}
 	`;
 
+export const PortR = styled.div`
+		width: 16px;
+		height: 16px;
+		z-index: 10;
+		background: rgba(0, 0, 0, 0.5);
+		border-radius: 8px;
+		cursor: pointer;
+
+		&:hover {
+			background: rgba(0, 0, 0, 1);
+		}
+	`;
+
 export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,ConstantNodeWidgetState> {
 	constructor(props:ConstantNodeWidgetProps){
 		super(props);
@@ -117,6 +130,18 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 						<PortWidget engine={this.props.engine} port={this.props.node.getConstantPort()}>
 							<Port height={20} width={this.props.node.getOptions().name.length * 10}>{CONSTPORT}</Port>
 						</PortWidget>
+
+						{/*<PortWidget
+							style={{
+								left: this.props.size / 2 - 8,
+								top: this.props.size - 8,
+								position: 'absolute'
+							}}
+							port={this.props.node.getPort(PortModelAlignment.BOTTOM)}
+							engine={this.props.engine}>
+							<PortR />
+						</PortWidget>*/}
+
 					</PortsContainer>
 				</Ports>
 			</Node>)

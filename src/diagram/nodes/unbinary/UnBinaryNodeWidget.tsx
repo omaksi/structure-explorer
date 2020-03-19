@@ -6,7 +6,6 @@ import _ from 'lodash';
 import { Port, PortLabel, PortS } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, INPORT, OUTPORT, UNBINARY} from "../ConstantNames";
 import { PortWidget } from '../../PortWidget';
-import {UnBinaryPortModel} from "./UnBinaryPortModel";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -48,6 +47,7 @@ export const Title = styled.div`
 export const TitleName = styled.div`
 		flex-grow: 1;
 		padding: 5px 5px;
+		cursor:text;
 				
 		&:hover {
 			background: #90EE90;
@@ -99,6 +99,19 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				</PortWidget>
 			)
 		}
+	};
+
+	generatePredicate = (predicate: string) => {
+		return (
+			<Port onDoubleClick={() => {
+				this.props.node.removeUnaryPredicate(predicate);
+				this.forceUpdate();
+				//this.props.engine.repaintCanvas();
+			}}
+				  height={20} width={this.props.node.getOptions().name.length * 10}>
+				{predicate}
+			</Port>
+		)
 	};
 
 	cancelRenameNode(){
@@ -168,8 +181,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				</Title>
 			<Ports>
 					<PortsContainer>
-						{_.map(this.props.node.getPorts(), this.generatePort)}
-
+						{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
 
 						<PortsContainerForAddInOut>
 							<PortWidget engine={this.props.engine} port={this.props.node.getInPort()}>
@@ -178,8 +190,10 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 							{" | "}
 							<PortWidget engine={this.props.engine} port={this.props.node.getAppendPort()}>
 								<PortS onClick={() => {
-									this.props.node.addNewPort(`Pred${this.props.node.portIndex}`);
-									this.props.engine.repaintCanvas();
+									//this.props.node.addNewPort(`Pred${this.props.node.portIndex}`);
+									this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
+									this.forceUpdate();
+									//this.props.engine.repaintCanvas();
 								}}
 									  height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</PortS>
 							</PortWidget>

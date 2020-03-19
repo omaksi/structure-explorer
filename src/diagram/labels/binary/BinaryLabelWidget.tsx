@@ -74,7 +74,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 	}
 
 	generatePredicate = (predicate: string) => {
-		if (![ADDPORT, INPORT, OUTPORT].includes(predicate)) {
 			return (
 				<Predicate onDoubleClick={() => {
 					this.props.model.removePredicate(predicate);
@@ -83,8 +82,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 					{predicate}
 				</Predicate>
 			)
-		}
-	};
+		};
 
 	componentDidUpdate() {
 		window.requestAnimationFrame(this.calculateLabelPosition);

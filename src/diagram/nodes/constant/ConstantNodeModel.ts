@@ -1,9 +1,10 @@
-import {NodeModel, NodeModelGenerics} from '@projectstorm/react-diagrams';
+import {NodeModel, NodeModelGenerics, PortModelAlignment} from '@projectstorm/react-diagrams';
 import {ConstantPortModel} from './ConstantPortModel';
 import { BasePositionModelOptions } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 import {PortModel} from "@projectstorm/react-diagrams-core/dist/@types/src/entities/port/PortModel";
 import {CONSTPORT} from "../ConstantNames";
+import {DiamondPortModel} from "../diamond/DiamondPortModel";
 
 export interface ConstantNodeModelGenerics {
 	PORT: ConstantPortModel;
@@ -38,6 +39,7 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		});
 
 		this.constantPort = this.setUpConstantPort();
+		//this.addPort(new DiamondPortModel(PortModelAlignment.BOTTOM));
 		this.registerEvents();
 	}
 

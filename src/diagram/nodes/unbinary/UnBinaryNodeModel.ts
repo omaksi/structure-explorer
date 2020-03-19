@@ -17,19 +17,20 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 }
 
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
-	portIndex: number;
+	unaryPredicateIndex: number;
 	inPort: UnBinaryPortModel;
 	outPort: UnBinaryPortModel;
 	appendPort: UnBinaryPortModel;
+	unaryPredicates: Set<string>;
 
-	constructor(name: string, color: string,reduxFunctions:any);
+	constructor(name: string, color: string, reduxFunctions: any);
 	constructor(options?: UnBinaryNodeModelOptions);
-	constructor(options: any = {}, color?: string, reduxFunctions?:any) {
+	constructor(options: any = {}, color?: string, reduxFunctions?: any) {
 		if (typeof options === 'string') {
 			options = {
 				name: options,
 				color: color,
-				reduxFunctions:reduxFunctions,
+				reduxFunctions: reduxFunctions,
 			};
 		}
 		super({
@@ -40,19 +41,20 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		});
 		this.addTemplatePorts();
 		this.registerEvents();
-		this.portIndex = 0;
+		this.unaryPredicateIndex = 0;
+		this.unaryPredicates = new Set();
 		//if created through DIAGRAM CLICK/DROP -> DISPATCH THIS: MAYBE I SHOULD DISPATCH IT IN CREATENODE FUNCTION NOT HERE
 		//setDomain(this.options.name);
 	}
 
 
-	addTemplatePorts(){
+	addTemplatePorts() {
 		let port: UnBinaryPortModel = new UnBinaryPortModel(INPORT);
-		port.setPortAlignment(PortModelAlignment.BOTTOM);
+		port.setPortAlignment(PortModelAlignment.LEFT);
 		this.addPort(port);
 		this.inPort = port;
 		port = new UnBinaryPortModel(OUTPORT);
-		port.setPortAlignment(PortModelAlignment.BOTTOM);
+		port.setPortAlignment(PortModelAlignment.RIGHT);
 		this.addPort(port);
 		this.outPort = port;
 		port = new UnBinaryPortModel(ADDPORT);
@@ -61,7 +63,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.appendPort = port;
 	}
 
-	registerEvents(){
+	registerEvents() {
 		let reduxFunctions = this.options.reduxFunctions;
 		let nodeName = this.options.name;
 		this.registerListener({
@@ -71,32 +73,50 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		})
 	}
 
+	getUnaryPredicates() {
+		return this.unaryPredicates;
+	}
+
+	addUnaryPredicate(name: string) {
+		if (!this.unaryPredicates.has(name)) {
+			this.unaryPredicates.add(name);
+			this.options.reduxFunctions["addUnaryPredicate"](name, this.getNodeName());
+			this.unaryPredicateIndex++;
+		}
+	}
+
+	removeUnaryPredicate(name: string) {
+		if (this.unaryPredicates.has(name)) {
+			this.unaryPredicates.delete(name);
+			this.options.reduxFunctions["removeUnaryPredicate"](name, this.getNodeName());
+		}
+	}
+
 	addNewPort(name: string) {
 		//MAYBE EXTRACT FUNCTION IN diagram reducer that checks if port with same name already exists and move it inside UnBinaryNodeModel
 		let port: UnBinaryPortModel = new UnBinaryPortModel(name);
 		port.setMaximumLinks(0);
-		this.portIndex += 1;
 		this.addPort(port);
 		return port;
 	}
 
-	getNodeName(){
+	getNodeName() {
 		return this.options.name;
 	}
 
-	getInPort(){
+	getInPort() {
 		return this.inPort;
 	}
 
-	getOutPort(){
+	getOutPort() {
 		return this.outPort;
 	}
 
-	getAppendPort(){
+	getAppendPort() {
 		return this.appendPort;
 	}
 
-	renameNode(name:string){
+	renameNode(name: string) {
 		this.options.name = name;
 	}
 
@@ -110,5 +130,4 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 			delete this.ports[port.getName()];
 		}
 	}
-
 }

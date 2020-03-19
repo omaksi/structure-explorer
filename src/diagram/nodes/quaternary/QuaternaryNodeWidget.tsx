@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { DiamondNodeModel } from './DiamondNodeModel';
+import { QuaternaryNodeModel } from './QuaternaryNodeModel';
 import { DiagramEngine, PortModelAlignment, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 
-export interface DiamondNodeWidgetProps {
-	node: DiamondNodeModel;
+export interface QuaternaryNodeWidgetProps {
+	node: QuaternaryNodeModel;
 	engine: DiagramEngine;
 	size?: number;
 }
@@ -23,11 +23,11 @@ export interface DiamondNodeWidgetProps {
 		}
 	`;
 
-export class DiamondNodeWidget extends React.Component<DiamondNodeWidgetProps> {
+export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetProps> {
 	render() {
 		return (
 			<div
-				className={'diamond-node'}
+				className={'quaternary-node'}
 				style={{
 					position: 'relative',
 					width: this.props.size,

@@ -86,7 +86,7 @@ export const PortD = styled.div`
 		}
 	`;
 
-export const Diamond = () => {
+export const Quaternary = () => {
     return(
         <NodeU>
         <div
@@ -162,7 +162,7 @@ style={{
 <Port />
 </PortWidget>*/
 
-/*export const Diamond = () =>{
+/*export const Quaternary = () =>{
     return(
         <Node>
             <Title>

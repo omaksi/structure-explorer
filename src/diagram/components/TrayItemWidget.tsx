@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Diamond, Unbinary} from "./TrayItemWidgetIcon";
+import {Quaternary, Unbinary} from "./TrayItemWidgetIcon";
 import styled from "@emotion/styled";
 
 export interface TrayItemWidgetProps {
@@ -42,7 +42,7 @@ export class UnbinaryItemWidget extends React.Component<TrayItemWidgetProps> {
 	}
 }
 
-export class DiamondItemWidget extends React.Component<TrayItemWidgetProps> {
+export class QuaternaryItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (
 			<BasicTray
@@ -56,7 +56,7 @@ export class DiamondItemWidget extends React.Component<TrayItemWidgetProps> {
 				}}
 				className="tray-item">
 				{this.props.name}
-			<Diamond/>
+			<Quaternary/>
 			</BasicTray>
 
 		);

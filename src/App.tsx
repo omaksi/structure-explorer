@@ -1,5 +1,5 @@
 import './App.css';
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {Col, Row, Modal, Button, ButtonToolbar} from 'react-bootstrap';
 import {createStore} from 'redux';
 import reducer from './reducers';
@@ -8,12 +8,12 @@ import ExpressionsContainer from './containers/ExpressionsContainer';
 import DownloadButton from './components/lib/DownloadButton';
 import {toggleTeacherMode} from "./actions";
 import Toggle from 'react-toggle';
-import FontAwesome from 'react-fontawesome';
 import {importAppState} from "./actions";
 import {DEFAULT_FILE_NAME} from "./constants";
 import {Application} from "./diagram/Application";
 import DiagramModelContainer from "./containers/DiagramModelContainer";
 import MathSystemContainer from './containers/MathSystemContainer';
+import ButtonToolbarElement from "./components/buttons/ButtonToolbarElement";
 
 
 // @ts-ignore
@@ -46,6 +46,8 @@ class App extends React.Component<IProps,IState> {
 
     this.exportState = this.exportState.bind(this);
     this.importState = this.importState.bind(this);
+    this.setModelShowState = this.setModelShowState.bind(this);
+    this.setDiagramToggledState = this.setDiagramToggledState.bind(this);
   }
 
 
@@ -74,6 +76,14 @@ class App extends React.Component<IProps,IState> {
     fr.readAsText(file);
   }
 
+  setModelShowState(bool:boolean){
+    this.setState({modalShow: bool});
+  }
+
+  setDiagramToggledState(bool:boolean){
+    this.setState({diagramToggled: bool});
+  }
+
   render() {
     return (
         <Provider store={store}>
@@ -81,31 +91,7 @@ class App extends React.Component<IProps,IState> {
             <Row>
               <div className='toolbar'>
                 <div className='col-xs-7 toolbar-import-export'>
-                  <ButtonToolbar>
-                    <button className='btn btn-lock' onClick={() => this.setState({diagramToggled: false})}>
-                      <FontAwesome name='bars'/>
-                    </button>
-
-                    <button className='btn btn-lock' onClick={() =>this.setState({diagramToggled: true})}>
-                      <FontAwesome name='sitemap'/>
-                    </button>
-
-                    <button className='btn btn-lock' onClick={() => this.setState({modalShow: true})}>
-                      <FontAwesome name='download'/>
-                      <span className='toolbar-btn-label-1'>Uložiť</span>
-                      <span className='toolbar-btn-label-2'>cvičenie</span>
-                    </button>
-
-                    <label className="btn btn-lock">
-                      <FontAwesome name='upload'/>
-                      <span className='toolbar-btn-label-1'>Importovať</span>
-                      <span className='toolbar-btn-label-2'>cvičenie</span>
-                      <input type="file" name='jsonFile'
-                             onChange={e => this.importState(e)}
-                             hidden={true}
-                             style={{display: 'none'}}/>
-                    </label>
-                  </ButtonToolbar>
+                  <ButtonToolbarElement setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
                 </div>
                 <div className='col-xs-5 toolbar-mode-toggle'>
                   <label className='teacher-mode'>

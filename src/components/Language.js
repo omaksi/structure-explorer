@@ -5,7 +5,7 @@ import TextInput from "./inputs/TextInput";
 
 const help = (
     <div className="collapse" id="help-language">
-     <div /*className="well"*/>
+     <div className="well">
        Tu sa definuje jazyk. <strong>Symboly konštánt</strong> sa definujú oddelene
        čiarkou. <strong>Symboly predikátov</strong> sa definujú oddelené čiarkami, vo
        formáte <code>predikat/arita</code>. <strong>Symboly funkcií</strong> sa definujú oddelené čiarkami, vo

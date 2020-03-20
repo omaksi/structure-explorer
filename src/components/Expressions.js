@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-  Button,
-  FormControl,
-  FormGroup,
-  HelpBlock,
-  InputGroup,
-  Panel,
-  Row,
+    Button,
+    FormControl,
+    FormGroup,
+    Form,
+    InputGroup,
+    Row,
 } from "react-bootstrap";
+import Card from "react-bootstrap/Card";
 import {EXPRESSION_LABEL, FORMULA, TERM} from "../constants/index";
 import FontAwesome from 'react-fontawesome';
 import LockButton from './buttons/LockButton';
@@ -82,16 +82,16 @@ function prepareExpressions(formulas, terms) {
 const Expressions = (props) => (
    <React.Fragment>
      {prepareExpressions(props.formulas, props.terms).map(expression =>
-        <Panel>
-          <Panel.Heading>
-            <Panel.Title>{expression.panelTitle}</Panel.Title>
+        <Card>
+          <Card.Header>
+            <Card.Title>{expression.panelTitle}</Card.Title>
             <span data-toggle="collapse" data-target={"#help-" + expression.expressionType.toLowerCase()}
                   aria-expanded="false"
                   aria-controls="collapseExample">
                     ?
                  </span>
-          </Panel.Heading>
-          <Panel.Body>
+          </Card.Header>
+          <Card.Body>
             {expression.help}
             {expression.items.map((item, index) =>
                <Row key={index}>
@@ -103,12 +103,12 @@ const Expressions = (props) => (
                          <label className='input-group-addon'
                                 htmlFor={expression.expressionType.toLowerCase() + '-' + index}>
                            <span>{EXPRESSION_LABEL[expression.expressionType]}<sub>{index + 1}</sub></span></label>
-                         <FormControl type='text' value={item.value}
+                           {<FormControl type='text' value={item.value}
                                       onChange={(e) => props.onInputChange(e.target.value, index, expression.expressionType)}
                                       id={expression.expressionType.toLowerCase() + '-' + index}
-                                      disabled={item.inputLocked}/>
-                         <InputGroup.Button>
-                           <Button
+                                      disabled={item.inputLocked}/>}
+                           <InputGroup.Append>
+                               <Button
                               onClick={() => props.removeExpression(expression.expressionType, index)}><FontAwesome
                               name='trash'/></Button>
                            {props.teacherMode ? (
@@ -116,9 +116,9 @@ const Expressions = (props) => (
                                  lockFn={() => props.lockExpressionValue(expression.expressionType, index)}
                                  locked={item.inputLocked}/>
                            ) : null}
-                         </InputGroup.Button>
+                           </InputGroup.Append>
                        </InputGroup>
-                       <HelpBlock>{item.errorMessage}</HelpBlock>
+                       <Form.Text>{item.errorMessage}</Form.Text>
                      </FormGroup>
                    </div>
                    <div className='col-sm-4 col-md-2 col-xs-8 no-padding-right'>
@@ -138,11 +138,11 @@ const Expressions = (props) => (
                                      </span>
                          )}
                          {props.teacherMode ? (
-                            <InputGroup.Button>
+                            <InputGroup.Append>
                               <LockButton
                                  lockFn={() => props.lockExpressionAnswer(expression.expressionType, index)}
                                  locked={item.answerLocked}/>
-                            </InputGroup.Button>
+                            </InputGroup.Append>
                          ) : null}
                        </InputGroup>
                      </FormGroup>
@@ -157,10 +157,10 @@ const Expressions = (props) => (
                  </div>
                </Row>
             )}
-            <Button bsStyle='success' onClick={() => props.addExpression(expression.expressionType)}><FontAwesome
-               name='plus'/> Pridaj</Button>
-          </Panel.Body>
-        </Panel>
+              {<Button bsStyle='success' onClick={() => props.addExpression(expression.expressionType)}><FontAwesome
+               name='plus'/> Pridaj</Button>}
+          </Card.Body>
+        </Card>
      )}
    </React.Fragment>
 );

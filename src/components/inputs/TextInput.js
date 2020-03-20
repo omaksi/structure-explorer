@@ -13,9 +13,9 @@ const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTa
                   value={textData.value}
                   disabled={textData.locked}
                   placeholder={placeholder}/>
-     <InputGroup.Addon>&#125;</InputGroup.Addon>
+     <InputGroup.Append>&#125;</InputGroup.Append>
      {toggleTable || teacherMode ? (
-        <InputGroup.Button>
+        <InputGroup.Append>
           {toggleTable ? (
              (arity > 2 || domain.length === 0) ? null : (
                 <TableButton onClick={() => toggleTable()} enabled={tableEnabled}/>
@@ -29,7 +29,7 @@ const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTa
           {teacherMode ? (
              <LockButton lockFn={() => onLock()} locked={textData.locked}/>
           ) : null}
-        </InputGroup.Button>
+        </InputGroup.Append>
      ) : null}
    </InputGroup>
 );

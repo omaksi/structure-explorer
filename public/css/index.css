@@ -1,0 +1,38 @@
+.selectComponent {
+    display: block;
+    margin: 0 auto;
+}
+
+.checkComponent{
+    text-align: center;
+}
+
+.interpretationHead{
+    text-Align:center;
+    padding:0.4em;
+    font-size:1.2em;
+}
+
+.centerItems{
+    text-Align:center;
+}
+
+.buttonSelected{
+    background:black;
+}
+
+.buttonNotSelected{
+    background:#dddddd;
+    color:black;
+    border-color:#dddddd;
+}
+
+.errorRedBorderFix{
+    z-index: 10;
+    position: inherit;
+}
+
+body{
+    margin: 0;
+    user-select:none; /*fix the bug, when text is dragged over canvas and cause loading of different element (text - element)*/
+}

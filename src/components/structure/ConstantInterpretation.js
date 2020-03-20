@@ -1,4 +1,4 @@
-import {Col, FormGroup, HelpBlock, InputGroup} from "react-bootstrap";
+import {Col, FormGroup, Form, InputGroup} from "react-bootstrap";
 import LockButton from "../buttons/LockButton";
 import React from "react";
 
@@ -24,13 +24,13 @@ export function ConstantInterpretation({structure,setConstantValue,structureObje
                             )}
                         </select>
                         {teacherMode ? (
-                            <InputGroup.Button>
+                            <InputGroup.Append>
                                 <LockButton lockFn={() => lockConstantValue(constant)}
                                             locked={structure.constants[constant].locked}/>
-                            </InputGroup.Button>
+                            </InputGroup.Append>
                         ) : null}
                     </InputGroup>
-                    <HelpBlock>{structure.constants[constant].errorMessage}</HelpBlock>
+                    <Form.Text>{structure.constants[constant].errorMessage}</Form.Text>
                 </FormGroup>
             )}
         </fieldset>

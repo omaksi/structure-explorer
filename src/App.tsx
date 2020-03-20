@@ -5,9 +5,6 @@ import {createStore} from 'redux';
 import reducer from './reducers';
 import {Provider} from 'react-redux';
 import ExpressionsContainer from './containers/ExpressionsContainer';
-import VariablesValueContainer from "./containers/VariablesValueContainer";
-import LanguageContainer from './containers/LanguageContainer';
-import StructureContainer from './containers/StructureContainer';
 import DownloadButton from './components/lib/DownloadButton';
 import {toggleTeacherMode} from "./actions";
 import Toggle from 'react-toggle';
@@ -16,7 +13,6 @@ import {importAppState} from "./actions";
 import {DEFAULT_FILE_NAME} from "./constants";
 import {Application} from "./diagram/Application";
 import DiagramModelContainer from "./containers/DiagramModelContainer";
-import {MathSystem} from "./components/MathSystem";
 import MathSystemContainer from './containers/MathSystemContainer';
 
 

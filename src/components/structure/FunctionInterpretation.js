@@ -1,4 +1,4 @@
-import {Col, FormGroup, HelpBlock} from "react-bootstrap";
+import {Col, FormGroup, Form} from "react-bootstrap";
 import TextInput from "../inputs/TextInput";
 import {FUNCTION} from "../../constants";
 import React from "react";
@@ -26,7 +26,7 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
                                    arity={parseInt(name.split('/')[1])}
                                    domain={domain}
                                    placeholder='(1,2), (2,2), (3,1), ...'/>
-                        <HelpBlock>{structure.functions[name].errorMessage}</HelpBlock>
+                        <Form.Text>{structure.functions[name].errorMessage}</Form.Text>
                         {structure.functions[name].tableEnabled && domain.length > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
                                              arity={structureObject.language.getFunction(name.split('/')[0])}

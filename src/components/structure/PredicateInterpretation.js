@@ -1,4 +1,4 @@
-import {Col, FormGroup, HelpBlock} from "react-bootstrap";
+import {Col, FormGroup, Form} from "react-bootstrap";
 import {PREDICATE} from "../../constants";
 import React from "react";
 import {RelationalTable,DatabasePredicate} from './index'
@@ -25,7 +25,7 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
                                    arity={parseInt(name.split('/')[1])}
                                    domain={domain}
                                    placeholder='(1,2), (2,2), (3,1), ...'/>
-                        <HelpBlock>{structure.predicates[name].errorMessage}</HelpBlock>
+                        <Form.Text>{structure.predicates[name].errorMessage}</Form.Text>
                         {structure.predicates[name].tableEnabled && domain.length > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
                                              arity={structureObject.language.getPredicate(name.split('/')[0])}

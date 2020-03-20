@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  Panel,
   Row
 } from "react-bootstrap";
+import Card from "react-bootstrap/Card";
+
 import Domain from "./structure/Domain";
 import {ConstantInterpretation} from "./structure/";
 import PredicateInterpretation from "./structure/PredicateInterpretation";
@@ -29,13 +30,13 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
 
 
   return (
-     <Panel>
-       <Panel.Heading>
-         <Panel.Title componentClass='h2'>Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)</Panel.Title>
+     <Card>
+       <Card.Header>
+         <Card.Title componentClass='h2'>Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)</Card.Title>
          <span  data-toggle="collapse" data-target="#help-structure" aria-expanded="false" aria-controls="collapseExample">?</span>
-       </Panel.Heading>
+       </Card.Header>
 
-       <Panel.Body>
+       <Card.Body>
          {help}
            <Row>
                <Domain structure={structure} setDomain={setDomain} lockDomain={lockDomain} teacherMode={teacherMode} lengthOfCol={12}/>
@@ -55,8 +56,8 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
                 <FunctionInterpretation toggleTable={toggleTable} toggleDatabase={toggleDatabase} domain={domain} teacherMode={teacherMode} structure={structure} structureObject={structureObject} functions={functions} lockFunctionValue={lockFunctionValue} setFunctionValueTable={setFunctionValueTable} setFunctionValueText={setFunctionValueText} lengthOfCol={12}/>
             </Row>
          )}
-       </Panel.Body>
-     </Panel>
+       </Card.Body>
+     </Card>
 
 
   )

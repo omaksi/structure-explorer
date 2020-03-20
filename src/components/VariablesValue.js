@@ -1,5 +1,6 @@
 import React from 'react';
-import {Col, FormGroup, HelpBlock, Panel, Row} from "react-bootstrap";
+import {Col, FormGroup, Form, Row} from "react-bootstrap";
+import Card from "react-bootstrap/Card";
 import TextInput from "./inputs/TextInput";
 
 const help = (
@@ -12,16 +13,16 @@ const help = (
 );
 
 const VariablesValue = (props) => (
-   <Panel>
-     <Panel.Heading>
-       <Panel.Title componentClass='h2'>Ohodnotenie premenných</Panel.Title>
+   <Card>
+     <Card.Header>
+       <Card.Title componentClass='h2'>Ohodnotenie premenných</Card.Title>
        <span data-toggle="collapse" data-target="#help-variables"
              aria-expanded="false"
              aria-controls="collapseExample">
                     ?
                  </span>
-     </Panel.Heading>
-     <Panel.Body>
+     </Card.Header>
+     <Card.Body>
        {help}
        <Row>
          <Col lg={12}>
@@ -36,13 +37,13 @@ const VariablesValue = (props) => (
                           teacherMode={props.teacherMode}
                           id='editor-variables'
                           placeholder='(x,1), (y,2), (z,3), ...'/>
-               <HelpBlock>{props.variables.errorMessage}</HelpBlock>
+               <Form.Text>{props.variables.errorMessage}</Form.Text>
              </FormGroup>
            </fieldset>
          </Col>
        </Row>
-     </Panel.Body>
-   </Panel>
+     </Card.Body>
+   </Card>
 );
 
 export default VariablesValue;

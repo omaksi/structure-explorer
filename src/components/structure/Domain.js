@@ -1,4 +1,4 @@
-import {Col, FormGroup, HelpBlock} from "react-bootstrap";
+import {Col, FormGroup, Form} from "react-bootstrap";
 import TextInput from "../inputs/TextInput";
 import React from "react";
 
@@ -16,7 +16,7 @@ function Domain({structure,setDomain,lockDomain,teacherMode,lengthOfCol}){
                            teacherMode={teacherMode}
                            id='language-editor-domain'
                            placeholder='1, 2, 3, 🐶, ...'/>
-                <HelpBlock>{structure.domain.errorMessage}</HelpBlock>
+                <Form.Text>{structure.domain.errorMessage}</Form.Text>
             </FormGroup>
         </fieldset>
         </Col>

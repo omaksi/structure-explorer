@@ -1,6 +1,6 @@
 {
   "name": "graphexplorer",
-  "version": "2.8.3",
+  "version": "2.8.4",
   "private": true,
   "dependencies": {
     "@emotion/core": "^10.0.28",
@@ -13,6 +13,7 @@
     "@types/node": "^13.9.2",
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
+    "bootstrap-switch-button-react": "^1.2.0",
     "closest": "^0.0.1",
     "dagre": "^0.8.5",
     "fibers": "^4.0.2",
@@ -26,13 +27,13 @@
     "react-dom": "^16.13.1",
     "react-fontawesome": "^1.7.1",
     "react-scripts": "^3.4.0",
-    "react-toggle": "^4.1.1",
     "redux": "latest",
     "resize-observer-polyfill": "^1.5.1",
     "sass": "^1.26.3",
     "terser-webpack-plugin": "^2.3.5",
     "typescript": "^3.8.3",
-    "webpack": "4.41.5"
+    "webpack": "4.41.5",
+    "minimist": "^1.2.5"
   },
   "scripts": {
     "start": "react-scripts start",

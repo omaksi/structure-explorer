@@ -1,19 +1,19 @@
 import './App.css';
-import React, {ChangeEvent} from 'react';
-import {Col, Row, Modal, Button, ButtonToolbar} from 'react-bootstrap';
+import React from 'react';
+import {Col, Row, Modal, Button} from 'react-bootstrap';
 import {createStore} from 'redux';
 import reducer from './reducers';
 import {Provider} from 'react-redux';
 import ExpressionsContainer from './containers/ExpressionsContainer';
 import DownloadButton from './components/lib/DownloadButton';
 import {toggleTeacherMode} from "./actions";
-import Toggle from 'react-toggle';
 import {importAppState} from "./actions";
 import {DEFAULT_FILE_NAME} from "./constants";
 import {Application} from "./diagram/Application";
 import DiagramModelContainer from "./containers/DiagramModelContainer";
 import MathSystemContainer from './containers/MathSystemContainer';
 import ButtonToolbarElement from "./components/buttons/ButtonToolbarElement";
+import BootstrapSwitchButton from "bootstrap-switch-button-react/lib/bootstrap-switch-button-react";
 
 
 // @ts-ignore
@@ -84,6 +84,10 @@ class App extends React.Component<IProps,IState> {
     this.setState({diagramToggled: bool});
   }
 
+  setTeacherModeState(){
+    store.dispatch(toggleTeacherMode());
+  }
+
   render() {
     return (
         <Provider store={store}>
@@ -91,15 +95,19 @@ class App extends React.Component<IProps,IState> {
             <Row>
               <div className='toolbar'>
                 <div className='col-xs-7 toolbar-import-export'>
-                  <ButtonToolbarElement setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
+                  <ButtonToolbarElement diagramToggledState={this.state.diagramToggled} teacherModeState={store.getState().common.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
                 </div>
                 <div className='col-xs-5 toolbar-mode-toggle'>
-                  <label className='teacher-mode'>
-                    <Toggle
-                        defaultChecked={store.getState().teacherMode}
-                        onChange={() => store.dispatch(toggleTeacherMode())}/>
-                    <span className='teacher-mode-span'>Učiteľský mód</span>
-                  </label>
+
+                  <BootstrapSwitchButton
+                      checked={false}
+                      onlabel='On'
+                      onstyle='outline-success'
+                      offlabel='Off'
+                      offstyle='outline-light'
+                      onChange={() => store.dispatch(toggleTeacherMode())}
+                  />
+
                 </div>
                <Modal show={this.state.modalShow} onHide={() => this.setState({modalShow: false})}>
                   <Modal.Header>

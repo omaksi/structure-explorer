@@ -33,7 +33,6 @@
 }
 
 body{
-    margin: 0;
     user-select:none; /*fix the bug, when text is dragged over canvas and cause loading of different element (text - element)*/
 }
 
@@ -44,6 +43,5 @@ body{
 }
 
 .btn:focus, .btn.focus {
-    outline: 0;
-    box-shadow: none;
+    box-shadow: none !important;;
 }

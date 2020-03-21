@@ -1,28 +1,26 @@
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
-import {ButtonToolbar} from "react-bootstrap";
+import {Button, ButtonToolbar, Modal} from "react-bootstrap";
+import DownloadButton from "../lib/DownloadButton";
+import {DEFAULT_FILE_NAME} from "../../constants";
 
-const ButtonToolbarElement = ({diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (
+const ButtonToolbarElement = ({exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (
     <ButtonToolbar>
-        <button className={'btn btn-outline-primary btn-lg'+(diagramToggledState?'':' active')} onClick={() => setDiagramToggledState(false)}>
+        <button title="Prepnúť na matematický pohľad" className={'btn btn-outline-primary btn-lg'+(diagramToggledState?'':' active')} onClick={() => setDiagramToggledState(false)}>
             <FontAwesome name='fas fa-list'/>
         </button>
 
-        <button className={'btn btn-outline-primary btn-lg'+(diagramToggledState?' active':'')} onClick={() => setDiagramToggledState(true)}>
+        <button title="Prepnúť na grafový pohľad" className={'btn btn-outline-primary btn-lg'+(diagramToggledState?' active':'')} onClick={() => setDiagramToggledState(true)}>
             <FontAwesome name='fas fa-project-diagram'/>
         </button>
 
-        <button className='btn btn-outline-primary btn-lg' onClick={() => setModelShowState(true)}>
+        <button title="Exportovať cvičenie" className='btn btn-outline-primary btn-lg' onClick={() => setModelShowState(true)}>
             <FontAwesome name='fas fa-file-export'/>
-            {/*<span className='toolbar-btn-label-1'>Uložiť</span>
-            <span className='toolbar-btn-label-2'>cvičenie</span>*/}
         </button>
 
-        <button className='btn btn-outline-primary btn-lg'
+        <button title="Importovať cvičenie" className='btn btn-outline-primary btn-lg'
                 onClick={() => document.getElementById("uploadInput").click()}>
             <FontAwesome name='fas fa-file-import'/>
-            {/*<span className='toolbar-btn-label-1'>Importovať</span>
-            <span className='toolbar-btn-label-2'>cvičenie</span>*/}
             <input id="uploadInput" type="file" name='jsonFile'
                    onChange={(e) => {
                        importState(e);
@@ -31,10 +29,29 @@ const ButtonToolbarElement = ({diagramToggledState,teacherModeState,setDiagramTo
                    style={{display: 'none'}}/>
         </button>
 
-        <button className='btn btn-teacher btn-outline-primary btn-lg' onClick={() => setTeacherModeState()} style={teacherModeState?{color:"white",backgroundColor:"#28a745"}:{color:"black",backgroundColor:"white"}}>
+        <Modal show={modalShowState} onHide={() => setModelShowState(false)}>
+            <Modal.Header>
+                <Modal.Title>Uložiť štruktúru</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <div className='form-inline'>
+                    <div className='form-group'>
+                        <label className='exercise-name-label' htmlFor="exercise-name">Cvičenie: </label>
+                        <input type="text" className="exercise-name-input form-control" id="exercise-name"
+                               placeholder={DEFAULT_FILE_NAME}
+                               onChange={(e) => setExerciseNameState(e.target.value)}/>
+                    </div>
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+                <DownloadButton genFile={exportState} downloadTitle='Uložiť'
+                                className='btn btn-success'/>
+                <Button bsStyle='primary' onClick={() => setModelShowState(false)}>Zrušiť</Button>
+            </Modal.Footer>
+        </Modal>
+
+        <button title="Učiteľský mód" className='btn btn-outline-primary btn-lg' onClick={() => setTeacherModeState()} style={teacherModeState?{color:"white",backgroundColor:"#28a745"}:{color:"black",backgroundColor:"white",hover:{color:"white" ,backgroundColor:"#28a745"}}}>
             <FontAwesome name='fas fa-user-edit'/>
-            {/*<span className='toolbar-btn-label-1'>Uložiť</span>
-            <span className='toolbar-btn-label-2'>cvičenie</span>*/}
         </button>
     </ButtonToolbar>
 );

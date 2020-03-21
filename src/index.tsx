@@ -1,11 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
+import AppContainer from "./containers/AppContainer";
+import {createStore} from "redux";
+import reducer from "./reducers";
+
+// @ts-ignore
+const store = createStore(reducer);
 
 const Main = () => (
     <main className="container">
-        <App/>
+        <AppContainer store={store}/>
     </main>
 );
 

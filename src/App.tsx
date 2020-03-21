@@ -1,41 +1,29 @@
 import './App.css';
 import React from 'react';
-import {Col, Row, Modal, Button} from 'react-bootstrap';
-import {createStore} from 'redux';
-import reducer from './reducers';
+import {Col, Row} from 'react-bootstrap';
 import {Provider} from 'react-redux';
 import ExpressionsContainer from './containers/ExpressionsContainer';
-import DownloadButton from './components/lib/DownloadButton';
-import {toggleTeacherMode} from "./actions";
 import {importAppState} from "./actions";
 import {DEFAULT_FILE_NAME} from "./constants";
 import {Application} from "./diagram/Application";
 import DiagramModelContainer from "./containers/DiagramModelContainer";
 import MathSystemContainer from './containers/MathSystemContainer';
 import ButtonToolbarElement from "./components/buttons/ButtonToolbarElement";
-import BootstrapSwitchButton from "bootstrap-switch-button-react/lib/bootstrap-switch-button-react";
 
-
-// @ts-ignore
-const store = createStore(reducer);
-
-store.subscribe(() => {
-  let state = store.getState();
-});
-
-interface IProps{
-
+interface AppProps{
+  store:any;
+  teacherMode:boolean;
+  toggleTeacherMode:any;
 }
 
-interface IState {
+interface AppState {
   modalShow:boolean;
   diagramToggled:boolean;
   exerciseName:string;
 }
 
-class App extends React.Component<IProps,IState> {
-
-  constructor(props:IProps) {
+class App extends React.Component<AppProps,AppState> {
+  constructor(props:AppProps) {
     super(props);
 
     this.state = {
@@ -48,11 +36,13 @@ class App extends React.Component<IProps,IState> {
     this.importState = this.importState.bind(this);
     this.setModelShowState = this.setModelShowState.bind(this);
     this.setDiagramToggledState = this.setDiagramToggledState.bind(this);
+    this.setTeacherModeState = this.setTeacherModeState.bind(this);
+    this.setExerciseNameState = this.setExerciseNameState.bind(this);
   }
 
 
   exportState() {
-    let state = store.getState();
+    let state = this.props.store.getState();
     let json = JSON.stringify({
       common: state.common,
       language: state.language,
@@ -70,6 +60,8 @@ class App extends React.Component<IProps,IState> {
   importState(e:any) {
     let file = e.target.files[0];
     let fr = new FileReader();
+
+    let store = this.props.store;
     fr.onload = function (e) {
       store.dispatch(importAppState(e.target.result));
     };
@@ -84,60 +76,37 @@ class App extends React.Component<IProps,IState> {
     this.setState({diagramToggled: bool});
   }
 
+  setExerciseNameState(name:string){
+    this.setState({exerciseName:name});
+  }
+
   setTeacherModeState(){
-    store.dispatch(toggleTeacherMode());
+    this.props.toggleTeacherMode();
   }
 
   render() {
     return (
-        <Provider store={store}>
+        <Provider store={this.props.store}>
           <div className='app'>
-            <Row>
-              <div className='toolbar'>
-                <div className='col-xs-7 toolbar-import-export'>
-                  <ButtonToolbarElement diagramToggledState={this.state.diagramToggled} teacherModeState={store.getState().common.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
-                </div>
-                <div className='col-xs-5 toolbar-mode-toggle'>
-
-                  <BootstrapSwitchButton
+            <Row className={"navbar"}>
+                  <ButtonToolbarElement exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
+              {/*<BootstrapSwitchButton
                       checked={false}
                       onlabel='On'
                       onstyle='outline-success'
                       offlabel='Off'
                       offstyle='outline-light'
-                      onChange={() => store.dispatch(toggleTeacherMode())}
-                  />
-
-                </div>
-               <Modal show={this.state.modalShow} onHide={() => this.setState({modalShow: false})}>
-                  <Modal.Header>
-                    <Modal.Title>Uložiť štruktúru</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <div className='form-inline'>
-                      <div className='form-group'>
-                        <label className='exercise-name-label' htmlFor="exercise-name">Cvičenie: </label>
-                        <input type="text" className="exercise-name-input form-control" id="exercise-name"
-                               placeholder={DEFAULT_FILE_NAME}
-                               onChange={(e) => this.setState({exerciseName: e.target.value})}/>
-                      </div>
-                    </div>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <DownloadButton genFile={this.exportState} downloadTitle='Uložiť'
-                                    className='btn btn-success'/>
-                    <Button bsStyle='primary' onClick={() => this.setState({modalShow: false})}>Zrušiť</Button>
-                  </Modal.Footer>
-                </Modal>
-              </div>
+                      onChange={() => this.props.store.dispatch(toggleTeacherMode())}
+                  />*/}
             </Row>
-
               {!this.state.diagramToggled? (
                   <MathSystemContainer/>
                   ):
-                    <Col sm={12} className='reactDiagram'>
-                      <DiagramModelContainer app={new Application(store.getState().diagramNodeState.diagramModel)}/>
+                  <Row className='reactDiagram'>
+                    <Col sm={12} >
+                      <DiagramModelContainer app={new Application(this.props.store.getState().diagramNodeState.diagramModel)}/>
                     </Col>
+                  </Row>
               }
             <Row>
               <Col sm={12}>

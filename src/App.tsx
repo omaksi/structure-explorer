@@ -2,13 +2,13 @@ import './App.css';
 import React from 'react';
 import {Col, Row} from 'react-bootstrap';
 import {Provider} from 'react-redux';
-import ExpressionsContainer from './containers/ExpressionsContainer';
-import {importAppState} from "./actions";
+import ExpressionsContainer from './redux/containers/ExpressionsContainer';
+import {importAppState} from "./redux/actions";
 import {DEFAULT_FILE_NAME} from "./constants";
-import {Application} from "./diagram/Application";
-import DiagramModelContainer from "./containers/DiagramModelContainer";
-import MathSystemContainer from './containers/MathSystemContainer';
-import ButtonToolbarElement from "./components/buttons/ButtonToolbarElement";
+import {Application} from "./graph_view/Application";
+import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
+import MathSystemContainer from './redux/containers/MathSystemContainer';
+import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
 
 interface AppProps{
   store:any;
@@ -89,7 +89,7 @@ class App extends React.Component<AppProps,AppState> {
         <Provider store={this.props.store}>
           <div className='app'>
             <Row className={"navbar"}>
-                  <ButtonToolbarElement exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
+                  <ButtonToolbarComponent exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
               {/*<BootstrapSwitchButton
                       checked={false}
                       onlabel='On'

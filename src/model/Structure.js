@@ -1,7 +1,7 @@
 import {EMPTY_CONSTANT_VALUE} from "../constants/messages";
 
 /**
- * Represent structure
+ * Represent components_parts
  * @author Milan Cifra
  * @class
  */

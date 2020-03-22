@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import AppContainer from "./containers/AppContainer";
+import AppContainer from "./redux/containers/AppContainer";
 import {createStore} from "redux";
-import reducer from "./reducers";
+import reducer from "./redux/reducers";
 
 // @ts-ignore
 const store = createStore(reducer);

@@ -1,4 +1,4 @@
-import * as actions from '../actions/index';
+import * as actions from '../redux/actions/index';
 
 describe('actions', () => {
   it('vytvorenie akcie pre zmenu konstant', () => {

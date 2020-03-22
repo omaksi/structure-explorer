@@ -1,11 +1,11 @@
-import reducer from '../../reducers/root';
+import reducer from '../../redux/reducers/root';
 import Structure from "../../model/Structure";
 import Language from "../../model/Language";
 import {STUDENT_MODE} from "../../constants/index";
 import {
   setConstants, setConstantValue, setDomain, setFunctions, setFunctionValueText, setPredicates, setPredicateValueText,
   toggleTeacherMode
-} from "../../actions/index";
+} from "../../redux/actions/index";
 import {EMPTY_CONSTANT_VALUE} from "../../constants/messages";
 
 describe('reducer', () => {
@@ -98,7 +98,7 @@ describe('zamykanie vstupov', () => {
     state = reducer(state, setPredicates('likes/2'));
     state = reducer(state, setFunctions('mother/1'));
     state = reducer(state, setDomain('1,2,3'));
-    // expect(state.structure.domain).toEqual({value: '1,2,3', locked: false, errorMessage: '', parsed: ['1', '2', '3']});
+    // expect(state.components_parts.domain).toEqual({value: '1,2,3', locked: false, errorMessage: '', parsed: ['1', '2', '3']});
     state = reducer(state, setConstantValue('1', 'a'));
     state = reducer(state, setPredicateValueText('(1,2)', 'likes/2'));
     state = reducer(state, setFunctionValueText('(1,2)', 'mother/1'));

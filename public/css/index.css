@@ -45,3 +45,7 @@ body{
 .btn:focus, .btn.focus {
     box-shadow: none !important;;
 }
+
+.no-border-radius,.no-border-radius div {
+    border-radius: 0 !important;
+}

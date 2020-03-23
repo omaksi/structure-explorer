@@ -99,7 +99,6 @@ function languageReducer(s, action, struct) {
       setConstants();
       return state;
 
-
     case LOCK_CONSTANTS:
       state.constants.locked = !state.constants.locked;
       return state;

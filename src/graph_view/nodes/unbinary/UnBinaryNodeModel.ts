@@ -73,23 +73,36 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		})
 	}
 
+	clearPredicates(){
+		this.unaryPredicates = new Set();
+		this.unaryPredicateIndex = 0;
+	}
+
 	getUnaryPredicates() {
 		return this.unaryPredicates;
 	}
 
+	addUnaryPredicateToSet(name: string){
+		this.unaryPredicates.add(name);
+	}
+
 	addUnaryPredicate(name: string) {
 		if (!this.unaryPredicates.has(name)) {
-			this.unaryPredicates.add(name);
 			this.options.reduxFunctions["addUnaryPredicate"](name, this.getNodeName());
+			this.addUnaryPredicateToSet(name);
 			this.unaryPredicateIndex++;
 		}
 	}
 
 	removeUnaryPredicate(name: string) {
 		if (this.unaryPredicates.has(name)) {
-			this.unaryPredicates.delete(name);
+			this.removeUnaryPredicateFromSet(name);
 			this.options.reduxFunctions["removeUnaryPredicate"](name, this.getNodeName());
 		}
+	}
+
+	removeUnaryPredicateFromSet(name: string){
+		this.unaryPredicates.delete(name);
 	}
 
 	addNewPort(name: string) {

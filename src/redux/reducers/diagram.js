@@ -181,10 +181,10 @@ function syncPredicates(values) {
   let domainState = values.diagramNodeState.domainNodes;
   let portMap = new Map();
 
-  if (predicatesObjects !== null && Object.keys(predicatesObjects).length > 0) {
+  if (predicatesObjects && Object.keys(predicatesObjects).length > 0) {
     for (let [key, value] of Object.entries(predicatesObjects)) {
       let parsedNodeValues = value.parsed;
-      if (parsedNodeValues != null) {
+      if (parsedNodeValues) {
         let keyWithoutArity = key.split('/')[0];
         let arityWithoutKey = key.split('/')[1];
 
@@ -198,31 +198,35 @@ function syncPredicates(values) {
               portMap.get(currentNodeValue).add(keyWithoutArity);
             }
           });
-        }
-
-        else{
+        } else {
 
         }
       }
 
       for (let [currentNodeName, currentNodeObject] of domainState.entries()) {
-        if (portMap.has(currentNodeName)) {
-          let arrayOfNodeNames = Array.from(portMap.get(currentNodeName));
-          arrayOfNodeNames.map((predicatePortName) => {
-            let existsPort = currentNodeObject.getPort(predicatePortName);
-            if (existsPort === undefined) {
-              currentNodeObject.addNewPort(predicatePortName);
-            }
-          });
 
-          let currentNodePorts = currentNodeObject.getPorts();
-          for (let [portName, portObject] of Object.entries(currentNodePorts)) {
-            if (!arrayOfNodeNames.includes(portName) && ![ADDPORT, INPORT, OUTPORT].includes(portName)) {
-              currentNodeObject.removePort(portObject);
+        let setOfPredicatesForNode = portMap.get(currentNodeName);
+        let nodePredicates = currentNodeObject.getUnaryPredicates();
+
+        if (portMap.has(currentNodeName)) {
+          for(let predicateName of setOfPredicatesForNode){
+            if (!nodePredicates.has(predicateName)) {
+              currentNodeObject.addUnaryPredicateToSet(predicateName);
             }
           }
         }
+
+        for (let predicate of nodePredicates) {
+          if (!setOfPredicatesForNode || !setOfPredicatesForNode.has(predicate)) {
+            currentNodeObject.removeUnaryPredicateFromSet(predicate);
+          }
+        }
       }
+    }
+  }
+  else{
+    for (let [currentNodeName,currentNodeObject] of domainState.entries()) {
+      currentNodeObject.clearPredicates();
     }
   }
 }

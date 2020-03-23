@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TrayWidget } from './TrayWidget';
 import { Application } from '../Application';
 import {QuaternaryItemWidget, UnbinaryItemWidget} from './TrayItemWidget';
-import { DefaultNodeModel } from '@projectstorm/react-diagrams';
+import { DefaultNodeModel, DiagramModel } from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { MainCanvasWidget } from './MainCanvasWidget';
 import styled from '@emotion/styled';
@@ -138,7 +138,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	}
 
 	componentDidMount(): void {
-		this.props.syncDiagram(this.props);
+		this.props.syncDiagram(this.props); //toto by malo byt zavolane predtym, inak to nerenderuje a new Application dostava stary stav
 	}
 
 	render() {

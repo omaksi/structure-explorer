@@ -25,7 +25,6 @@ import {connect} from 'react-redux';
 import {BodyWidget} from "../../graph_view/components/BodyWidget";
 
 const mapStateToProps = (state) => ({
-  diagramModel: state.diagramModel,
   domain: [...state.structureObject.domain],
   language: state.language,
   structure: state.structure,

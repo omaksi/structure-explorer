@@ -8,7 +8,7 @@ const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTa
     <InputGroup>
         <label className='input-group-addon' htmlFor={id}>{label}</label>
      <Form.Control
-                  isInvalid={(errorProperty || errorProperty.length > 0)}
+                  isInvalid={(errorProperty && errorProperty.length > 0)}
                   id={id}
                   type='text'
                   onChange={(e) => onChange(e)}

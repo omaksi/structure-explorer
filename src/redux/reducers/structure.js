@@ -19,7 +19,7 @@ import {
   TOGGLE_EDIT_TABLE,
   TOGGLE_EDIT_DATABASE,
   RENAME_DOMAIN_NODE,
-  ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE, ADD_CONSTANT_NODE, REMOVE_CONSTANT_NODE
+  ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE, ADD_CONSTANT_NODE, REMOVE_CONSTANT_NODE, ADD_UNARY_PREDICATE
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -59,6 +59,10 @@ function structureReducer(s, action, struct) {
     case REMOVE_CONSTANT_NODE:
       syncLanguageWithStructure();
       setVariables();
+      return state;
+    case ADD_UNARY_PREDICATE:
+      syncLanguageWithStructure();
+      console.log("state",state.variables);
       return state;
     case SET_CONSTANT_VALUE:
       setConstantValue(action.constantName, action.value);

@@ -88,7 +88,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	generatePort = (port:any) =>{
 		if(![ADDPORT,INPORT,OUTPORT].includes(port.options.name)) {
 			return (
-				//<UnBinaryPortLabelWidget engine={this.props.engine} port={port} width={this.props.node.getOptions().name.length*10}/>
 				<PortWidget engine={this.props.engine} port={this.props.node.getPort(port.options.name)}>
 					<Port onDoubleClick={() => {
 						this.props.node.removePort(port);

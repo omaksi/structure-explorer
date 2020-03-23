@@ -12,7 +12,7 @@ export class Application {
 	protected activeModel: DiagramModel;
 	protected diagramEngine: DiagramEngine;
 
-	constructor(diagramModel: DiagramModel) {
+	constructor(diagramModel:DiagramModel) {
 		this.diagramEngine = createEngine();
 		this.setState();
 		this.setModel(diagramModel);
@@ -40,11 +40,12 @@ export class Application {
 
 	public setModel(diagramModel: DiagramModel) {
 		this.diagramEngine.setModel(diagramModel);
+		this.activeModel = diagramModel;
 		//set number of links to zero, so if we will select a link it will not create a point
 		//this.getDiagramEngine().setMaxNumberPointsPerLink(0);
 	}
 
-	public getActiveDiagram(): DiagramModel {
+	public getActiveModel(): DiagramModel {
 		return this.activeModel;
 	}
 

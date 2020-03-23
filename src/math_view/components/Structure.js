@@ -12,7 +12,7 @@ import HelpButton from "../buttons/HelpButton";
 
 const help = (
    <div className="collapse" id="help-structure">
-     <div className="well">
+     <div style={{textAlign:"justify"}}>
        Pomocou editoru štruktúry sa definuje štruktúra. Prvky <strong>domény</strong> sa oddeľujú čiarkami.
        Pridaním nového symbolu do jazyka sa automaticky pridá vstup na zadanie interpretácie.
        Interpretácia <strong>konštanty</strong> sa vyberá zo selectu, ktorý automaticky obsahuje prvky z
@@ -31,9 +31,9 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
 
   return (
      <Card className={"no-border-radius"}>
-       <Card.Header>
-         <Card.Title componentClass='h2'>Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)</Card.Title>
-           <HelpButton dataTarget={"#help-components_parts"}/>
+       <Card.Header className={"d-flex justify-content-between"}>
+         <Card.Title>Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)</Card.Title>
+           <HelpButton dataTarget={"#help-structure"}/>
        </Card.Header>
 
        <Card.Body>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Col, FormGroup, Form, Row} from "react-bootstrap";
+import {Col, Form, Row} from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import TextInput from "../components_parts/TextInput";
 import HelpButton from "../buttons/HelpButton";
@@ -15,8 +15,8 @@ const help = (
 
 const VariablesValue = (props) => (
    <Card className={"no-border-radius"}>
-     <Card.Header>
-       <Card.Title componentClass='h2'>Ohodnotenie premenných</Card.Title>
+     <Card.Header className={"d-flex justify-content-between"}>
+       <Card.Title >Ohodnotenie premenných</Card.Title>
          <HelpButton dataTarget={"#help-variables"}/>
      </Card.Header>
      <Card.Body>
@@ -25,17 +25,18 @@ const VariablesValue = (props) => (
          <Col lg={12}>
            <fieldset>
              <legend>Ohodnotenie premenných</legend>
-             <FormGroup
-                validationState={props.variables.errorMessage.length > 0 ? 'error' : null}>
-               <TextInput onChange={(e) => props.onInputChange(e.target.value)}
-                          onLock={() => props.lockInput()}
-                          textData={props.variables}
-                          label={<span><var>e</var> = &#123;</span>}
-                          teacherMode={props.teacherMode}
-                          id='editor-variables'
-                          placeholder='(x,1), (y,2), (z,3), ...'/>
+             <Form.Group>
+               <TextInput
+                            errorProperty={props.variables.errorMessage}
+                            onChange={(e) => props.onInputChange(e.target.value)}
+                            onLock={() => props.lockInput()}
+                            textData={props.variables}
+                            label={<span><var>e</var> = &#123;</span>}
+                            teacherMode={props.teacherMode}
+                            id='editor-variables'
+                            placeholder='(x,1), (y,2), (z,3), ...'/>
                <Form.Text className={props.variables.errorMessage.length === 0?"":"alert alert-danger"}>{props.variables.errorMessage}</Form.Text>
-             </FormGroup>
+             </Form.Group>
            </fieldset>
          </Col>
        </Row>

@@ -10,14 +10,14 @@ const help = (
        čiarkou. <strong>Symboly predikátov</strong> sa definujú oddelené čiarkami, vo
        formáte <code>predikat/arita</code>. <strong>Symboly funkcií</strong> sa definujú oddelené čiarkami, vo
        formáte <code>funkcia/arita</code>.
-     </div>}
+     </div>
    </div>
 );
 
 const Language = (props) => (
    <Card className={"no-border-radius"}>
-     <Card.Header>
-       <Card.Title componentClass='h2'>Jazyk 𝓛</Card.Title>
+     <Card.Header className={"d-flex justify-content-between"}>
+       <Card.Title>Jazyk 𝓛</Card.Title>
          <HelpButton dataTarget={"#help-language"}/>
      </Card.Header>
      <Card.Body>

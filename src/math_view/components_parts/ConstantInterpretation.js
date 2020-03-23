@@ -1,4 +1,4 @@
-import {Col, FormGroup, Form, InputGroup} from "react-bootstrap";
+import {Col, Form, InputGroup} from "react-bootstrap";
 import LockButton from "../buttons/LockButton";
 import React from "react";
 
@@ -8,8 +8,7 @@ export function ConstantInterpretation({structure,setConstantValue,structureObje
         <fieldset>
             <legend>Interpretácia symbolov konštánt</legend>
             {Object.keys(structure.constants).map((constant) =>
-                <FormGroup
-                    validationState={structure.constants[constant].errorMessage.length > 0 ? 'error' : null}>
+                <Form.Group>
                     <InputGroup>
                         <label className='input-group-addon'
                                htmlFor={'constant-' + constant}><var>i</var>({constant}) = </label>
@@ -31,7 +30,7 @@ export function ConstantInterpretation({structure,setConstantValue,structureObje
                         ) : null}
                     </InputGroup>
                     <Form.Text className={structure.constants[constant].errorMessage.length === 0?"":"alert alert-danger"}>{structure.constants[constant].errorMessage}</Form.Text>
-                </FormGroup>
+                </Form.Group>
             )}
         </fieldset>
     </Col>

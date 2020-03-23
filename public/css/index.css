@@ -49,3 +49,11 @@ body{
 .no-border-radius,.no-border-radius div {
     border-radius: 0 !important;
 }
+
+.form-control.is-invalid{
+    background-image: none;
+}
+
+.btn-light{
+    border: 1px solid silver !important;
+}

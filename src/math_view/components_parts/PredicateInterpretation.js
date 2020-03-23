@@ -1,4 +1,4 @@
-import {Col, FormGroup, Form} from "react-bootstrap";
+import {Col, Form} from "react-bootstrap";
 import {PREDICATE} from "../../constants";
 import React from "react";
 import {RelationalTable,DatabasePredicate} from './index'
@@ -10,8 +10,7 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
             <fieldset>
                 <legend>Interpretácia predikátových symbolov</legend>
                 {predicates.map((name) =>
-                    <FormGroup
-                        validationState={structure.predicates[name].errorMessage.length > 0 ? 'error' : null}>
+                    <Form.Group>
                         <TextInput onChange={(e) => setPredicateValueText(e.target.value, name)}
                                    onLock={() => lockPredicateValue(name)}
                                    textData={structure.predicates[name]}
@@ -42,7 +41,7 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
                                               disabled={structure.predicates[name].locked}
                                               type={PREDICATE}/>
                         ) : null}
-                    </FormGroup>
+                    </Form.Group>
                 )}
             </fieldset>
         </Col>

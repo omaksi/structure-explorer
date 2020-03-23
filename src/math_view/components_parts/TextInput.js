@@ -1,13 +1,15 @@
 import React from 'react';
-import {InputGroup, FormControl} from 'react-bootstrap';
+import {InputGroup, Form} from 'react-bootstrap';
 import LockButton from "../buttons/LockButton";
 import TableButton from "../buttons/TableButton";
 import DatabaseButton from "../buttons/DatabaseButton";
 
-const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTable, toggleDatabase, arity, domain, placeholder,databaseEnabled,tableEnabled}) => (
+const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTable, toggleDatabase, arity, domain, placeholder,databaseEnabled,tableEnabled,errorProperty}) => (
     <InputGroup>
         <label className='input-group-addon' htmlFor={id}>{label}</label>
-     <FormControl id={id}
+     <Form.Control
+                  isInvalid={(errorProperty || errorProperty.length > 0)}
+                  id={id}
                   type='text'
                   onChange={(e) => onChange(e)}
                   value={textData.value}

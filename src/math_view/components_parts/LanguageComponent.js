@@ -1,4 +1,4 @@
-import {Col, FormGroup, Form, Row} from "react-bootstrap";
+import {Col, Form, Row} from "react-bootstrap";
 import TextInput from "./TextInput";
 import React from "react";
 
@@ -8,9 +8,10 @@ function LanguageComponent({legendText,onChangeSetFunction,onLockFunction,textDa
             <Col lg={12}>
                 <fieldset>
                     <legend>{legendText}</legend>
-                    <FormGroup
-                        validationState={errorProperty.length > 0 ? 'error' : null}>
-                        <TextInput onChange={(e) => onChangeSetFunction(e.target.value)}
+                    <Form.Group>
+                        <TextInput
+                            errorProperty={errorProperty.length}
+                            onChange={(e) => onChangeSetFunction(e.target.value)}
                                    onLock={() => onLockFunction()}
                                    textData={textData}
                                    label={textInputLabel}
@@ -18,7 +19,7 @@ function LanguageComponent({legendText,onChangeSetFunction,onLockFunction,textDa
                                    id={idName}
                                    placeholder={placeholderText}/>
                         <Form.Text className={errorProperty.length === 0?"":"alert alert-danger"}>{errorProperty}</Form.Text>
-                    </FormGroup>
+                    </Form.Group>
                 </fieldset>
             </Col>
         </Row>

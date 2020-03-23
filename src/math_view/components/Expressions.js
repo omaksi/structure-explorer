@@ -1,8 +1,6 @@
 import React from 'react';
 import {
     Button,
-    FormControl,
-    FormGroup,
     Form,
     InputGroup,
     Row,
@@ -84,7 +82,7 @@ const Expressions = (props) => (
    <React.Fragment>
      {prepareExpressions(props.formulas, props.terms).map(expression =>
         <Card className={"no-border-radius"}>
-          <Card.Header>
+          <Card.Header className={"d-flex justify-content-between"}>
             <Card.Title>{expression.panelTitle}</Card.Title>
               <HelpButton dataTarget={"#help-" + expression.expressionType.toLowerCase()}/>
           </Card.Header>
@@ -94,16 +92,15 @@ const Expressions = (props) => (
                <Row key={index}>
                  <div className='expression'>
                    <div className='col-sm-6 col-md-8'>
-                     <FormGroup
-                        validationState={item.errorMessage.length > 0 ? 'error' : null}>
+                     <Form.Group>
                        <InputGroup>
                          <label className='input-group-addon'
                                 htmlFor={expression.expressionType.toLowerCase() + '-' + index}>
                            <span>{EXPRESSION_LABEL[expression.expressionType]}<sub>{index + 1}</sub></span></label>
-                           <FormControl type='text' value={item.value}
-                                      onChange={(e) => props.onInputChange(e.target.value, index, expression.expressionType)}
-                                      id={expression.expressionType.toLowerCase() + '-' + index}
-                                      disabled={item.inputLocked}/>
+                           <Form.Control type='text' value={item.value}
+                                         onChange={(e) => props.onInputChange(e.target.value, index, expression.expressionType)}
+                                         id={expression.expressionType.toLowerCase() + '-' + index}
+                                         disabled={item.inputLocked}/>
                            <InputGroup.Append>
                                <Button
                               onClick={() => props.removeExpression(expression.expressionType, index)}><FontAwesome
@@ -116,10 +113,10 @@ const Expressions = (props) => (
                            </InputGroup.Append>
                        </InputGroup>
                        <Form.Text className={item.errorMessage.length === 0?"":"alert alert-danger"}>{item.errorMessage}</Form.Text>
-                     </FormGroup>
+                     </Form.Group>
                    </div>
                    <div className='col-sm-4 col-md-2 col-xs-8 no-padding-right'>
-                     <FormGroup>
+                     <Form.Group>
                        <InputGroup>
                          <label className='input-group-addon'
                                 htmlFor={expression.expressionType.toLowerCase() + '-answer-' + index}>𝓜</label>
@@ -142,7 +139,7 @@ const Expressions = (props) => (
                             </InputGroup.Append>
                          ) : null}
                        </InputGroup>
-                     </FormGroup>
+                     </Form.Group>
                    </div>
                    <div className='col-sm-2 col-md-2 col-xs-4 no-padding-left feedback'>
                      {item.answerValue !== '' && item.answerValue !== '-1' ? (item.answerValue === item.expressionValue ?

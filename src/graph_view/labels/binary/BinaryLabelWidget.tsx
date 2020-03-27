@@ -13,7 +13,7 @@ export interface BinaryLabelWidgetProps {
 }
 
 export const PredicatesNode = styled.div`
-		pointer-events: all;
+		pointer-events: auto;
 		width:100%;
 		height:100%;
 		background-color: yellow;

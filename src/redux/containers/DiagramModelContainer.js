@@ -19,7 +19,7 @@ import {
   removeConstantNode,
   checkBadName,
   addUnaryPredicate,
-  removeUnaryPredicate,
+  removeUnaryPredicate, toggleEditableNodes,
 } from "../actions";
 import {connect} from 'react-redux';
 import {BodyWidget} from "../../graph_view/components/BodyWidget";
@@ -28,7 +28,7 @@ const mapStateToProps = (state) => ({
   domain: [...state.structureObject.domain],
   language: state.language,
   structure: state.structure,
-  diagramNodeState: state.diagramNodeState
+  diagramState: state.diagramState
 });
 
 const mapDispatchOnProps = {
@@ -52,7 +52,8 @@ const mapDispatchOnProps = {
   lockPredicateValue: lockPredicateValue,
   lockFunctionValue: lockFunctionValue,
   addUnaryPredicate: addUnaryPredicate,
-  removeUnaryPredicate: removeUnaryPredicate
+  removeUnaryPredicate: removeUnaryPredicate,
+  toggleEditableNodes: toggleEditableNodes
 };
 
 const DiagramModelContainer = connect(

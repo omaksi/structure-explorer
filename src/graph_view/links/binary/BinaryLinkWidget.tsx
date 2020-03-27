@@ -150,6 +150,6 @@ export class BinaryLinkWidget extends React.Component<BinaryLinkProps, BinaryLin
 			}
 		}
 
-		return <g data-Binary-link-test={this.props.link.getOptions().testName}>{paths}</g>;
+		return <g data-binary-link-test={this.props.link.getOptions().testName}>{paths}</g>;
 	}
 }

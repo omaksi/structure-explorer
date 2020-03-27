@@ -219,3 +219,8 @@ export const importAppState = (content) => ({
   type: 'IMPORT_APP',
   content
 });
+
+export const toggleEditableNodes = (value) => ({
+  type: 'TOGGLE_EDITABLE_NODES',
+  value
+});

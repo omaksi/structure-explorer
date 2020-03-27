@@ -10,8 +10,8 @@ export class ConstantNodeFactory extends AbstractReactFactory<ConstantNodeModel,
 	}
 
 	generateReactWidget(event:any): JSX.Element {
-		let reduxFunctions = event.model.options.reduxFunctions;
-		return <ConstantNodeWidget removeConstantNode={reduxFunctions["removeConstantNode"]} renameDomainNode={reduxFunctions["renameDomainNode"]} engine={this.engine} size={50} node={event.model}/>;
+		let reduxProps = event.model.options.reduxProps;
+		return <ConstantNodeWidget removeConstantNode={reduxProps["removeConstantNode"]} renameDomainNode={reduxProps["renameDomainNode"]} engine={this.engine} size={50} node={event.model}/>;
 	}
 
 	generateModel(event:any) {

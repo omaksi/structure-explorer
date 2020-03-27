@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { UnBinaryNodeModel } from './UnBinaryNodeModel';
-import { DiagramEngine, PortModel, PortWidget } from '@projectstorm/react-diagrams';
+import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
-import { Port, PortLabel, PortS } from "./UnBinaryPortLabelWidget";
-import {ADDPORT, INPORT, OUTPORT, UNBINARY} from "../ConstantNames";
+import { Port, PortS } from "./UnBinaryPortLabelWidget";
+import {ADDPORT, INPORT, MAINPORT, OUTPORT, UNBINARY} from "../ConstantNames";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -12,6 +12,7 @@ export interface UnBinaryNodeWidgetProps {
 	renameDomainNode:any;
 	removeDomainNode:any;
 	checkBadName:any;
+	editableNodes:any;
 	name?:string;
 	size?: number;
 }
@@ -72,31 +73,17 @@ export const PortsContainerForAddInOut = styled.div`
 	`;
 
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
-	constructor(props:UnBinaryNodeWidgetProps){
+	constructor(props: UnBinaryNodeWidgetProps) {
 		super(props);
 
-		this.state={
-			renameActive:false,
-			titleChanged:false,
-			nodeName:this.props.node.getOptions().name,
-			badName:false
+		this.state = {
+			renameActive: false,
+			titleChanged: false,
+			nodeName: this.props.node.getOptions().name,
+			badName: false
 		};
-
 		this.setBadNameState = this.setBadNameState.bind(this);
 	}
-
-	generatePort = (port:any) =>{
-		if(![ADDPORT,INPORT,OUTPORT].includes(port.options.name)) {
-			return (
-				<PortWidget engine={this.props.engine} port={this.props.node.getPort(port.options.name)}>
-					<Port onDoubleClick={() => {
-						this.props.node.removePort(port);
-						this.props.engine.repaintCanvas();
-					}} height={20} width={this.props.node.getOptions().name.length * 10}>{port.options.name}</Port>
-				</PortWidget>
-			)
-		}
-	};
 
 	generatePredicate = (predicate: string) => {
 		return (
@@ -111,29 +98,32 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		)
 	};
 
-	cancelRenameNode(){
-		this.setState({renameActive:false,nodeName:this.props.node.getNodeName(),badName:false});
+	componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
+		console.log("yes");
+	}
+
+	cancelRenameNode() {
+		this.setState({renameActive: false, nodeName: this.props.node.getNodeName(), badName: false});
 		this.props.node.setLocked(false);
 	}
 
-	renameNode(){
+	renameNode() {
 		this.props.node.setLocked(false);
 
-		if(this.state.nodeName!==this.props.node.getNodeName()){
-			if(!this.state.badName){
-				this.props.renameDomainNode(this.state.nodeName,this.props.node.getNodeName());
+		if (this.state.nodeName !== this.props.node.getNodeName()) {
+			if (!this.state.badName) {
+				this.props.renameDomainNode(this.state.nodeName, this.props.node.getNodeName());
 				this.props.node.renameNode(this.state.nodeName);
-			}
-			else{
+			} else {
 				this.setState({nodeName: this.props.node.getNodeName()});
 			}
 		}
-		this.setState({renameActive:false});
-		this.setState({badName:false});
+		this.setState({renameActive: false});
+		this.setState({badName: false});
 	}
 
-	setBadNameState(bool:boolean){
-		this.setState({badName:bool});
+	setBadNameState(bool: boolean) {
+		this.setState({badName: bool});
 	}
 
 	render() {
@@ -142,63 +132,54 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				data-basic-node-name={this.props.name}
 				selected={this.props.node.isSelected()}
 				background={this.props.node.getOptions().color}
+				style={{pointerEvents:this.props.editableNodes.editable?"auto":"none",cursor:this.props.editableNodes.editable?"pointer":"move"}}
 			>
 				<Title>
-					<TitleName onDoubleClick={() => {
-						if (!this.state.renameActive) {
-							this.setState({renameActive: true});
-							this.props.node.setLocked(true);
-						}
-					}}>
-						{!this.state.renameActive ? this.props.node.getNodeName() :
-							<input autoFocus onBlur={() => {
-								this.renameNode();
+					<PortWidget engine={this.props.engine} port={this.props.node.getMainPort()}>
+						<TitleName onDoubleClick={() => {
+							if (!this.state.renameActive) {
+								this.setState({renameActive: true});
+								this.props.node.setLocked(true);
 							}
-							}
-								   onKeyDown={(e) => {
-									   if (e.key === "Escape") {
-										   this.cancelRenameNode();
-									   } else if (e.key === "Enter") {
-										   this.renameNode();
+						}}>
+							{!this.state.renameActive ? this.props.node.getNodeName() :
+								<input autoFocus onBlur={() => {
+									this.renameNode();
+								}
+								}
+									   onKeyDown={(e) => {
+										   if (e.key === "Escape") {
+											   this.cancelRenameNode();
+										   } else if (e.key === "Enter") {
+											   this.renameNode();
+										   }
 									   }
-								   }
-								   }
+									   }
 
-								   type="text" style={{
-								width: this.props.node.getOptions().name.length * 9 + "px",
-								height: 20 + "px",
-								border:this.state.badName?"1px solid red":"1px solid black"
-							}} name="" value={this.state.nodeName}
-								   onChange={(e) => {
-								   	this.setState({nodeName: e.target.value});
-								   	this.props.checkBadName(e.target.value,this.props.node.getNodeName(),this.setBadNameState,UNBINARY);
-								   }}/>
-						}
-					</TitleName>
+									   type="text" style={{
+									width: this.props.node.getOptions().name.length * 9 + "px",
+									height: 20 + "px",
+									border: this.state.badName ? "1px solid red" : "1px solid black"
+								}} name="" value={this.state.nodeName}
+									   onChange={(e) => {
+										   this.setState({nodeName: e.target.value});
+										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
+									   }}/>
+							}
+						</TitleName>
+					</PortWidget>
 				</Title>
-			<Ports>
+				<Ports>
 					<PortsContainer>
 						{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
-
-						<PortsContainerForAddInOut>
-							<PortWidget engine={this.props.engine} port={this.props.node.getInPort()}>
-								<PortS height={20} width={this.props.node.getOptions().name.length * 20}>{INPORT}</PortS>
-							</PortWidget>
-							{" | "}
-							<PortWidget engine={this.props.engine} port={this.props.node.getAppendPort()}>
-								<PortS onClick={() => {
-									//this.props.node.addNewPort(`Pred${this.props.node.portIndex}`);
-									this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
-									this.forceUpdate();
-									//this.props.engine.repaintCanvas();
-								}}
-									  height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</PortS>
-							</PortWidget>
-							{" | "}
-							<PortWidget engine={this.props.engine} port={this.props.node.getOutPort()}>
-								<PortS height={20} width={this.props.node.getOptions().name.length * 20}>{OUTPORT}</PortS>
-							</PortWidget>
-						</PortsContainerForAddInOut>
+						<PortWidget engine={this.props.engine} port={this.props.node.getAppendPort()}>
+							<PortS onClick={() => {
+								this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
+								//this.forceUpdate();
+								this.props.engine.repaintCanvas(); //-> update is not performed
+							}}
+								   height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</PortS>
+						</PortWidget>
 					</PortsContainer>
 
 				</Ports>

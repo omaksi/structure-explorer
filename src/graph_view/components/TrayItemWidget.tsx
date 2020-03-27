@@ -8,7 +8,7 @@ export interface TrayItemWidgetProps {
 	name: string;
 	element:any;
 	clickFunction:any;
-	reduxFunctions:any;
+	reduxProps:any;
 }
 
 export const BasicTray = styled.div`
@@ -33,7 +33,7 @@ export class UnbinaryItemWidget extends React.Component<TrayItemWidgetProps> {
 					event.dataTransfer.setData('storm-graph_view-node', JSON.stringify(this.props.model));
 				}}
 				onClick={e => {
-					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model),this.props.reduxFunctions);
+					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model),this.props.reduxProps);
 				}}
 				className="tray-item">
 				<Unbinary/>
@@ -52,7 +52,7 @@ export class QuaternaryItemWidget extends React.Component<TrayItemWidgetProps> {
 					event.dataTransfer.setData('storm-graph_view-node', JSON.stringify(this.props.model));
 				}}
 				onClick={e => {
-					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model),this.props.reduxFunctions);
+					this.props.clickFunction(this.props.element,JSON.stringify(this.props.model),this.props.reduxProps);
 				}}
 				className="tray-item">
 				{this.props.name}

@@ -47,7 +47,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 			width: options.width || 3,
 			color: options.color || 'gray',
 			selectedColor: options.selectedColor || 'rgb(0,192,255)',
-			curvyness: 65,
+			curvyness: 0,
 			...options
 		});
 
@@ -89,13 +89,12 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					}
 
 					if (sourceNode === constantNode) {
-						if (link.getTargetPort() === unbinaryNode.getInPort()) {
+						if (link.getTargetPort() === unbinaryNode.getMainPort()) {
 							return;
 						} else {
 
-							console.log("constant port after added link",link.getSourcePort());
 							link.setSourcePortWithoutEvent(constantPort);
-							link.setTargetPortWithoutEvent(unbinaryNode.getInPort());
+							link.setTargetPortWithoutEvent(unbinaryNode.getMainPort());
 
 
 							console.log(constantPort);

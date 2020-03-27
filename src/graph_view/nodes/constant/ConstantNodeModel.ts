@@ -12,21 +12,21 @@ export interface ConstantNodeModelGenerics {
 export interface ConstantNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
 	color?: string;
-	reduxFunctions?:any;
+	reduxProps?:any;
 }
 
 export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNodeModelGenerics> {
 	constantPort:ConstantPortModel;
 
-	constructor(name: string, color: string,reduxFunctions:any);
+	constructor(name: string, color: string,reduxProps:any);
 	constructor(options?: ConstantNodeModelOptions);
-	constructor(options: any = {}, color?: string, reduxFunctions?:any) {
+	constructor(options: any = {}, color?: string, reduxProps?:any) {
 		if (typeof options === 'string') {
 			options = {
 				name: options,
 				previousName:options,
 				color: color,
-				reduxFunctions:reduxFunctions
+				reduxProps:reduxProps
 			};
 		}
 		super({
@@ -54,11 +54,11 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 	}
 
 	registerEvents(){
-		let reduxFunctions = this.options.reduxFunctions;
+		let reduxProps = this.options.reduxProps;
 		let nodeName = this.options.name;
 		this.registerListener({
 			entityRemoved(event: any): void {
-				reduxFunctions["removeConstantNode"](nodeName);
+				reduxProps["removeConstantNode"](nodeName);
 			}
 		})
 	}

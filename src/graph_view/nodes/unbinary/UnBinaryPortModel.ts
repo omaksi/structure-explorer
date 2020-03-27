@@ -39,7 +39,6 @@ export class UnBinaryPortModel extends PortModel {
 
 		else if(this.getParent() === port.getParent()){
 			if(this!=port){
-
 				return true;
 			}
 			else{

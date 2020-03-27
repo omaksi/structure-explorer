@@ -62,7 +62,6 @@ function structureReducer(s, action, struct) {
       return state;
     case ADD_UNARY_PREDICATE:
       syncLanguageWithStructure();
-      console.log("state",state.variables);
       return state;
     case SET_CONSTANT_VALUE:
       setConstantValue(action.constantName, action.value);
@@ -104,7 +103,6 @@ function structureReducer(s, action, struct) {
       return state;
 
     case RENAME_DOMAIN_NODE:
-      console.log("DOMAIN BEFORE",state.domain.value);
 
       let currDomainState = state.domain.value;
 

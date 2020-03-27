@@ -5,6 +5,7 @@ import AppContainer from "./redux/containers/AppContainer";
 import {createStore} from "redux";
 import reducer from "./redux/reducers";
 
+
 // @ts-ignore
 const store = createStore(reducer);
 

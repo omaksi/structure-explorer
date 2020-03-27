@@ -18,7 +18,7 @@ const defaultState = {
     language: languageDefaultState(),
     structure: structureDefaultState(),
     expressions: expressionsDefaultState(),
-    diagramNodeState:diagramDefaultState()
+    diagramState:diagramDefaultState()
 };
 
 function checkImportedState(state:any) {
@@ -41,13 +41,13 @@ function root(state = defaultState, action:any) {
         } catch (e) {
             console.error(e);
         }
-        state.diagramNodeState = diagramDefaultState();
+        state.diagramState = diagramDefaultState();
     }
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action, state.structureObject);
     let structure = structureReducer(state.structure, action, state.structureObject);
     let expressions = expressionsReducer(state.expressions, action, state.structureObject, state.structure.variables.object);
-    let diagramNodeState = diagramReducer(state.diagramNodeState, action);
+    let diagramState = diagramReducer(state.diagramState, action);
 
     return {
         structureObject: state.structureObject,
@@ -55,7 +55,7 @@ function root(state = defaultState, action:any) {
         language: language,
         structure: structure,
         expressions: expressions,
-        diagramNodeState: diagramNodeState
+        diagramState: diagramState
     }
 }
 

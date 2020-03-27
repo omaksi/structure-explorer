@@ -3,28 +3,41 @@ import {
   ADD_DOMAIN_NODE, RENAME_DOMAIN_NODE, CHECK_BAD_NAME, REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
-  SYNC_DIAGRAM, SYNC_MATH_STATE
+  SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
-import {ADDPORT, INPORT, OUTPORT, UNBINARY} from "../../graph_view/nodes/ConstantNames";
+import {INPORT, UNBINARY} from "../../graph_view/nodes/ConstantNames";
 import {ConstantNodeModel} from "../../graph_view/nodes/constant/ConstantNodeModel";
 import {DefaultLinkModel} from "@projectstorm/react-diagrams-defaults";
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
+import {DiagramApplication} from "../../graph_view/DiagramAplication";
+
+
+//let state = {};
 
 export function defaultState(){
+  let diagramModel = new DiagramModel();
   return{
-    diagramModel: new DiagramModel(),
+    diagramModel: diagramModel,
+    diagramEngine: new DiagramApplication(diagramModel).diagramEngine,
     domainNodes: new Map(),
     constantNodes: new Map(),
-    functionNodes: new Map()
+    functionNodes: new Map(),
+    editableNodes: {
+      editable:false
+    }
   }
 }
 
 function diagramReducer(state, action) {
+  //console.log("before",s);
+  //state = copyState(s);
+  //console.log("after",state);
+
   switch (action.type) {
     case SET_DIAGRAM:
-      state.diagramNodeState.diagramModel = action.diagramModel;
+      state.diagramModel = action.diagramModel;
       return state;
     case SYNC_DIAGRAM:
       syncDomain(action.value);
@@ -53,10 +66,26 @@ function diagramReducer(state, action) {
     case SYNC_MATH_STATE:
       deleteAllLabels(state);
       return state;
+    case TOGGLE_EDITABLE_NODES:
+      state.editableNodes.editable = action.value;
+        //state.editableNodes = {editable:action.value};
+      return state;
     default:
       return state;
   }
 }
+
+const copyState = (state) => ({
+  diagramModel: state.diagramModel,
+  diagramEngine: state.diagramEngine,
+  /*domainNodes: {...state.domainNodes},
+  constantNodes: {...state.constantNodes},
+  functionNodes: {...state.functionNodes},*/
+  domainNodes: state.domainNodes,
+  constantNodes: state.constantNodes,
+  functionNodes: state.functionNodes,
+  editableNodes:{...state.editableNodes}
+});
 
 function deleteAllLabels(action) {
   for (let a = 0; a < action.diagramModel.getNodes().length; a++) {
@@ -104,9 +133,9 @@ function checkIfNameCanBeUsed(state,action){
   }
 }
 
-function createNode(nodeObject,nodeName,nameOfSet,diagramModel,app){
-  let canvasWidth = app.getDiagramEngine().getCanvas().clientWidth;
-  let canvasHeight = app.getDiagramEngine().getCanvas().clientHeight;
+function createNode(nodeObject,nodeName,nameOfSet,diagramModel,diagramCanvas){
+  let canvasWidth = diagramCanvas.clientWidth;
+  let canvasHeight = diagramCanvas.clientHeight;
 
   nodeObject.setPosition(Math.random() * (canvasWidth - canvasWidth * 0.1) + canvasWidth * 0.05, Math.random() * (canvasHeight - canvasHeight * 0.1) + canvasHeight * 0.05);
   addNodeState(nodeName, nodeObject, nameOfSet);
@@ -123,9 +152,10 @@ function createLink(sourcePort,targetPort,diagramModel){
 function syncConstants(values){
   if(values.structure.constants!== null){
     let constantObjects = new Map(Object.entries(values.structure.constants));
-    let constantState = values.diagramNodeState.constantNodes;
-    let domainState = values.diagramNodeState.domainNodes;
-    let diagramModel = values.diagramNodeState.diagramModel;
+    let constantState = values.diagramState.constantNodes;
+    let domainState = values.diagramState.domainNodes;
+    let diagramModel = values.diagramState.diagramModel;
+    let diagramCanvas = values.diagramState.diagramEngine.getCanvas();
 
     for(let [nodeName,nodeObject] of constantState.entries()) {
       if (!constantObjects.has(nodeName)) {
@@ -141,7 +171,7 @@ function syncConstants(values){
           "addConstantNode":values.addConstantNode,
           "removeConstantNode":values.removeConstantNode
         });
-        createNode(node,nodeName,constantState,diagramModel,values.app);
+        createNode(node,nodeName,constantState,diagramModel,diagramCanvas);
         if(nodeProperties.value.length!==0){
           createLink(node.getConstantPort(),domainState.get(nodeProperties.value).getPort(INPORT),diagramModel);
         }
@@ -166,9 +196,9 @@ function removeNodeState(nodeName,nodeSet){
 }
 
 function clearDiagramState(values){
-  values.diagramNodeState.domainNodes.clear();
-  values.diagramNodeState.constantNodes.clear();
-  values.diagramNodeState.functionNodes.clear();
+  values.diagramState.domainNodes.clear();
+  values.diagramState.constantNodes.clear();
+  values.diagramState.functionNodes.clear();
 }
 
 function clearCertainNodeState(nodeState){
@@ -178,7 +208,7 @@ function clearCertainNodeState(nodeState){
 //atm refers all predicates to have unary level
 function syncPredicates(values) {
   let predicatesObjects = values.structure.predicates;
-  let domainState = values.diagramNodeState.domainNodes;
+  let domainState = values.diagramState.domainNodes;
   let portMap = new Map();
 
   if (predicatesObjects && Object.keys(predicatesObjects).length > 0) {
@@ -233,8 +263,9 @@ function syncPredicates(values) {
 
 function syncDomain(values) {
   let domain = (values.domain);
-  let domainState = values.diagramNodeState.domainNodes;
-  let diagramModel = values.diagramNodeState.diagramModel;
+  let domainState = values.diagramState.domainNodes;
+  let diagramModel = values.diagramState.diagramModel;
+  let diagramCanvas = values.diagramState.diagramEngine.getCanvas();
 
   if (domain == null || domain.length === 0) {
     for(let node of domainState.values()){
@@ -265,7 +296,7 @@ function syncDomain(values) {
         "addUnaryPredicate":values.addUnaryPredicate,
         "removeUnaryPredicate":values.removeUnaryPredicate
       });
-      createNode(node,nodeName,domainState,diagramModel,values.app);
+      createNode(node,nodeName,domainState,diagramModel,diagramCanvas);
     }
   });
 }

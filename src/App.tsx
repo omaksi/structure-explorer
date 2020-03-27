@@ -5,7 +5,6 @@ import {Provider} from 'react-redux';
 import ExpressionsContainer from './redux/containers/ExpressionsContainer';
 import {importAppState} from "./redux/actions";
 import {DEFAULT_FILE_NAME} from "./constants";
-import {Application} from "./graph_view/Application";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
 import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
@@ -31,6 +30,11 @@ class App extends React.Component<AppProps,AppState> {
       diagramToggled:true,
       exerciseName:''
     };
+
+    this.props.store.subscribe(() => {
+      let state = this.props.store.getState();
+      console.log('STATE:', state);
+    });
 
     this.exportState = this.exportState.bind(this);
     this.importState = this.importState.bind(this);
@@ -104,7 +108,7 @@ class App extends React.Component<AppProps,AppState> {
                   ):
                   <Row className='reactDiagram'>
                     <Col sm={12} >
-                      <DiagramModelContainer app={new Application(this.props.store.getState().diagramNodeState.diagramModel)}/>
+                      <DiagramModelContainer/>
                     </Col>
                   </Row>
               }

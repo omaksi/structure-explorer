@@ -2,7 +2,7 @@ import {NodeModel, NodeModelGenerics, PortModelAlignment} from '@projectstorm/re
 import {UnBinaryPortModel} from './UnBinaryPortModel';
 import {BasePositionModelOptions} from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
-import {ADDPORT, INPORT, OUTPORT} from "../ConstantNames";
+import {ADDPORT, MAINPORT} from "../ConstantNames";
 
 export interface UnBinaryNodeModelGenerics {
 	PORT: UnBinaryPortModel;
@@ -12,25 +12,24 @@ export interface UnBinaryNodeModelGenerics {
 export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
 	color?: string;
-	reduxFunctions:any;
+	reduxProps:any;
 	domainNodeName:any;
 }
 
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
 	unaryPredicateIndex: number;
-	inPort: UnBinaryPortModel;
-	outPort: UnBinaryPortModel;
 	appendPort: UnBinaryPortModel;
+	mainPort: UnBinaryPortModel;
 	unaryPredicates: Set<string>;
 
-	constructor(name: string, color: string, reduxFunctions: any);
+	constructor(name: string, color: string, reduxProps: any);
 	constructor(options?: UnBinaryNodeModelOptions);
-	constructor(options: any = {}, color?: string, reduxFunctions?: any) {
+	constructor(options: any = {}, color?: string, reduxProps?: any) {
 		if (typeof options === 'string') {
 			options = {
 				name: options,
 				color: color,
-				reduxFunctions: reduxFunctions,
+				reduxProps: reduxProps,
 			};
 		}
 		super({
@@ -43,32 +42,31 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.registerEvents();
 		this.unaryPredicateIndex = 0;
 		this.unaryPredicates = new Set();
-		//if created through DIAGRAM CLICK/DROP -> DISPATCH THIS: MAYBE I SHOULD DISPATCH IT IN CREATENODE FUNCTION NOT HERE
-		//setDomain(this.options.name);
+	}
+
+	getMainPort():UnBinaryPortModel{
+		return this.mainPort;
 	}
 
 
 	addTemplatePorts() {
-		let port: UnBinaryPortModel = new UnBinaryPortModel(INPORT);
-		port.setPortAlignment(PortModelAlignment.LEFT);
-		this.addPort(port);
-		this.inPort = port;
-		port = new UnBinaryPortModel(OUTPORT);
-		port.setPortAlignment(PortModelAlignment.RIGHT);
-		this.addPort(port);
-		this.outPort = port;
-		port = new UnBinaryPortModel(ADDPORT);
+		let port:UnBinaryPortModel = new UnBinaryPortModel(ADDPORT);
+		this.appendPort = port;
 		port.setMaximumLinks(0);
 		this.addPort(port);
-		this.appendPort = port;
+
+		port = new UnBinaryPortModel(MAINPORT);
+		port.setPortAlignment(PortModelAlignment.LEFT);
+		this.mainPort = port;
+		this.addPort(port);
 	}
 
 	registerEvents() {
-		let reduxFunctions = this.options.reduxFunctions;
+		let reduxProps = this.options.reduxProps;
 		let nodeName = this.options.name;
 		this.registerListener({
 			entityRemoved(event: any): void {
-				reduxFunctions["removeDomainNode"](nodeName);
+				reduxProps["removeDomainNode"](nodeName);
 			}
 		})
 	}
@@ -88,7 +86,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	addUnaryPredicate(name: string) {
 		if (!this.unaryPredicates.has(name)) {
-			this.options.reduxFunctions["addUnaryPredicate"](name, this.getNodeName());
+			this.options.reduxProps["addUnaryPredicate"](name, this.getNodeName());
 			this.addUnaryPredicateToSet(name);
 			this.unaryPredicateIndex++;
 		}
@@ -97,7 +95,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	removeUnaryPredicate(name: string) {
 		if (this.unaryPredicates.has(name)) {
 			this.removeUnaryPredicateFromSet(name);
-			this.options.reduxFunctions["removeUnaryPredicate"](name, this.getNodeName());
+			this.options.reduxProps["removeUnaryPredicate"](name, this.getNodeName());
 		}
 	}
 
@@ -117,14 +115,6 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		return this.options.name;
 	}
 
-	getInPort() {
-		return this.inPort;
-	}
-
-	getOutPort() {
-		return this.outPort;
-	}
-
 	getAppendPort() {
 		return this.appendPort;
 	}
@@ -142,5 +132,21 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 			this.ports[port.getName()].setParent(null);
 			delete this.ports[port.getName()];
 		}
+	}
+
+	serialize() {
+		return {
+			...super.serialize(),
+			unaryPredicates: this.unaryPredicates,
+			unaryPredicateIndex: this.unaryPredicateIndex,
+			appendPort: this.appendPort
+		};
+	}
+
+	deserialize(event: any) {
+		super.deserialize(event);
+		this.unaryPredicates = event.data.unaryPredicates;
+		this.unaryPredicateIndex = event.data.unaryPredicateIndex;
+		this.appendPort = event.data.appendPort;
 	}
 }

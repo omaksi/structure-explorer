@@ -1,8 +1,6 @@
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
-import {ButtonToolbar, Modal} from "react-bootstrap";
-import DownloadButton from "./DownloadButton";
-import {DEFAULT_FILE_NAME} from "../../constants";
+import {ButtonToolbar} from "react-bootstrap";
 import ModalComponent from "../components_parts/ModalComponent";
 
 const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (

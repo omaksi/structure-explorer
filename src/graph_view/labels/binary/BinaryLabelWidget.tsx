@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import {DiagramEngine} from '@projectstorm/react-diagrams';
 import {ADDPORT, INPORT, OUTPORT} from "../../nodes/ConstantNames";
 import _ from "lodash";
+import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
 
 export interface BinaryLabelWidgetProps {
 	model: BinaryLabelModel;
@@ -12,8 +13,9 @@ export interface BinaryLabelWidgetProps {
 	size?: number;
 }
 
-export const PredicatesNode = styled.div`
-		pointer-events: auto;
+export const PredicatesNode = styled.div<{pointerEvents: string, cursor:string}>`
+		pointer-events: ${p => p.pointerEvents};
+		cursor: ${p => p.cursor};
 		width:100%;
 		height:100%;
 		background-color: yellow;
@@ -65,12 +67,9 @@ interface BinaryNodeWidgetState {
 }
 
 export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,BinaryNodeWidgetState> {
-	counter: number;
-
 	constructor(props: BinaryLabelWidgetProps) {
 		super(props);
 
-		this.counter = 0;
 	}
 
 	generatePredicate = (predicate: string) => {
@@ -145,7 +144,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 
 	render() {
 		return (
-			<PredicatesNode>
+			<PredicatesNode pointerEvents={this.props.model.editable?"all":"none"} cursor={this.props.model.editable?"pointer":"move"}>
 				<Predicates>
 					<PredicateContainer>
 						{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicate)}

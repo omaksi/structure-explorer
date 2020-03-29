@@ -4,7 +4,7 @@ import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port, PortS } from "./UnBinaryPortLabelWidget";
-import {ADDPORT, INPORT, MAINPORT, OUTPORT, UNBINARY} from "../ConstantNames";
+import {ADDPORT, UNBINARY} from "../ConstantNames";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -12,7 +12,6 @@ export interface UnBinaryNodeWidgetProps {
 	renameDomainNode:any;
 	removeDomainNode:any;
 	checkBadName:any;
-	editableNodes:any;
 	name?:string;
 	size?: number;
 }
@@ -24,8 +23,10 @@ interface UnBinaryNodeWidgetState {
 	badName?:boolean;
 }
 
-export const Node = styled.div<{ background: string; selected: boolean }>`
+export const Node = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
 		width: 100%;
+		pointer-events: ${p => p.pointerEvents};
+		cursor: ${p => p.cursor};
 		background-color: ${p => p.background};
 		border-radius: 5px;
 		font-family: sans-serif;
@@ -65,13 +66,6 @@ export const PortsContainer = styled.div`
 		flex: 1 0 0;
 	`;
 
-export const PortsContainerForAddInOut = styled.div`
-		display: flex;
-		flex-shrink: 0;
-		flex-direction: row;
-		flex: 1 1 0;
-	`;
-
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
 	constructor(props: UnBinaryNodeWidgetProps) {
 		super(props);
@@ -89,18 +83,13 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		return (
 			<Port onDoubleClick={() => {
 				this.props.node.removeUnaryPredicate(predicate);
-				this.forceUpdate();
-				//this.props.engine.repaintCanvas();
+				this.props.engine.repaintCanvas();
 			}}
 				  height={20} width={this.props.node.getOptions().name.length * 10}>
 				{predicate}
 			</Port>
 		)
 	};
-
-	componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
-		console.log("yes");
-	}
 
 	cancelRenameNode() {
 		this.setState({renameActive: false, nodeName: this.props.node.getNodeName(), badName: false});
@@ -132,7 +121,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				data-basic-node-name={this.props.name}
 				selected={this.props.node.isSelected()}
 				background={this.props.node.getOptions().color}
-				style={{pointerEvents:this.props.editableNodes.editable?"auto":"none",cursor:this.props.editableNodes.editable?"pointer":"move"}}
+				pointerEvents={this.props.node.isEditable()?"auto":"none"}
+				cursor={this.props.node.isEditable()?"pointer":"move"}
 			>
 				<Title>
 					<PortWidget engine={this.props.engine} port={this.props.node.getMainPort()}>
@@ -175,8 +165,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 						<PortWidget engine={this.props.engine} port={this.props.node.getAppendPort()}>
 							<PortS onClick={() => {
 								this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
-								//this.forceUpdate();
-								this.props.engine.repaintCanvas(); //-> update is not performed
+								this.props.engine.repaintCanvas();
 							}}
 								   height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</PortS>
 						</PortWidget>

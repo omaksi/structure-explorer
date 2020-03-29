@@ -11,7 +11,7 @@ export class UnBinaryNodeFactory extends AbstractReactFactory<UnBinaryNodeModel,
 
 	generateReactWidget(event:any): JSX.Element {
 		let reduxProps = event.model.options.reduxProps;
-		return <UnBinaryNodeWidget editableNodes={reduxProps["editableNodes"]} checkBadName={reduxProps["checkBadName"]} removeDomainNode={reduxProps["removeDomainNode"]} renameDomainNode={reduxProps["renameDomainNode"]} engine={this.engine} size={50} node={event.model}/>;
+		return <UnBinaryNodeWidget checkBadName={reduxProps["checkBadName"]} removeDomainNode={reduxProps["removeDomainNode"]} renameDomainNode={reduxProps["renameDomainNode"]} engine={this.engine} size={50} node={event.model}/>;
 	}
 
 	generateModel(event:any) {

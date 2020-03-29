@@ -154,15 +154,15 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"checkBadName":this.props.checkBadName,
 			"addUnaryPredicate":this.props.addUnaryPredicate,
 			"removeUnaryPredicate":this.props.removeUnaryPredicate,
-			"editableNodes":editableNodes
+			"editable":editableNodes
 		};
 
 		return (
 			<Body>
 				<Content>
 					<TrayWidget>
-						<button className={"btn btn-outline-primary "+(editableNodes.editable?"":"active")} onClick={(e) => {editableNodesFunction(false);this.forceUpdate()}}><FontAwesome name={"fas fa-arrows-alt"}/></button>
-						<button className={"btn btn-outline-primary "+(editableNodes.editable?"active":"")} onClick={(e) => {editableNodesFunction(true);this.forceUpdate()}}><FontAwesome name={"fas fa-edit"}/></button>
+						<button className={"btn btn-outline-primary "+(editableNodes?"":"active")} onClick={(e) => {editableNodesFunction(false)}}><FontAwesome name={"fas fa-arrows-alt"}/></button>
+						<button className={"btn btn-outline-primary "+(editableNodes?"active":"")} onClick={(e) => {editableNodesFunction(true)}}><FontAwesome name={"fas fa-edit"}/></button>
 
 						<UnbinaryItemWidget model={{type: 'in'}} clickFunction={createNode} element={this}
 											name="Pridaj vrchol" color="rgb(192,255,0)"

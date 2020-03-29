@@ -92,16 +92,8 @@ class App extends React.Component<AppProps,AppState> {
     return (
         <Provider store={this.props.store}>
           <div className='app'>
-            <Row className={"navbar"}>
+            <Row className={'navbar'}>
                   <ButtonToolbarComponent exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
-              {/*<BootstrapSwitchButton
-                      checked={false}
-                      onlabel='On'
-                      onstyle='outline-success'
-                      offlabel='Off'
-                      offstyle='outline-light'
-                      onChange={() => this.props.store.dispatch(toggleTeacherMode())}
-                  />*/}
             </Row>
               {!this.state.diagramToggled? (
                   <MathSystemContainer/>

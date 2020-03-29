@@ -13,9 +13,6 @@ import {DiagramModel} from "@projectstorm/react-diagrams";
 import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
 import {DiagramApplication} from "../../graph_view/DiagramAplication";
 
-
-//let state = {};
-
 export function defaultState(){
   let diagramModel = new DiagramModel();
   return{
@@ -24,17 +21,11 @@ export function defaultState(){
     domainNodes: new Map(),
     constantNodes: new Map(),
     functionNodes: new Map(),
-    editableNodes: {
-      editable:false
-    }
+    editableNodes: false
   }
 }
 
 function diagramReducer(state, action) {
-  //console.log("before",s);
-  //state = copyState(s);
-  //console.log("after",state);
-
   switch (action.type) {
     case SET_DIAGRAM:
       state.diagramModel = action.diagramModel;
@@ -43,59 +34,64 @@ function diagramReducer(state, action) {
       syncDomain(action.value);
       syncPredicates(action.value);
       syncConstants(action.value);
+      syncLabels(state);
       return state;
     case ADD_DOMAIN_NODE:
-      state.domainNodes.set(action.nodeName,action.nodeObject);
+      state.domainNodes.set(action.nodeName, action.nodeObject);
       return state;
     case REMOVE_DOMAIN_NODE:
       state.domainNodes.delete(action.nodeName);
       return state;
     case ADD_CONSTANT_NODE:
-      state.constantNodes.set(action.nodeName,action.nodeObject);
+      state.constantNodes.set(action.nodeName, action.nodeObject);
       return state;
     case REMOVE_CONSTANT_NODE:
       state.constantNodes.delete(action.nodeName);
       return state;
     case CHECK_BAD_NAME:
-      checkIfNameCanBeUsed(state,action);
+      checkIfNameCanBeUsed(state, action);
       return state;
     case RENAME_DOMAIN_NODE:
-      state.domainNodes.set(action.value,state.domainNodes.get(action.oldValue));
+      state.domainNodes.set(action.value, state.domainNodes.get(action.oldValue));
       state.domainNodes.delete(action.oldValue);
       return state;
     case SYNC_MATH_STATE:
       deleteAllLabels(state);
       return state;
     case TOGGLE_EDITABLE_NODES:
-      state.editableNodes.editable = action.value;
-        //state.editableNodes = {editable:action.value};
-      return state;
+      let nodeArray = state.diagramModel.getNodes();
+      for (let a = 0; a < nodeArray.length; a++) {
+        nodeArray[a].changeEditableState(action.value);
+      }
+
+      let linkArray = state.diagramModel.getLinks();
+      for (let i = 0; i < linkArray.length; i++) {
+        let labelArray = linkArray[i].getLabels();
+        for (let y = 0; y < labelArray.length; y++) {
+          labelArray[y].changeEditableState(action.value);
+        }
+      }
+      state.diagramEngine.repaintCanvas();
+      return {...state, editableNodes: action.value};
     default:
       return state;
   }
 }
 
-const copyState = (state) => ({
-  diagramModel: state.diagramModel,
-  diagramEngine: state.diagramEngine,
-  /*domainNodes: {...state.domainNodes},
-  constantNodes: {...state.constantNodes},
-  functionNodes: {...state.functionNodes},*/
-  domainNodes: state.domainNodes,
-  constantNodes: state.constantNodes,
-  functionNodes: state.functionNodes,
-  editableNodes:{...state.editableNodes}
-});
+function syncLabels(state){
+  let linkArray = state.diagramModel.getLinks();
+  for (let i = 0; i<linkArray.length;i++) {
+    if(linkArray[i].label && linkArray[i].getLabels().length === 0){
+      linkArray[i].addLabel(linkArray[i].label);
+    }
+  }
+}
 
 function deleteAllLabels(action) {
-  for (let a = 0; a < action.diagramModel.getNodes().length; a++) {
-    let node = action.diagramModel.getNodes()[a];
-    for (let [portName, port] of Object.entries(node.getPorts())) {
-      for (let [linkName, link] of Object.entries(port.getLinks())) {
-        if (link instanceof BinaryLinkModel) {
-          link.clearLabels();
-        }
-      }
+  let linkArray = action.diagramModel.getLinks();
+  for(let i = 0; i<linkArray.length;i++){
+    if (linkArray[i] instanceof BinaryLinkModel) {
+      linkArray[i].clearLabels();
     }
   }
 }

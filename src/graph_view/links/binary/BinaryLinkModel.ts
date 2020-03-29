@@ -183,14 +183,21 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 		}
 	}
 
-	clearLabels(){
-		for(let i = 0;i<this.getLabels().length;i++)
-		{
-			this.getLabels()[i].setParent(null);
-			console.log("cleared");
-			delete this.getLabels()[i];
+	clearLabels() {
+		if (this.label) {
+			let label = new BinaryLabelModel();
+
+			label.predicateIndex = this.label.predicateIndex;
+			label.predicates = this.label.predicates;
+			label.editable = this.label.editable;
+
+			this.label.setParent(null);
+			delete this.label;
+
+			this.labels = [];
+
+			this.label = label;
 		}
-		this.labels = [];
 	}
 
 	serialize() {

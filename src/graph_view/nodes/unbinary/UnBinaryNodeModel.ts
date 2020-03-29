@@ -18,9 +18,11 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
 	unaryPredicateIndex: number;
+	unaryPredicatesLength: number;
 	appendPort: UnBinaryPortModel;
 	mainPort: UnBinaryPortModel;
 	unaryPredicates: Set<string>;
+	editable:boolean;
 
 	constructor(name: string, color: string, reduxProps: any);
 	constructor(options?: UnBinaryNodeModelOptions);
@@ -41,13 +43,22 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.addTemplatePorts();
 		this.registerEvents();
 		this.unaryPredicateIndex = 0;
+		this.unaryPredicatesLength = 0;
 		this.unaryPredicates = new Set();
+		this.editable = reduxProps["editable"];
 	}
 
 	getMainPort():UnBinaryPortModel{
 		return this.mainPort;
 	}
 
+	isEditable():boolean{
+		return this.editable;
+	}
+
+	changeEditableState(value:boolean){
+		this.editable = value;
+	}
 
 	addTemplatePorts() {
 		let port:UnBinaryPortModel = new UnBinaryPortModel(ADDPORT);
@@ -137,16 +148,18 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	serialize() {
 		return {
 			...super.serialize(),
-			unaryPredicates: this.unaryPredicates,
+			unaryPredicatesLength: this.unaryPredicates.size,
 			unaryPredicateIndex: this.unaryPredicateIndex,
-			appendPort: this.appendPort
+			appendPort: this.appendPort,
+			editable: this.editable
 		};
 	}
 
 	deserialize(event: any) {
 		super.deserialize(event);
-		this.unaryPredicates = event.data.unaryPredicates;
+		this.unaryPredicatesLength = event.data.unaryPredicatesLength;
 		this.unaryPredicateIndex = event.data.unaryPredicateIndex;
 		this.appendPort = event.data.appendPort;
+		this.editable = event.data.editable;
 	}
 }

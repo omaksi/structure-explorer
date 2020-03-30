@@ -47,8 +47,4 @@ export class ConstantPortModel extends PortModel {
 		}
 	}
 
-	/*addLink(link: LinkModel) {
-		this.links[link.getID()] = link;
-	}*/
-
 }

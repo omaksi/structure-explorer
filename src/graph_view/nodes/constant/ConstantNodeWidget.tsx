@@ -1,16 +1,15 @@
 import * as React from 'react';
 import { ConstantNodeModel } from './ConstantNodeModel';
-import {DiagramEngine, PortWidget, PortModel, PortModelAlignment} from '@projectstorm/react-diagrams';
+import {DiagramEngine, PortWidget} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
-import _ from 'lodash';
-import { Port } from "./ConstantPortLabelWidget";
-import {CONSTPORT} from "../ConstantNames";
+import {UNBINARY} from "../ConstantNames";
 
 export interface ConstantNodeWidgetProps {
 	node: ConstantNodeModel;
 	engine: DiagramEngine;
 	renameDomainNode:any;
 	removeConstantNode:any;
+	checkBadName:any;
 	name?:string;
 	size?: number;
 }
@@ -19,10 +18,13 @@ interface ConstantNodeWidgetState {
 	renameActive?:boolean;
 	titleChanged?:boolean;
 	nodeName?:string;
+	badName?:boolean;
 }
 
-export const Node = styled.div<{ background: string; selected: boolean }>`
+export const Node = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
 		background-color: ${p => p.background};
+		pointer-events: ${p => p.pointerEvents};
+		cursor: ${p => p.cursor};
 		border-radius: 50%;
 		font-family: sans-serif;
 		color: black;
@@ -87,27 +89,37 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 	constructor(props:ConstantNodeWidgetProps){
 		super(props);
 
-		this.state={
-			renameActive:false,
-			titleChanged:false,
-			nodeName:this.props.node.getOptions().name
-		}
+		this.state = {
+			renameActive: false,
+			titleChanged: false,
+			nodeName: this.props.node.getOptions().name,
+			badName: false
+		};
+		this.setBadNameState = this.setBadNameState.bind(this);
 	}
 
-	componentDidUpdate(prevProps: Readonly<ConstantNodeWidgetProps>, prevState: Readonly<ConstantNodeWidgetState>, snapshot?: any): void {
-		if(this.state.renameActive){
-			this.props.node.setLocked(true);
-		}
-		else{
-			this.props.node.setLocked(false);
+	cancelRenameNode() {
+		this.setState({renameActive: false, nodeName: this.props.node.getNodeName(), badName: false});
+		this.props.node.setLocked(false);
+	}
 
-			if(this.state.nodeName!==this.props.node.getNodeName()){
-				//call redux store
+	renameNode() {
+		this.props.node.setLocked(false);
 
-				let state = this.props.renameDomainNode(this.state.nodeName,this.props.node.getNodeName());
+		if (this.state.nodeName !== this.props.node.getNodeName()) {
+			if (!this.state.badName) {
+				this.props.renameDomainNode(this.state.nodeName, this.props.node.getNodeName());
 				this.props.node.renameNode(this.state.nodeName);
+			} else {
+				this.setState({nodeName: this.props.node.getNodeName()});
 			}
 		}
+		this.setState({renameActive: false});
+		this.setState({badName: false});
+	}
+
+	setBadNameState(bool: boolean) {
+		this.setState({badName: bool});
 	}
 
 	render() {
@@ -115,35 +127,45 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 			<Node
 				data-basic-node-name={this.props.name}
 				selected={this.props.node.isSelected()}
-				background={this.props.node.getOptions().color}>
+				background={this.props.node.getOptions().color}
+				pointerEvents={this.props.node.isEditable()?"auto":"none"}
+				cursor={this.props.node.isEditable()?"pointer":"move"}
+			>
 				<Title>
-					<TitleName onDoubleClick={() => {
-						this.setState({renameActive: !this.state.renameActive});
-					}}>
-						{!this.state.renameActive ? this.state.nodeName :
-							<input autoFocus type="text" style={{width:this.props.node.getOptions().name.length * 8+"px",height:20+"px"}} name="" value={this.state.nodeName} onChange={e => this.setState({nodeName:e.target.value})}/>
-						}
-					</TitleName>
+					<PortWidget engine={this.props.engine} port={this.props.node.getMainPort()}>
+						<TitleName onDoubleClick={() => {
+							if (!this.state.renameActive) {
+								this.setState({renameActive: true});
+								this.props.node.setLocked(true);
+							}
+						}}>
+							{!this.state.renameActive ? this.props.node.getNodeName() :
+								<input autoFocus onBlur={() => {
+									this.renameNode();
+								}
+								}
+									   onKeyDown={(e) => {
+										   if (e.key === "Escape") {
+											   this.cancelRenameNode();
+										   } else if (e.key === "Enter") {
+											   this.renameNode();
+										   }
+									   }
+									   }
+
+									   type="text" style={{
+									width: this.props.node.getOptions().name.length * 9 + "px",
+									height: 20 + "px",
+									border: this.state.badName ? "1px solid red" : "1px solid black"
+								}} name="" value={this.state.nodeName}
+									   onChange={(e) => {
+										   this.setState({nodeName: e.target.value});
+										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
+									   }}/>
+							}
+						</TitleName>
+					</PortWidget>
 				</Title>
-				<Ports>
-					<PortsContainer>
-						<PortWidget engine={this.props.engine} port={this.props.node.getConstantPort()}>
-							<Port height={20} width={this.props.node.getOptions().name.length * 10}>{CONSTPORT}</Port>
-						</PortWidget>
-
-						{/*<PortWidget
-							style={{
-								left: this.props.size / 2 - 8,
-								top: this.props.size - 8,
-								position: 'absolute'
-							}}
-							port={this.props.node.getPort(PortModelAlignment.BOTTOM)}
-							engine={this.props.engine}>
-							<PortR />
-						</PortWidget>*/}
-
-					</PortsContainer>
-				</Ports>
 			</Node>)
 	}
 }

@@ -28,7 +28,6 @@ function checkImportedState(state:any) {
     if (!state.language.constants || !state.language.predicates || !state.language.functions) {
         throw 'State is not valid!';
     }
-
 }
 
 function root(state = defaultState, action:any) {

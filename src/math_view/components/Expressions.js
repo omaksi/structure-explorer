@@ -152,7 +152,9 @@ const Expressions = (props) => (
                </Row>
             )}
               <button className='btn btn-success' title={"Pridaj"} onClick={() => props.addExpression(expression.expressionType)}><FontAwesome
-                  name='plus'/></button>
+                  name='plus'/>
+                  Pridaj
+              </button>
           </Card.Body>
         </Card>
      )}

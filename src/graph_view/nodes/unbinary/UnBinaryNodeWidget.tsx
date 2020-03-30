@@ -4,7 +4,9 @@ import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port, PortS } from "./UnBinaryPortLabelWidget";
-import {ADDPORT, UNBINARY} from "../ConstantNames";
+import {ADDPORT, CONSTANT} from "../ConstantNames";
+import FontAwesome from "react-fontawesome";
+import {Predicate, PredicateButton, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -38,6 +40,7 @@ export const Node = styled.div<{ background: string; selected: boolean, pointerE
 	`;
 
 export const Title = styled.div`
+		width: 100%;
 		background: rgba(0, 0, 0, 0.3);
 		display: flex;
 		white-space: nowrap;
@@ -46,6 +49,7 @@ export const Title = styled.div`
 	`;
 
 export const TitleName = styled.div`
+		width: 100%;
 		flex-grow: 1;
 		padding: 5px 5px;
 				
@@ -66,6 +70,19 @@ export const PortsContainer = styled.div`
 		flex: 1 0 0;
 	`;
 
+export const PredicateRemoveButton = styled.div`
+		outline: none;
+		cursor: pointer;
+		height: 20px;
+		background: rgba(white, 0.1);
+		color: black;
+		text-align:center;
+
+		&:hover {
+			background: #00ff80;
+		}
+	`;
+
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
 	constructor(props: UnBinaryNodeWidgetProps) {
 		super(props);
@@ -81,13 +98,16 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 	generatePredicate = (predicate: string) => {
 		return (
-			<Port onDoubleClick={() => {
-				this.props.node.removeUnaryPredicate(predicate);
-				this.props.engine.repaintCanvas();
-			}}
-				  height={20} width={this.props.node.getOptions().name.length * 10}>
-				{predicate}
-			</Port>
+
+			<PredicateRowContainer key={predicate} >
+				<Predicate>
+					{predicate}
+				</Predicate>
+				<PredicateRemoveButton onClick={() =>{
+					this.props.node.removeUnaryPredicate(predicate);
+					this.props.engine.repaintCanvas();
+				}}><FontAwesome name={"fas fa-trash"}/></PredicateRemoveButton>
+			</PredicateRowContainer>
 		)
 	};
 
@@ -153,7 +173,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 								}} name="" value={this.state.nodeName}
 									   onChange={(e) => {
 										   this.setState({nodeName: e.target.value});
-										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
+										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, CONSTANT);
 									   }}/>
 							}
 						</TitleName>

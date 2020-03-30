@@ -31,11 +31,6 @@ class App extends React.Component<AppProps,AppState> {
       exerciseName:''
     };
 
-    this.props.store.subscribe(() => {
-      let state = this.props.store.getState();
-      console.log('STATE:', state);
-    });
-
     this.exportState = this.exportState.bind(this);
     this.importState = this.importState.bind(this);
     this.setModelShowState = this.setModelShowState.bind(this);

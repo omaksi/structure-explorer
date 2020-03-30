@@ -2,9 +2,10 @@ import * as React from 'react';
 import { BinaryLabelModel } from './BinaryLabelModel';
 import styled from '@emotion/styled';
 import {DiagramEngine} from '@projectstorm/react-diagrams';
-import {ADDPORT, INPORT, OUTPORT} from "../../nodes/ConstantNames";
+import {ADDPORT} from "../../nodes/ConstantNames";
 import _ from "lodash";
-import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
+import FontAwesome from "react-fontawesome";
+import {PredicateRemoveButton} from "../../nodes/unbinary/UnBinaryNodeWidget";
 
 export interface BinaryLabelWidgetProps {
 	model: BinaryLabelModel;
@@ -24,7 +25,7 @@ export const PredicatesNode = styled.div<{pointerEvents: string, cursor:string}>
 		color: black;
 		border: solid 2px black;
 		overflow: visible;
-		font-size: 11px;
+		font-size: 12px;
 		font-weight: bold;
 
 	`;
@@ -36,10 +37,6 @@ export const Predicate = styled.div`
 		background: rgba(white, 0.1);
 		color: black;
 		text-align:center;
-
-		&:hover {
-			background: #00ff80;
-		}
 	`;
 
 export const Predicates = styled.div`
@@ -60,6 +57,30 @@ export const PredicateContainer = styled.div`
 		}
 	`;
 
+export const PredicateRowContainer = styled.div`
+		display: flex;
+		flex-direction: row;
+		flex> 1 0 0;
+	`;
+
+export const PredicateButton = styled.div`
+		outline: none;
+		cursor: pointer;
+		height: 20px;
+		background: rgba(white, 0.1);
+		color: black;
+		text-align:center;
+
+		&:hover {
+			background: #00ff80;
+		}
+	`;
+export const HoverEffect = styled.div`
+		&:hover {
+					background: #00ff80;
+				}
+`;
+
 interface BinaryNodeWidgetState {
 	renameActive?:boolean;
 	titleChanged?:boolean;
@@ -72,14 +93,22 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 
 	}
 
-	generatePredicate = (predicate: string) => {
+	generatePredicate = (predicateObject: string) => {
 			return (
-				<Predicate onDoubleClick={() => {
-					this.props.model.removePredicate(predicate);
-					this.props.engine.repaintCanvas();
-				}}>
-					{predicate}
+				<PredicateRowContainer key={predicateObject[0]} >
+					<PredicateButton onClick={() =>{
+						this.props.model.changeDirectionOfPredicate(predicateObject[0], predicateObject[1]);
+						this.forceUpdate();
+					}}><FontAwesome name={predicateObject[1]==="b"?'fas fa-arrows-alt-h':(predicateObject[1]==="f"?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></PredicateButton>
+
+				<Predicate>
+					{predicateObject[0]}
 				</Predicate>
+					<PredicateRemoveButton onClick={() =>{
+						this.props.model.removePredicate(predicateObject[0]);
+						this.props.engine.repaintCanvas();
+					}}><FontAwesome name={"fas fa-minus"}/></PredicateRemoveButton>
+				</PredicateRowContainer>
 			)
 		};
 
@@ -147,13 +176,19 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 			<PredicatesNode pointerEvents={this.props.model.editable?"all":"none"} cursor={this.props.model.editable?"pointer":"move"}>
 				<Predicates>
 					<PredicateContainer>
+						{/*this.props.model.getPredicates().forEach((predicateName:string,predicateDirection:string) =>
+						this.generatePredicate(predicateName,predicateDirection)
+						)
+						*/}
 						{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicate)}
+						<HoverEffect>
 						<Predicate onClick={() => {
 							this.props.model.addPredicate(`Pred${this.props.model.predicateIndex}`);
 							this.props.engine.repaintCanvas();
 						}}>
 							{ADDPORT}
 						</Predicate>
+						</HoverEffect>
 					</PredicateContainer>
 				</Predicates>
 			</PredicatesNode>)

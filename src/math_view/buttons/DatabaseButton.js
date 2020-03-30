@@ -3,8 +3,8 @@ import FontAwesome from 'react-fontawesome';
 import {Button} from "react-bootstrap";
 
 const DatabaseButton = ({onClick,enabled}) => (
-    <Button onClick={() => onClick()} className={enabled?"buttonSelected":"buttonNotSelected"}>
-        <FontAwesome name='database'/>
+    <Button onClick={() => onClick()} variant={"outline-secondary"} className={"btn-with-border "+(enabled?'active':'')}>
+        <FontAwesome name='fas fa-server'/>
     </Button>
 );
 

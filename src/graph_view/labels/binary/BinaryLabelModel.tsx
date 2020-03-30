@@ -2,7 +2,6 @@ import { LabelModel} from '@projectstorm/react-diagrams-core';
 import { DeserializeEvent } from '@projectstorm/react-canvas-core';
 import {BaseModelListener} from '@projectstorm/react-canvas-core';
 import { LabelModelOptions, LabelModelGenerics } from '@projectstorm/react-diagrams';
-import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
 
 export interface BinaryLabelModelOptions extends LabelModelOptions {
 	label?: string;
@@ -19,7 +18,7 @@ export interface BinaryLabelModelGenerics extends LabelModelGenerics {
 }
 
 export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
-	predicates: Set<string>;
+	predicates: Map<string,string>;
 	editable: boolean;
 	predicateIndex:number;
 	numberOfPredicates: number;
@@ -31,7 +30,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 			type: 'binary',
 		});
 
-		this.predicates = new Set();
+		this.predicates = new Map();
 		this.editable = true;
 		this.predicateIndex = 0;
 		this.numberOfPredicates = 0;
@@ -41,18 +40,34 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		this.options.label = label;
 	}
 
-	getPredicates():Set<string>{
+	getPredicates():Map<string,string>{
 		return this.predicates;
 	}
 
+	//b - both
+	//f - from => means it goes from this node to another (so this node is first parameter)
+	//t - to => means it goes to this node from another (so this node is second parameter)
 	addPredicate(name:string){
-		this.predicates.add(name);
+		this.predicates.set(name,"b");
 		this.predicateIndex+=1;
 	}
 
 	removePredicate(name:string){
 		if(this.predicates.has(name)){
 			this.predicates.delete(name);
+		}
+	}
+
+	//going from b -> f -> t
+	changeDirectionOfPredicate(name:string,currentDirection:string){
+		if(currentDirection === "b"){
+			this.predicates.set(name,"f");
+		}
+		else if(currentDirection === "f"){
+			this.predicates.set(name,"t");
+		}
+		else{
+			this.predicates.set(name,"b");
 		}
 	}
 

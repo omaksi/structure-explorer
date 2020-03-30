@@ -55,13 +55,38 @@ function structureReducer(s, action, struct) {
     case SET_CONSTANTS:
     case SET_PREDICATES:
     case SET_FUNCTIONS:
-    case ADD_CONSTANT_NODE:
-    case REMOVE_CONSTANT_NODE:
       syncLanguageWithStructure();
       setVariables();
       return state;
+
+    case ADD_CONSTANT_NODE:
+      insertNewInputs();
+      return state;
+
+    case REMOVE_CONSTANT_NODE:
+      deleteUnusedInputs();
+      //maybe need to rework
+      return state;
+
     case ADD_UNARY_PREDICATE:
-      syncLanguageWithStructure();
+      insertNewInputs();
+      let predicateName = action.predicateName+"/1";
+      let currentPredicateValue = state.predicates[predicateName].value;
+
+      if(currentPredicateValue === ""){
+        currentPredicateValue = action.nodeName;
+      }
+
+      else{
+        if (currentPredicateValue.charAt(currentPredicateValue.length - 1) === ",") {
+          currentPredicateValue += action.nodeName;
+        }
+        else {
+          currentPredicateValue += ","+action.nodeName;
+        }
+      }
+      functions.parseText(currentPredicateValue, state.predicates[predicateName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
+      setPredicateValue(predicateName);
       return state;
     case SET_CONSTANT_VALUE:
       setConstantValue(action.constantName, action.value);
@@ -103,7 +128,6 @@ function structureReducer(s, action, struct) {
       return state;
 
     case RENAME_DOMAIN_NODE:
-
       let currDomainState = state.domain.value;
 
       let nodeReg1 = new RegExp(action.oldValue + "[,]{1}", "g");
@@ -158,8 +182,10 @@ function structureReducer(s, action, struct) {
       else{
         let nodeRegex1 = new RegExp(action.nodeName + "[,]{1}", "g");
         let nodeRegex2 = new RegExp(action.nodeName+"?![.]", "g");
+        let nodeRegex3 = new RegExp("[,]{1}"+action.nodeName+"$", "g");
         currentDomainState = currentDomainState.replace(nodeRegex1, "");
         currentDomainState = currentDomainState.replace(nodeRegex2, "");
+        currentDomainState = currentDomainState.replace(nodeRegex3, "");
 
         if (currentDomainState.charAt(currentDomainState.length - 1) === ",") {
           currentDomainState = currentDomainState.substring(0, currentDomainState.length - 1);
@@ -283,17 +309,17 @@ function syncLanguageWithStructure() {
 
 function deleteUnusedInputs() {
   Object.keys(state.constants).forEach(e => {
-    if (!structure.language.hasConstant(e)) {
+    if (!structure.language.hasConstant(e.split('/')[0])) {
       delete state.constants[e];
     }
   });
   Object.keys(state.predicates).forEach(e => {
-    if (!structure.language.hasPredicate(e)) {
+    if (!structure.language.hasPredicate(e.split('/')[0])) {
       delete state.predicates[e];
     }
   });
   Object.keys(state.functions).forEach(e => {
-    if (!structure.language.hasFunction(e)) {
+    if (!structure.language.hasFunction(e.split('/')[0])) {
       delete state.functions[e];
     }
   });

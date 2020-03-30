@@ -1,10 +1,11 @@
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
+import {Button} from "react-bootstrap";
 
 const LockButton = ({lockFn, locked}) => (
-   <button className='btn btn-lock' onClick={() => lockFn()}>
+   <Button variant={'outline-secondary'} className={"btn-with-border"} onClick={() => lockFn()}>
      <FontAwesome name={locked ? 'unlock' : 'lock'}/>
-   </button>
+   </Button>
 );
 
 export default LockButton;

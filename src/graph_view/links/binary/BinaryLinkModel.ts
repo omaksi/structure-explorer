@@ -70,7 +70,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					let constantNode: ConstantNodeModel = sourceNode instanceof ConstantNodeModel ? sourceNode : targetNode instanceof ConstantNodeModel ? targetNode : null;
 					let unbinaryNode: UnBinaryNodeModel = sourceNode instanceof UnBinaryNodeModel ? sourceNode : targetNode instanceof UnBinaryNodeModel ? targetNode : null;
 
-					let constantPort: ConstantPortModel = constantNode.getConstantPort();
+					let constantPort: ConstantPortModel = constantNode.getMainPort();
 
 					if (constantPort === null || constantPort === undefined) {
 						throw new DOMException("Constant port can not be null, probably problem in initialization");
@@ -97,9 +97,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 							link.setTargetPortWithoutEvent(unbinaryNode.getMainPort());
 
 
-							console.log(constantPort);
 							//link.setSourcePort(constantPort); //calling setSource to the same port is causing strange behaviour and will unmount a link from the source port
-							console.log("link after target port",link.getSourcePort());
 
 							/*let newLink = new BinaryLinkModel();
 							newLink.setSourcePortWithoutEvent(constantPort);
@@ -109,12 +107,6 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					}
 
 					else {
-						/*link.remove();
-
-						let newLink = new BinaryLinkModel();
-						newLink.setSourcePort(constantPort);
-						newLink.setTargetPortWithoutEvent(unbinaryNode.getInPort());
-						console.log(newLink);*/
 						return;
 
 					}
@@ -228,7 +220,6 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 	}
 
 	setWidth(width: number) {
-		console.log("SET WIDTH");
 		this.options.width += width;
 		this.fireEvent({ width }, 'widthChanged');
 	}

@@ -16,7 +16,8 @@ export interface ConstantNodeModelOptions extends BasePositionModelOptions {
 }
 
 export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNodeModelGenerics> {
-	constantPort:ConstantPortModel;
+	mainPort:ConstantPortModel;
+	editable:boolean;
 
 	constructor(name: string, color: string,reduxProps:any);
 	constructor(options?: ConstantNodeModelOptions);
@@ -36,8 +37,8 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 			...options
 		});
 
-		this.constantPort = this.setUpConstantPort();
-		//this.addPort(new TernaryPortModel(PortModelAlignment.BOTTOM));
+		this.mainPort = this.setUpConstantPort();
+		this.editable = reduxProps["editable"];
 		this.registerEvents();
 	}
 
@@ -48,9 +49,17 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 	}
 
 	removeAllLinks(){
-		for (let link of _.values(this.getConstantPort().getLinks())) {
+		for (let link of _.values(this.getMainPort().getLinks())) {
 			link.remove();
 		}
+	}
+
+	isEditable():boolean{
+		return this.editable;
+	}
+
+	changeEditableState(value:boolean){
+		this.editable = value;
 	}
 
 	registerEvents(){
@@ -63,8 +72,8 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		})
 	}
 
-	getConstantPort(): ConstantPortModel {
-		return this.constantPort;
+	getMainPort(): ConstantPortModel {
+		return this.mainPort;
 	}
 
 	getNodeName(){
@@ -84,5 +93,17 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 			this.ports[port.getName()].setParent(null);
 			delete this.ports[port.getName()];
 		}
+	}
+
+	serialize() {
+		return {
+			...super.serialize(),
+			editable: this.editable
+		};
+	}
+
+	deserialize(event: any) {
+		super.deserialize(event);
+		this.editable = event.data.editable;
 	}
 }

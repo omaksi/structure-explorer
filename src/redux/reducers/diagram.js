@@ -6,9 +6,8 @@ import {
   SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
-import {INPORT, UNBINARY} from "../../graph_view/nodes/ConstantNames";
+import {UNBINARY} from "../../graph_view/nodes/ConstantNames";
 import {ConstantNodeModel} from "../../graph_view/nodes/constant/ConstantNodeModel";
-import {DefaultLinkModel} from "@projectstorm/react-diagrams-defaults";
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
 import {DiagramApplication} from "../../graph_view/DiagramAplication";
@@ -139,7 +138,7 @@ function createNode(nodeObject,nodeName,nameOfSet,diagramModel,diagramCanvas){
 }
 
 function createLink(sourcePort,targetPort,diagramModel){
-  let link = new DefaultLinkModel();
+  let link = new BinaryLinkModel();
   link.setSourcePort(sourcePort);
   link.setTargetPort(targetPort);
   diagramModel.addAll(link);
@@ -165,18 +164,19 @@ function syncConstants(values){
         let node = new ConstantNodeModel(nodeName, 'rgb(92,192,125)', {
           "renameDomainNode":values.renameDomainNode,
           "addConstantNode":values.addConstantNode,
-          "removeConstantNode":values.removeConstantNode
+          "removeConstantNode":values.removeConstantNode,
+          "editable":values.diagramState.editableNodes
         });
         createNode(node,nodeName,constantState,diagramModel,diagramCanvas);
         if(nodeProperties.value.length!==0){
-          createLink(node.getConstantPort(),domainState.get(nodeProperties.value).getPort(INPORT),diagramModel);
+          createLink(node.getMainPort(),domainState.get(nodeProperties.value).getMainPort(),diagramModel);
         }
       }
       else{
         let nodeObject = constantState.get(nodeName);
         nodeObject.removeAllLinks();
         if(nodeProperties.value.length!==0){
-          createLink(nodeObject.getConstantPort(),domainState.get(nodeProperties.value).getPort(INPORT),diagramModel);
+          createLink(nodeObject.getMainPort(),domainState.get(nodeProperties.value).getMainPort(),diagramModel);
         }
       }
     }

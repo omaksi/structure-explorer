@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
 import DownloadButton from "../buttons/DownloadButton";
 import {DEFAULT_FILE_NAME} from "../../constants";
 import FontAwesome from "react-fontawesome";
@@ -22,11 +22,13 @@ const ModalComponent = ({modalShowState,setModalShowState,setExerciseNameState,e
         <Modal.Footer>
             <DownloadButton genFile={exportState} title={"Uložiť"}
                             className='btn btn-success'>
+                Uložiť
             </DownloadButton>
 
-            <button className='btn btn-danger' title='Zrušiť' onClick={() => setModalShowState(false)}>
+            <Button variant={"danger"} title='Zrušiť' onClick={() => setModalShowState(false)}>
                 <FontAwesome name='fas fa-window-close'/>
-            </button>
+                Zrušiť
+            </Button>
 
         </Modal.Footer>
     </Modal>

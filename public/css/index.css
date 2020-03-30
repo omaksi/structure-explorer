@@ -42,12 +42,22 @@ body{
     border:0;
 }
 
-.btn:focus, .btn.focus {
-    box-shadow: none !important;;
+.btn-with-border {
+    border: 1px solid #6c757d;
+    color: #6c757d;
+}
+
+.teacher-mode-button:hover {
+    color:white !important;
+    background-color:#51c46b !important;
 }
 
 .no-border-radius,.no-border-radius div {
     border-radius: 0 !important;
+}
+
+.btn:focus, .btn.focus {
+    box-shadow: none !important;;
 }
 
 .form-control.is-invalid{

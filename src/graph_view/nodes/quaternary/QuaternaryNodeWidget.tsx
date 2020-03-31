@@ -8,8 +8,6 @@ export interface QuaternaryNodeWidgetProps {
 	engine: DiagramEngine;
 	size?: number;
 }
-
-//vzhlad portu (cierna gulicka)
 	export const Port = styled.div`
 		width: 16px;
 		height: 16px;
@@ -23,16 +21,17 @@ export interface QuaternaryNodeWidgetProps {
 		}
 	`;
 
+	export const Node = styled.div<{ size: number}>`
+			position: 'relative';
+			width: ${p => p.size};
+			height: ${p => p.size};
+			`;
+
 export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetProps> {
 	render() {
+
 		return (
-			<div
-				className={'quaternary-node'}
-				style={{
-					position: 'relative',
-					width: this.props.size,
-					height: this.props.size
-				}}>
+			<Node size={this.props.size}>
 				<svg
 					width={this.props.size}
 					height={this.props.size}
@@ -101,7 +100,7 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 					engine={this.props.engine}>
 					<Port />
 				</PortWidget>
-			</div>
+			</Node>
 		);
 	}
 }

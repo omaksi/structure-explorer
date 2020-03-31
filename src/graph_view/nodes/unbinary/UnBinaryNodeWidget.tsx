@@ -29,7 +29,8 @@ export const Node = styled.div<{ background: string; selected: boolean, pointerE
 		width: 100%;
 		pointer-events: ${p => p.pointerEvents};
 		cursor: ${p => p.cursor};
-		background-color: ${p => p.background};
+		/*background-color: ${p => p.background};*/
+		background-color: DarkCyan;
 		border-radius: 5px;
 		font-family: sans-serif;
 		font-weight: bold;

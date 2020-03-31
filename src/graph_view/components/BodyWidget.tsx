@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TrayWidget } from './TrayWidget';
-import {QuaternaryItemWidget, UnbinaryItemWidget} from './TrayItemWidget';
+import {ItemWidgetIcon} from './TrayItemWidget';
 import { DefaultNodeModel} from '@projectstorm/react-diagrams';
 import { CanvasWidget} from '@projectstorm/react-canvas-core';
 import { MainCanvasWidget} from './MainCanvasWidget';
@@ -11,6 +11,7 @@ import {QuaternaryNodeModel} from "../nodes/quaternary/QuaternaryNodeModel";
 import {TernaryNodeModel} from "../nodes/ternary/TernaryNodeModel";
 import FontAwesome from "react-fontawesome";
 import { Button } from 'react-bootstrap';
+import {ConstantIcon, QuaternaryIcon, TernaryIcon, UnbinaryIcon} from "./TrayItemWidgetIcon";
 
 export interface BodyWidgetProps {
 	renameDomainNode:any;
@@ -165,21 +166,30 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 						<Button title={"Pohyb po grafe"}  variant={"outline-primary"}  className={editableNodes?"":"active"} onClick={(e:any) => {editableNodesFunction(false)}}><FontAwesome name={"fas fa-arrows-alt"}/></Button>
 						<Button title={"Editovanie grafu"} variant={"outline-primary"} className={editableNodes?"active":""} onClick={(e:any) => {editableNodesFunction(true)}}><FontAwesome name={"fas fa-edit"}/></Button>
 
-						<UnbinaryItemWidget model={{type: 'in'}} clickFunction={createNode} element={this}
-											name="Pridaj vrchol" color="rgb(192,255,0)"
-											reduxProps={reduxProps}/>
-						<UnbinaryItemWidget model={{type: 'unbinary'}} clickFunction={createNode} element={this}
+						<ItemWidgetIcon model={{type: 'unbinary'}} clickFunction={createNode} element={this}
 											name="Pridaj unárny/binárny" color="rgb(125,192,125)"
-											reduxProps={reduxProps}/>
-						<UnbinaryItemWidget model={{type: 'constant'}} clickFunction={createNode} element={this}
-											name="Pridaj unárny/binárny" color="rgb(125,192,125)"
-											reduxProps={reduxProps}/>
-						<QuaternaryItemWidget model={{type: 'quaternary'}} clickFunction={createNode} element={this}
-										   name="Pridaj stvornarny" color="rgb(128,96,245)"
-										   reduxProps={reduxProps}/>
-						<QuaternaryItemWidget model={{type: 'ternary'}} clickFunction={createNode} element={this}
+											reduxProps={reduxProps}
+											title={"Pridaj vrchol, ktorý predstavuje prvok domény. Tomuto prvku je možné následne pridať unárne predikáty a vytvarať binárne väzby"}
+										children={<UnbinaryIcon/>}
+						/>
+						<ItemWidgetIcon model={{type: 'constant'}} clickFunction={createNode} element={this}
+											name="Pridaj konštantu" color="rgb(125,192,125)"
+											reduxProps={reduxProps}
+										children={<ConstantIcon/>}
+						/>
+
+						<ItemWidgetIcon model={{type: 'ternary'}} clickFunction={createNode} element={this}
 											  name="Pridaj ternary" color="rgb(128,96,245)"
-											  reduxProps={reduxProps}/>
+											  reduxProps={reduxProps}
+										children={<TernaryIcon/>}
+						/>
+
+						<ItemWidgetIcon model={{type: 'quaternary'}} clickFunction={createNode} element={this}
+										   name="Pridaj stvornarny" color="rgb(128,96,245)"
+										   reduxProps={reduxProps}
+										children={<QuaternaryIcon/>}
+						/>
+
 					</TrayWidget>
 					<Layer
 						onDrop={event => {

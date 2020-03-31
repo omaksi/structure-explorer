@@ -22,7 +22,8 @@ interface ConstantNodeWidgetState {
 }
 
 export const Node = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
-		background-color: ${p => p.background};
+		/*background-color: ${p => p.background};*/
+		background-color: green;
 		pointer-events: ${p => p.pointerEvents};
 		cursor: ${p => p.cursor};
 		border-radius: 50%;

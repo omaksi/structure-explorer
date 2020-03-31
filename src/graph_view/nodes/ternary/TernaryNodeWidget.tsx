@@ -9,7 +9,6 @@ export interface QuaternaryNodeWidgetProps {
 	size?: number;
 }
 
-//vzhlad portu (cierna gulicka)
 	export const Port = styled.div`
 		width: 16px;
 		height: 16px;
@@ -23,16 +22,16 @@ export interface QuaternaryNodeWidgetProps {
 		}
 	`;
 
+export const Node = styled.div<{ size: number}>`
+			position: 'relative';
+			width: ${p => p.size};
+			height: 27;
+			`;
+
 export class TernaryNodeWidget extends React.Component<QuaternaryNodeWidgetProps> {
 	render() {
 		return (
-			<div
-				className={'ternary-node'}
-				style={{
-					position: 'relative',
-					width: this.props.size,
-					height: this.props.size
-				}}>
+			<Node size={this.props.size}>
 				<svg
 					width={this.props.size}
 					height={this.props.size}
@@ -89,18 +88,7 @@ export class TernaryNodeWidget extends React.Component<QuaternaryNodeWidgetProps
 					engine={this.props.engine}>
 					<Port />
 				</PortWidget>
-
-				{/*<PortWidget
-					style={{
-						left: this.props.size / 2 - 8,
-						top: this.props.size - 8,
-						position: 'absolute'
-					}}
-					port={this.props.node.getPort(PortModelAlignment.BOTTOM)}
-					engine={this.props.engine}>
-					<Port />
-				</PortWidget>*/}
-			</div>
+			</Node>
 		);
 	}
 }

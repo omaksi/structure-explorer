@@ -104,7 +104,7 @@ const Expressions = (props) => (
                            <InputGroup.Append>
                                <Button
                               onClick={() => props.removeExpression(expression.expressionType, index)}><FontAwesome
-                              name='trash'/></Button>
+                              name='fas fa-trash'/></Button>
                            {props.teacherMode ? (
                               <LockButton
                                  lockFn={() => props.lockExpressionValue(expression.expressionType, index)}
@@ -151,10 +151,10 @@ const Expressions = (props) => (
                  </div>
                </Row>
             )}
-              <button className='btn btn-success' title={"Pridaj"} onClick={() => props.addExpression(expression.expressionType)}><FontAwesome
+              <Button variant={"success"} title={"Pridaj"} onClick={() => props.addExpression(expression.expressionType)}><FontAwesome
                   name='plus'/>
                   Pridaj
-              </button>
+              </Button>
           </Card.Body>
         </Card>
      )}

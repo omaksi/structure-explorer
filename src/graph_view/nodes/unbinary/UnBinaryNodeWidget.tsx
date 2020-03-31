@@ -77,7 +77,7 @@ export const PredicateRemoveButton = styled.div`
 		background: rgba(white, 0.1);
 		color: black;
 		text-align:center;
-
+		
 		&:hover {
 			background: #00ff80;
 		}
@@ -182,7 +182,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				<Ports>
 					<PortsContainer>
 						{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
-						<PortWidget engine={this.props.engine} port={this.props.node.getAppendPort()}>
+						<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
 							<PortS onClick={() => {
 								this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
 								this.props.engine.repaintCanvas();

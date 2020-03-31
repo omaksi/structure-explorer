@@ -10,6 +10,7 @@ import {ConstantNodeModel} from "../nodes/constant/ConstantNodeModel";
 import {QuaternaryNodeModel} from "../nodes/quaternary/QuaternaryNodeModel";
 import {TernaryNodeModel} from "../nodes/ternary/TernaryNodeModel";
 import FontAwesome from "react-fontawesome";
+import { Button } from 'react-bootstrap';
 
 export interface BodyWidgetProps {
 	renameDomainNode:any;
@@ -161,8 +162,8 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			<Body>
 				<Content>
 					<TrayWidget>
-						<button className={"btn btn-outline-primary "+(editableNodes?"":"active")} onClick={(e) => {editableNodesFunction(false)}}><FontAwesome name={"fas fa-arrows-alt"}/></button>
-						<button className={"btn btn-outline-primary "+(editableNodes?"active":"")} onClick={(e) => {editableNodesFunction(true)}}><FontAwesome name={"fas fa-edit"}/></button>
+						<Button title={"Pohyb po grafe"}  variant={"outline-primary"}  className={editableNodes?"":"active"} onClick={(e:any) => {editableNodesFunction(false)}}><FontAwesome name={"fas fa-arrows-alt"}/></Button>
+						<Button title={"Editovanie grafu"} variant={"outline-primary"} className={editableNodes?"active":""} onClick={(e:any) => {editableNodesFunction(true)}}><FontAwesome name={"fas fa-edit"}/></Button>
 
 						<UnbinaryItemWidget model={{type: 'in'}} clickFunction={createNode} element={this}
 											name="Pridaj vrchol" color="rgb(192,255,0)"

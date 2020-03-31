@@ -60,7 +60,7 @@ export const PredicateContainer = styled.div`
 export const PredicateRowContainer = styled.div`
 		display: flex;
 		flex-direction: row;
-		flex> 1 0 0;
+		flex: 1 0 0;
 	`;
 
 export const PredicateButton = styled.div`
@@ -107,7 +107,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 					<PredicateRemoveButton onClick={() =>{
 						this.props.model.removePredicate(predicateObject[0]);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome name={"fas fa-minus"}/></PredicateRemoveButton>
+					}}><FontAwesome name={"fas fa-trash"}/></PredicateRemoveButton>
 				</PredicateRowContainer>
 			)
 		};

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button,
+    Button, Col,
     Form,
     InputGroup,
     Row,
@@ -10,6 +10,7 @@ import {EXPRESSION_LABEL, FORMULA, TERM} from "../../constants";
 import FontAwesome from 'react-fontawesome';
 import LockButton from '../buttons/LockButton';
 import HelpButton from "../buttons/HelpButton";
+import AddButton from "../buttons/AddButton";
 
 const helpFormula = (
    <div className="collapse" id="help-formula">
@@ -81,30 +82,34 @@ function prepareExpressions(formulas, terms) {
 const Expressions = (props) => (
    <React.Fragment>
      {prepareExpressions(props.formulas, props.terms).map(expression =>
-        <Card className={"no-border-radius"}>
-          <Card.Header className={"d-flex justify-content-between"}>
+        <Card>
+          <Card.Header as="h4" className={"d-flex justify-content-between"}>
             <Card.Title>{expression.panelTitle}</Card.Title>
               <HelpButton dataTarget={"#help-" + expression.expressionType.toLowerCase()}/>
           </Card.Header>
           <Card.Body>
             {expression.help}
             {expression.items.map((item, index) =>
+                <Form>
                <Row key={index}>
-                 <div className='expression'>
-                   <div className='col-sm-6 col-md-8'>
+                   <Col>
                      <Form.Group>
                        <InputGroup>
-                         <label className='input-group-addon'
-                                htmlFor={expression.expressionType.toLowerCase() + '-' + index}>
-                           <span>{EXPRESSION_LABEL[expression.expressionType]}<sub>{index + 1}</sub></span></label>
+                           <InputGroup.Prepend>
+                               <InputGroup.Text id={expression.expressionType.toLowerCase() + '-' + index}>{EXPRESSION_LABEL[expression.expressionType]}<sub>{index + 1}</sub></InputGroup.Text>
+                           </InputGroup.Prepend>
                            <Form.Control type='text' value={item.value}
                                          onChange={(e) => props.onInputChange(e.target.value, index, expression.expressionType)}
                                          id={expression.expressionType.toLowerCase() + '-' + index}
-                                         disabled={item.inputLocked}/>
+                                         disabled={item.inputLocked}
+                                         isInvalid={item.errorMessage.length >0}
+                           />
                            <InputGroup.Append>
-                               <Button
+                               <Button variant={"outline-secondary"}
                               onClick={() => props.removeExpression(expression.expressionType, index)}><FontAwesome
-                              name='fas fa-trash'/></Button>
+                              name='fas fa-trash'/>
+                                   &nbsp;Zmaž
+                               </Button>
                            {props.teacherMode ? (
                               <LockButton
                                  lockFn={() => props.lockExpressionValue(expression.expressionType, index)}
@@ -112,24 +117,26 @@ const Expressions = (props) => (
                            ) : null}
                            </InputGroup.Append>
                        </InputGroup>
-                       <Form.Text className={item.errorMessage.length === 0?"":"alert alert-danger"}>{item.errorMessage}</Form.Text>
                      </Form.Group>
-                   </div>
-                   <div className='col-sm-4 col-md-2 col-xs-8 no-padding-right'>
+                   </Col>
+
+                   <Col>
                      <Form.Group>
                        <InputGroup>
-                         <label className='input-group-addon'
-                                htmlFor={expression.expressionType.toLowerCase() + '-answer-' + index}>𝓜</label>
-                         <select className='form-control bootstrap-select' value={item.answerValue}
-                                 onChange={(e) => props.setExpressionAnswer(expression.expressionType, e.target.value, index)}
-                                 id={expression.expressionType.toLowerCase() + '-answer-' + index}
-                                 disabled={item.answerLocked}>
-                           {expression.answers(props.domain)}
-                         </select>
+                           <InputGroup.Prepend>
+                               <InputGroup.Text id={expression.expressionType.toLowerCase() + '-answer-' + index}>𝓜</InputGroup.Text>
+                           </InputGroup.Prepend>
+                           <Form.Control as="select" value={item.answerValue}
+                                         onChange={(e) => props.setExpressionAnswer(expression.expressionType, e.target.value, index)}
+                                         id={expression.expressionType.toLowerCase() + '-answer-' + index}
+                                         disabled={item.answerLocked}>
+                               {expression.answers(props.domain)}
+                            </Form.Control>
+
                          {expression.expressionType === TERM ? null : (
-                            <span className='input-group-addon'>
-                                       𝝋<sub>{index + 1}</sub>[e]
-                                     </span>
+                             <InputGroup.Append>
+                                 <InputGroup.Text id={expression.expressionType.toLowerCase() + '-answer-' + index}>𝝋<sub>{index + 1}</sub>[e]</InputGroup.Text>
+                             </InputGroup.Append>
                          )}
                          {props.teacherMode ? (
                             <InputGroup.Append>
@@ -140,21 +147,19 @@ const Expressions = (props) => (
                          ) : null}
                        </InputGroup>
                      </Form.Group>
-                   </div>
-                   <div className='col-sm-2 col-md-2 col-xs-4 no-padding-left feedback'>
+                   </Col>
+
                      {item.answerValue !== '' && item.answerValue !== '-1' ? (item.answerValue === item.expressionValue ?
-                        <strong className="text-success"><FontAwesome
+                         <strong className="text-success"><FontAwesome
                            name='check'/>&nbsp;Správne</strong> :
-                        <strong className="text-danger"><FontAwesome
-                           name='times'/>&nbsp;Nesprávne</strong>) : null}
-                   </div>
-                 </div>
+                         <strong className="text-danger"><FontAwesome
+                           name='times'/>&nbsp;Nesprávne</strong>
+                        ) : null}
+                   <Form.Control.Feedback type={"invalid"}>{item.errorMessage}</Form.Control.Feedback>
                </Row>
+                </Form>
             )}
-              <Button variant={"success"} title={"Pridaj"} onClick={() => props.addExpression(expression.expressionType)}><FontAwesome
-                  name='plus'/>
-                  Pridaj
-              </Button>
+            <AddButton onClickAddFunction={props.addExpression} addType={expression.expressionType}/>
           </Card.Body>
         </Card>
      )}

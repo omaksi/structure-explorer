@@ -9,19 +9,19 @@ const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState
         <ButtonGroup className='mr-lg-2'>
         <Button variant='outline-primary' size='lg' title='Prepnúť na matematický pohľad' className={diagramToggledState?'':' active'} onClick={() => setDiagramToggledState(false)}>
             <FontAwesome name='fas fa-list'/>
-            Matematika
+            &nbsp;Matematika
         </Button>
 
         <Button variant='outline-primary' size='lg' title='Prepnúť na grafový pohľad' className={diagramToggledState?' active':''} onClick={() => setDiagramToggledState(true)}>
             <FontAwesome name='fas fa-project-diagram'/>
-            Graf
+            &nbsp;Graf
         </Button>
         </ButtonGroup>
 
         <ButtonGroup className='mr-lg-2'>
         <Button variant='outline-primary' size='lg' title='Exportovať cvičenie' onClick={() => setModelShowState(true)}>
             <FontAwesome name='fas fa-file-export'/>
-            Exportovať
+            &nbsp;Exportovať
         </Button>
 
         <Button variant='outline-primary' size='lg' title='Importovať cvičenie'
@@ -33,16 +33,16 @@ const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState
                    }}
                    hidden={true}
                    style={{display: 'none'}}/>
-                   Importovať
+            &nbsp;Importovať
         </Button>
         </ButtonGroup>
 
         <ModalComponent exportState={exportState} modalShowState={modalShowState} setExerciseNameState={setExerciseNameState} setModalShowState={setModelShowState}/>
 
         <ButtonGroup>
-        <Button variant='outline-sucess' size='lg' title='Učiteľský mód' className={'teacher-mode-button btn-no-border'} onClick={() => setTeacherModeState()} style={teacherModeState?{color:'white',backgroundColor:'#28a745'}:{color:'black',backgroundColor:'white'}}>
+        <Button variant='outline-success' size='lg' title='Učiteľský mód' className={'teacher-mode-button btn-no-border '+(teacherModeState?'active':'')} onClick={() => setTeacherModeState()}>
             <FontAwesome name='fas fa-user-edit'/>
-            Učiteľský mód
+            &nbsp;Učiteľský mód
         </Button>
         </ButtonGroup>
     </ButtonToolbar>

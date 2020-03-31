@@ -15,7 +15,7 @@ const help = (
 
 const VariablesValue = (props) => (
    <Card className={"no-border-radius"}>
-     <Card.Header className={"d-flex justify-content-between"}>
+     <Card.Header as="h4" className={"d-flex justify-content-between"}>
        <Card.Title >Ohodnotenie premenných</Card.Title>
          <HelpButton dataTarget={"#help-variables"}/>
      </Card.Header>
@@ -23,9 +23,8 @@ const VariablesValue = (props) => (
        {help}
        <Row>
          <Col lg={12}>
-           <fieldset>
-             <legend>Ohodnotenie premenných</legend>
              <Form.Group>
+                 <Form.Label>Ohodnotenie premenných</Form.Label>
                <TextInput
                             errorProperty={props.variables.errorMessage}
                             onChange={(e) => props.onInputChange(e.target.value)}
@@ -35,9 +34,7 @@ const VariablesValue = (props) => (
                             teacherMode={props.teacherMode}
                             id='editor-variables'
                             placeholder='(x,1), (y,2), (z,3), ...'/>
-               <Form.Text className={props.variables.errorMessage.length === 0?"":"alert alert-danger"}>{props.variables.errorMessage}</Form.Text>
              </Form.Group>
-           </fieldset>
          </Col>
        </Row>
      </Card.Body>

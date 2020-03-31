@@ -8,8 +8,7 @@ import {RelationalTable} from './index'
 function FunctionInterpretation({functions,structure,setFunctionValueText,lockFunctionValue,toggleTable,toggleDatabase,teacherMode,domain,structureObject,setFunctionValueTable,lengthOfCol}) {
     return (
         <Col lg={lengthOfCol}>
-            <fieldset>
-                <legend>Interpretácia funkčných symbolov</legend>
+            <Form.Label>Interpretácia funkčných symbolov</Form.Label>
                 {functions.map((name) =>
                     <Form.Group>
                         <TextInput
@@ -27,8 +26,6 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
                             arity={parseInt(name.split('/')[1])}
                             domain={domain}
                             placeholder='(1,2), (2,2), (3,1), ...'/>
-                        <Form.Text
-                            className={structure.functions[name].errorMessage.length === 0 ? "" : "alert alert-danger"}>{structure.functions[name].errorMessage}</Form.Text>
                         {structure.functions[name].tableEnabled && domain.length > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
                                              arity={structureObject.language.getFunction(name.split('/')[0])}
@@ -48,7 +45,6 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
                         ) : null}
                     </Form.Group>
                 )}
-            </fieldset>
         </Col>
     )
 }

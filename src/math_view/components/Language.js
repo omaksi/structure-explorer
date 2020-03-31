@@ -16,8 +16,8 @@ const help = (
 
 const Language = (props) => (
    <Card className={"no-border-radius"}>
-     <Card.Header className={"d-flex justify-content-between"}>
-       <Card.Title>Jazyk 𝓛</Card.Title>
+     <Card.Header as="h4" className={"d-flex justify-content-between"}>
+       Jazyk 𝓛
          <HelpButton dataTarget={"#help-language"}/>
      </Card.Header>
      <Card.Body>

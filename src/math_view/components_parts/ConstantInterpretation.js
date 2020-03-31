@@ -5,34 +5,36 @@ import React from "react";
 export function ConstantInterpretation({structure,setConstantValue,structureObject,teacherMode,lockConstantValue}){
     return(
     <Col lg={12}>
-        <fieldset>
-            <legend>Interpretácia symbolov konštánt</legend>
+        <Form>
+            <Form.Label>Interpretácia symbolov konštánt</Form.Label>
             {Object.keys(structure.constants).map((constant) =>
                 <Form.Group>
                     <InputGroup>
-                        <label className='input-group-addon'
-                               htmlFor={'constant-' + constant}><var>i</var>({constant}) = </label>
-                        <select value={structure.constants[constant].value}
-                                id={'constant-' + constant}
-                                className='form-control bootstrap-select'
-                                onChange={(e) => setConstantValue(e.target.value, constant)}
-                                disabled={structure.constants[constant].locked}>
+                        <InputGroup.Prepend>
+                            <InputGroup.Text id={'constant-' + constant}><var>i</var>({constant}) = </InputGroup.Text>
+                        </InputGroup.Prepend>
+
+                        <Form.Control as="select" value={structure.constants[constant].value}
+                                      id={'constant-' + constant}
+                                      onChange={(e) => setConstantValue(e.target.value, constant)}
+                                      disabled={structure.constants[constant].locked}
+                                      isInvalid={structure.constants[constant].errorMessage.length > 0}>
                             <option value={''}>Vyber hodnotu ...</option>
                             {[...structureObject.domain].map((item) =>
                                 <option value={item}>{item}</option>
                             )}
-                        </select>
+                        </Form.Control>
                         {teacherMode ? (
                             <InputGroup.Append>
                                 <LockButton lockFn={() => lockConstantValue(constant)}
                                             locked={structure.constants[constant].locked}/>
                             </InputGroup.Append>
                         ) : null}
+                        <Form.Control.Feedback type={"invalid"}>{structure.constants[constant].errorMessage}</Form.Control.Feedback>
                     </InputGroup>
-                    <Form.Text className={structure.constants[constant].errorMessage.length === 0?"":"alert alert-danger"}>{structure.constants[constant].errorMessage}</Form.Text>
                 </Form.Group>
             )}
-        </fieldset>
+        </Form>
     </Col>
     )
 }

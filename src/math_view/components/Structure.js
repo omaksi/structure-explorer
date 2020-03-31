@@ -30,9 +30,11 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
     let functions = Object.keys(structure.functions);
 
   return (
-     <Card className={"no-border-radius"}>
-       <Card.Header className={"d-flex justify-content-between"}>
-         <Card.Title>Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)</Card.Title>
+     <Card>
+       <Card.Header as={"h4"} className={"d-flex justify-content-between"}>
+           <Card.Title>
+               Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)
+           </Card.Title>
            <HelpButton dataTarget={"#help-structure"}/>
        </Card.Header>
 
@@ -58,8 +60,6 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
          )}
        </Card.Body>
      </Card>
-
-
   )
 }
 

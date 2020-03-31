@@ -145,7 +145,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				cursor={this.props.node.isEditable()?"pointer":"move"}
 			>
 				<Title>
-					<PortWidget engine={this.props.engine} port={this.props.node.getMainPort()}>
+					<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getMainPort()}>
 						<TitleName onDoubleClick={() => {
 							if (!this.state.renameActive) {
 								this.setState({renameActive: true});

@@ -22,12 +22,11 @@ const ModalComponent = ({modalShowState,setModalShowState,setExerciseNameState,e
         <Modal.Footer>
             <DownloadButton genFile={exportState} title={"Uložiť"}
                             className='btn btn-success'>
-                Uložiť
             </DownloadButton>
 
-            <Button variant={"danger"} title='Zrušiť' onClick={() => setModalShowState(false)}>
+            <Button variant={"secondary"} title='Zrušiť' onClick={() => setModalShowState(false)}>
                 <FontAwesome name='fas fa-window-close'/>
-                Zrušiť
+                &nbsp;Zrušiť
             </Button>
 
         </Modal.Footer>

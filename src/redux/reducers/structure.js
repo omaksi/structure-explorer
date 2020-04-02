@@ -19,13 +19,24 @@ import {
   TOGGLE_EDIT_TABLE,
   TOGGLE_EDIT_DATABASE,
   RENAME_DOMAIN_NODE,
-  ADD_DOMAIN_NODE, REMOVE_DOMAIN_NODE, ADD_CONSTANT_NODE, REMOVE_CONSTANT_NODE, ADD_UNARY_PREDICATE
+  ADD_DOMAIN_NODE,
+  REMOVE_DOMAIN_NODE,
+  ADD_CONSTANT_NODE,
+  REMOVE_CONSTANT_NODE,
+  ADD_UNARY_PREDICATE,
+  RENAME_CONSTANT_NODE
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
   ITEM_NOT_IN_DOMAIN
 } from "../../constants/messages";
-import {RULE_DOMAIN, RULE_PREDICATES_FUNCTIONS_VALUE, RULE_VARIABLE_VALUATION} from "../../constants/parser_start_rules";
+import {
+  RULE_CONSTANTS,
+  RULE_DOMAIN,
+  RULE_PREDICATES_FUNCTIONS_VALUE,
+  RULE_VARIABLE_VALUATION
+} from "../../constants/parser_start_rules";
+import {setConstants} from "../actions";
 
 let functions = require('./functions/functions');
 
@@ -128,17 +139,7 @@ function structureReducer(s, action, struct) {
       return state;
 
     case RENAME_DOMAIN_NODE:
-      let currDomainState = state.domain.value;
-
-      let nodeReg1 = new RegExp(action.oldValue + "[,]{1}", "g");
-      let nodeReg2 = new RegExp("[,]{1}"+action.oldValue+"$", "g");
-      let nodeReg3 = new RegExp("^"+action.oldValue+"$", "g");
-      let nodeReg4 = new RegExp("[,]{1}"+action.oldValue+"[,]{1}", "g");
-
-      currDomainState = currDomainState.replace(nodeReg1, action.value+",");
-      currDomainState = currDomainState.replace(nodeReg2, ","+action.value);
-      currDomainState = currDomainState.replace(nodeReg3, action.value);
-      currDomainState = currDomainState.replace(nodeReg4, ","+action.value+",");
+      let currDomainState = replaceAllOccurrences(action.oldName,action.newName,state.domain.value);
 
       if (currDomainState.charAt(currDomainState.length - 1) === ",") {
         currDomainState = currDomainState.substring(0, currDomainState.length - 1);
@@ -148,8 +149,8 @@ function structureReducer(s, action, struct) {
       setDomain();
 
       Object.keys(state.constants).forEach(c => {
-        if(state.constants[c].value === action.oldValue){
-          state.constants[c].value = action.value;
+        if(state.constants[c].value === action.oldName){
+          state.constants[c].value = action.newName;
         }
       });
       setConstantsValues();
@@ -157,6 +158,17 @@ function structureReducer(s, action, struct) {
       /*setPredicatesValues();
       setFunctionsValues();
       setVariables();*/
+      return state;
+    case RENAME_CONSTANT_NODE:
+      let currConstantState = replaceAllOccurrences(action.oldName,action.newName,state.constants.value);
+
+      if (currConstantState.charAt(currConstantState.length - 1) === ",") {
+        currConstantState = currConstantState.substring(0, currConstantState.length - 1);
+      }
+
+      functions.parseText(currConstantState, state.constants, {startRule: RULE_CONSTANTS});
+      setConstants();
+
       return state;
 
     case ADD_DOMAIN_NODE:
@@ -180,38 +192,22 @@ function structureReducer(s, action, struct) {
       }
 
       else{
-        let nodeRegex1 = new RegExp(action.nodeName + "[,]{1}", "g");
-        let nodeRegex2 = new RegExp(action.nodeName+"?![.]", "g");
-        let nodeRegex3 = new RegExp("[,]{1}"+action.nodeName+"$", "g");
-        currentDomainState = currentDomainState.replace(nodeRegex1, "");
-        currentDomainState = currentDomainState.replace(nodeRegex2, "");
-        currentDomainState = currentDomainState.replace(nodeRegex3, "");
+        currentDomainState = replaceAllOccurrences(action.nodeName,"",currentDomainState);
 
         if (currentDomainState.charAt(currentDomainState.length - 1) === ",") {
           currentDomainState = currentDomainState.substring(0, currentDomainState.length - 1);
         }
       }
 
-
-      /*if (!state.constants.parsed) {
-        currentDomainState = "";
-      } else {*/
-
-        /*let nodeRegex1 = new RegExp(action.nodeName + ",", "g");
-        let nodeRegex2 = new RegExp(action.nodeName, "g");
-        currentDomainState = currentDomainState.replace(nodeRegex1, "");
-        currentDomainState = currentDomainState.replace(nodeRegex2, "");
-
-        if (currentDomainState.charAt(currentDomainState.length - 1) === ",") {
-          currentDomainState = currentDomainState.substring(0, currentDomainState.length - 1);
-        }*/
-        /*let newParsedArray = replaceAllOccurrencesInParsedArray(state.domain.parsed,action.nodeName,"");
-        newParsedArray = newParsedArray.filter(val => val !== "");
-        currentDomainState = newParsedArray.join();
-      }*/
-
       functions.parseText(currentDomainState, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
+
+      Object.keys(state.constants).forEach(c => {
+        if(state.constants[c].value === action.oldName){
+          state.constants[c].value = "";
+        }
+      });
+      setConstantsValues();
       return state;
 
     case SET_DOMAIN:
@@ -265,6 +261,28 @@ function structureReducer(s, action, struct) {
     default:
       return state;
   }
+}
+
+function replaceAllOccurrences(oldValue,newValue,state){
+  let nodeRegex1 = new RegExp("^"+oldValue + "[,]{1}", "g");
+  let nodeRegex2 = new RegExp("[,]{1}"+oldValue+"$", "g");
+  let nodeRegex3 = new RegExp("^"+oldValue+"$", "g");
+  let nodeRegex4 = new RegExp("[,]{1}"+oldValue+"[,]{1}", "g");
+
+  if(newValue === ""){
+    state = state.replace(nodeRegex1, "");
+    state = state.replace(nodeRegex2, "");
+    state = state.replace(nodeRegex3, "");
+    state = state.replace(nodeRegex4, ",");
+  }
+
+  else{
+    state = state.replace(nodeRegex1, newValue+",");
+    state = state.replace(nodeRegex2, ","+newValue);
+    state = state.replace(nodeRegex3, newValue);
+    state = state.replace(nodeRegex4, ","+newValue+",");
+  }
+  return state;
 }
 
 function replaceAllOccurrencesInParsedArray(parsedArray,oldValue,value){

@@ -9,7 +9,7 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
         <Col lg={lengthOfCol}>
             <Form.Label>Interpretácia predikátových symbolov</Form.Label>
                 {predicates.map((name) =>
-                    <Form.Group>
+                    <Form.Group key={name}>
                         <TextInput
                                    errorProperty={structure.predicates[name].errorMessage}
                                    onChange={(e) => setPredicateValueText(e.target.value, name)}

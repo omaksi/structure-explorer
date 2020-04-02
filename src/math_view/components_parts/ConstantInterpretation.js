@@ -8,7 +8,7 @@ export function ConstantInterpretation({structure,setConstantValue,structureObje
         <Form>
             <Form.Label>Interpretácia symbolov konštánt</Form.Label>
             {Object.keys(structure.constants).map((constant) =>
-                <Form.Group>
+                <Form.Group key={constant}>
                     <InputGroup>
                         <InputGroup.Prepend>
                             <InputGroup.Text id={'constant-' + constant}><var>i</var>({constant}) = </InputGroup.Text>
@@ -19,9 +19,9 @@ export function ConstantInterpretation({structure,setConstantValue,structureObje
                                       onChange={(e) => setConstantValue(e.target.value, constant)}
                                       disabled={structure.constants[constant].locked}
                                       isInvalid={structure.constants[constant].errorMessage.length > 0}>
-                            <option value={''}>Vyber hodnotu ...</option>
+                            <option key={''} value={''}>Vyber hodnotu ...</option>
                             {[...structureObject.domain].map((item) =>
-                                <option value={item}>{item}</option>
+                                <option key={item} value={item}>{item}</option>
                             )}
                         </Form.Control>
                         {teacherMode ? (

@@ -53,7 +53,7 @@ function languageReducer(s, action, struct) {
         }
       }
 
-      if(predicateState.charAt(predicateState.length-1)==="," || state.predicates.parsed === undefined || state.predicates.parsed.length===0){
+      if(predicateState.charAt(predicateState.length-1)==="," || (state.predicates.parsed && state.predicates.parsed.length===0)){
         predicateState+=unaryPredicate;
       }
       else{
@@ -66,7 +66,7 @@ function languageReducer(s, action, struct) {
     case ADD_CONSTANT_NODE:
       let constantState = state.constants.value;
 
-      if(constantState.charAt(constantState.length-1)==="," || state.constants.parsed === undefined || state.constants.parsed.length===0){
+      if(constantState.charAt(constantState.length-1)==="," || (state.constants.parsed && state.constants.parsed.length===0)){
         constantState+=action.nodeName;
       }
       else{

@@ -46,9 +46,9 @@ const helpTerm = (
 
 const getFormulaAnswers = () => (
    <React.Fragment>
-     <option value={'-1'}>⊨/⊭?</option>
-     <option value={'true'}>⊨</option>
-     <option value={'false'}>⊭</option>
+     <option key={'-1'} value={'-1'}>⊨/⊭?</option>
+     <option key={'true'} value={'true'}>⊨</option>
+     <option key={'false'} value={'false'}>⊭</option>
    </React.Fragment>
 );
 
@@ -56,7 +56,7 @@ const getTermAnswers = (domain) => (
    <React.Fragment>
      <option value={''}>Vyber hodnotu ...</option>
      {domain.map(item =>
-        <option value={item}>{item}</option>
+        <option key={item} value={item}>{item}</option>
      )}
    </React.Fragment>
 );
@@ -82,7 +82,7 @@ function prepareExpressions(formulas, terms) {
 const Expressions = (props) => (
    <React.Fragment>
      {prepareExpressions(props.formulas, props.terms).map(expression =>
-        <Card>
+        <Card className={"mt-3"} key={expression.expressionType}>
           <Card.Header as="h4" className={"d-flex justify-content-between"}>
             <Card.Title>{expression.panelTitle}</Card.Title>
               <HelpButton dataTarget={"#help-" + expression.expressionType.toLowerCase()}/>
@@ -90,8 +90,8 @@ const Expressions = (props) => (
           <Card.Body>
             {expression.help}
             {expression.items.map((item, index) =>
-                <Form>
-               <Row key={index}>
+                <Form key={"expression-form-"+index}>
+               <Row key={"expression-row"+index}>
                    <Col>
                      <Form.Group>
                        <InputGroup>
@@ -105,10 +105,9 @@ const Expressions = (props) => (
                                          isInvalid={item.errorMessage.length >0}
                            />
                            <InputGroup.Append>
-                               <Button variant={"outline-secondary"}
+                               <Button variant={"secondary"}
                               onClick={() => props.removeExpression(expression.expressionType, index)}><FontAwesome
                               name='fas fa-trash'/>
-                                   &nbsp;Zmaž
                                </Button>
                            {props.teacherMode ? (
                               <LockButton

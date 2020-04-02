@@ -74,10 +74,10 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	registerEvents() {
 		let reduxProps = this.options.reduxProps;
-		let nodeName = this.options.name;
+		let node = this;
 		this.registerListener({
 			entityRemoved(event: any): void {
-				reduxProps["removeDomainNode"](nodeName);
+				reduxProps["removeDomainNode"](node.getNodeName());
 			}
 		})
 	}

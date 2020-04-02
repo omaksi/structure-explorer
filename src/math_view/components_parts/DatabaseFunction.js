@@ -10,7 +10,7 @@ function renderFunctionValueSelect(functionName, functionValues, params, domain,
         <select className="selectComponent" onChange={(e) => onChange(params.concat([e.target.value]), functionName)} value={value}>
             <option value=''>{''}</option>
             {domain.map(item =>
-                <option disabled={disabled} value={item}>{item}</option>
+                <option key={item} disabled={disabled} value={item}>{item}</option>
             )}
         </select>
     )
@@ -47,10 +47,10 @@ function DatabaseFunction(props) {
 
     let mainElement = (
         <tbody>
-        {permutateWithRepetitions(domainValueArray,props.arity).map((arrayValues) =>
-            <tr>
-                {arrayValues.map((value) =>
-                    <td className="centerItems">
+        {permutateWithRepetitions(domainValueArray,props.arity).map((arrayValues,count) =>
+            <tr key={"database-function-row"+count}>
+                {arrayValues.map((value,index) =>
+                    <td key={"database-function-row-"+count+"-item-"+index}>
                         {value}
                     </td>
                 )}
@@ -63,12 +63,12 @@ function DatabaseFunction(props) {
         );
 
     let headElements = (
-        <th className="interpretationHead">
+        <th>
             {props.symbol+"("}
         {[...Array(props.arity-1)].map((x, count) =>
-            <span><var>{"m"}</var><sub>{count+1}</sub>{", "}</span>
+            <span key={"database-function-header-parameter-"+count}><var>{"m"}</var><sub>{count+1}</sub>{", "}</span>
          )}
-            <span><var>{"m"}</var><sub>{props.arity}</sub></span>
+            <span key={"database-function-header-parameter-last"}><var>{"m"}</var><sub>{props.arity}</sub></span>
             {")"}
         </th>
     );
@@ -78,7 +78,7 @@ function DatabaseFunction(props) {
             <thead>
             <tr>
                 {[...Array(props.arity)].map((x, count) =>
-                    <th className="interpretationHead"><var>{"m"}</var><sub>{count+1}</sub></th>
+                    <th key={"database-function-header"+count}><var>{"m"}</var><sub>{count+1}</sub></th>
                 )}
                 {headElements}
             </tr>

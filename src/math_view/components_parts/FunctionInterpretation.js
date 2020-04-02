@@ -10,7 +10,7 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
         <Col lg={lengthOfCol}>
             <Form.Label>Interpretácia funkčných symbolov</Form.Label>
                 {functions.map((name) =>
-                    <Form.Group>
+                    <Form.Group key={name}>
                         <TextInput
                             errorProperty={structure.functions[name].errorMessage}
                             onChange={(e) => setFunctionValueText(e.target.value, name)}

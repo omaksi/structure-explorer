@@ -3,7 +3,7 @@ import {
   ADD_DOMAIN_NODE, RENAME_DOMAIN_NODE, CHECK_BAD_NAME, REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
-  SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES
+  SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES, RENAME_CONSTANT_NODE
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
 import {UNBINARY} from "../../graph_view/nodes/ConstantNames";
@@ -51,8 +51,12 @@ function diagramReducer(state, action) {
       checkIfNameCanBeUsed(state, action);
       return state;
     case RENAME_DOMAIN_NODE:
-      state.domainNodes.set(action.value, state.domainNodes.get(action.oldValue));
-      state.domainNodes.delete(action.oldValue);
+      state.domainNodes.set(action.newName, state.domainNodes.get(action.oldName));
+      state.domainNodes.delete(action.oldName);
+      return state;
+    case RENAME_CONSTANT_NODE:
+      state.constantNodes.set(action.newName, state.constantNodes.get(action.oldName));
+      state.constantNodes.delete(action.oldName);
       return state;
     case SYNC_MATH_STATE:
       deleteAllLabels(state);

@@ -18,10 +18,16 @@ export const setDomain = (value) => ({
   value
 });
 
-export const renameDomainNode = (value,oldValue) => ({
+export const renameDomainNode = (oldName,newName) => ({
   type: 'RENAME_DOMAIN_NODE',
-  value,
-  oldValue
+  oldName,
+  newName
+});
+
+export const renameConstantNode = (oldName,newName) => ({
+  type: 'RENAME_CONSTANT_NODE',
+  oldName,
+  newName
 });
 
 export const syncMathState = () => ({

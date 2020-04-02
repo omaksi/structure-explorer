@@ -14,7 +14,7 @@ const help = (
 );
 
 const VariablesValue = (props) => (
-   <Card className={"no-border-radius"}>
+   <Card className={"mt-3"}>
      <Card.Header as="h4" className={"d-flex justify-content-between"}>
        <Card.Title >Ohodnotenie premenných</Card.Title>
          <HelpButton dataTarget={"#help-variables"}/>

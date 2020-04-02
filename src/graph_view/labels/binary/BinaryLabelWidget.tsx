@@ -41,7 +41,7 @@ export const Predicate = styled.div`
 
 export const Predicates = styled.div`
 		display: flex;
-		background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+		background-image: linear-gradient(rgba(256, 256, 256, 0.4), rgba(256, 256, 256, 0.5));
 	`;
 
 export const PredicateContainer = styled.div`

@@ -64,10 +64,10 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 
 	registerEvents(){
 		let reduxProps = this.options.reduxProps;
-		let nodeName = this.options.name;
+		let node = this;
 		this.registerListener({
 			entityRemoved(event: any): void {
-				reduxProps["removeConstantNode"](nodeName);
+				reduxProps["removeConstantNode"](node.getNodeName());
 			}
 		})
 	}

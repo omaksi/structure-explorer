@@ -11,6 +11,7 @@ export interface MainCanvasWidgetProps {
 		background-color:white !important;
 		background-size: 50px 50px;
 		display: flex;
+		/*border: 1px solid black;*/
 
 		> * {
 			height: 100%;
@@ -48,7 +49,7 @@ export class MainCanvasWidget extends React.Component<MainCanvasWidgetProps> {
 		return (
 			<Container
 				background={this.props.background || 'rgb(60, 60, 60)'}
-				color={this.props.color || 'rgba(0,0,0, 0.07)'}>
+				color={this.props.color || 'rgba(0,0,0, 0.15)'}>
 				{this.props.children}
 			</Container>
 		);

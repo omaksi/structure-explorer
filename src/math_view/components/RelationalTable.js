@@ -11,7 +11,7 @@ function renderFunctionValueSelect(functionName, functionValues, params, domain,
         <select onChange={(e) => onChange(params.concat([e.target.value]), functionName)} value={value}>
             <option value=''>{''}</option>
             {domain.map(item =>
-                <option disabled={disabled} value={item}>{item}</option>
+                <option key={item} disabled={disabled} value={item}>{item}</option>
             )}
         </select>
     )
@@ -21,7 +21,7 @@ export function RelationalTable(props) {
     let domain = [...props.domain];
 
     let inputComponent = (item) => (
-        <td className="checkComponent">
+        <td key={item} className="checkComponent">
             {props.type === PREDICATE ? (
                 <input type='checkbox'
                        onChange={(e) => props.onInputChange(item, props.name, e.target.checked)}
@@ -43,7 +43,7 @@ export function RelationalTable(props) {
     );
 
     let arity2 = domain.map((item1) =>
-        <tr>
+        <tr key={item1}>
             <th className="interpretationHead">{item1}</th>
             {domain.map((item2) =>
                 inputComponent([item1, item2])
@@ -57,7 +57,7 @@ export function RelationalTable(props) {
             <tr>
                 <th className="interpretationHead">{props.name}</th>
                 {domain.map(item =>
-                    <th className="interpretationHead">{item}</th>
+                    <th key={item} className="interpretationHead">{item}</th>
                 )}
             </tr>
             </thead>

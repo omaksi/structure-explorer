@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ConstantNodeModel } from './ConstantNodeModel';
 import {DiagramEngine, PortWidget} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
-import {UNBINARY} from "../ConstantNames";
+import {CONSTANT, UNBINARY} from "../ConstantNames";
 
 export interface ConstantNodeWidgetProps {
 	node: ConstantNodeModel;
@@ -23,22 +23,23 @@ interface ConstantNodeWidgetState {
 
 export const Node = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
 		/*background-color: ${p => p.background};*/
-		background-color: green;
+		background-color: #a6adbd;
 		pointer-events: ${p => p.pointerEvents};
 		cursor: ${p => p.cursor};
 		border-radius: 50%;
 		font-family: sans-serif;
+		font-weight:bold;
 		color: black;
 		border: solid 2px black;
 		overflow: hidden;
-		font-size: 11px;
+		font-size: 13px;
 		border: solid 2.5px ${p => (p.selected ? 'rgb(0,192,255)' : 'black')};
 		justify-items: center;
 		text-align:center;
 	`;
 
 export const Title = styled.div`
-		//background: rgba(0, 0, 0, 0.3);
+		background: rgba(256, 256, 256, 0.15);
 		display: flex;
 		white-space: nowrap;
 		justify-items: center;
@@ -50,41 +51,10 @@ export const TitleName = styled.div`
 		padding: 10px 10px;
 				
 		&:hover {
-			background: #90EE90;
+			background: rgba(256, 256, 256, 0.4);
 		}
 	`;
 
-export const Ports = styled.div`
-		display: flex;
-		//background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
-	`;
-
-export const PortsContainer = styled.div`
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-
-		&:first-of-type {
-			margin-right: 10px;
-		}
-
-		&:only-child {
-			margin-right: 0px;
-		}
-	`;
-
-export const PortR = styled.div`
-		width: 16px;
-		height: 16px;
-		z-index: 10;
-		background: rgba(0, 0, 0, 0.5);
-		border-radius: 8px;
-		cursor: pointer;
-
-		&:hover {
-			background: rgba(0, 0, 0, 1);
-		}
-	`;
 
 export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,ConstantNodeWidgetState> {
 	constructor(props:ConstantNodeWidgetProps){
@@ -109,7 +79,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 
 		if (this.state.nodeName !== this.props.node.getNodeName()) {
 			if (!this.state.badName) {
-				this.props.renameDomainNode(this.state.nodeName, this.props.node.getNodeName());
+				this.props.renameDomainNode(this.props.node.getNodeName(),this.state.nodeName);
 				this.props.node.renameNode(this.state.nodeName);
 			} else {
 				this.setState({nodeName: this.props.node.getNodeName()});
@@ -138,6 +108,8 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 							if (!this.state.renameActive) {
 								this.setState({renameActive: true});
 								this.props.node.setLocked(true);
+								this.props.engine.getModel().clearSelection();
+								this.props.node.setSelected(true);
 							}
 						}}>
 							{!this.state.renameActive ? this.props.node.getNodeName() :
@@ -161,7 +133,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 								}} name="" value={this.state.nodeName}
 									   onChange={(e) => {
 										   this.setState({nodeName: e.target.value});
-										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
+										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, CONSTANT);
 									   }}/>
 							}
 						</TitleName>

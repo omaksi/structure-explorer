@@ -7,7 +7,7 @@ function renderPredicateValueSelect(predicateName, predicateValues, params, doma
         <select className="selectComponent" onChange={(e) => changeValue(onInputChange,e.target.value,params,index,predicateName)} value={value}>
             <option value=''>{''}</option>
             {domain.map(item =>
-                <option disabled={disabled} value={item}>{item}</option>
+                <option key={item} disabled={disabled} value={item}>{item}</option>
             )}
         </select>
     )
@@ -32,10 +32,10 @@ export function DatabasePredicate(props) {
     }
         let element = (predicateArrayElements) => (
         <tbody>
-        {predicateArrayElements.map((onePredicateArray) =>
-        <tr>
+        {predicateArrayElements.map((onePredicateArray,count) =>
+        <tr key={'database-predicate-row'+count}>
             {onePredicateArray.map((domainElement,index) =>
-                <td>
+                <td key={'database-predicate-column'+index}>
                     {renderPredicateValueSelect(props.name, props.value, [...onePredicateArray], domain, props.onInputChange, props.disabled,domainElement,index)}
 
                 </td>
@@ -50,7 +50,7 @@ export function DatabasePredicate(props) {
     let newSelectionElement = () => (
         <tr>
             {props.selectionElement.map((value,index)=>
-                <SelectComponent domain={domain} index={index} props={props}/>
+                <SelectComponent key={'select-component'+index} domain={domain} index={index} props={props}/>
             )}
         </tr>
     );
@@ -60,9 +60,9 @@ export function DatabasePredicate(props) {
         <thead>
         <tr>
             {[...Array(parseInt(props.arity))].map((x, count) =>
-                <th className="interpretationHead"><var>{"m"}</var><sub>{count+1}</sub></th>
+                <th key={"m" + (count + 1)} className="interpretationHead"><var>{"m"}</var><sub>{count + 1}</sub></th>
+
             )}
-            {headElements}
         </tr>
         </thead>
         );

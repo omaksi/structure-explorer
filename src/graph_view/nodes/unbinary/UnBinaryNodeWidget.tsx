@@ -3,8 +3,8 @@ import { UnBinaryNodeModel } from './UnBinaryNodeModel';
 import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
-import { Port, PortS } from "./UnBinaryPortLabelWidget";
-import {ADDPORT, CONSTANT} from "../ConstantNames";
+import { Port } from "./UnBinaryPortLabelWidget";
+import {ADDPORT, CONSTANT, UNBINARY} from "../ConstantNames";
 import FontAwesome from "react-fontawesome";
 import {Predicate, PredicateButton, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
 
@@ -30,7 +30,7 @@ export const Node = styled.div<{ background: string; selected: boolean, pointerE
 		pointer-events: ${p => p.pointerEvents};
 		cursor: ${p => p.cursor};
 		/*background-color: ${p => p.background};*/
-		background-color: DarkCyan;
+		background-color: green;
 		border-radius: 5px;
 		font-family: sans-serif;
 		font-weight: bold;
@@ -42,7 +42,7 @@ export const Node = styled.div<{ background: string; selected: boolean, pointerE
 
 export const Title = styled.div`
 		width: 100%;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(256, 256, 256, 0.35);
 		display: flex;
 		white-space: nowrap;
 		justify-items: center;
@@ -55,13 +55,13 @@ export const TitleName = styled.div`
 		padding: 5px 5px;
 				
 		&:hover {
-			background: #90EE90;
+			background: rgba(256, 256, 256, 0.4);
 		}
 	`;
 
 export const Ports = styled.div`
 		display: flex;
-		background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+		background-image: linear-gradient(rgba(256, 256, 256, 0.45), rgba(256, 256, 256, 0.55));
 	`;
 
 export const PortsContainer = styled.div`
@@ -78,6 +78,8 @@ export const PredicateRemoveButton = styled.div`
 		background: rgba(white, 0.1);
 		color: black;
 		text-align:center;
+		padding-left:0.3em;
+		padding-right:0.3em;
 		
 		&:hover {
 			background: #00ff80;
@@ -85,6 +87,8 @@ export const PredicateRemoveButton = styled.div`
 	`;
 
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
+	_isMounted:boolean = false;
+
 	constructor(props: UnBinaryNodeWidgetProps) {
 		super(props);
 
@@ -95,6 +99,16 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			badName: false
 		};
 		this.setBadNameState = this.setBadNameState.bind(this);
+	}
+
+	componentWillUnmount(): void {
+		this._isMounted = false;
+
+	}
+
+	componentDidMount(): void {
+		this._isMounted = true;
+
 	}
 
 	generatePredicate = (predicate: string) => {
@@ -113,16 +127,22 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	};
 
 	cancelRenameNode() {
+		if(!this._isMounted){
+			return;
+		}
 		this.setState({renameActive: false, nodeName: this.props.node.getNodeName(), badName: false});
 		this.props.node.setLocked(false);
 	}
 
 	renameNode() {
+		if(!this._isMounted){
+			return;
+		}
 		this.props.node.setLocked(false);
 
 		if (this.state.nodeName !== this.props.node.getNodeName()) {
 			if (!this.state.badName) {
-				this.props.renameDomainNode(this.state.nodeName, this.props.node.getNodeName());
+				this.props.renameDomainNode(this.props.node.getNodeName(),this.state.nodeName);
 				this.props.node.renameNode(this.state.nodeName);
 			} else {
 				this.setState({nodeName: this.props.node.getNodeName()});
@@ -133,6 +153,10 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	}
 
 	setBadNameState(bool: boolean) {
+		if(!this._isMounted){
+			return;
+		}
+
 		this.setState({badName: bool});
 	}
 
@@ -148,9 +172,11 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				<Title>
 					<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getMainPort()}>
 						<TitleName onDoubleClick={() => {
-							if (!this.state.renameActive) {
+							if (!this.state.renameActive  && this._isMounted) {
 								this.setState({renameActive: true});
 								this.props.node.setLocked(true);
+								this.props.engine.getModel().clearSelection();
+								this.props.node.setSelected(true);
 							}
 						}}>
 							{!this.state.renameActive ? this.props.node.getNodeName() :
@@ -174,7 +200,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 								}} name="" value={this.state.nodeName}
 									   onChange={(e) => {
 										   this.setState({nodeName: e.target.value});
-										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, CONSTANT);
+										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
 									   }}/>
 							}
 						</TitleName>
@@ -184,11 +210,11 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					<PortsContainer>
 						{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
 						<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
-							<PortS onClick={() => {
+							<Port onClick={() => {
 								this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
 								this.props.engine.repaintCanvas();
 							}}
-								   height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</PortS>
+								   height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</Port>
 						</PortWidget>
 					</PortsContainer>
 

@@ -3,6 +3,7 @@ import {ConstantPortModel} from './ConstantPortModel';
 import { BasePositionModelOptions } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 import {CONSTPORT} from "../ConstantNames";
+import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
 
 export interface ConstantNodeModelGenerics {
 	PORT: ConstantPortModel;
@@ -62,11 +63,20 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		this.editable = value;
 	}
 
+	setConstantValueInMathView(domainNodeName:string){
+		this.options.reduxProps["setConstantValueFromLink"](this.getNodeName(),domainNodeName);
+	}
+
 	registerEvents(){
 		let reduxProps = this.options.reduxProps;
 		let node = this;
 		this.registerListener({
 			entityRemoved(event: any): void {
+				for (let link of _.values(node.getMainPort().getLinks())) {
+					if(link instanceof BinaryLinkModel){
+						link.setCallReduxFunc(false);
+					}
+				}
 				reduxProps["removeConstantNode"](node.getNodeName());
 			}
 		})

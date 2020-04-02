@@ -23,20 +23,17 @@ import {
   REMOVE_DOMAIN_NODE,
   ADD_CONSTANT_NODE,
   REMOVE_CONSTANT_NODE,
-  ADD_UNARY_PREDICATE,
-  RENAME_CONSTANT_NODE
+  ADD_UNARY_PREDICATE, RENAME_CONSTANT_NODE, SET_CONSTANT_VALUE_FROM_LINK
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
   ITEM_NOT_IN_DOMAIN
 } from "../../constants/messages";
 import {
-  RULE_CONSTANTS,
   RULE_DOMAIN,
   RULE_PREDICATES_FUNCTIONS_VALUE,
   RULE_VARIABLE_VALUATION
 } from "../../constants/parser_start_rules";
-import {setConstants} from "../actions";
 
 let functions = require('./functions/functions');
 
@@ -75,8 +72,19 @@ function structureReducer(s, action, struct) {
       return state;
 
     case REMOVE_CONSTANT_NODE:
+      console.log(state);
       deleteUnusedInputs();
       //maybe need to rework
+      return state;
+
+    case SET_CONSTANT_VALUE_FROM_LINK:
+      setConstantValue(action.constantNodeName,action.domainNodeName);
+      return state;
+
+    case RENAME_CONSTANT_NODE:
+      state.constants[action.newName] = state.constants[action.oldName];
+      delete state.constants[action.oldName];
+      syncLanguageWithStructure();
       return state;
 
     case ADD_UNARY_PREDICATE:
@@ -139,7 +147,7 @@ function structureReducer(s, action, struct) {
       return state;
 
     case RENAME_DOMAIN_NODE:
-      let currDomainState = replaceAllOccurrences(action.oldName,action.newName,state.domain.value);
+      let currDomainState = functions.replaceAllOccurrences(action.oldName,action.newName,state.domain.value);
 
       if (currDomainState.charAt(currDomainState.length - 1) === ",") {
         currDomainState = currDomainState.substring(0, currDomainState.length - 1);
@@ -158,17 +166,6 @@ function structureReducer(s, action, struct) {
       /*setPredicatesValues();
       setFunctionsValues();
       setVariables();*/
-      return state;
-    case RENAME_CONSTANT_NODE:
-      let currConstantState = replaceAllOccurrences(action.oldName,action.newName,state.constants.value);
-
-      if (currConstantState.charAt(currConstantState.length - 1) === ",") {
-        currConstantState = currConstantState.substring(0, currConstantState.length - 1);
-      }
-
-      functions.parseText(currConstantState, state.constants, {startRule: RULE_CONSTANTS});
-      setConstants();
-
       return state;
 
     case ADD_DOMAIN_NODE:
@@ -192,7 +189,7 @@ function structureReducer(s, action, struct) {
       }
 
       else{
-        currentDomainState = replaceAllOccurrences(action.nodeName,"",currentDomainState);
+        currentDomainState = functions.replaceAllOccurrences(action.nodeName,"",currentDomainState);
 
         if (currentDomainState.charAt(currentDomainState.length - 1) === ",") {
           currentDomainState = currentDomainState.substring(0, currentDomainState.length - 1);
@@ -263,36 +260,14 @@ function structureReducer(s, action, struct) {
   }
 }
 
-function replaceAllOccurrences(oldValue,newValue,state){
-  let nodeRegex1 = new RegExp("^"+oldValue + "[,]{1}", "g");
-  let nodeRegex2 = new RegExp("[,]{1}"+oldValue+"$", "g");
-  let nodeRegex3 = new RegExp("^"+oldValue+"$", "g");
-  let nodeRegex4 = new RegExp("[,]{1}"+oldValue+"[,]{1}", "g");
-
-  if(newValue === ""){
-    state = state.replace(nodeRegex1, "");
-    state = state.replace(nodeRegex2, "");
-    state = state.replace(nodeRegex3, "");
-    state = state.replace(nodeRegex4, ",");
-  }
-
-  else{
-    state = state.replace(nodeRegex1, newValue+",");
-    state = state.replace(nodeRegex2, ","+newValue);
-    state = state.replace(nodeRegex3, newValue);
-    state = state.replace(nodeRegex4, ","+newValue+",");
-  }
-  return state;
-}
-
-function replaceAllOccurrencesInParsedArray(parsedArray,oldValue,value){
+/*function replaceAllOccurrencesInParsedArray(parsedArray,oldValue,value){
   for(let i = 0;i<parsedArray.length;i++){
     if(parsedArray[i] === oldValue){
       parsedArray[i] = value;
     }
   }
   return parsedArray;
-}
+}*/
 
 function setDomain() {
   if (!state.domain.parsed) {
@@ -327,17 +302,17 @@ function syncLanguageWithStructure() {
 
 function deleteUnusedInputs() {
   Object.keys(state.constants).forEach(e => {
-    if (!structure.language.hasConstant(e.split('/')[0])) {
+    if (!structure.language.hasConstant(e/*.split('/')[0])*/)) {
       delete state.constants[e];
     }
   });
   Object.keys(state.predicates).forEach(e => {
-    if (!structure.language.hasPredicate(e.split('/')[0])) {
+    if (!structure.language.hasPredicate(e/*e.split('/')[0]*/)) {
       delete state.predicates[e];
     }
   });
   Object.keys(state.functions).forEach(e => {
-    if (!structure.language.hasFunction(e.split('/')[0])) {
+    if (!structure.language.hasFunction(/*e.split('/')[0]*/e)) {
       delete state.functions[e];
     }
   });

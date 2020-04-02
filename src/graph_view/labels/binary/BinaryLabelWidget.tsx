@@ -47,6 +47,7 @@ export const Predicates = styled.div`
 export const PredicateContainer = styled.div`
 		display: flex;
 		flex-direction: column;
+		flex-grow:1;
 
 		&:first-of-type {
 			margin-right: 10px;
@@ -70,6 +71,8 @@ export const PredicateButton = styled.div`
 		background: rgba(white, 0.1);
 		color: black;
 		text-align:center;
+		padding-left:0.2em;
+		padding-right:0.2em;
 
 		&:hover {
 			background: #00ff80;
@@ -77,9 +80,25 @@ export const PredicateButton = styled.div`
 	`;
 export const HoverEffect = styled.div`
 		&:hover {
-					background: #00ff80;
+					background: rgba(256, 256, 256, 0.8);
 				}
 `;
+
+export const Title = styled.div`
+		width: 100%;
+		background: rgba(256, 256, 256, 0.15);
+		display: flex;
+		white-space: nowrap;
+		justify-items: center;
+		text-align:center;
+		cursor: default;
+	`;
+
+export const TitleName = styled.div`
+		width: 100%;
+		flex-grow: 1;
+		padding: 5px 5px;
+	`;
 
 interface BinaryNodeWidgetState {
 	renameActive?:boolean;
@@ -104,10 +123,10 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 				<Predicate>
 					{predicateObject[0]}
 				</Predicate>
-					<PredicateRemoveButton onClick={() =>{
+					<PredicateButton onClick={() =>{
 						this.props.model.removePredicate(predicateObject[0]);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome name={"fas fa-trash"}/></PredicateRemoveButton>
+					}}><FontAwesome name={"fas fa-trash"}/></PredicateButton>
 				</PredicateRowContainer>
 			)
 		};
@@ -172,8 +191,19 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 	};
 
 	render() {
+		let link = this.props.model.getParent();
+		// @ts-ignore
+		let sourceNodeName = link.getSourcePort().getNode().getNodeName();
+		// @ts-ignore
+		let targetNodeName = link.getTargetPort().getNode().getNodeName();
+
 		return (
 			<PredicatesNode pointerEvents={this.props.model.editable?"all":"none"} cursor={this.props.model.editable?"pointer":"move"}>
+				<Title>
+					<TitleName>
+						{sourceNodeName+"_"+targetNodeName}
+					</TitleName>
+				</Title>
 				<Predicates>
 					<PredicateContainer>
 						{/*this.props.model.getPredicates().forEach((predicateName:string,predicateDirection:string) =>

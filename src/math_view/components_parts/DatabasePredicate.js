@@ -4,7 +4,7 @@ import {SelectComponent} from "./SelectComponent";
 
 function renderPredicateValueSelect(predicateName, predicateValues, params, domain, onInputChange, disabled,value,index) {
     return (
-        <select className="selectComponent" onChange={(e) => changeValue(onInputChange,e.target.value,params,index,predicateName)} value={value}>
+        <select onChange={(e) => changeValue(onInputChange,e.target.value,params,index,predicateName)} value={value}>
             <option value=''>{''}</option>
             {domain.map(item =>
                 <option key={item} disabled={disabled} value={item}>{item}</option>

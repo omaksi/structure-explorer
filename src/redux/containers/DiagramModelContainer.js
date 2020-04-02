@@ -19,7 +19,7 @@ import {
   removeConstantNode,
   checkBadName,
   addUnaryPredicate,
-  removeUnaryPredicate, toggleEditableNodes,
+  removeUnaryPredicate, toggleEditableNodes, renameConstantNode, setConstantValueFromLink,
 } from "../actions";
 import {connect} from 'react-redux';
 import {BodyWidget} from "../../graph_view/components/BodyWidget";
@@ -34,12 +34,13 @@ const mapStateToProps = (state) => ({
 const mapDispatchOnProps = {
   setDiagramModel:setDiagramModel,
   syncDiagram:syncDiagram,
-  renameDomainNode:renameDomainNode,
   setConstantValue: setConstantValue,
   checkBadName:checkBadName,
   addDomainNode:addDomainNode,
+  renameDomainNode:renameDomainNode,
   removeDomainNode:removeDomainNode,
   addConstantNode:addConstantNode,
+  renameConstantNode:renameConstantNode,
   removeConstantNode:removeConstantNode,
   setPredicateValueText: setPredicateValueText,
   setPredicateValueTable: setPredicateValueTable,
@@ -53,7 +54,8 @@ const mapDispatchOnProps = {
   lockFunctionValue: lockFunctionValue,
   addUnaryPredicate: addUnaryPredicate,
   removeUnaryPredicate: removeUnaryPredicate,
-  toggleEditableNodes: toggleEditableNodes
+  toggleEditableNodes: toggleEditableNodes,
+  setConstantValueFromLink: setConstantValueFromLink
 };
 
 const DiagramModelContainer = connect(

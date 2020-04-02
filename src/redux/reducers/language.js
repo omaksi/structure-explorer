@@ -1,6 +1,14 @@
 import {
-  ADD_CONSTANT_NODE, ADD_UNARY_PREDICATE,
-  IMPORT_APP, LOCK_CONSTANTS, LOCK_FUNCTIONS, LOCK_PREDICATES, REMOVE_CONSTANT_NODE, SET_CONSTANTS, SET_FUNCTIONS,
+  ADD_CONSTANT_NODE,
+  ADD_UNARY_PREDICATE,
+  IMPORT_APP,
+  LOCK_CONSTANTS,
+  LOCK_FUNCTIONS,
+  LOCK_PREDICATES,
+  REMOVE_CONSTANT_NODE,
+  RENAME_CONSTANT_NODE,
+  SET_CONSTANTS,
+  SET_FUNCTIONS,
   SET_PREDICATES
 } from "../actions/action_types";
 import {RULE_CONSTANTS, RULE_DOMAIN, RULE_FUNCTIONS, RULE_PREDICATES} from "../../constants/parser_start_rules";
@@ -53,7 +61,7 @@ function languageReducer(s, action, struct) {
         }
       }
 
-      if(predicateState.charAt(predicateState.length-1)==="," || (state.predicates.parsed && state.predicates.parsed.length===0)){
+      if(predicateState.charAt(predicateState.length-1)==="," || !state.predicates.parsed || state.predicates.parsed.length===0){
         predicateState+=unaryPredicate;
       }
       else{
@@ -66,7 +74,7 @@ function languageReducer(s, action, struct) {
     case ADD_CONSTANT_NODE:
       let constantState = state.constants.value;
 
-      if(constantState.charAt(constantState.length-1)==="," || (state.constants.parsed && state.constants.parsed.length===0)){
+      if(constantState.charAt(constantState.length-1)==="," || !state.constants.parsed || state.constants.parsed.length===0){
         constantState+=action.nodeName;
       }
       else{
@@ -97,6 +105,18 @@ function languageReducer(s, action, struct) {
 
       functions.parseText(currentConstantState, state.constants, {startRule: RULE_DOMAIN});
       setConstants();
+      return state;
+
+    case RENAME_CONSTANT_NODE:
+      let currConstantState = functions.replaceAllOccurrences(action.oldName,action.newName,state.constants.value);
+
+      if (currConstantState.charAt(currConstantState.length - 1) === ",") {
+        currConstantState = currConstantState.substring(0, currConstantState.length - 1);
+      }
+
+      functions.parseText(currConstantState, state.constants, {startRule: RULE_CONSTANTS});
+      setConstants();
+
       return state;
 
     case LOCK_CONSTANTS:

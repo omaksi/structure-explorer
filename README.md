@@ -19,5 +19,5 @@ Po úspešnom nainštalovaní spustíme virtuálny server pomocou príkazu:
 npm start
 ```
 
-Po tomto kroku bude aplikácia bežať na porte `localhost:3000/`.
+Po tomto kroku bude aplikácia bežať na porte `localhost:3000`.
 

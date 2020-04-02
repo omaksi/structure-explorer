@@ -7,7 +7,7 @@ function renderFunctionValueSelect(functionName, functionValues, params, domain,
         value = '';
     }
     return (
-        <select className="selectComponent" onChange={(e) => onChange(params.concat([e.target.value]), functionName)} value={value}>
+        <select onChange={(e) => onChange(params.concat([e.target.value]), functionName)} value={value}>
             <option value=''>{''}</option>
             {domain.map(item =>
                 <option key={item} disabled={disabled} value={item}>{item}</option>

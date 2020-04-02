@@ -40,8 +40,9 @@ export interface BinaryLinkModelGenerics extends LinkModelGenerics {
 
 export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 	label:BinaryLabelModel;
+	callReduxFunc:boolean;
 
-	constructor(options: BinaryLinkModelOptions = {}) {
+	constructor(options: BinaryLinkModelOptions = {},canCallReduxFunc:boolean = true) {
 		super({
 			type: 'binary',
 			width: options.width || 3,
@@ -51,7 +52,8 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 			...options
 		});
 
-		let link = this;
+		this.callReduxFunc = canCallReduxFunc;
+		let link:BinaryLinkModel = this;
 		// @ts-ignore
 		this.registerListener({
 			targetPortChanged(event: BaseEntityEvent<LinkModel> & { port: PortModel | null }): void {
@@ -88,6 +90,15 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 						}
 					}
 
+					//When link is created through Redux Action, another Action would be called and error would be thrown, so if it is created with some Redux Action we will not allow this Action to be dispatched
+					if(link.isCallReduxFunc()){
+						constantNode.setConstantValueInMathView(unbinaryNode.getNodeName());
+					}
+
+					else{
+						link.setCallReduxFunc(true);
+					}
+
 					if (sourceNode === constantNode) {
 						if (link.getTargetPort() === unbinaryNode.getMainPort()) {
 							return;
@@ -111,10 +122,33 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 
 					}
 				}
+			},
+
+			entityRemoved(event:any): void {
+				if(!link.isCallReduxFunc() || !link.getTargetPort()){
+					return;
+				}
+
+				let sourceNode = link.getSourcePort().getNode();
+				let targetNode = link.getTargetPort().getNode();
+
+				let constantNode: ConstantNodeModel = sourceNode  instanceof ConstantNodeModel ? sourceNode : targetNode instanceof ConstantNodeModel ? targetNode : null;
+
+				if(constantNode === null){
+					return;
+				}
+				constantNode.setConstantValueInMathView("");
 			}
 		});
 	}
 
+	setCallReduxFunc(value:boolean){
+		this.callReduxFunc = value;
+	}
+
+	isCallReduxFunc(){
+		return this.callReduxFunc;
+	}
 
 	setSourcePortWithoutEvent(port: PortModel) {
 		if (port !== null) {

@@ -83,8 +83,8 @@ const Expressions = (props) => (
    <React.Fragment>
      {prepareExpressions(props.formulas, props.terms).map(expression =>
         <Card className={"mt-3"} key={expression.expressionType}>
-          <Card.Header as="h4" className={"d-flex justify-content-between"}>
-            <Card.Title>{expression.panelTitle}</Card.Title>
+          <Card.Header as={"h5"} className={"d-flex justify-content-between"}>
+            <span>{expression.panelTitle}</span>
               <HelpButton dataTarget={"#help-" + expression.expressionType.toLowerCase()}/>
           </Card.Header>
           <Card.Body>
@@ -115,6 +115,7 @@ const Expressions = (props) => (
                                  locked={item.inputLocked}/>
                            ) : null}
                            </InputGroup.Append>
+                           <Form.Control.Feedback type={"invalid"}>{item.errorMessage}</Form.Control.Feedback>
                        </InputGroup>
                      </Form.Group>
                    </Col>
@@ -154,7 +155,6 @@ const Expressions = (props) => (
                          <strong className="text-danger"><FontAwesome
                            name='times'/>&nbsp;Nesprávne</strong>
                         ) : null}
-                   <Form.Control.Feedback type={"invalid"}>{item.errorMessage}</Form.Control.Feedback>
                </Row>
                 </Form>
             )}

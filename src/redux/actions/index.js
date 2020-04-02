@@ -30,6 +30,12 @@ export const renameConstantNode = (oldName,newName) => ({
   newName
 });
 
+export const setConstantValueFromLink = (constantNodeName,domainNodeName) => ({
+  type: 'SET_CONSTANT_VALUE_FROM_LINK',
+  constantNodeName,
+  domainNodeName
+});
+
 export const syncMathState = () => ({
   type: 'SYNC_MATH_STATE'
 });

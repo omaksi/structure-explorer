@@ -11,6 +11,7 @@ import {ConstantNodeModel} from "../../graph_view/nodes/constant/ConstantNodeMod
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
 import {DiagramApplication} from "../../graph_view/DiagramAplication";
+import _ from "lodash";
 
 export function defaultState(){
   let diagramModel = new DiagramModel();
@@ -142,7 +143,7 @@ function createNode(nodeObject,nodeName,nameOfSet,diagramModel,diagramCanvas){
 }
 
 function createLink(sourcePort,targetPort,diagramModel){
-  let link = new BinaryLinkModel();
+  let link = new BinaryLinkModel({},false);
   link.setSourcePort(sourcePort);
   link.setTargetPort(targetPort);
   diagramModel.addAll(link);
@@ -166,10 +167,12 @@ function syncConstants(values){
     for(let [nodeName,nodeProperties] of constantObjects.entries()) {
       if(!constantState.has(nodeName)) {
         let node = new ConstantNodeModel(nodeName, 'rgb(92,192,125)', {
-          "renameDomainNode":values.renameDomainNode,
-          "addConstantNode":values.addConstantNode,
-          "removeConstantNode":values.removeConstantNode,
-          "editable":values.diagramState.editableNodes
+          "addConstantNode": values.addConstantNode,
+          "renameConstantNode": values.renameConstantNode,
+          "removeConstantNode": values.removeConstantNode,
+          "checkBadName":values.checkBadName,
+          "editable":values.diagramState.editableNodes,
+          "setConstantValueFromLink":values.setConstantValueFromLink
         });
         createNode(node,nodeName,constantState,diagramModel,diagramCanvas);
         if(nodeProperties.value.length!==0){
@@ -178,11 +181,23 @@ function syncConstants(values){
       }
       else{
         let nodeObject = constantState.get(nodeName);
+
+        //When entity is removed it would cause a dispatch of another Redux Function and we would get error, by setting callReduxFunc on false we will avoid this problem
+        interruptCallingReduxFunc(nodeObject.getMainPort());
+
         nodeObject.removeAllLinks();
         if(nodeProperties.value.length!==0){
           createLink(nodeObject.getMainPort(),domainState.get(nodeProperties.value).getMainPort(),diagramModel);
         }
       }
+    }
+  }
+}
+
+function interruptCallingReduxFunc(port){
+  for (let link of _.values(port.getLinks())) {
+    if(link instanceof BinaryLinkModel){
+      link.setCallReduxFunc(false);
     }
   }
 }
@@ -289,8 +304,8 @@ function syncDomain(values) {
   domain.map(nodeName => {
     if (!existingDomainNodes.includes(nodeName)) {
       let node = new UnBinaryNodeModel(nodeName, 'rgb(92,192,125)', {
-        "renameDomainNode": values.renameDomainNode,
         "addDomainNode":values.addDomainNode,
+        "renameDomainNode": values.renameDomainNode,
         "removeDomainNode":values.removeDomainNode,
         "checkBadName":values.checkBadName,
         "addUnaryPredicate":values.addUnaryPredicate,
@@ -303,6 +318,7 @@ function syncDomain(values) {
 
 function removeWholeNode(node,diagramModel){
   for(let portObject of Object.values(node.getPorts())){
+    interruptCallingReduxFunc(portObject);
     node.removePort(portObject); //ensures that all links are deleted
   }
  diagramModel.removeNode(node);

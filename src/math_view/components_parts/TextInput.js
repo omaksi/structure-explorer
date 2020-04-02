@@ -7,7 +7,7 @@ import DatabaseButton from "../buttons/DatabaseButton";
 const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTable, toggleDatabase, arity, domain, placeholder,databaseEnabled,tableEnabled,errorProperty}) => (
     <InputGroup>
         <InputGroup.Prepend>
-            <InputGroup.Text id="inputGroup-sizing-default">{label}</InputGroup.Text>
+            <InputGroup.Text>{label}</InputGroup.Text>
         </InputGroup.Prepend>
 
             <Form.Control
@@ -20,7 +20,7 @@ const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTa
                 placeholder={placeholder}
             />
      <InputGroup.Append>
-         <InputGroup.Text id="inputGroup-sizing-default">&#125;</InputGroup.Text>
+         <InputGroup.Text>&#125;</InputGroup.Text>
          {toggleTable ? (
              (arity === 0 || arity > 2 || domain.length === 0) ? null : (
                      <TableButton onClick={() => toggleTable()} enabled={tableEnabled}/>

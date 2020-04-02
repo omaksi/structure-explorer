@@ -15,8 +15,8 @@ const help = (
 
 const VariablesValue = (props) => (
    <Card className={"mt-3"}>
-     <Card.Header as="h4" className={"d-flex justify-content-between"}>
-       <Card.Title >Ohodnotenie premenných</Card.Title>
+     <Card.Header as="h5" className={"d-flex justify-content-between"}>
+       <span>Ohodnotenie premenných</span>
          <HelpButton dataTarget={"#help-variables"}/>
      </Card.Header>
      <Card.Body>

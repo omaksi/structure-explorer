@@ -78,8 +78,8 @@ export const PredicateRemoveButton = styled.div`
 		background: rgba(white, 0.1);
 		color: black;
 		text-align:center;
-		padding-left:0.3em;
-		padding-right:0.3em;
+		padding-left:0.2em;
+		padding-right:0.2em;
 		
 		&:hover {
 			background: #00ff80;

@@ -7,7 +7,7 @@ import {CONSTANT, UNBINARY} from "../ConstantNames";
 export interface ConstantNodeWidgetProps {
 	node: ConstantNodeModel;
 	engine: DiagramEngine;
-	renameDomainNode:any;
+	renameConstantNode:any;
 	removeConstantNode:any;
 	checkBadName:any;
 	name?:string;
@@ -79,7 +79,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 
 		if (this.state.nodeName !== this.props.node.getNodeName()) {
 			if (!this.state.badName) {
-				this.props.renameDomainNode(this.props.node.getNodeName(),this.state.nodeName);
+				this.props.renameConstantNode(this.props.node.getNodeName(),this.state.nodeName);
 				this.props.node.renameNode(this.state.nodeName);
 			} else {
 				this.setState({nodeName: this.props.node.getNodeName()});

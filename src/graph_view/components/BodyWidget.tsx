@@ -14,17 +14,19 @@ import { Button } from 'react-bootstrap';
 import {ConstantIcon, QuaternaryIcon, TernaryIcon, UnbinaryIcon} from "./TrayItemWidgetIcon";
 
 export interface BodyWidgetProps {
-	renameDomainNode:any;
 	syncDiagram:any;
 	addDomainNode:any;
+	renameDomainNode:any;
 	removeDomainNode:any;
 	addConstantNode:any;
+	renameConstantNode:any;
 	removeConstantNode:any;
 	diagramState:any;
 	checkBadName:any;
 	addUnaryPredicate:any;
 	removeUnaryPredicate:any;
 	toggleEditableNodes:any;
+	setConstantValueFromLink:any;
 }
 
 	export const Body = styled.div`
@@ -148,15 +150,17 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 		let editableNodesFunction = this.props.toggleEditableNodes;
 
 		let reduxProps = {
-			"renameDomainNode": this.props.renameDomainNode,
 			"addDomainNode": this.props.addDomainNode,
+			"renameDomainNode": this.props.renameDomainNode,
 			"removeDomainNode": this.props.removeDomainNode,
 			"addConstantNode": this.props.addConstantNode,
+			"renameConstantNode": this.props.renameConstantNode,
 			"removeConstantNode": this.props.removeConstantNode,
 			"checkBadName":this.props.checkBadName,
 			"addUnaryPredicate":this.props.addUnaryPredicate,
 			"removeUnaryPredicate":this.props.removeUnaryPredicate,
-			"editable":editableNodes
+			"setConstantValueFromLink":this.props.setConstantValueFromLink,
+			"editable":editableNodes,
 		};
 
 		return (
@@ -179,13 +183,13 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 						/>
 
 						<ItemWidgetIcon model={{type: 'ternary'}} clickFunction={createNode} element={this}
-											  name="Pridaj ternary" color="rgb(128,96,245)"
+											  name="Pridaj ternárny" color="rgb(128,96,245)"
 											  reduxProps={reduxProps}
 										children={<TernaryIcon/>}
 						/>
 
 						<ItemWidgetIcon model={{type: 'quaternary'}} clickFunction={createNode} element={this}
-										   name="Pridaj stvornarny" color="rgb(128,96,245)"
+										   name="Pridaj štvornárny" color="rgb(128,96,245)"
 										   reduxProps={reduxProps}
 										children={<QuaternaryIcon/>}
 						/>

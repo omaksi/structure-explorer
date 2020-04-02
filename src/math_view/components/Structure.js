@@ -31,10 +31,8 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
 
   return (
      <Card>
-       <Card.Header as={"h4"} className={"d-flex justify-content-between"}>
-           <Card.Title>
-               Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)
-           </Card.Title>
+       <Card.Header as={"h5"} className={"d-flex justify-content-between"}>
+           <span>Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)</span>
            <HelpButton dataTarget={"#help-structure"}/>
        </Card.Header>
 

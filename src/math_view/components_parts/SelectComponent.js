@@ -14,7 +14,7 @@ export class SelectComponent extends React.Component{
     render() {
         return(
             <td>
-                {<select className="selectComponent" onChange={(e) => this.handleChange(e)}  value={this.props.props.selectionElement[this.props.index]}>
+                {<select onChange={(e) => this.handleChange(e)}  value={this.props.props.selectionElement[this.props.index]}>
                     <option value=''>{''}</option>
                     {this.props.domain.map(item =>
                         <option key={item} disabled={this.props.props.disabled} value={item}>{item}</option>

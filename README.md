@@ -1,44 +1,5 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Tento repozitár obsahuje zdrojové súbory k mojej bakalárskej práci s názvom "Prieskumník grafových štruktúr pre logiku prvého rádu". Aplikácia využíva framework [React](https://reactjs.org/) na vytvorenie použivateľského rozhrania. Je prepojena s knižnicou [Redux](https://redux.js.org/), ktorá slúži na spravovanie stavu premenných. Taktiež v tejto práci využívam [TypeScript](https://www.typescriptlang.org/), ktorý slúži na otypovanie premenných.
 
-## Available Scripts
+V roku 2017/18 v rámci bakalárskej práce Milana Cifru vznikol výučbový nástroj nazvaný Prieskumník sémantiky logiky prvého rádu. Nástroj umožňuje definovať prvorádové jazyky, štruktúry interpretujúce ich symboly a vyhodnocovať termy a formuly. Štruktúry je možné vytvárať definovaním v množinovej notácii a pomocou matíc. Pre lepšie pochopenie štruktúr a ich súvislosti s praktickými problémami je však vhodné prieskumník ďalej rozšíriť o grafový a prípadne aj databázový pohľad na štruktúry.
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Mojim cielom bolo rozšíriť existujúci prieskumník sémantiky logiky prvého rádu o grafovú vizualizáciu a editovanie štruktúr a prípadne aj zobrazenie a vizualizáciu v štýle databázových tabuliek.

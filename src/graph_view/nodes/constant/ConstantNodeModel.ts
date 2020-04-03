@@ -67,8 +67,11 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		this.options.reduxProps["setConstantValueFromLink"](this.getNodeName(),domainNodeName);
 	}
 
+	removeNodeFromMathView(){
+		this.options.reduxProps["removeConstantNode"](this.getNodeName());
+	}
+
 	registerEvents(){
-		let reduxProps = this.options.reduxProps;
 		let node = this;
 		this.registerListener({
 			entityRemoved(event: any): void {
@@ -77,7 +80,7 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 						link.setCallReduxFunc(false);
 					}
 				}
-				reduxProps["removeConstantNode"](node.getNodeName());
+				node.removeNodeFromMathView();
 			}
 		})
 	}

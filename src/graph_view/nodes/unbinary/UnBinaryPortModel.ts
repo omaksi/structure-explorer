@@ -1,7 +1,8 @@
 import {LinkModel, PortModelAlignment, PortModel} from '@projectstorm/react-diagrams';
 import _ from "lodash";
-import {ADDPORT} from "../ConstantNames";
 import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
+import {UnBinaryNodeModel} from "./UnBinaryNodeModel";
+import {ADDPORT} from "../ConstantNames";
 
 
 export class UnBinaryPortModel extends PortModel {
@@ -33,37 +34,25 @@ export class UnBinaryPortModel extends PortModel {
 	}
 
 	canLinkToPort(port: PortModel): boolean {
-		if(port.getName() === ADDPORT){
-			return false;
+		for (let link of _.values(this.getLinks())) {
+			if (link.getSourcePort() === this && link.getTargetPort() === port) {
+				return false;
+			}
 		}
 
-		else if(this.getParent() === port.getParent()){
-			if(this!=port){
-				return true;
-			}
-			else{
-				this.removeBadLink();
-			}
+		if (this.getParent() === port.getParent()) {
+			return this !== port;
+		}
+
+		else if(port.getName() === ADDPORT){
+			return false;
 		}
 
 		else if(port.getParent().getOptions().type==='constant') {
 			return true;
 		}
 
-		for (let link of _.values(this.getLinks())) {
-			if(link.getSourcePort() === this && link.getTargetPort() === port){
-				return false;
-			}
-		}
-
 		return true;
-	}
-
-	checkIfExists(link:LinkModel){
-		for (let existingLink of _.values(this.getLinks())) {
-			if(link.getSourcePort() === existingLink.getSourcePort() && link.getTargetPort() === existingLink.getTargetPort()){
-			}
-		}
 	}
 
 	addLink(link: LinkModel) {

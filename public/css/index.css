@@ -21,3 +21,13 @@ body{
 .form-control.is-invalid{
     background-image: none;
 }
+
+.hidden-on-medium-and-lower{
+    display: inline;
+}
+
+@media all and (max-width: 990px) {
+    .hidden-on-medium-and-lower{
+        display: none;
+    }
+}

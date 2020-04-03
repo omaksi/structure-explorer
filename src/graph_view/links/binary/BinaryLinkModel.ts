@@ -65,8 +65,12 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 				let targetNode = link.getTargetPort().getNode();
 
 				if (sourceNode instanceof UnBinaryNodeModel && targetNode instanceof UnBinaryNodeModel) {
+					if(sourceNode === targetNode) {
+						link.getOptions().curvyness = 135;
+						}
 					link.label = new BinaryLabelModel();
 					link.addLabel(link.label);
+					return;
 
 				} else if ((sourceNode instanceof UnBinaryNodeModel && targetNode instanceof ConstantNodeModel) || (targetNode instanceof UnBinaryNodeModel && sourceNode instanceof ConstantNodeModel)) {
 					let constantNode: ConstantNodeModel = sourceNode instanceof ConstantNodeModel ? sourceNode : targetNode instanceof ConstantNodeModel ? targetNode : null;
@@ -79,12 +83,9 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					}
 
 					let numberOfLinks: number = Object.keys(constantPort.getLinks()).length;
-
 					if (numberOfLinks > 1) {
 						for (let [linkKeyName, linkObject] of Object.entries(constantPort.getLinks())) {
 							if (linkObject !== link) {
-								/*linkObject.getSourcePort().removeLink(linkObject);
-								linkObject.getTargetPort().removeLink(linkObject);*/
 								linkObject.remove();
 							}
 						}
@@ -97,29 +98,6 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 
 					else{
 						link.setCallReduxFunc(true);
-					}
-
-					if (sourceNode === constantNode) {
-						if (link.getTargetPort() === unbinaryNode.getMainPort()) {
-							return;
-						} else {
-
-							link.setSourcePortWithoutEvent(constantPort);
-							link.setTargetPortWithoutEvent(unbinaryNode.getMainPort());
-
-
-							//link.setSourcePort(constantPort); //calling setSource to the same port is causing strange behaviour and will unmount a link from the source port
-
-							/*let newLink = new BinaryLinkModel();
-							newLink.setSourcePortWithoutEvent(constantPort);
-							newLink.setTargetPortWithoutEvent(unbinaryNode.getInPort());*/
-							return;
-						}
-					}
-
-					else {
-						return;
-
 					}
 				}
 			},

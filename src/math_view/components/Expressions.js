@@ -92,7 +92,7 @@ const Expressions = (props) => (
             {expression.items.map((item, index) =>
                 <Form key={"expression-form-"+index}>
                <Row key={"expression-row"+index}>
-                   <Col>
+                   <Col sm={12} md={12} lg={7}>
                      <Form.Group>
                        <InputGroup>
                            <InputGroup.Prepend>
@@ -120,7 +120,7 @@ const Expressions = (props) => (
                      </Form.Group>
                    </Col>
 
-                   <Col>
+                   <Col xs={8} sm={6} md={5} lg={3}>
                      <Form.Group>
                        <InputGroup>
                            <InputGroup.Prepend>
@@ -149,12 +149,14 @@ const Expressions = (props) => (
                      </Form.Group>
                    </Col>
 
+                   <Col xs={4} sm={4} md={2} className={"pt-2 no-padding-right"}>
                      {item.answerValue !== '' && item.answerValue !== '-1' ? (item.answerValue === item.expressionValue ?
                          <strong className="text-success"><FontAwesome
                            name='check'/>&nbsp;Správne</strong> :
                          <strong className="text-danger"><FontAwesome
                            name='times'/>&nbsp;Nesprávne</strong>
                         ) : null}
+                   </Col>
                </Row>
                 </Form>
             )}

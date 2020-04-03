@@ -1,4 +1,5 @@
 export const ADDPORT:string = "+";
+export const ADDPORTSELECTED:string = "x";
 export const INPORT:string = "IN";
 export const OUTPORT:string = "OUT";
 export const CONSTPORT:string = "*";

@@ -3,6 +3,7 @@ import {UnBinaryPortModel} from './UnBinaryPortModel';
 import {BasePositionModelOptions} from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 import {ADDPORT, MAINPORT} from "../ConstantNames";
+import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
 
 export interface UnBinaryNodeModelGenerics {
 	PORT: UnBinaryPortModel;
@@ -60,6 +61,12 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.editable = value;
 	}
 
+	createPredicateLinkForSameNode(){
+		let link = new BinaryLinkModel();
+		link.setSourcePort(this.getMainPort());
+		link.setTargetPort(this.getAppendPort());
+	}
+
 	addTemplatePorts() {
 		let port:UnBinaryPortModel = new UnBinaryPortModel(ADDPORT);
 		this.appendPort = port;
@@ -67,17 +74,16 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.addPort(port);
 
 		port = new UnBinaryPortModel(MAINPORT);
-		port.setPortAlignment(PortModelAlignment.LEFT);
+		//port.setPortAlignment(PortModelAlignment.TOP);
 		this.mainPort = port;
 		this.addPort(port);
 	}
 
 	registerEvents() {
-		let reduxProps = this.options.reduxProps;
 		let node = this;
 		this.registerListener({
 			entityRemoved(event: any): void {
-				reduxProps["removeDomainNode"](node.getNodeName());
+				node.removeNodeFromMathView();
 			}
 		})
 	}
@@ -110,16 +116,12 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		}
 	}
 
-	removeUnaryPredicateFromSet(name: string){
-		this.unaryPredicates.delete(name);
+	removeNodeFromMathView(){
+		this.options.reduxProps["removeDomainNode"](this.getNodeName());
 	}
 
-	addNewPort(name: string) {
-		//MAYBE EXTRACT FUNCTION IN graph_view reducer that checks if port with same name already exists and move it inside UnBinaryNodeModel
-		let port: UnBinaryPortModel = new UnBinaryPortModel(name);
-		port.setMaximumLinks(0);
-		this.addPort(port);
-		return port;
+	removeUnaryPredicateFromSet(name: string){
+		this.unaryPredicates.delete(name);
 	}
 
 	getNodeName() {

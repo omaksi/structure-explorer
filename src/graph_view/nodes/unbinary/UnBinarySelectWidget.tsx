@@ -4,12 +4,11 @@ import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port } from "./UnBinaryPortLabelWidget";
-import {ADDPORT, ADDPORTSELECTED, CONSTANT, UNBINARY} from "../ConstantNames";
+import {ADDPORT, CONSTANT, UNBINARY} from "../ConstantNames";
 import FontAwesome from "react-fontawesome";
 import {Predicate, PredicateButton, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
-import {UnBinarySelectWidget} from "./UnBinarySelectWidget";
 
-export interface UnBinaryNodeWidgetProps {
+export interface UnBinarySelectWidgetProps {
 	node: UnBinaryNodeModel;
 	engine: DiagramEngine;
 	renameDomainNode:any;
@@ -19,15 +18,14 @@ export interface UnBinaryNodeWidgetProps {
 	size?: number;
 }
 
-interface UnBinaryNodeWidgetState {
+interface UnBinarySelectWidgetState {
 	renameActive?:boolean;
 	titleChanged?:boolean;
 	nodeName?:string;
 	badName?:boolean;
-	predicateDropDownMenu?:boolean;
 }
 
-export const Node = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
+export const Select = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
 		width: 100%;
 		pointer-events: ${p => p.pointerEvents};
 		cursor: ${p => p.cursor};
@@ -88,18 +86,17 @@ export const PredicateRemoveButton = styled.div`
 		}
 	`;
 
-export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
+export class UnBinarySelectWidget extends React.Component<UnBinarySelectWidgetProps,UnBinarySelectWidgetState> {
 	_isMounted:boolean = false;
 
-	constructor(props: UnBinaryNodeWidgetProps) {
+	constructor(props: UnBinarySelectWidgetProps) {
 		super(props);
 
 		this.state = {
 			renameActive: false,
 			titleChanged: false,
 			nodeName: this.props.node.getOptions().name,
-			badName: false,
-			predicateDropDownMenu: false
+			badName: false
 		};
 		this.setBadNameState = this.setBadNameState.bind(this);
 	}
@@ -125,21 +122,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					this.props.node.removeUnaryPredicate(predicate);
 					this.props.engine.repaintCanvas();
 				}}><FontAwesome name={"fas fa-trash"}/></PredicateRemoveButton>
-			</PredicateRowContainer>
-		)
-	};
-
-	generateAvailablePredicate = (predicate: string) => {
-		return (
-
-			<PredicateRowContainer key={predicate} >
-				<Predicate>
-					{predicate}
-				</Predicate>
-				<PredicateRemoveButton onClick={() =>{
-					this.props.node.removeUnaryPredicate(predicate);
-					this.props.engine.repaintCanvas();
-				}}><FontAwesome name={"fas fa-plus"}/></PredicateRemoveButton>
 			</PredicateRowContainer>
 		)
 	};
@@ -180,93 +162,26 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 	render() {
 		return (
-			<div>
-			<Node
+			<Select
 				data-basic-node-name={this.props.name}
 				selected={this.props.node.isSelected()}
 				background={this.props.node.getOptions().color}
 				pointerEvents={this.props.node.isEditable()?"auto":"none"}
 				cursor={this.props.node.isEditable()?"pointer":"move"}
 			>
-				<Title>
-					<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getMainPort()}>
-						<TitleName onDoubleClick={() => {
-							if (!this.state.renameActive  && this._isMounted) {
-								this.setState({renameActive: true});
-								this.props.node.setLocked(true);
-								this.props.engine.getModel().clearSelection();
-								this.props.node.setSelected(true);
-							}
-						}}>
-							{!this.state.renameActive ? this.props.node.getNodeName() :
-								<input autoFocus onBlur={() => {
-									this.renameNode();
-								}
-								}
-									   onKeyDown={(e) => {
-										   if (e.key === "Escape") {
-											   this.cancelRenameNode();
-										   } else if (e.key === "Enter") {
-											   this.renameNode();
-										   }
-									   }
-									   }
-
-									   type="text" style={{
-									width: this.props.node.getOptions().name.length * 9 + "px",
-									height: 20 + "px",
-									border: this.state.badName ? "1px solid red" : "1px solid black"
-								}} name="" value={this.state.nodeName}
-									   onChange={(e) => {
-										   this.setState({nodeName: e.target.value});
-										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
-									   }}/>
-							}
-						</TitleName>
-					</PortWidget>
-				</Title>
 				<Ports>
 					<PortsContainer>
 						{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
 						<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
 							<Port onClick={() => {
-								if(this.state.predicateDropDownMenu){
-									this.setState({predicateDropDownMenu:false});
-								}
-								else{
-									//this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
-									this.setState({predicateDropDownMenu:true});
-									//this.props.engine.repaintCanvas();
-								}
+								this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
+								this.props.engine.repaintCanvas();
 							}}
-								   height={20} width={this.props.node.getOptions().name.length * 20}>{this.state.predicateDropDownMenu?ADDPORTSELECTED:ADDPORT}</Port>
+								   height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</Port>
 						</PortWidget>
 					</PortsContainer>
+
 				</Ports>
-			</Node>
-
-				{this.state.predicateDropDownMenu?
-					<Node data-basic-node-name={this.props.name}
-						  selected={this.props.node.isSelected()}
-						  background={this.props.node.getOptions().color}
-						  pointerEvents={this.props.node.isEditable()?"auto":"none"}
-						  cursor={this.props.node.isEditable()?"pointer":"move"}>
-						<Ports>
-							<PortsContainer>
-								{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generateAvailablePredicate)}
-								<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
-									<Port onClick={() => {
-										this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
-										this.props.engine.repaintCanvas();
-									}}
-										  height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</Port>
-								</PortWidget>
-							</PortsContainer>
-						</Ports>
-					</Node>:null
-				}
-
-			</div>
-		)
+			</Select>)
 	}
 }

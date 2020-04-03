@@ -9,19 +9,19 @@ const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState
         <ButtonGroup className='mr-lg-2'>
         <Button variant='outline-primary' size='lg' title='Prepnúť na matematický pohľad' className={diagramToggledState?'':' active'} onClick={() => setDiagramToggledState(false)}>
             <FontAwesome name='fas fa-list'/>
-            &nbsp;Matematika
+            <span className={'hidden-on-medium-and-lower'}>&nbsp;Matematika</span>
         </Button>
 
         <Button variant='outline-primary' size='lg' title='Prepnúť na grafový pohľad' className={diagramToggledState?' active':''} onClick={() => setDiagramToggledState(true)}>
             <FontAwesome name='fas fa-project-diagram'/>
-            &nbsp;Graf
+            <span className={'hidden-on-medium-and-lower'}>&nbsp;Graf</span>
         </Button>
         </ButtonGroup>
 
         <ButtonGroup className='mr-lg-2'>
         <Button variant='secondary' size='lg' title='Exportovať cvičenie' onClick={() => setModelShowState(true)}>
             <FontAwesome name='fas fa-file-export'/>
-            &nbsp;Exportovať
+            <span className={'hidden-on-medium-and-lower'}>&nbsp;Exportovať</span>
         </Button>
 
         <Button variant='secondary' size='lg' title='Importovať cvičenie'
@@ -33,7 +33,7 @@ const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState
                    }}
                    hidden={true}
                    style={{display: 'none'}}/>
-            &nbsp;Importovať
+            <span className={'hidden-on-medium-and-lower'}>&nbsp;Importovať</span>
         </Button>
         </ButtonGroup>
 
@@ -42,7 +42,7 @@ const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState
         <ButtonGroup>
         <Button variant={'outline-success'} size='lg' title='Učiteľský mód' className={(teacherModeState?'active':'')} onClick={() => setTeacherModeState()}>
             <FontAwesome name='fas fa-user-edit'/>
-            &nbsp;Učiteľský mód
+            <span className={'hidden-on-medium-and-lower'}>&nbsp;Učiteľský mód</span>
         </Button>
         </ButtonGroup>
     </ButtonToolbar>

@@ -45,6 +45,12 @@ export const syncDiagram = (value) => ({
   value
 });
 
+export const getPredicates = (set,arity) =>({
+  type:'GET_PREDICATES',
+  set,
+  arity
+});
+
 export const removeConstantNode = (nodeName) => ({
   type: 'REMOVE_CONSTANT_NODE',
   nodeName

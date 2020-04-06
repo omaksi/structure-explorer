@@ -3,7 +3,7 @@ import {
   ADD_DOMAIN_NODE, RENAME_DOMAIN_NODE, CHECK_BAD_NAME, REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
-  SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES, RENAME_CONSTANT_NODE
+  SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES, RENAME_CONSTANT_NODE, GET_PREDICATES
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
 import {UNBINARY} from "../../graph_view/nodes/ConstantNames";
@@ -62,6 +62,7 @@ function diagramReducer(state, action) {
     case SYNC_MATH_STATE:
       deleteAllLabels(state);
       return state;
+
     case TOGGLE_EDITABLE_NODES:
       let nodeArray = state.diagramModel.getNodes();
       for (let a = 0; a < nodeArray.length; a++) {

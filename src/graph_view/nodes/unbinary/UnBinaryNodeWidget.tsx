@@ -42,6 +42,21 @@ export const Node = styled.div<{ background: string; selected: boolean, pointerE
 		border: solid 2px ${p => (p.selected ? 'rgb(0,192,255)' : 'black')};
 	`;
 
+export const DropDownNode = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
+		width: 100%;
+		pointer-events: ${p => p.pointerEvents};
+		cursor: ${p => p.cursor};
+		/*background-color: ${p => p.background};*/
+		background-color: green;
+		border-radius: 5px;
+		font-family: sans-serif;
+		font-weight: bold;
+		color: black;
+		overflow: visible;
+		font-size: 13px;
+		border: solid 2px black;
+	`;
+
 export const Title = styled.div`
 		width: 100%;
 		background: rgba(256, 256, 256, 0.35);
@@ -137,7 +152,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					{predicate}
 				</Predicate>
 				<PredicateRemoveButton onClick={() =>{
-					this.props.node.removeUnaryPredicate(predicate);
+					this.props.node.addUnaryPredicate(predicate);
 					this.props.engine.repaintCanvas();
 				}}><FontAwesome name={"fas fa-plus"}/></PredicateRemoveButton>
 			</PredicateRowContainer>
@@ -246,14 +261,14 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			</Node>
 
 				{this.state.predicateDropDownMenu?
-					<Node data-basic-node-name={this.props.name}
+					<DropDownNode data-basic-node-name={this.props.name}
 						  selected={this.props.node.isSelected()}
 						  background={this.props.node.getOptions().color}
 						  pointerEvents={this.props.node.isEditable()?"auto":"none"}
 						  cursor={this.props.node.isEditable()?"pointer":"move"}>
 						<Ports>
 							<PortsContainer>
-								{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generateAvailablePredicate)}
+								{_.map(Array.from(this.props.node.getAvailablePredicatesForGivenArity("1")), this.generateAvailablePredicate)}
 								<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
 									<Port onClick={() => {
 										this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
@@ -263,7 +278,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 								</PortWidget>
 							</PortsContainer>
 						</Ports>
-					</Node>:null
+					</DropDownNode>:null
 				}
 
 			</div>

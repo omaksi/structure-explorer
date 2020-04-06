@@ -10,7 +10,7 @@ import {ConstantNodeModel} from "../nodes/constant/ConstantNodeModel";
 import {QuaternaryNodeModel} from "../nodes/quaternary/QuaternaryNodeModel";
 import {TernaryNodeModel} from "../nodes/ternary/TernaryNodeModel";
 import FontAwesome from "react-fontawesome";
-import { Button } from 'react-bootstrap';
+import {Button, Row} from 'react-bootstrap';
 import {ConstantIcon, QuaternaryIcon, TernaryIcon, UnbinaryIcon} from "./TrayItemWidgetIcon";
 
 export interface BodyWidgetProps {
@@ -27,6 +27,7 @@ export interface BodyWidgetProps {
 	removeUnaryPredicate:any;
 	toggleEditableNodes:any;
 	setConstantValueFromLink:any;
+	store:any;
 }
 
 	export const Body = styled.div`
@@ -35,17 +36,6 @@ export interface BodyWidgetProps {
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
-	`;
-
-	export const Header = styled.div`
-		display: flex;
-		background: rgb(30, 30, 30);
-		flex-grow: 0;
-		flex-shrink: 0;
-		color: white;
-		font-family: Helvetica, Arial, sans-serif;
-		padding: 10px;
-		align-items: center;
 	`;
 
 	export const Content = styled.div`
@@ -161,14 +151,18 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"removeUnaryPredicate":this.props.removeUnaryPredicate,
 			"setConstantValueFromLink":this.props.setConstantValueFromLink,
 			"editable":editableNodes,
+			"store":this.props.store,
+
 		};
 
 		return (
-			<Body>
+			<Body tabIndex={0} onKeyPress={()=>{
+				editableNodes?editableNodesFunction(false):editableNodesFunction(true)
+			}}>
 				<Content>
 					<TrayWidget>
-						<Button title={"Pohyb po grafe"}  variant={"outline-primary"}  className={editableNodes?"":"active"} onClick={(e:any) => {editableNodesFunction(false)}}><FontAwesome name={"fas fa-arrows-alt"}/></Button>
-						<Button title={"Editovanie grafu"} variant={"outline-primary"} className={editableNodes?"active":""} onClick={(e:any) => {editableNodesFunction(true)}}><FontAwesome name={"fas fa-edit"}/></Button>
+						<Button title={"Pohyb po grafe"}  variant={"outline-primary"}  className={editableNodes?"":"active"} onClick={() => {editableNodesFunction(false)}}><FontAwesome name={"fas fa-arrows-alt"}/></Button>
+						<Button title={"Editovanie grafu"} variant={"outline-primary"} className={editableNodes?"active":""} onClick={() => {editableNodesFunction(true)}}><FontAwesome name={"fas fa-edit"}/></Button>
 
 						<ItemWidgetIcon model={{type: 'unbinary'}} clickFunction={createNode} element={this}
 											name="Pridaj unárny/binárny" color="rgb(125,192,125)"

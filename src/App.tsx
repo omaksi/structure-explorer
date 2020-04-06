@@ -8,6 +8,7 @@ import {DEFAULT_FILE_NAME} from "./constants";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
 import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
+import {Body} from "./graph_view/components/BodyWidget";
 
 interface AppProps{
   store:any;
@@ -95,7 +96,7 @@ class App extends React.Component<AppProps,AppState> {
                   ):
                   <Row className='reactDiagram'>
                     <Col sm={12} >
-                      <DiagramModelContainer/>
+                      <DiagramModelContainer store={this.props.store}/>
                     </Col>
                   </Row>
               }

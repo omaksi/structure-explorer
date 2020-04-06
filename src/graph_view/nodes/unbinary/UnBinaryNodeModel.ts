@@ -49,6 +49,25 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.editable = reduxProps["editable"];
 	}
 
+	getReduxProps(){
+		return this.getOptions().reduxProps;
+	}
+
+	getAvailablePredicatesForGivenArity(arity:string){
+		let predicateSet = new Set();
+		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
+
+		if(predicates){
+			for(let predicateObject of predicates){
+				if(predicateObject.arity === arity && !this.unaryPredicates.has(predicateObject.name)){
+					predicateSet.add(predicateObject.name);
+				}
+			}
+		}
+
+		return predicateSet;
+	}
+
 	getMainPort():UnBinaryPortModel{
 		return this.mainPort;
 	}
@@ -59,12 +78,6 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	changeEditableState(value:boolean){
 		this.editable = value;
-	}
-
-	createPredicateLinkForSameNode(){
-		let link = new BinaryLinkModel();
-		link.setSourcePort(this.getMainPort());
-		link.setTargetPort(this.getAppendPort());
 	}
 
 	addTemplatePorts() {
@@ -82,7 +95,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	registerEvents() {
 		let node = this;
 		this.registerListener({
-			entityRemoved(event: any): void {
+			entityRemoved(): void {
 				node.removeNodeFromMathView();
 			}
 		})

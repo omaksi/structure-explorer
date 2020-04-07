@@ -10,7 +10,7 @@ import {ConstantNodeModel} from "../nodes/constant/ConstantNodeModel";
 import {QuaternaryNodeModel} from "../nodes/quaternary/QuaternaryNodeModel";
 import {TernaryNodeModel} from "../nodes/ternary/TernaryNodeModel";
 import FontAwesome from "react-fontawesome";
-import {Button, Row} from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
 import {ConstantIcon, QuaternaryIcon, TernaryIcon, UnbinaryIcon} from "./TrayItemWidgetIcon";
 
 export interface BodyWidgetProps {
@@ -156,8 +156,11 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 		};
 
 		return (
-			<Body tabIndex={0} onKeyPress={()=>{
-				editableNodes?editableNodesFunction(false):editableNodesFunction(true)
+			<Body tabIndex={1} onKeyPress={(e:any)=>{
+				let exclude = ['input', 'textarea'];
+				if(!exclude.includes(e.target.tagName.toLowerCase())){
+					editableNodes?editableNodesFunction(false):editableNodesFunction(true);
+				}
 			}}>
 				<Content>
 					<TrayWidget>

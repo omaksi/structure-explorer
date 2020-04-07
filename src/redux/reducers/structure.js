@@ -23,7 +23,7 @@ import {
   REMOVE_DOMAIN_NODE,
   ADD_CONSTANT_NODE,
   REMOVE_CONSTANT_NODE,
-  ADD_UNARY_PREDICATE, RENAME_CONSTANT_NODE, SET_CONSTANT_VALUE_FROM_LINK
+  ADD_UNARY_PREDICATE, RENAME_CONSTANT_NODE, SET_CONSTANT_VALUE_FROM_LINK, REMOVE_UNARY_PREDICATE
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -78,7 +78,12 @@ function structureReducer(s, action, struct) {
       return state;
 
     case SET_CONSTANT_VALUE_FROM_LINK:
-      setConstantValue(action.constantNodeName,action.domainNodeName);
+      if(state.constants[action.constantNodeName]){
+        setConstantValue(action.constantNodeName,action.domainNodeName);
+      }
+      else{
+        throw new DOMException("This constant node was considered as undefined"+action.constantNodeName);
+      }
       return state;
 
     case RENAME_CONSTANT_NODE:
@@ -107,6 +112,15 @@ function structureReducer(s, action, struct) {
       functions.parseText(currentPredicateValue, state.predicates[predicateName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
       setPredicateValue(predicateName);
       return state;
+
+    case REMOVE_UNARY_PREDICATE:
+      let predName = action.predicateName+"/1";
+      let currentPredValue = functions.replaceAllOccurrences(action.nodeName,"",state.predicates[predName].value);
+
+      functions.parseText(currentPredValue,state.predicates[predName],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
+      setPredicateValue(predName);
+      return state;
+
     case SET_CONSTANT_VALUE:
       setConstantValue(action.constantName, action.value);
       return state;

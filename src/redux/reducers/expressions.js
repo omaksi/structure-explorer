@@ -17,7 +17,7 @@ import {
   SET_FUNCTION_VALUE_TEXT, SET_FUNCTIONS,
   SET_PREDICATE_VALUE_TABLE,
   SET_PREDICATE_VALUE_TEXT,
-  SET_PREDICATES, SET_VARIABLES_VALUE
+  SET_PREDICATES, SET_VARIABLES_VALUE, ADD_DOMAIN_NODE, SET_CONSTANT_VALUE_FROM_LINK, REMOVE_CONSTANT_NODE
 } from "../actions/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
 
@@ -52,6 +52,9 @@ function expressionsReducer(state = s, action, structure2, variables) {
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
     case RENAME_DOMAIN_NODE:
+    case ADD_DOMAIN_NODE:
+    case SET_CONSTANT_VALUE_FROM_LINK:
+    case REMOVE_CONSTANT_NODE:
       syncExpressionsValue();
       return state;
     case ADD_EXPRESSION:

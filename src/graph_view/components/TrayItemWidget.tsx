@@ -1,10 +1,5 @@
 import * as React from 'react';
 import styled from "@emotion/styled";
-import {Node as UnbinaryNode, Ports as UnbinaryPorts, PortsContainer as UnbinaryPortsContainer, Title as UnbinaryTittle, TitleName as UnbinaryTittleName} from "../nodes/unbinary/UnBinaryNodeWidget";
-import {Port as UnbinaryPort} from "../nodes/unbinary/UnBinaryPortLabelWidget";
-import {Node as ConstantNode, Title as ConstantTitle, TitleName as ConstantTitleName} from "../nodes/constant/ConstantNodeWidget";
-import {Node as QuaternaryNode} from "../nodes/quaternary/QuaternaryNodeWidget";
-import {Node as TernaryNode} from "../nodes/ternary/TernaryNodeWidget";
 
 export interface TrayItemWidgetProps {
 	model: any;

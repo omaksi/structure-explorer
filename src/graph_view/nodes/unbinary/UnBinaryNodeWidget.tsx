@@ -193,7 +193,16 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.setState({badName: bool});
 	}
 
+	isPredicateDropDownMenu(){
+		if(!this.props.node.isSelected() && this.state.predicateDropDownMenu){
+			this.setState({predicateDropDownMenu:false});
+		}
+	}
+
 	render() {
+
+		this.isPredicateDropDownMenu();
+
 		return (
 			<div>
 			<Node
@@ -246,11 +255,18 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 						<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
 							<Port onClick={() => {
 								if(this.state.predicateDropDownMenu){
+									console.log("false");
 									this.setState({predicateDropDownMenu:false});
+									this.props.engine.getModel().clearSelection();
+									this.props.engine.repaintCanvas();
 								}
 								else{
+									console.log("true");
 									//this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
 									this.setState({predicateDropDownMenu:true});
+									this.props.engine.getModel().clearSelection();
+									this.props.node.setSelected(true);
+									this.props.engine.repaintCanvas();
 									//this.props.engine.repaintCanvas();
 								}
 							}}
@@ -260,7 +276,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				</Ports>
 			</Node>
 
-				{this.state.predicateDropDownMenu?
+				{(this.state.predicateDropDownMenu && this.props.node.isSelected())?
 					<DropDownNode data-basic-node-name={this.props.name}
 						  selected={this.props.node.isSelected()}
 						  background={this.props.node.getOptions().color}
@@ -272,6 +288,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 								<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
 									<Port onClick={() => {
 										this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
+										this.props.engine.getModel().clearSelection();
+										this.props.node.setSelected(true);
 										this.props.engine.repaintCanvas();
 									}}
 										  height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</Port>
@@ -280,7 +298,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 						</Ports>
 					</DropDownNode>:null
 				}
-
 			</div>
 		)
 	}

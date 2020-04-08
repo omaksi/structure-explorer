@@ -4,10 +4,9 @@ import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Port } from "./UnBinaryPortLabelWidget";
-import {ADDPORT, ADDPORTSELECTED, CONSTANT, UNBINARY} from "../ConstantNames";
+import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
 import FontAwesome from "react-fontawesome";
-import {Predicate, PredicateButton, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
-import {UnBinarySelectWidget} from "./UnBinarySelectWidget";
+import {Predicate, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -25,6 +24,7 @@ interface UnBinaryNodeWidgetState {
 	nodeName?:string;
 	badName?:boolean;
 	predicateDropDownMenu?:boolean;
+	badNameForNewPredicate?:boolean;
 }
 
 export const Node = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
@@ -57,9 +57,14 @@ export const DropDownNode = styled.div<{ background: string; selected: boolean, 
 		border: solid 2px black;
 	`;
 
+export const DropDownPorts = styled.div`
+		display: flex;
+		background-image: linear-gradient(rgba(256, 256, 256, 0.9), rgba(256, 256, 256, 0.9));
+	`;
+
 export const Title = styled.div`
 		width: 100%;
-		background: rgba(256, 256, 256, 0.35);
+		background: rgba(256, 256, 256, 0.45);
 		display: flex;
 		white-space: nowrap;
 		justify-items: center;
@@ -72,13 +77,13 @@ export const TitleName = styled.div`
 		padding: 5px 5px;
 				
 		&:hover {
-			background: rgba(256, 256, 256, 0.4);
+			background: rgba(256, 256, 256, 0.7);
 		}
 	`;
 
 export const Ports = styled.div`
 		display: flex;
-		background-image: linear-gradient(rgba(256, 256, 256, 0.45), rgba(256, 256, 256, 0.55));
+		background-image: linear-gradient(rgba(256, 256, 256, 0.55), rgba(256, 256, 256, 0.65));
 	`;
 
 export const PortsContainer = styled.div`
@@ -88,7 +93,7 @@ export const PortsContainer = styled.div`
 		flex: 1 0 0;
 	`;
 
-export const PredicateRemoveButton = styled.div`
+export const PredicateButton = styled.div`
 		outline: none;
 		cursor: pointer;
 		height: 20px;
@@ -103,8 +108,26 @@ export const PredicateRemoveButton = styled.div`
 		}
 	`;
 
+export const PredicateAddRowContainer = styled.div`
+		display: flex;
+		flex-direction: row;
+		flex: 1 0 0;
+		
+		&:hover {
+			background: green;
+			background-image: linear-gradient(rgba(256, 256, 256, 0.55), rgba(256, 256, 256, 0.65));
+		}
+	`;
+
+export const InputElement = styled.div`
+		width: 100%;
+		flex-grow: 1;
+		padding: 3px 3px;
+	`;
+
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
-	_isMounted:boolean = false;
+	_isMounted:boolean = true;
+	predicateTextInput:any;
 
 	constructor(props: UnBinaryNodeWidgetProps) {
 		super(props);
@@ -114,19 +137,23 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			titleChanged: false,
 			nodeName: this.props.node.getOptions().name,
 			badName: false,
+			badNameForNewPredicate: false,
 			predicateDropDownMenu: false
 		};
 		this.setBadNameState = this.setBadNameState.bind(this);
+		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
 	}
 
 	componentWillUnmount(): void {
-		this._isMounted = false;
-
+		//this._isMounted = false;
 	}
 
 	componentDidMount(): void {
 		this._isMounted = true;
+	}
 
+	componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
+		this.isPredicateDropDownMenu();
 	}
 
 	generatePredicate = (predicate: string) => {
@@ -136,28 +163,41 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				<Predicate>
 					{predicate}
 				</Predicate>
-				<PredicateRemoveButton onClick={() =>{
+				<PredicateButton onClick={() =>{
 					this.props.node.removeUnaryPredicate(predicate);
 					this.props.engine.repaintCanvas();
-				}}><FontAwesome name={"fas fa-trash"}/></PredicateRemoveButton>
+				}}><FontAwesome name={"fas fa-trash"}/></PredicateButton>
 			</PredicateRowContainer>
 		)
 	};
 
 	generateAvailablePredicate = (predicate: string) => {
 		return (
-
 			<PredicateRowContainer key={predicate} >
-				<Predicate>
-					{predicate}
-				</Predicate>
-				<PredicateRemoveButton onClick={() =>{
+				<Predicate onClick={() =>{
 					this.props.node.addUnaryPredicate(predicate);
 					this.props.engine.repaintCanvas();
-				}}><FontAwesome name={"fas fa-plus"}/></PredicateRemoveButton>
+				}}>
+					{predicate}
+				</Predicate>
+				<PredicateButton onClick={() =>{
+					this.props.node.addUnaryPredicate(predicate);
+					this.props.engine.repaintCanvas();
+				}}><FontAwesome name={"fas fa-plus"}/></PredicateButton>
 			</PredicateRowContainer>
 		)
 	};
+
+	checkBadPredName(predName:string,arity:string){
+		predName = predName.replace(/\s/g, "");
+
+		if(predName === ""){
+			this.setState({badNameForNewPredicate:true});
+			return;
+		}
+
+		this.setState({badNameForNewPredicate:!this.props.node.canUsePredicateForGivenArity(predName,arity)});
+	}
 
 	cancelRenameNode() {
 		if(!this._isMounted){
@@ -167,20 +207,20 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.props.node.setLocked(false);
 	}
 
-	renameNode() {
+	renameNode(nodeName:string) {
 		if(!this._isMounted){
 			return;
 		}
 		this.props.node.setLocked(false);
 
-		if (this.state.nodeName !== this.props.node.getNodeName()) {
+		if (nodeName !== this.props.node.getNodeName()) {
 			if (!this.state.badName) {
-				this.props.renameDomainNode(this.props.node.getNodeName(),this.state.nodeName);
-				this.props.node.renameNode(this.state.nodeName);
-			} else {
-				this.setState({nodeName: this.props.node.getNodeName()});
+				this.props.renameDomainNode(this.props.node.getNodeName(),nodeName);
+				this.props.node.renameNode(nodeName);
 			}
 		}
+
+		this.setState({nodeName: this.props.node.getNodeName()});
 		this.setState({renameActive: false});
 		this.setState({badName: false});
 	}
@@ -193,6 +233,10 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.setState({badName: bool});
 	}
 
+	setBadNameForNewPredicateState(bool:boolean){
+		this.setState({badNameForNewPredicate: bool});
+	}
+
 	isPredicateDropDownMenu(){
 		if(!this.props.node.isSelected() && this.state.predicateDropDownMenu){
 			this.setState({predicateDropDownMenu:false});
@@ -200,9 +244,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	}
 
 	render() {
-
-		this.isPredicateDropDownMenu();
-
 		return (
 			<div>
 			<Node
@@ -215,6 +256,9 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				<Title>
 					<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getMainPort()}>
 						<TitleName onDoubleClick={() => {
+							if(this.state.predicateDropDownMenu){
+								this.setState({predicateDropDownMenu:false});
+							}
 							if (!this.state.renameActive  && this._isMounted) {
 								this.setState({renameActive: true});
 								this.props.node.setLocked(true);
@@ -224,14 +268,16 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 						}}>
 							{!this.state.renameActive ? this.props.node.getNodeName() :
 								<input autoFocus onBlur={() => {
-									this.renameNode();
+									let name = this.state.nodeName.replace(/\s/g, "");
+									this.renameNode(name);
 								}
 								}
 									   onKeyDown={(e) => {
 										   if (e.key === "Escape") {
 											   this.cancelRenameNode();
 										   } else if (e.key === "Enter") {
-											   this.renameNode();
+											   let name = this.state.nodeName.replace(/\s/g, "");
+											   this.renameNode(name);
 										   }
 									   }
 									   }
@@ -243,7 +289,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 								}} name="" value={this.state.nodeName}
 									   onChange={(e) => {
 										   this.setState({nodeName: e.target.value});
-										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
+										   let name:string = e.target.value.replace(/\s/g, "");
+										   this.props.checkBadName(name, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
 									   }}/>
 							}
 						</TitleName>
@@ -255,19 +302,15 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 						<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
 							<Port onClick={() => {
 								if(this.state.predicateDropDownMenu){
-									console.log("false");
 									this.setState({predicateDropDownMenu:false});
 									this.props.engine.getModel().clearSelection();
 									this.props.engine.repaintCanvas();
 								}
 								else{
-									console.log("true");
-									//this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
 									this.setState({predicateDropDownMenu:true});
 									this.props.engine.getModel().clearSelection();
 									this.props.node.setSelected(true);
 									this.props.engine.repaintCanvas();
-									//this.props.engine.repaintCanvas();
 								}
 							}}
 								   height={20} width={this.props.node.getOptions().name.length * 20}>{this.state.predicateDropDownMenu?ADDPORTSELECTED:ADDPORT}</Port>
@@ -282,20 +325,31 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 						  background={this.props.node.getOptions().color}
 						  pointerEvents={this.props.node.isEditable()?"auto":"none"}
 						  cursor={this.props.node.isEditable()?"pointer":"move"}>
-						<Ports>
+						<DropDownPorts>
 							<PortsContainer>
 								{_.map(Array.from(this.props.node.getAvailablePredicatesForGivenArity("1")), this.generateAvailablePredicate)}
+
+								<InputElement>
 								<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
-									<Port onClick={() => {
-										this.props.node.addUnaryPredicate(`Pred${this.props.node.unaryPredicateIndex}`);
-										this.props.engine.getModel().clearSelection();
-										this.props.node.setSelected(true);
-										this.props.engine.repaintCanvas();
-									}}
-										  height={20} width={this.props.node.getOptions().name.length * 20}>{ADDPORT}</Port>
+									<PredicateRowContainer key={"lastPredicateOption"}>
+									<input onFocusCapture={(e) => this.checkBadPredName(e.target.value,"1")} onChange={(e) => this.checkBadPredName(e.target.value,"1")} ref={(input) => this.predicateTextInput = input} onFocus={() => this.props.node.setLocked(true)} onBlur={() => this.props.node.setLocked(false)} placeholder={"Predicate"} style={{
+										width: this.props.node.getOptions().name.length * 7 + "px",
+										height: 20 + "px",
+										border: this.state.badNameForNewPredicate ? "1px solid red" : "1px solid black"
+									}}>
+									</input>
+									<PredicateButton onClick={() =>{
+										if(!this.state.badNameForNewPredicate){
+											this.props.node.addUnaryPredicate(this.predicateTextInput.value);
+											this.predicateTextInput.value = "";
+											this.props.engine.repaintCanvas();
+										}
+									}}><FontAwesome name={"fas fa-plus"}/></PredicateButton>
+									</PredicateRowContainer>
 								</PortWidget>
+								</InputElement>
 							</PortsContainer>
-						</Ports>
+						</DropDownPorts>
 					</DropDownNode>:null
 				}
 			</div>

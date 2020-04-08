@@ -127,12 +127,14 @@ export interface BodyWidgetProps {
 
 
 export class BodyWidget extends React.Component<BodyWidgetProps,any> {
+		body:any;
 	constructor(props: any) {
 		super(props);
 	}
 
 	componentDidMount(): void {
 		this.props.syncDiagram(this.props); //toto by malo byt zavolane predtym, inak to nerenderuje a new DiagramApplication dostava stary stav
+		this.body.focus();
 	}
 
 	render() {
@@ -156,10 +158,17 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 		};
 
 		return (
-			<Body tabIndex={1} onKeyPress={(e:any)=>{
+			<Body ref={Body => this.body = Body} tabIndex={1} onKeyPress={(e:any)=>{
 				let exclude = ['input', 'textarea'];
-				if(!exclude.includes(e.target.tagName.toLowerCase())){
-					editableNodes?editableNodesFunction(false):editableNodesFunction(true);
+
+				if(!exclude.includes(e.target.tagName.toLowerCase())) {
+					if (e.key === ';') {
+						editableNodes ? editableNodesFunction(false) : editableNodesFunction(true);
+					} else if (e.key.toLowerCase() === 'm') {
+						editableNodesFunction(false);
+					} else if (e.key.toLowerCase() === 'n') {
+						editableNodesFunction(true);
+					}
 				}
 			}}>
 				<Content>

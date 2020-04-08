@@ -5,7 +5,6 @@ import {DiagramEngine} from '@projectstorm/react-diagrams';
 import {ADDPORT} from "../../nodes/ConstantNames";
 import _ from "lodash";
 import FontAwesome from "react-fontawesome";
-import {PredicateRemoveButton} from "../../nodes/unbinary/UnBinaryNodeWidget";
 
 export interface BinaryLabelWidgetProps {
 	model: BinaryLabelModel;
@@ -78,11 +77,6 @@ export const PredicateButton = styled.div`
 			background: #00ff80;
 		}
 	`;
-export const HoverEffect = styled.div`
-		&:hover {
-					background: rgba(256, 256, 256, 0.8);
-				}
-`;
 
 export const Title = styled.div`
 		width: 100%;
@@ -211,14 +205,12 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 						)
 						*/}
 						{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicate)}
-						<HoverEffect>
 						<Predicate onClick={() => {
 							this.props.model.addPredicate(`Pred${this.props.model.predicateIndex}`);
 							this.props.engine.repaintCanvas();
 						}}>
 							{ADDPORT}
 						</Predicate>
-						</HoverEffect>
 					</PredicateContainer>
 				</Predicates>
 			</PredicatesNode>)

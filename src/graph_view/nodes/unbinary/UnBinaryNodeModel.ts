@@ -1,9 +1,8 @@
-import {NodeModel, NodeModelGenerics, PortModelAlignment} from '@projectstorm/react-diagrams';
+import {NodeModel, NodeModelGenerics} from '@projectstorm/react-diagrams';
 import {UnBinaryPortModel} from './UnBinaryPortModel';
 import {BasePositionModelOptions} from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 import {ADDPORT, MAINPORT} from "../ConstantNames";
-import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
 
 export interface UnBinaryNodeModelGenerics {
 	PORT: UnBinaryPortModel;
@@ -51,6 +50,31 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	getReduxProps(){
 		return this.getOptions().reduxProps;
+	}
+
+	getAllPredicateNames():Set<string>{
+		let predicateSet:Set<string> = new Set();
+		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
+
+		if(predicates){
+			for(let predicateObject of predicates){
+				predicateSet.add(predicateObject.name);
+			}
+		}
+		return predicateSet;
+	}
+
+	canUsePredicateForGivenArity(predName:string,predArity:string):boolean{
+		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
+
+		if(predicates){
+			for(let predicateObject of predicates){
+				if(predicateObject.name === predName){
+					return predicateObject.arity === predArity;
+				}
+			}
+		}
+		return true;
 	}
 
 	getAvailablePredicatesForGivenArity(arity:string){
@@ -115,6 +139,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	}
 
 	addUnaryPredicate(name: string) {
+		name = name.replace(/\s/g, "");
 		if (!this.unaryPredicates.has(name)) {
 			this.options.reduxProps["addUnaryPredicate"](name, this.getNodeName());
 			this.addUnaryPredicateToSet(name);

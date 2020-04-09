@@ -77,8 +77,8 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		return true;
 	}
 
-	getAvailablePredicatesForGivenArity(arity:string){
-		let predicateSet = new Set();
+	getAvailablePredicatesForGivenArity(arity:string):Set<string>{
+		let predicateSet:Set<string> = new Set();
 		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
 
 		if(predicates){
@@ -90,6 +90,20 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		}
 
 		return predicateSet;
+	}
+
+	getMaximumLengthOfPredicatesForGivenArity(arity:string):number{
+		let maxLength = 0;
+		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
+
+		if(predicates){
+			for(let predicateObject of predicates){
+				if(predicateObject.arity === arity && maxLength<predicateObject.name.length){
+					maxLength = predicateObject.name.length;
+				}
+			}
+		}
+		return maxLength;
 	}
 
 	getMainPort():UnBinaryPortModel{
@@ -155,6 +169,9 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	}
 
 	removeNodeFromMathView(){
+		for(let unaryPredicate of this.unaryPredicates){
+			this.options.reduxProps["removeUnaryPredicate"](unaryPredicate, this.getNodeName());
+		}
 		this.options.reduxProps["removeDomainNode"](this.getNodeName());
 	}
 

@@ -74,19 +74,30 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 		this.props.node.setLocked(false);
 	}
 
-	renameNode() {
+	renameNode(nodeName:string) {
 		this.props.node.setLocked(false);
 
-		if (this.state.nodeName !== this.props.node.getNodeName()) {
+		if (nodeName !== this.props.node.getNodeName()) {
 			if (!this.state.badName) {
-				this.props.renameConstantNode(this.props.node.getNodeName(),this.state.nodeName);
-				this.props.node.renameNode(this.state.nodeName);
+				this.props.renameConstantNode(this.props.node.getNodeName(),nodeName);
+				this.props.node.renameNode(nodeName);
 			} else {
 				this.setState({nodeName: this.props.node.getNodeName()});
 			}
 		}
+		this.setState({nodeName: this.props.node.getNodeName()});
 		this.setState({renameActive: false});
 		this.setState({badName: false});
+	}
+
+	getWidestElement():number{
+		let width:number = this.state.nodeName.length;
+		let minimumWidth:number = this.props.node.getNodeName().length;
+
+		if(this.state.renameActive){
+			return width;
+		}
+		return width;
 	}
 
 	setBadNameState(bool: boolean) {
@@ -94,6 +105,8 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 	}
 
 	render() {
+		let width = this.getWidestElement();
+
 		return (
 			<Node
 				data-basic-node-name={this.props.name}
@@ -114,26 +127,29 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 						}}>
 							{!this.state.renameActive ? this.props.node.getNodeName() :
 								<input autoFocus onBlur={() => {
-									this.renameNode();
+									let name = this.state.nodeName.replace(/\s/g, "");
+									this.renameNode(name);
 								}
 								}
 									   onKeyDown={(e) => {
 										   if (e.key === "Escape") {
 											   this.cancelRenameNode();
 										   } else if (e.key === "Enter") {
-											   this.renameNode();
+											   let name = this.state.nodeName.replace(/\s/g, "");
+											   this.renameNode(name);
 										   }
 									   }
 									   }
 
 									   type="text" style={{
-									width: this.props.node.getOptions().name.length * 9 + "px",
+									width: (width+1.5)+"ch",
 									height: 20 + "px",
 									border: this.state.badName ? "1px solid red" : "1px solid black"
 								}} name="" value={this.state.nodeName}
 									   onChange={(e) => {
 										   this.setState({nodeName: e.target.value});
-										   this.props.checkBadName(e.target.value, this.props.node.getNodeName(), this.setBadNameState, CONSTANT);
+										   let name = e.target.value.replace(/\s/g, "");
+										   this.props.checkBadName(name, this.props.node.getNodeName(), this.setBadNameState, CONSTANT);
 									   }}/>
 							}
 						</TitleName>

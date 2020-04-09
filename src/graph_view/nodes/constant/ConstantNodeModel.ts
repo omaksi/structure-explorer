@@ -71,6 +71,7 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		this.options.reduxProps["removeConstantNode"](this.getNodeName());
 	}
 
+
 	registerEvents(){
 		let node = this;
 		this.registerListener({

@@ -243,7 +243,31 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		}
 	}
 
+	getWidestElement():number{
+		let width:number = this.state.nodeName.length;
+		let minimumWidth:number = this.props.node.getNodeName().length;
+
+		if(this.state.renameActive){
+			if(width<minimumWidth){
+				width = minimumWidth;
+			}
+		}
+
+		if(this.state.predicateDropDownMenu){
+			let predicateWidth = this.props.node.getMaximumLengthOfPredicatesForGivenArity("1");
+			if(width<predicateWidth){
+				width = predicateWidth;
+			}
+			if(this.predicateTextInput && this.predicateTextInput.value.length>width){
+				width = this.predicateTextInput.value.length;
+			}
+		}
+		return width;
+	}
+
 	render() {
+		let width = this.getWidestElement();
+
 		return (
 			<div>
 			<Node
@@ -283,7 +307,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 									   }
 
 									   type="text" style={{
-									width: this.props.node.getOptions().name.length * 9 + "px",
+									width: (width+1.5)+"ch",
 									height: 20 + "px",
 									border: this.state.badName ? "1px solid red" : "1px solid black"
 								}} name="" value={this.state.nodeName}
@@ -333,13 +357,13 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 								<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
 									<PredicateRowContainer key={"lastPredicateOption"}>
 									<input onFocusCapture={(e) => this.checkBadPredName(e.target.value,"1")} onChange={(e) => this.checkBadPredName(e.target.value,"1")} ref={(input) => this.predicateTextInput = input} onFocus={() => this.props.node.setLocked(true)} onBlur={() => this.props.node.setLocked(false)} placeholder={"Predicate"} style={{
-										width: this.props.node.getOptions().name.length * 7 + "px",
+										width: (width)+"ch",
 										height: 20 + "px",
 										border: this.state.badNameForNewPredicate ? "1px solid red" : "1px solid black"
 									}}>
 									</input>
 									<PredicateButton onClick={() =>{
-										if(!this.state.badNameForNewPredicate){
+										if(!this.state.badNameForNewPredicate && this.predicateTextInput.value){
 											this.props.node.addUnaryPredicate(this.predicateTextInput.value);
 											this.predicateTextInput.value = "";
 											this.props.engine.repaintCanvas();

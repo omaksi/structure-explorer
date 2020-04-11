@@ -7,6 +7,7 @@ import { Port } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
 import FontAwesome from "react-fontawesome";
 import {Predicate, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
+import {DropDownMenuWidget} from "../DropDownMenuWidget";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -25,6 +26,7 @@ interface UnBinaryNodeWidgetState {
 	badName?:boolean;
 	predicateDropDownMenu?:boolean;
 	badNameForNewPredicate?:boolean;
+	inputElementTextLength?:number;
 }
 
 export const Node = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
@@ -108,17 +110,6 @@ export const PredicateButton = styled.div`
 		}
 	`;
 
-export const PredicateAddRowContainer = styled.div`
-		display: flex;
-		flex-direction: row;
-		flex: 1 0 0;
-		
-		&:hover {
-			background: green;
-			background-image: linear-gradient(rgba(256, 256, 256, 0.55), rgba(256, 256, 256, 0.65));
-		}
-	`;
-
 export const InputElement = styled.div`
 		width: 100%;
 		flex-grow: 1;
@@ -127,7 +118,6 @@ export const InputElement = styled.div`
 
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
 	_isMounted:boolean = true;
-	predicateTextInput:any;
 
 	constructor(props: UnBinaryNodeWidgetProps) {
 		super(props);
@@ -138,10 +128,12 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			nodeName: this.props.node.getOptions().name,
 			badName: false,
 			badNameForNewPredicate: false,
-			predicateDropDownMenu: false
+			predicateDropDownMenu: false,
+			inputElementTextLength: 0
 		};
 		this.setBadNameState = this.setBadNameState.bind(this);
 		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
+		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
 	}
 
 	componentWillUnmount(): void {
@@ -233,6 +225,10 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.setState({badName: bool});
 	}
 
+	setInputElementTextLength(length: number){
+		this.setState({inputElementTextLength:length});
+	}
+
 	setBadNameForNewPredicateState(bool:boolean){
 		this.setState({badNameForNewPredicate: bool});
 	}
@@ -258,8 +254,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			if(width<predicateWidth){
 				width = predicateWidth;
 			}
-			if(this.predicateTextInput && this.predicateTextInput.value.length>width){
-				width = this.predicateTextInput.value.length;
+			if(this.state.inputElementTextLength>width){
+				width = this.state.inputElementTextLength;
 			}
 		}
 		return width;
@@ -331,7 +327,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 									this.props.engine.repaintCanvas();
 								}
 								else{
-									this.setState({predicateDropDownMenu:true});
+									this.setState({predicateDropDownMenu:true, badNameForNewPredicate:true});
 									this.props.engine.getModel().clearSelection();
 									this.props.node.setSelected(true);
 									this.props.engine.repaintCanvas();
@@ -344,37 +340,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			</Node>
 
 				{(this.state.predicateDropDownMenu && this.props.node.isSelected())?
-					<DropDownNode data-basic-node-name={this.props.name}
-						  selected={this.props.node.isSelected()}
-						  background={this.props.node.getOptions().color}
-						  pointerEvents={this.props.node.isEditable()?"auto":"none"}
-						  cursor={this.props.node.isEditable()?"pointer":"move"}>
-						<DropDownPorts>
-							<PortsContainer>
-								{_.map(Array.from(this.props.node.getAvailablePredicatesForGivenArity("1")), this.generateAvailablePredicate)}
-
-								<InputElement>
-								<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
-									<PredicateRowContainer key={"lastPredicateOption"}>
-									<input onFocusCapture={(e) => this.checkBadPredName(e.target.value,"1")} onChange={(e) => this.checkBadPredName(e.target.value,"1")} ref={(input) => this.predicateTextInput = input} onFocus={() => this.props.node.setLocked(true)} onBlur={() => this.props.node.setLocked(false)} placeholder={"Predicate"} style={{
-										width: (width)+"ch",
-										height: 20 + "px",
-										border: this.state.badNameForNewPredicate ? "1px solid red" : "1px solid black"
-									}}>
-									</input>
-									<PredicateButton onClick={() =>{
-										if(!this.state.badNameForNewPredicate && this.predicateTextInput.value){
-											this.props.node.addUnaryPredicate(this.predicateTextInput.value);
-											this.predicateTextInput.value = "";
-											this.props.engine.repaintCanvas();
-										}
-									}}><FontAwesome name={"fas fa-plus"}/></PredicateButton>
-									</PredicateRowContainer>
-								</PortWidget>
-								</InputElement>
-							</PortsContainer>
-						</DropDownPorts>
-					</DropDownNode>:null
+					<DropDownMenuWidget setStateInputElementTextLength={this.setInputElementTextLength} setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState} activeDropDownMenu={this.state.predicateDropDownMenu} model={this.props.node} engine={this.props.engine} modelName={this.props.node.getNodeName()} badNameForLanguageElement={this.state.badNameForNewPredicate}/>:null
 				}
 			</div>
 		)

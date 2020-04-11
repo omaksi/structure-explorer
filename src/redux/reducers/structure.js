@@ -161,6 +161,8 @@ function structureReducer(s, action, struct) {
       return state;
 
     case RENAME_DOMAIN_NODE:
+      console.log("fullstate",state);
+
       let currDomainState = functions.replaceAllOccurrences(action.oldName,action.newName,state.domain.value);
 
       if (currDomainState.charAt(currDomainState.length - 1) === ",") {
@@ -177,8 +179,20 @@ function structureReducer(s, action, struct) {
       });
       setConstantsValues();
 
-      /*setPredicatesValues();
-      setFunctionsValues();
+      console.log(state);
+
+      Object.keys(state.predicates).forEach(p => {
+        if (!state.predicates[p].parsed) {
+          state.predicates[p].value = action.newName;
+        } else {
+
+        }
+      });
+
+
+      setPredicatesValues();
+
+      /*setFunctionsValues();
       setVariables();*/
       return state;
 
@@ -218,6 +232,7 @@ function structureReducer(s, action, struct) {
           state.constants[c].value = "";
         }
       });
+
       setConstantsValues();
       return state;
 

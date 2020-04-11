@@ -1,6 +1,6 @@
 import {
   ADD_CONSTANT_NODE,
-  ADD_UNARY_PREDICATE, GET_PREDICATES,
+  ADD_UNARY_PREDICATE,
   IMPORT_APP,
   LOCK_CONSTANTS,
   LOCK_FUNCTIONS,
@@ -72,6 +72,7 @@ function languageReducer(s, action, struct) {
       setPredicates();
       return state;
     case ADD_CONSTANT_NODE:
+      console.log(structure);
       let constantState = state.constants.value;
 
       if(constantState.charAt(constantState.length-1)==="," || !state.constants.parsed || state.constants.parsed.length===0){

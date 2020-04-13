@@ -68,7 +68,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					if(sourceNode === targetNode) {
 						link.getOptions().curvyness = 135;
 						}
-					link.label = new BinaryLabelModel();
+					link.label = new BinaryLabelModel({},sourceNode.getOptions().reduxProps,sourceNode.getNodeName()+" - "+targetNode.getNodeName());
 					link.addLabel(link.label);
 					return;
 
@@ -189,9 +189,9 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 
 	clearLabels() {
 		if (this.label) {
-			let label = new BinaryLabelModel();
+			let label = new BinaryLabelModel({},this.label.getReduxProps());
 
-			label.predicateIndex = this.label.predicateIndex;
+			label.changeCounter = this.label.changeCounter;
 			label.predicates = this.label.predicates;
 			label.editable = this.label.editable;
 

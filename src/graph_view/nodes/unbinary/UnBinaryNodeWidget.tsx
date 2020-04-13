@@ -8,6 +8,7 @@ import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
 import FontAwesome from "react-fontawesome";
 import {Predicate, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
 import {DropDownMenuWidget} from "../DropDownMenuWidget";
+import {canUsePredicateForGivenArity, getMaximumLengthOfPredicatesForGivenArity} from "../functions";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -24,7 +25,7 @@ interface UnBinaryNodeWidgetState {
 	titleChanged?:boolean;
 	nodeName?:string;
 	badName?:boolean;
-	predicateDropDownMenu?:boolean;
+	isDropDownMenu?:boolean;
 	badNameForNewPredicate?:boolean;
 	inputElementTextLength?:number;
 }
@@ -128,7 +129,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			nodeName: this.props.node.getOptions().name,
 			badName: false,
 			badNameForNewPredicate: false,
-			predicateDropDownMenu: false,
+			isDropDownMenu: false,
 			inputElementTextLength: 0
 		};
 		this.setBadNameState = this.setBadNameState.bind(this);
@@ -145,7 +146,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	}
 
 	componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
-		this.isPredicateDropDownMenu();
+		this.isisDropDownMenu();
 	}
 
 	generatePredicate = (predicate: string) => {
@@ -188,7 +189,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			return;
 		}
 
-		this.setState({badNameForNewPredicate:!this.props.node.canUsePredicateForGivenArity(predName,arity)});
+		this.setState({badNameForNewPredicate:!canUsePredicateForGivenArity(predName,arity,this.props.node.getReduxProps()["store"])});
 	}
 
 	cancelRenameNode() {
@@ -218,10 +219,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	}
 
 	setBadNameState(bool: boolean) {
-		if(!this._isMounted){
-			return;
-		}
-
 		this.setState({badName: bool});
 	}
 
@@ -233,9 +230,9 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.setState({badNameForNewPredicate: bool});
 	}
 
-	isPredicateDropDownMenu(){
-		if(!this.props.node.isSelected() && this.state.predicateDropDownMenu){
-			this.setState({predicateDropDownMenu:false});
+	isisDropDownMenu(){
+		if(!this.props.node.isSelected() && this.state.isDropDownMenu){
+			this.setState({isDropDownMenu:false});
 		}
 	}
 
@@ -249,8 +246,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			}
 		}
 
-		if(this.state.predicateDropDownMenu){
-			let predicateWidth = this.props.node.getMaximumLengthOfPredicatesForGivenArity("1");
+		if(this.state.isDropDownMenu){
+			let predicateWidth = getMaximumLengthOfPredicatesForGivenArity("1",this.props.node.getReduxProps());
 			if(width<predicateWidth){
 				width = predicateWidth;
 			}
@@ -266,81 +263,88 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 		return (
 			<div>
-			<Node
-				data-basic-node-name={this.props.name}
-				selected={this.props.node.isSelected()}
-				background={this.props.node.getOptions().color}
-				pointerEvents={this.props.node.isEditable()?"auto":"none"}
-				cursor={this.props.node.isEditable()?"pointer":"move"}
-			>
-				<Title>
-					<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getMainPort()}>
-						<TitleName onDoubleClick={() => {
-							if(this.state.predicateDropDownMenu){
-								this.setState({predicateDropDownMenu:false});
-							}
-							if (!this.state.renameActive  && this._isMounted) {
-								this.setState({renameActive: true});
-								this.props.node.setLocked(true);
-								this.props.engine.getModel().clearSelection();
-								this.props.node.setSelected(true);
-							}
-						}}>
-							{!this.state.renameActive ? this.props.node.getNodeName() :
-								<input autoFocus onBlur={() => {
-									let name = this.state.nodeName.replace(/\s/g, "");
-									this.renameNode(name);
+				<Node
+					data-basic-node-name={this.props.name}
+					selected={this.props.node.isSelected()}
+					background={this.props.node.getOptions().color}
+					pointerEvents={this.props.node.isEditable() ? "auto" : "none"}
+					cursor={this.props.node.isEditable() ? "pointer" : "move"}
+				>
+					<Title>
+						<PortWidget style={{flexGrow: 1}} engine={this.props.engine}
+									port={this.props.node.getMainPort()}>
+							<TitleName onDoubleClick={() => {
+								if (this.state.isDropDownMenu) {
+									this.setState({isDropDownMenu: false});
 								}
-								}
-									   onKeyDown={(e) => {
-										   if (e.key === "Escape") {
-											   this.cancelRenameNode();
-										   } else if (e.key === "Enter") {
-											   let name = this.state.nodeName.replace(/\s/g, "");
-											   this.renameNode(name);
-										   }
-									   }
-									   }
-
-									   type="text" style={{
-									width: (width+1.5)+"ch",
-									height: 20 + "px",
-									border: this.state.badName ? "1px solid red" : "1px solid black"
-								}} name="" value={this.state.nodeName}
-									   onChange={(e) => {
-										   this.setState({nodeName: e.target.value});
-										   let name:string = e.target.value.replace(/\s/g, "");
-										   this.props.checkBadName(name, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
-									   }}/>
-							}
-						</TitleName>
-					</PortWidget>
-				</Title>
-				<Ports>
-					<PortsContainer>
-						{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
-						<PortWidget style={{flexGrow: 1}} engine={this.props.engine} port={this.props.node.getAppendPort()}>
-							<Port onClick={() => {
-								if(this.state.predicateDropDownMenu){
-									this.setState({predicateDropDownMenu:false});
-									this.props.engine.getModel().clearSelection();
-									this.props.engine.repaintCanvas();
-								}
-								else{
-									this.setState({predicateDropDownMenu:true, badNameForNewPredicate:true});
+								if (!this.state.renameActive && this._isMounted) {
+									this.setState({renameActive: true});
+									this.props.node.setLocked(true);
 									this.props.engine.getModel().clearSelection();
 									this.props.node.setSelected(true);
-									this.props.engine.repaintCanvas();
 								}
-							}}
-								   height={20} width={this.props.node.getOptions().name.length * 20}>{this.state.predicateDropDownMenu?ADDPORTSELECTED:ADDPORT}</Port>
-						</PortWidget>
-					</PortsContainer>
-				</Ports>
-			</Node>
+							}}>
+								{!this.state.renameActive ? this.props.node.getNodeName() :
+									<input autoFocus onBlur={() => {
+										let name = this.state.nodeName.replace(/\s/g, "");
+										this.renameNode(name);
+									}
+									}
+										   onKeyDown={(e) => {
+											   if (e.key === "Escape") {
+												   this.cancelRenameNode();
+											   } else if (e.key === "Enter") {
+												   let name = this.state.nodeName.replace(/\s/g, "");
+												   this.renameNode(name);
+											   }
+										   }
+										   }
 
-				{(this.state.predicateDropDownMenu && this.props.node.isSelected())?
-					<DropDownMenuWidget setStateInputElementTextLength={this.setInputElementTextLength} setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState} activeDropDownMenu={this.state.predicateDropDownMenu} model={this.props.node} engine={this.props.engine} modelName={this.props.node.getNodeName()} badNameForLanguageElement={this.state.badNameForNewPredicate}/>:null
+										   type="text" style={{
+										width: (width + 1.5) + "ch",
+										height: 20 + "px",
+										border: this.state.badName ? "1px solid red" : "1px solid black"
+									}} name="" value={this.state.nodeName}
+										   onChange={(e) => {
+											   this.setState({nodeName: e.target.value});
+											   let name: string = e.target.value.replace(/\s/g, "");
+											   this.props.checkBadName(name, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
+										   }}/>
+								}
+							</TitleName>
+						</PortWidget>
+					</Title>
+					<Ports>
+						<PortsContainer>
+							{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
+							<PortWidget style={{flexGrow: 1}} engine={this.props.engine}
+										port={this.props.node.getAppendPort()}>
+								<Port onClick={() => {
+									if (this.state.isDropDownMenu) {
+										this.setState({isDropDownMenu: false});
+										this.props.engine.getModel().clearSelection();
+										this.props.engine.repaintCanvas();
+									} else {
+										this.setState({isDropDownMenu: true, badNameForNewPredicate: true});
+										this.props.engine.getModel().clearSelection();
+										this.props.node.setSelected(true);
+										this.props.engine.repaintCanvas();
+									}
+								}}
+									  height={20}
+									  width={this.props.node.getOptions().name.length * 20}>{this.state.isDropDownMenu ? ADDPORTSELECTED : ADDPORT}</Port>
+							</PortWidget>
+						</PortsContainer>
+					</Ports>
+				</Node>
+
+				{(this.state.isDropDownMenu && this.props.node.isSelected()) ?
+					<DropDownMenuWidget widthOfInputElement={width}
+										setStateInputElementTextLength={this.setInputElementTextLength}
+										setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState}
+										isDropDownMenu={this.state.isDropDownMenu} model={this.props.node}
+										engine={this.props.engine} modelName={this.props.node.getNodeName()}
+										badNameForLanguageElement={this.state.badNameForNewPredicate} arity={"1"}/> : null
 				}
 			</div>
 		)

@@ -2,11 +2,14 @@ import * as React from 'react';
 import { BinaryLabelModel } from './BinaryLabelModel';
 import styled from '@emotion/styled';
 import {DiagramEngine, PortWidget} from '@projectstorm/react-diagrams';
-import {ADDPORT} from "../../nodes/ConstantNames";
+import {ADDPORT, ADDPORTSELECTED} from "../../nodes/ConstantNames";
 import _ from "lodash";
 import FontAwesome from "react-fontawesome";
 import {InputElement, PortsContainer} from "../../nodes/unbinary/UnBinaryNodeWidget";
 import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
+import {DropDownMenuWidget} from "../../nodes/DropDownMenuWidget";
+import {Port} from "../../nodes/unbinary/UnBinaryPortLabelWidget";
+import {canUsePredicateForGivenArity} from "../../nodes/functions";
 
 export interface BinaryLabelWidgetProps {
 	model: BinaryLabelModel;
@@ -119,8 +122,9 @@ export const LabelDropDownPorts = styled.div`
 interface BinaryNodeWidgetState {
 	renameActive?:boolean;
 	titleChanged?:boolean;
-	predicateDropDownMenu:boolean;
+	isDropDownMenu:boolean;
 	badNameForNewPredicate: boolean;
+	inputElementTextLength: number;
 }
 
 export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,BinaryNodeWidgetState> {
@@ -129,9 +133,13 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		super(props);
 
 		this.state = {
-			predicateDropDownMenu: false,
-			badNameForNewPredicate: false
+			isDropDownMenu: false,
+			badNameForNewPredicate: false,
+			inputElementTextLength: 0
 		};
+
+		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
+		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
 	}
 
 	generatePredicate = (predicateObject: string) => {
@@ -229,20 +237,9 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		)
 	};
 
-	checkBadPredName(predName:string,arity:string,node:UnBinaryNodeModel){
-		predName = predName.replace(/\s/g, "");
-
-		if(predName === ""){
-			this.setState({badNameForNewPredicate:true});
-			return;
-		}
-
-		this.setState({badNameForNewPredicate:!node.canUsePredicateForGivenArity(predName,arity)});
-	}
-
 	getWidestElement(firstNodeName:string,secondNodeName:string):number{
 		let width:number = firstNodeName.length+secondNodeName.length;
-		/*let minimumWidth:number = this.props.model;
+		let minimumWidth:number = 0;
 
 		if(this.state.renameActive){
 			if(width<minimumWidth){
@@ -250,16 +247,24 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 			}
 		}
 
-		if(this.state.predicateDropDownMenu){
-			let predicateWidth = this.props.node.getMaximumLengthOfPredicatesForGivenArity("1");
+		if(this.state.isDropDownMenu){
+			let predicateWidth = this.props.model.getMaximumLengthOfPredicatesForGivenArity("2");
 			if(width<predicateWidth){
 				width = predicateWidth;
 			}
 			if(this.predicateTextInput && this.predicateTextInput.value.length>width){
 				width = this.predicateTextInput.value.length;
 			}
-		}*/
+		}
 		return width;
+	}
+
+	setInputElementTextLength(length: number){
+		this.setState({inputElementTextLength:length});
+	}
+
+	setBadNameForNewPredicateState(bool:boolean){
+		this.setState({badNameForNewPredicate: bool});
 	}
 
 	render() {
@@ -269,11 +274,11 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		// @ts-ignore
 		let targetNodeName = link.getTargetPort().getNode().getNodeName();
 
-		let node:UnBinaryNodeModel;
+		let node: UnBinaryNodeModel;
 		let tempNode = link.getSourcePort().getNode();
-		node = tempNode instanceof UnBinaryNodeModel?tempNode:null;
+		node = tempNode instanceof UnBinaryNodeModel ? tempNode : null;
 
-		let width = this.getWidestElement(sourceNodeName,targetNodeName);
+		let width = this.getWidestElement(sourceNodeName, targetNodeName);
 
 		return (
 			<div>
@@ -287,42 +292,30 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 					<Predicates>
 						<PredicateContainer>
 							{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicate)}
-							<Predicate onClick={() => {
-								this.props.model.addPredicate(`Pred${this.props.model.predicateIndex}`);
-								this.props.engine.repaintCanvas();
-							}}>
-								{ADDPORT}
-							</Predicate>
+							<Port onClick={() => {
+								if (this.state.isDropDownMenu) {
+									this.setState({isDropDownMenu: false});
+									this.props.engine.getModel().clearSelection();
+									this.props.engine.repaintCanvas();
+								} else {
+									this.setState({isDropDownMenu: true, badNameForNewPredicate: true});
+									this.props.engine.getModel().clearSelection();
+									this.props.model.setSelected(true);
+									this.props.engine.repaintCanvas();
+								}
+							}}
+								  height={20}
+								  width={this.props.model.getOptions().name?0:20}>{this.state.isDropDownMenu ? ADDPORTSELECTED : ADDPORT}</Port>
 						</PredicateContainer>
 					</Predicates>
 				</PredicatesNode>
-				{(this.state.predicateDropDownMenu && this.props.model.isSelected())?
-					<LabelDropDownMenu  pointerEvents={this.props.model.editable?"auto":"none"}
-								  cursor={this.props.model.editable?"pointer":"move"}>
-						<LabelDropDownPorts>
-							<PortsContainer>
-								{_.map(Array.from(node.getAvailablePredicatesForGivenArity("2")), this.generateAvailablePredicate)}
-								<InputElement>
-										<PredicateRowContainer key={"lastBinaryPredicateOption"}>
-											<input onChange={(e) => this.checkBadPredName(e.target.value,"2",node)} ref={(input) => this.predicateTextInput = input} onFocus={() => link.setLocked(true)} onBlur={() => link.setLocked(false)} placeholder={"Predicate"} style={{
-												width: (width)+"ch",
-												height: 20 + "px",
-												border: this.state.badNameForNewPredicate ? "1px solid red" : "1px solid black"
-											}}>
-											</input>
-											<PredicateButton onClick={() =>{
-												if(!this.state.badNameForNewPredicate && this.predicateTextInput.value){
-													this.props.model.addPredicate(this.predicateTextInput.value);
-													this.predicateTextInput.value = "";
-													this.setState({badNameForNewPredicate:true});
-													this.props.engine.repaintCanvas();
-												}
-											}}>{ADDPORT}</PredicateButton>
-										</PredicateRowContainer>
-								</InputElement>
-							</PortsContainer>
-						</LabelDropDownPorts>
-					</LabelDropDownMenu>:null
+				{(this.state.isDropDownMenu && this.props.model.isSelected()) ?
+					<DropDownMenuWidget model={this.props.model} engine={this.props.engine}
+										badNameForLanguageElement={this.state.badNameForNewPredicate}
+										isDropDownMenu={this.state.isDropDownMenu}
+										setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState}
+										setStateInputElementTextLength={this.setInputElementTextLength}
+										widthOfInputElement={width} arity={"2"}/> : null
 				}
 			</div>
 		)

@@ -4,6 +4,8 @@ import * as React from 'react';
 import FontAwesome from "react-fontawesome";
 import { DiagramEngine } from "@projectstorm/react-diagrams";
 import {ADDPORT} from "./ConstantNames";
+import {canUsePredicateForGivenArity, getAvailablePredicatesForGivenArity} from "./functions";
+import {BinaryLabelModel} from "../labels/binary/BinaryLabelModel";
 
 export const DropDownModel = styled.div<{pointerEvents: string, cursor:string}>`
 		width: 100%;
@@ -82,10 +84,12 @@ export interface DropDownMenuWidgetProps {
     model: any;
     engine: DiagramEngine;
     badNameForLanguageElement:boolean;
-    activeDropDownMenu:boolean;
+    isDropDownMenu:boolean;
     setStateBadNameForLanguageElement:any;
     setStateInputElementTextLength:any;
+    widthOfInputElement:number;
     modelName?:string;
+    arity:string;
 }
 
 export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps> {
@@ -102,74 +106,64 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
             this.props.setStateBadNameForLanguageElement(true);
             return;
         }
-        this.props.setStateBadNameForLanguageElement(!this.props.model.canUsePredicateForGivenArity(elementName,arity));
+        this.props.setStateBadNameForLanguageElement(!canUsePredicateForGivenArity(elementName,arity,this.props.model.getReduxProps()));
     }
 
     generateAvailablePredicate = (predicate: string) => {
         return (
             <DropDownRowContainer key={predicate} >
                 <DropDownLanguageElement onClick={() =>{
-                    this.props.model.addUnaryPredicate(predicate);
+                    this.props.model.addPredicate(predicate);
                     this.props.engine.repaintCanvas();
                 }}>
                     {predicate}
                 </DropDownLanguageElement>
                 <DropDownButton onClick={() =>{
-                    this.props.model.addUnaryPredicate(predicate);
+                    this.props.model.addPredicate(predicate);
                     this.props.engine.repaintCanvas();
                 }}><FontAwesome name={"fas fa-plus"}/></DropDownButton>
             </DropDownRowContainer>
         )
     };
 
-    getWidestElement():number{
-        let width:number = this.props.modelName.length;
-        let minimumWidth:number = this.props.model.getNodeName().length;
-
-        if(this.props.activeDropDownMenu){
-            let predicateWidth = this.props.model.getMaximumLengthOfPredicatesForGivenArity("1");
-            if(width<predicateWidth){
-                width = predicateWidth;
-            }
-            if(this.textInput && this.textInput.value.length>width){
-                width = this.textInput.value.length;
-            }
+    setLockedParentIfNeeded(bool:boolean){
+        if(this.props.model instanceof BinaryLabelModel){
+            this.props.model.setLockedParent(bool);
         }
-
-        if(width<minimumWidth){
-            width =minimumWidth;
-        }
-
-        return width;
     }
-    render() {
-        let width = this.getWidestElement();
 
+    render() {
         return (
             <DropDownModel pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
                            cursor={this.props.model.isEditable() ? "pointer" : "move"}>
                 <DropDownPorts>
                     <DropDownContainer>
-                        {_.map(Array.from(this.props.model.getAvailablePredicatesForGivenArity("1")), this.generateAvailablePredicate)}
+                        {_.map(Array.from(getAvailablePredicatesForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates())), this.generateAvailablePredicate)}
 
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
                                 <input onChange={(e) => {
-                                    this.checkBadElementName(e.target.value, "1");
+                                    this.checkBadElementName(e.target.value, this.props.arity);
                                     this.props.setStateInputElementTextLength(e.target.value.length);
                                 }}
                                        ref={(input) => this.textInput = input}
-                                       onFocus={() => this.props.model.setLocked(true)}
-                                       onBlur={() => this.props.model.setLocked(false)}
+                                       onFocus={() => {
+                                           this.props.model.setLocked(true);
+                                           this.setLockedParentIfNeeded(true);
+                                       }}
+                                       onBlur={() => {
+                                           this.props.model.setLocked(false);
+                                           this.setLockedParentIfNeeded(false);
+                                       }}
                                        placeholder={"New predicate/function"} style={{
-                                    width: (width) + "ch",
+                                    width: (this.props.widthOfInputElement) + "ch",
                                     height: 20 + "px",
                                     border: this.props.badNameForLanguageElement ? "1px solid red" : "1px solid black"
                                 }}>
                                 </input>
                                 <DropDownButton onClick={() => {
                                     if (!this.props.badNameForLanguageElement && this.textInput.value) {
-                                        this.props.model.addUnaryPredicate(this.textInput.value);
+                                        this.props.model.addPredicate(this.textInput.value);
                                         this.textInput.value = "";
                                         this.props.setStateBadNameForLanguageElement(true);
                                         this.props.engine.repaintCanvas();

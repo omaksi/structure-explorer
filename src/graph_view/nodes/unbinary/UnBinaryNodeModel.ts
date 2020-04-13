@@ -17,11 +17,10 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 }
 
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
-	unaryPredicateIndex: number;
-	unaryPredicatesLength: number;
+	changeCounter: number;
+	unaryPredicates: Set<string>;
 	appendPort: UnBinaryPortModel;
 	mainPort: UnBinaryPortModel;
-	unaryPredicates: Set<string>;
 	editable:boolean;
 
 	constructor(name: string, color: string, reduxProps: any);
@@ -42,10 +41,12 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		});
 		this.addTemplatePorts();
 		this.registerEvents();
-		this.unaryPredicateIndex = 0;
-		this.unaryPredicatesLength = 0;
 		this.unaryPredicates = new Set();
 		this.editable = reduxProps["editable"];
+	}
+
+	addPredicate(name:string){
+		this.addUnaryPredicate(name);
 	}
 
 	getReduxProps(){
@@ -64,46 +65,8 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		return predicateSet;
 	}
 
-	canUsePredicateForGivenArity(predName:string,predArity:string):boolean{
-		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
-
-		if(predicates){
-			for(let predicateObject of predicates){
-				if(predicateObject.name === predName){
-					return predicateObject.arity === predArity;
-				}
-			}
-		}
-		return true;
-	}
-
-	getAvailablePredicatesForGivenArity(arity:string):Set<string>{
-		let predicateSet:Set<string> = new Set();
-		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
-
-		if(predicates){
-			for(let predicateObject of predicates){
-				if(predicateObject.arity === arity && !this.unaryPredicates.has(predicateObject.name)){
-					predicateSet.add(predicateObject.name);
-				}
-			}
-		}
-
-		return predicateSet;
-	}
-
-	getMaximumLengthOfPredicatesForGivenArity(arity:string):number{
-		let maxLength = 0;
-		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
-
-		if(predicates){
-			for(let predicateObject of predicates){
-				if(predicateObject.arity === arity && maxLength<predicateObject.name.length){
-					maxLength = predicateObject.name.length;
-				}
-			}
-		}
-		return maxLength;
+	getPredicates(){
+		return this.unaryPredicates;
 	}
 
 	getMainPort():UnBinaryPortModel{
@@ -141,15 +104,19 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	clearPredicates(){
 		this.unaryPredicates = new Set();
-		this.unaryPredicateIndex = 0;
 	}
 
 	getUnaryPredicates() {
 		return this.unaryPredicates;
 	}
 
+	increaseChangeCounter(){
+		this.changeCounter+=1;
+	}
+
 	addUnaryPredicateToSet(name: string){
 		this.unaryPredicates.add(name);
+		this.increaseChangeCounter();
 	}
 
 	addUnaryPredicate(name: string) {
@@ -157,7 +124,6 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		if (!this.unaryPredicates.has(name)) {
 			this.options.reduxProps["addUnaryPredicate"](name, this.getNodeName());
 			this.addUnaryPredicateToSet(name);
-			this.unaryPredicateIndex++;
 		}
 	}
 
@@ -177,6 +143,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	removeUnaryPredicateFromSet(name: string){
 		this.unaryPredicates.delete(name);
+		this.increaseChangeCounter();
 	}
 
 	getNodeName() {
@@ -206,7 +173,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		return {
 			...super.serialize(),
 			unaryPredicatesLength: this.unaryPredicates.size,
-			unaryPredicateIndex: this.unaryPredicateIndex,
+			changeCounter: this.changeCounter,
 			appendPort: this.appendPort,
 			editable: this.editable
 		};
@@ -214,8 +181,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	deserialize(event: any) {
 		super.deserialize(event);
-		this.unaryPredicatesLength = event.data.unaryPredicatesLength;
-		this.unaryPredicateIndex = event.data.unaryPredicateIndex;
+		this.changeCounter = event.date.changeCounter;
 		this.appendPort = event.data.appendPort;
 		this.editable = event.data.editable;
 	}

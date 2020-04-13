@@ -6,6 +6,8 @@ import { LabelModelOptions, LabelModelGenerics } from '@projectstorm/react-diagr
 export interface BinaryLabelModelOptions extends LabelModelOptions {
 	label?: string;
 	predicates?: Set<string>;
+	reduxProps?: any;
+	name?:string;
 }
 
 export interface NodeModelListener extends BaseModelListener {
@@ -20,28 +22,40 @@ export interface BinaryLabelModelGenerics extends LabelModelGenerics {
 export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	predicates: Map<string,string>;
 	editable: boolean;
-	predicateIndex:number;
-	numberOfPredicates: number;
+	changeCounter: number;
 
-	constructor(options: BinaryLabelModelOptions = {}) {
+	constructor(options: BinaryLabelModelOptions = {},reduxProps?:any,name?:string) {
 		super({
 			...options,
 			offsetY: 0,
 			type: 'binary',
+			reduxProps: reduxProps,
+			name:name,
 		});
 
 		this.predicates = new Map();
 		this.editable = true;
-		this.predicateIndex = 0;
-		this.numberOfPredicates = 0;
+		this.changeCounter = 0;
 	}
 
 	setLabel(label: string) {
 		this.options.label = label;
 	}
 
+	getName():string{
+		return this.options.name;
+	}
+
 	getPredicates():Map<string,string>{
 		return this.predicates;
+	}
+
+	setLockedParent(bool:boolean){
+		this.getParent().setLocked(bool);
+	}
+
+	getReduxProps(){
+		return this.getOptions().reduxProps;
 	}
 
 	//b - both
@@ -49,12 +63,35 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	//t - to => means it goes to this node from another (so this node is second parameter)
 	addPredicate(name:string){
 		this.predicates.set(name,"b");
-		this.predicateIndex+=1;
+		this.increaseChangeCounter();
+	}
+
+	increaseChangeCounter(){
+		this.changeCounter+=1;
+	}
+
+	getMaximumLengthOfPredicatesForGivenArity(arity:string):number{
+		let maxLength = 0;
+		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
+
+		if(predicates){
+			for(let predicateObject of predicates){
+				if(predicateObject.arity === arity && maxLength<predicateObject.name.length){
+					maxLength = predicateObject.name.length;
+				}
+			}
+		}
+		return maxLength;
+	}
+
+	isEditable(){
+		return this.editable;
 	}
 
 	removePredicate(name:string){
 		if(this.predicates.has(name)){
 			this.predicates.delete(name);
+			this.increaseChangeCounter();
 		}
 	}
 
@@ -79,7 +116,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		super.deserialize(event);
 		this.options.label = event.data.label;
 		this.editable = event.data.editable;
-		this.numberOfPredicates = event.data.numberOfPredicates;
+		this.changeCounter = event.data.changeCounter;
 	}
 
 	serialize() {
@@ -87,7 +124,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 			...super.serialize(),
 			label: this.options.label,
 			editable: this.editable,
-			numberOfPredicates: this.predicates.size
+			changeCounter: this.changeCounter
 		};
 	}
 }

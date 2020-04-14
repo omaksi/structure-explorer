@@ -1,4 +1,5 @@
 import {
+  ADD_BINARY_PREDICATE,
   ADD_CONSTANT_NODE,
   ADD_UNARY_PREDICATE,
   IMPORT_APP,
@@ -50,26 +51,10 @@ function languageReducer(s, action, struct) {
       setConstants();
       return state;
     case ADD_UNARY_PREDICATE:
-      let predicateState = state.predicates.value;
-      let unaryPredicate = action.predicateName+"/1";
-
-      if(state.predicates.parsed){
-        for(let i = 0;i<state.predicates.parsed.length;i++){
-          if(state.predicates.parsed[i].name === action.predicateName){
-            return state;
-          }
-        }
-      }
-
-      if(predicateState.charAt(predicateState.length-1)==="," || !state.predicates.parsed || state.predicates.parsed.length===0){
-        predicateState+=unaryPredicate;
-      }
-      else{
-        predicateState+=","+unaryPredicate;
-      }
-
-      functions.parseText(predicateState, state.predicates, {startRule: RULE_PREDICATES});
-      setPredicates();
+      addPredicate(action.predicateName,1);
+      return state;
+    case ADD_BINARY_PREDICATE:
+      addPredicate(action.predicateName,2);
       return state;
     case ADD_CONSTANT_NODE:
       console.log(structure);
@@ -137,6 +122,30 @@ function languageReducer(s, action, struct) {
     default:
       return state;
   }
+}
+function addPredicate(predicateName,predicateArity){
+  let predicateNameWithArity = predicateName+"/"+predicateArity;
+  let parsedPredicatesMap = structure.language.predicates;
+  let newPredValue = "";
+
+  for(let [predValue,predArity] of parsedPredicatesMap.entries()){
+    newPredValue+=predValue+"/"+predArity+", ";
+  }
+
+  if(newPredValue.length!==0){
+    if(!parsedPredicatesMap.has(predicateName)) {
+      newPredValue += predicateNameWithArity;
+    }
+    else{
+      newPredValue = newPredValue.substring(0,newPredValue.length-2);
+    }
+  }
+  else{
+    newPredValue = predicateNameWithArity;
+  }
+
+  functions.parseText(newPredValue, state.predicates, {startRule: RULE_PREDICATES});
+  setPredicates();
 }
 
 function setConstants() {

@@ -1,14 +1,14 @@
+import _ from 'lodash';
 import * as React from 'react';
+import styled from '@emotion/styled';
+import FontAwesome from "react-fontawesome";
 import { UnBinaryNodeModel } from './UnBinaryNodeModel';
 import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
-import styled from '@emotion/styled';
-import _ from 'lodash';
 import { Port } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
-import FontAwesome from "react-fontawesome";
 import {Predicate, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
 import {DropDownMenuWidget} from "../DropDownMenuWidget";
-import {canUsePredicateForGivenArity, getMaximumLengthOfPredicatesForGivenArity} from "../functions";
+import {getMaximumLengthOfPredicatesForGivenArity} from "../functions";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -43,26 +43,6 @@ export const Node = styled.div<{ background: string; selected: boolean, pointerE
 		overflow: visible;
 		font-size: 13px;
 		border: solid 2px ${p => (p.selected ? 'rgb(0,192,255)' : 'black')};
-	`;
-
-export const DropDownNode = styled.div<{ background: string; selected: boolean, pointerEvents: string, cursor:string}>`
-		width: 100%;
-		pointer-events: ${p => p.pointerEvents};
-		cursor: ${p => p.cursor};
-		/*background-color: ${p => p.background};*/
-		background-color: green;
-		border-radius: 5px;
-		font-family: sans-serif;
-		font-weight: bold;
-		color: black;
-		overflow: visible;
-		font-size: 13px;
-		border: solid 2px black;
-	`;
-
-export const DropDownPorts = styled.div`
-		display: flex;
-		background-image: linear-gradient(rgba(256, 256, 256, 0.9), rgba(256, 256, 256, 0.9));
 	`;
 
 export const Title = styled.div`
@@ -111,12 +91,6 @@ export const PredicateButton = styled.div`
 		}
 	`;
 
-export const InputElement = styled.div`
-		width: 100%;
-		flex-grow: 1;
-		padding: 3px 3px;
-	`;
-
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
 	_isMounted:boolean = true;
 
@@ -145,8 +119,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this._isMounted = true;
 	}
 
-	componentDidUpdate(prevProps: Readonly<UnBinaryNodeWidgetProps>, prevState: Readonly<UnBinaryNodeWidgetState>, snapshot?: any): void {
-		this.isisDropDownMenu();
+	componentDidUpdate(): void {
+		this.setIsDropDownMenuAccordingBehaviour();
 	}
 
 	generatePredicate = (predicate: string) => {
@@ -163,34 +137,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			</PredicateRowContainer>
 		)
 	};
-
-	generateAvailablePredicate = (predicate: string) => {
-		return (
-			<PredicateRowContainer key={predicate} >
-				<Predicate onClick={() =>{
-					this.props.node.addUnaryPredicate(predicate);
-					this.props.engine.repaintCanvas();
-				}}>
-					{predicate}
-				</Predicate>
-				<PredicateButton onClick={() =>{
-					this.props.node.addUnaryPredicate(predicate);
-					this.props.engine.repaintCanvas();
-				}}><FontAwesome name={"fas fa-plus"}/></PredicateButton>
-			</PredicateRowContainer>
-		)
-	};
-
-	checkBadPredName(predName:string,arity:string){
-		predName = predName.replace(/\s/g, "");
-
-		if(predName === ""){
-			this.setState({badNameForNewPredicate:true});
-			return;
-		}
-
-		this.setState({badNameForNewPredicate:!canUsePredicateForGivenArity(predName,arity,this.props.node.getReduxProps()["store"])});
-	}
 
 	cancelRenameNode() {
 		if(!this._isMounted){
@@ -230,9 +176,10 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.setState({badNameForNewPredicate: bool});
 	}
 
-	isisDropDownMenu(){
+	setIsDropDownMenuAccordingBehaviour(){
 		if(!this.props.node.isSelected() && this.state.isDropDownMenu){
 			this.setState({isDropDownMenu:false});
+			this.props.node.setLocked(false);
 		}
 	}
 
@@ -335,9 +282,10 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					<DropDownMenuWidget widthOfInputElement={width}
 										setStateInputElementTextLength={this.setInputElementTextLength}
 										setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState}
-										isDropDownMenu={this.state.isDropDownMenu} model={this.props.node}
+										model={this.props.node}
 										engine={this.props.engine} modelName={this.props.node.getNodeName()}
-										badNameForLanguageElement={this.state.badNameForNewPredicate} arity={"1"}/> : null
+										badNameForLanguageElement={this.state.badNameForNewPredicate}
+										arity={"1"}/> : null
 				}
 			</div>
 		)

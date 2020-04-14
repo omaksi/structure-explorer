@@ -1,11 +1,10 @@
+import _ from "lodash";
 import * as React from 'react';
-import { BinaryLabelModel } from './BinaryLabelModel';
 import styled from '@emotion/styled';
+import FontAwesome from "react-fontawesome";
+import { BinaryLabelModel } from './BinaryLabelModel';
 import {DiagramEngine} from '@projectstorm/react-diagrams';
 import {ADDPORT, ADDPORTSELECTED} from "../../nodes/ConstantNames";
-import _ from "lodash";
-import FontAwesome from "react-fontawesome";
-import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
 import {DropDownMenuWidget} from "../../nodes/DropDownMenuWidget";
 import {Port} from "../../nodes/unbinary/UnBinaryPortLabelWidget";
 
@@ -97,26 +96,6 @@ export const TitleName = styled.div`
 		padding: 5px 5px;
 	`;
 
-export const LabelDropDownMenu = styled.div<{pointerEvents: string, cursor:string}>`
-		pointer-events: ${p => p.pointerEvents};
-		cursor: ${p => p.cursor};
-		width:100%;
-		height:100%;
-		background-color: yellow;
-		border-radius: 5px;
-		font-family: sans-serif;
-		color: black;
-		border: solid 2px black;
-		overflow: visible;
-		font-size: 12px;
-		font-weight: bold;
-	`;
-
-export const LabelDropDownPorts = styled.div`
-		display: flex;
-		background-image: linear-gradient(rgba(256, 256, 256, 0.9), rgba(256, 256, 256, 0.9));
-	`;
-
 interface BinaryNodeWidgetState {
 	renameActive?:boolean;
 	titleChanged?:boolean;
@@ -159,8 +138,14 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		};
 
 	componentDidUpdate() {
-		if(this.state.isDropDownMenu && !this.props.model.getParent().isSelected()){
+		this.setIsDropDownMenuAccordingBehaviour();
+	}
+
+	setIsDropDownMenuAccordingBehaviour(){
+		if(!this.props.model.getParent().isSelected() && this.state.isDropDownMenu){
 			this.setState({isDropDownMenu:false});
+			this.props.model.setLockedParent(false);
+			this.props.model.setLocked(false);
 		}
 	}
 
@@ -201,10 +186,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		// @ts-ignore
 		let targetNodeName = link.getTargetPort().getNode().getNodeName();
 
-		let node: UnBinaryNodeModel;
-		let tempNode = link.getSourcePort().getNode();
-		node = tempNode instanceof UnBinaryNodeModel ? tempNode : null;
-
 		let width = this.getWidestElement(sourceNodeName, targetNodeName);
 
 		return (
@@ -240,7 +221,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 				{(this.state.isDropDownMenu && this.props.model.getParent().isSelected()) ?
 					<DropDownMenuWidget model={this.props.model} engine={this.props.engine}
 										badNameForLanguageElement={this.state.badNameForNewPredicate}
-										isDropDownMenu={this.state.isDropDownMenu}
 										setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState}
 										setStateInputElementTextLength={this.setInputElementTextLength}
 										widthOfInputElement={width} arity={"2"}/> : null

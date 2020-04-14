@@ -13,27 +13,24 @@ export function canUsePredicateForGivenArity(predName:string,predArity:string,re
 
 export function getAvailablePredicatesForGivenArity(arity:string,reduxProps:any,modelSet:Set<string>):Set<string> {
     let predicateSet: Set<string> = new Set();
-    let predicates = reduxProps["store"].getState().language.predicates.parsed;
+    let predicates = reduxProps["store"].getState().structureObject.language.predicates;
 
-    if (predicates) {
-        for (let predicateObject of predicates) {
-            if (predicateObject.arity === arity && !modelSet.has(predicateObject.name)) {
-                predicateSet.add(predicateObject.name);
-            }
+    for(let [predValue,predArity] of predicates.entries()){
+        if(predArity === arity && !modelSet.has(predValue)){
+            predicateSet.add(predValue);
         }
     }
+
     return predicateSet;
 }
 
 export function getMaximumLengthOfPredicatesForGivenArity(arity:string,reduxProps:any):number{
     let maxLength = 0;
-    let predicates = reduxProps["store"].getState().language.predicates.parsed;
+    let predicates = reduxProps["store"].getState().structureObject.language.predicates;
 
-    if(predicates){
-        for(let predicateObject of predicates){
-            if(predicateObject.arity === arity && maxLength<predicateObject.name.length){
-                maxLength = predicateObject.name.length;
-            }
+    for(let [predValue,predArity] of predicates.entries()){
+        if(predArity === arity && maxLength<predValue.length){
+            maxLength = predValue.length;
         }
     }
     return maxLength;

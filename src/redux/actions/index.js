@@ -85,10 +85,11 @@ export const removeUnaryPredicate = (predicateName,nodeName) => ({
   nodeName
 });
 
-export const addBinaryPredicate = (predicateName,nodeName) => ({
+export const addBinaryPredicate = (predicateName,sourceNodeName,targetNodeName) => ({
   type: 'ADD_BINARY_PREDICATE',
   predicateName,
-  nodeName
+  sourceNodeName,
+  targetNodeName
 });
 
 export const removeBinaryPredicate = (predicateName,sourceNodeName,targetNodeName,direction) => ({
@@ -98,6 +99,15 @@ export const removeBinaryPredicate = (predicateName,sourceNodeName,targetNodeNam
   targetNodeName,
   direction
 });
+
+export const changeDirectionOfBinaryRelation = (predicateName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'CHANGE_DIRECTION_OF_BINARY_RELATION',
+  predicateName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
 
 export const checkBadName = (newName,oldName,nodeBadNameSetState,nodeType) => ({
   type: 'CHECK_BAD_NAME',

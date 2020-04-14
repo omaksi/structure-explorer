@@ -84,7 +84,6 @@ export interface DropDownMenuWidgetProps {
     model: any;
     engine: DiagramEngine;
     badNameForLanguageElement:boolean;
-    isDropDownMenu:boolean;
     setStateBadNameForLanguageElement:any;
     setStateInputElementTextLength:any;
     widthOfInputElement:number;
@@ -148,7 +147,6 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                 <DropDownPorts>
                     <DropDownContainer>
                         {_.map(Array.from(getAvailablePredicatesForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates())), this.generateAvailablePredicate)}
-
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
                                 <input onChange={(e) => {

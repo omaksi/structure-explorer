@@ -62,7 +62,6 @@ function diagramReducer(state, action) {
     case SYNC_MATH_STATE:
       deleteAllLabels(state);
       return state;
-
     case TOGGLE_EDITABLE_NODES:
       let nodeArray = state.diagramModel.getNodes();
       for (let a = 0; a < nodeArray.length; a++) {

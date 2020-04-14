@@ -23,7 +23,7 @@ import {
   REMOVE_DOMAIN_NODE,
   ADD_CONSTANT_NODE,
   REMOVE_CONSTANT_NODE,
-  ADD_UNARY_PREDICATE, RENAME_CONSTANT_NODE, SET_CONSTANT_VALUE_FROM_LINK, REMOVE_UNARY_PREDICATE
+  ADD_UNARY_PREDICATE, RENAME_CONSTANT_NODE, SET_CONSTANT_VALUE_FROM_LINK, REMOVE_UNARY_PREDICATE, ADD_BINARY_PREDICATE
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -93,24 +93,11 @@ function structureReducer(s, action, struct) {
       return state;
 
     case ADD_UNARY_PREDICATE:
-      insertNewInputs();
-      let predicateName = action.predicateName+"/1";
-      let currentPredicateValue = state.predicates[predicateName].value;
+      addPredicate(action.predicateName,1,structure.iPredicate,[action.nodeName]);
+      return state;
 
-      if(currentPredicateValue === ""){
-        currentPredicateValue = action.nodeName;
-      }
-
-      else{
-        if (currentPredicateValue.charAt(currentPredicateValue.length - 1) === ",") {
-          currentPredicateValue += action.nodeName;
-        }
-        else {
-          currentPredicateValue += ","+action.nodeName;
-        }
-      }
-      functions.parseText(currentPredicateValue, state.predicates[predicateName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
-      setPredicateValue(predicateName);
+    case ADD_BINARY_PREDICATE:
+      addPredicate(action.predicateName,2,structure.iPredicate, [action.sourceNodeName,action.targetNodeName]);
       return state;
 
     case REMOVE_UNARY_PREDICATE:
@@ -289,15 +276,50 @@ function structureReducer(s, action, struct) {
   }
 }
 
-/*function replaceAllOccurrencesInParsedArray(parsedArray,oldValue,value){
-  for(let i = 0;i<parsedArray.length;i++){
-    if(parsedArray[i] === oldValue){
-      parsedArray[i] = value;
-    }
-  }
-  return parsedArray;
-}*/
+function addUnaryPredicate(predicateName,structureIPredicate,nodeName){
+  let predName = predicateName+"/1";
+  let newPredValue = "";
 
+  if(structureIPredicate.has(predName)){
+    for(let parsedArrayOfLanguageElements of structureIPredicate.get(predName)){
+      newPredValue += parsedArrayOfLanguageElements[0]+", ";
+    }
+    newPredValue = newPredValue.substring(0,newPredValue.length-2);
+  }
+  newPredValue += nodeName;
+
+  return newPredValue;
+}
+
+function addBinaryPredicate(predicateName,structureIPredicate,sourceNodeName,targetNodeName){
+  let predName = predicateName+"/2";
+  let newPredValue = "";
+
+  if(structureIPredicate.has(predName)){
+    for(let parsedArrayOfLanguageElements of structureIPredicate.get(predName)){
+      newPredValue += "("+parsedArrayOfLanguageElements[0]+", "+parsedArrayOfLanguageElements[1]+"), ";
+    }
+    newPredValue = newPredValue.substring(0,newPredValue.length-2);
+  }
+  newPredValue += "("+sourceNodeName+", "+targetNodeName+")";
+  
+  return newPredValue;
+}
+
+function addPredicate(predicateName,predicateArity,structureIPredicate,nodeNames){
+  insertNewInputs();
+  let predValue = "";
+
+  if(predicateArity === 1){
+    predValue = addUnaryPredicate(predicateName,structureIPredicate,nodeNames[0]);
+  }
+  else if(predicateArity === 2){
+    predValue = addBinaryPredicate(predicateName,structureIPredicate,nodeNames[0],nodeNames[1]);
+  }
+
+  functions.parseText(predValue, state.predicates[predicateName+"/"+predicateArity], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
+  setPredicateValue(predValue);
+}
 function setDomain() {
   if (!state.domain.parsed) {
     return;
@@ -331,17 +353,17 @@ function syncLanguageWithStructure() {
 
 function deleteUnusedInputs() {
   Object.keys(state.constants).forEach(e => {
-    if (!structure.language.hasConstant(e/*.split('/')[0])*/)) {
+    if (!structure.language.hasConstant(e)) {
       delete state.constants[e];
     }
   });
   Object.keys(state.predicates).forEach(e => {
-    if (!structure.language.hasPredicate(e/*e.split('/')[0]*/)) {
+    if (!structure.language.hasPredicate(e)) {
       delete state.predicates[e];
     }
   });
   Object.keys(state.functions).forEach(e => {
-    if (!structure.language.hasFunction(/*e.split('/')[0]*/e)) {
+    if (!structure.language.hasFunction(e)) {
       delete state.functions[e];
     }
   });

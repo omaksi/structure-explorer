@@ -101,7 +101,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
     checkBadElementName(elementName:string,arity:string){
         elementName = elementName.replace(/\s/g, "");
 
-        if(elementName === ""){
+        if(elementName === "" || elementName.includes(",") || elementName.includes("/")){
             this.props.setStateBadNameForLanguageElement(true);
             return;
         }

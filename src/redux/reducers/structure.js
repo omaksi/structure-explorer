@@ -302,7 +302,7 @@ function addBinaryPredicate(predicateName,structureIPredicate,sourceNodeName,tar
     newPredValue = newPredValue.substring(0,newPredValue.length-2);
   }
   newPredValue += "("+sourceNodeName+", "+targetNodeName+")";
-  
+
   return newPredValue;
 }
 

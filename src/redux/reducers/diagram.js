@@ -106,6 +106,11 @@ function checkIfNameCanBeUsed(state,action){
     return;
   }
 
+  if(action.newName.includes(",")){
+    action.nodeBadNameSetState(true);
+    return;
+  }
+
   if(action.newName.length === 0 ){
     action.nodeBadNameSetState(true);
     return;

@@ -238,13 +238,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 	getWidestElement():number{
 		let width:number = this.state.nodeName.length;
-		let minimumWidth:number = this.props.node.getNodeName().length;
-
-		if(this.state.renameActive){
-			if(width<minimumWidth){
-				width = minimumWidth;
-			}
-		}
 
 		if(this.state.isDropDownMenu){
 			let predicateWidth = getMaximumLengthOfPredicatesForGivenArity("1",this.props.node.getReduxProps());

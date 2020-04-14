@@ -168,20 +168,20 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 				if (!exclude.includes(e.target.tagName.toLowerCase())) {
 					if (e.key === ';' || e.key === '`') {
 						editableNodes ? editableNodesFunction(false) : editableNodesFunction(true);
-					} else if (e.key.toLowerCase() === 'm') {
+					} else if (e.key.toLowerCase() === 'p') {
 						editableNodesFunction(false);
-					} else if (e.key.toLowerCase() === 'n') {
+					} else if (e.key.toLowerCase() === 'e') {
 						editableNodesFunction(true);
 					}
 				}
 			}}>
 				<Content>
 					<TrayWidget>
-						<Button title={"Pohyb po grafe"} variant={"outline-primary"}
+						<Button title={"Pohyb po grafe (P)"} variant={"outline-primary"}
 								className={editableNodes ? "" : "active"} onClick={() => {
 							editableNodesFunction(false)
 						}}><FontAwesome name={"fas fa-arrows-alt"}/></Button>
-						<Button title={"Editovanie grafu"} variant={"outline-primary"}
+						<Button title={"Editovanie grafu (E)"} variant={"outline-primary"}
 								className={editableNodes ? "active" : ""} onClick={() => {
 							editableNodesFunction(true)
 						}}><FontAwesome name={"fas fa-edit"}/></Button>

@@ -132,6 +132,15 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
         }
     }
 
+    addGivenInputElement(){
+        if (!this.props.badNameForLanguageElement && this.textInput.value) {
+            this.props.model.addPredicate(this.textInput.value);
+            this.textInput.value = "";
+            this.props.setStateBadNameForLanguageElement(true);
+            this.props.engine.repaintCanvas();
+        }
+    }
+
     render() {
         return (
             <DropDownModel pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
@@ -155,6 +164,11 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                            this.props.model.setLocked(false);
                                            this.setLockedParentIfNeeded(false);
                                        }}
+                                       onKeyDown={(e) => {
+                                           if (e.key === "Enter") {
+                                               this.addGivenInputElement();
+                                           }
+                                       }}
                                        placeholder={"New predicate/function"} style={{
                                     width: (this.props.widthOfInputElement) + "ch",
                                     height: 20 + "px",
@@ -162,12 +176,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                 }}>
                                 </input>
                                 <DropDownButton onClick={() => {
-                                    if (!this.props.badNameForLanguageElement && this.textInput.value) {
-                                        this.props.model.addPredicate(this.textInput.value);
-                                        this.textInput.value = "";
-                                        this.props.setStateBadNameForLanguageElement(true);
-                                        this.props.engine.repaintCanvas();
-                                    }
+                                    this.addGivenInputElement();
                                 }}>{ADDPORT}</DropDownButton>
                             </DropDownRowContainer>
                         </DropDownInputElement>

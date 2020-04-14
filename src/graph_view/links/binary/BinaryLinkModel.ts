@@ -128,27 +128,6 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 		return this.callReduxFunc;
 	}
 
-	setSourcePortWithoutEvent(port: PortModel) {
-		if (port !== null) {
-			port.addLink(this);
-		}
-		if (this.sourcePort !== null) {
-			this.sourcePort.removeLink(this);
-		}
-		this.sourcePort = port;
-	}
-
-	setTargetPortWithoutEvent(port: PortModel) {
-		if (port !== null) {
-			port.addLink(this);
-		}
-		if (this.targetPort !== null) {
-			this.targetPort.removeLink(this);
-		}
-		this.targetPort = port;
-	}
-
-
 	calculateControlOffset(port: PortModel): [number, number] {
 		if (port.getOptions().alignment === PortModelAlignment.RIGHT) {
 			return [this.options.curvyness, 0];

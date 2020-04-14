@@ -27,6 +27,8 @@ export interface BodyWidgetProps {
 	removeUnaryPredicate:any;
 	toggleEditableNodes:any;
 	setConstantValueFromLink:any;
+	addBinaryPredicate:any;
+	removeBinaryPredicate:any;
 	store:any;
 }
 
@@ -127,7 +129,8 @@ export interface BodyWidgetProps {
 
 
 export class BodyWidget extends React.Component<BodyWidgetProps,any> {
-		body:any;
+	body: any;
+
 	constructor(props: any) {
 		super(props);
 	}
@@ -148,21 +151,22 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"addConstantNode": this.props.addConstantNode,
 			"renameConstantNode": this.props.renameConstantNode,
 			"removeConstantNode": this.props.removeConstantNode,
-			"checkBadName":this.props.checkBadName,
-			"addUnaryPredicate":this.props.addUnaryPredicate,
-			"removeUnaryPredicate":this.props.removeUnaryPredicate,
-			"setConstantValueFromLink":this.props.setConstantValueFromLink,
-			"editable":editableNodes,
-			"store":this.props.store,
-
+			"checkBadName": this.props.checkBadName,
+			"addUnaryPredicate": this.props.addUnaryPredicate,
+			"removeUnaryPredicate": this.props.removeUnaryPredicate,
+			"addBinaryPredicate": this.props.addBinaryPredicate,
+			"removeBinaryPredicate": this.props.removeBinaryPredicate,
+			"setConstantValueFromLink": this.props.setConstantValueFromLink,
+			"editable": editableNodes,
+			"store": this.props.store
 		};
 
 		return (
-			<Body ref={Body => this.body = Body} tabIndex={1} onKeyPress={(e:any)=>{
+			<Body ref={Body => this.body = Body} tabIndex={1} onKeyPress={(e: any) => {
 				let exclude = ['input', 'textarea'];
 
-				if(!exclude.includes(e.target.tagName.toLowerCase())) {
-					if (e.key === ';') {
+				if (!exclude.includes(e.target.tagName.toLowerCase())) {
+					if (e.key === ';' || e.key === '`') {
 						editableNodes ? editableNodesFunction(false) : editableNodesFunction(true);
 					} else if (e.key.toLowerCase() === 'm') {
 						editableNodesFunction(false);
@@ -173,30 +177,36 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			}}>
 				<Content>
 					<TrayWidget>
-						<Button title={"Pohyb po grafe"}  variant={"outline-primary"}  className={editableNodes?"":"active"} onClick={() => {editableNodesFunction(false)}}><FontAwesome name={"fas fa-arrows-alt"}/></Button>
-						<Button title={"Editovanie grafu"} variant={"outline-primary"} className={editableNodes?"active":""} onClick={() => {editableNodesFunction(true)}}><FontAwesome name={"fas fa-edit"}/></Button>
+						<Button title={"Pohyb po grafe"} variant={"outline-primary"}
+								className={editableNodes ? "" : "active"} onClick={() => {
+							editableNodesFunction(false)
+						}}><FontAwesome name={"fas fa-arrows-alt"}/></Button>
+						<Button title={"Editovanie grafu"} variant={"outline-primary"}
+								className={editableNodes ? "active" : ""} onClick={() => {
+							editableNodesFunction(true)
+						}}><FontAwesome name={"fas fa-edit"}/></Button>
 
 						<ItemWidgetIcon model={{type: 'unbinary'}} clickFunction={createNode} element={this}
-											name="Pridaj unárny/binárny" color="rgb(125,192,125)"
-											reduxProps={reduxProps}
-											title={"Pridaj vrchol, ktorý predstavuje prvok domény. Tomuto prvku je možné následne pridať unárne predikáty a vytvarať binárne väzby"}
+										name="Pridaj unárny/binárny" color="rgb(125,192,125)"
+										reduxProps={reduxProps}
+										title={"Pridaj vrchol, ktorý predstavuje prvok domény. Tomuto prvku je možné následne pridať unárne predikáty a vytvarať binárne väzby"}
 										children={<UnbinaryIcon/>}
 						/>
 						<ItemWidgetIcon model={{type: 'constant'}} clickFunction={createNode} element={this}
-											name="Pridaj konštantu" color="rgb(125,192,125)"
-											reduxProps={reduxProps}
+										name="Pridaj konštantu" color="rgb(125,192,125)"
+										reduxProps={reduxProps}
 										children={<ConstantIcon/>}
 						/>
 
 						<ItemWidgetIcon model={{type: 'ternary'}} clickFunction={createNode} element={this}
-											  name="Pridaj ternárny" color="rgb(128,96,245)"
-											  reduxProps={reduxProps}
+										name="Pridaj ternárny" color="rgb(128,96,245)"
+										reduxProps={reduxProps}
 										children={<TernaryIcon/>}
 						/>
 
 						<ItemWidgetIcon model={{type: 'quaternary'}} clickFunction={createNode} element={this}
-										   name="Pridaj štvornárny" color="rgb(128,96,245)"
-										   reduxProps={reduxProps}
+										name="Pridaj štvornárny" color="rgb(128,96,245)"
+										reduxProps={reduxProps}
 										children={<QuaternaryIcon/>}
 						/>
 

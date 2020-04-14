@@ -14,7 +14,6 @@ export class BinaryLabelFactory extends AbstractReactFactory< BinaryLabelModel, 
 	}
 
 	generateModel(event:any): BinaryLabelModel {
-		console.log("event",event);
 		return new BinaryLabelModel();
 	}
 }

@@ -58,10 +58,17 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		return this.getOptions().reduxProps;
 	}
 
-	//b - both
-	//f - from => means it goes from this node to another (so this node is first parameter)
-	//t - to => means it goes to this node from another (so this node is second parameter)
 	addPredicate(name:string){
+		name = name.replace(/\s/g, "");
+		if (!this.predicates.has(name)) {
+			// @ts-ignore
+			this.options.reduxProps["addBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
+			this.addUnaryPredicateToSet(name);
+		}
+
+	}
+
+	addUnaryPredicateToSet(name: string){
 		this.predicates.set(name,"b");
 		this.increaseChangeCounter();
 	}
@@ -88,14 +95,23 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		return this.editable;
 	}
 
+	removeBinaryPredicateFromSet(name: string){
+		this.predicates.delete(name);
+		this.increaseChangeCounter();
+	}
+
 	removePredicate(name:string){
 		if(this.predicates.has(name)){
-			this.predicates.delete(name);
-			this.increaseChangeCounter();
+			this.removeBinaryPredicateFromSet(name);
+			// @ts-ignore
+			this.options.reduxProps["removeBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
 		}
 	}
 
 	//going from b -> f -> t
+	//b - both
+	//f - from => means it goes from this node to another (so this node is first parameter)
+	//t - to => means it goes to this node from another (so this node is second parameter)
 	changeDirectionOfPredicate(name:string,currentDirection:string){
 		if(currentDirection === "b"){
 			this.predicates.set(name,"f");
@@ -106,6 +122,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		else{
 			this.predicates.set(name,"b");
 		}
+		this.increaseChangeCounter();
 	}
 
 	changeEditableState(value:boolean){

@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { BinaryLabelModel } from './BinaryLabelModel';
 import styled from '@emotion/styled';
-import {DiagramEngine, PortWidget} from '@projectstorm/react-diagrams';
+import {DiagramEngine} from '@projectstorm/react-diagrams';
 import {ADDPORT, ADDPORTSELECTED} from "../../nodes/ConstantNames";
 import _ from "lodash";
 import FontAwesome from "react-fontawesome";
-import {InputElement, PortsContainer} from "../../nodes/unbinary/UnBinaryNodeWidget";
 import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
 import {DropDownMenuWidget} from "../../nodes/DropDownMenuWidget";
 import {Port} from "../../nodes/unbinary/UnBinaryPortLabelWidget";
-import {canUsePredicateForGivenArity} from "../../nodes/functions";
 
 export interface BinaryLabelWidgetProps {
 	model: BinaryLabelModel;
@@ -137,7 +135,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 			badNameForNewPredicate: false,
 			inputElementTextLength: 0
 		};
-
 		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
 		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
 	}
@@ -147,7 +144,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 				<PredicateRowContainer key={predicateObject[0]} >
 					<PredicateButton onClick={() =>{
 						this.props.model.changeDirectionOfPredicate(predicateObject[0], predicateObject[1]);
-						this.forceUpdate();
+						this.props.engine.repaintCanvas();
 					}}><FontAwesome name={predicateObject[1]==="b"?'fas fa-arrows-alt-h':(predicateObject[1]==="f"?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></PredicateButton>
 
 				<Predicate>
@@ -162,80 +159,10 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		};
 
 	componentDidUpdate() {
-		window.requestAnimationFrame(this.calculateLabelPosition);
-	}
-
-	componentDidMount() {
-		window.requestAnimationFrame(this.calculateLabelPosition);
-	}
-
-	findPathAndRelativePositionToRenderLabel = (index: number): { path: SVGPathElement; position: number } => {
-		// an array to hold all path lengths, making sure we hit the DOM only once to fetch this information
-		const link = this.props.model.getParent();
-		const lengths = link.getRenderedPath().map((path: any) => path.getTotalLength());
-
-		// calculate the point where we want to display the label
-		let labelPosition =
-			lengths.reduce((previousValue: number, currentValue: number) => previousValue + currentValue, 0) *
-			(index / (link.getLabels().length + 1));
-
-		// find the path where the label will be rendered and calculate the relative position
-		let pathIndex = 0;
-		while (pathIndex < link.getRenderedPath().length) {
-			if (labelPosition - lengths[pathIndex] < 0) {
-				return {
-					path: link.getRenderedPath()[pathIndex],
-					position: labelPosition
-				};
-			}
-
-			// keep searching
-			labelPosition -= lengths[pathIndex];
-			pathIndex++;
+		if(this.state.isDropDownMenu && !this.props.model.getParent().isSelected()){
+			this.setState({isDropDownMenu:false});
 		}
-	};
-
-	calculateLabelPosition = () => {
-		const found = this.findPathAndRelativePositionToRenderLabel(1);
-		if (!found) {
-			return;
-		}
-
-		const {path, position} = found;
-
-		const labelDimensions = {
-			//width: this.ref.current.offsetWidth,
-			//height: this.ref.current.offsetHeight
-			width: this.props.model.getOptions().offsetX,
-			height: this.props.model.getOptions().offsetY
-		};
-
-		const pathCentre = path.getPointAtLength(position);
-
-		const labelCoordinates = {
-			x: pathCentre.x - labelDimensions.width / 2 + this.props.model.getOptions().offsetX,
-			y: pathCentre.y - labelDimensions.height / 2 + this.props.model.getOptions().offsetY
-		};
-
-		//this.ref.current.style.transform = `translate(${labelCoordinates.x}px, ${labelCoordinates.y}px)`;
-	};
-
-	generateAvailablePredicate = (predicate: string) => {
-		return (
-			<PredicateRowContainer key={predicate} >
-				<Predicate onClick={() =>{
-					this.props.model.addPredicate(predicate);
-					this.props.engine.repaintCanvas();
-				}}>
-					{predicate}
-				</Predicate>
-				<PredicateButton onClick={() =>{
-					this.props.model.addPredicate(predicate);
-					this.props.engine.repaintCanvas();
-				}}><FontAwesome name={"fas fa-plus"}/></PredicateButton>
-			</PredicateRowContainer>
-		)
-	};
+	}
 
 	getWidestElement(firstNodeName:string,secondNodeName:string):number{
 		let width:number = firstNodeName.length+secondNodeName.length;
@@ -294,13 +221,14 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 							{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicate)}
 							<Port onClick={() => {
 								if (this.state.isDropDownMenu) {
-									this.setState({isDropDownMenu: false});
 									this.props.engine.getModel().clearSelection();
+									this.setState({isDropDownMenu: false});
 									this.props.engine.repaintCanvas();
 								} else {
-									this.setState({isDropDownMenu: true, badNameForNewPredicate: true});
 									this.props.engine.getModel().clearSelection();
 									this.props.model.setSelected(true);
+									this.props.model.getParent().setSelected(true);
+									this.setState({isDropDownMenu: true, badNameForNewPredicate: true});
 									this.props.engine.repaintCanvas();
 								}
 							}}
@@ -309,7 +237,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 						</PredicateContainer>
 					</Predicates>
 				</PredicatesNode>
-				{(this.state.isDropDownMenu && this.props.model.isSelected()) ?
+				{(this.state.isDropDownMenu && this.props.model.getParent().isSelected()) ?
 					<DropDownMenuWidget model={this.props.model} engine={this.props.engine}
 										badNameForLanguageElement={this.state.badNameForNewPredicate}
 										isDropDownMenu={this.state.isDropDownMenu}

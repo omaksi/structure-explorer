@@ -19,6 +19,7 @@ export interface UnBinaryNodeModelOptions extends BasePositionModelOptions {
 export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNodeModelGenerics> {
 	changeCounter: number;
 	unaryPredicates: Set<string>;
+	unaryFunctions: Set<string>;
 	appendPort: UnBinaryPortModel;
 	mainPort: UnBinaryPortModel;
 	editable:boolean;
@@ -41,12 +42,18 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		});
 		this.addTemplatePorts();
 		this.registerEvents();
+		this.changeCounter = 0;
 		this.unaryPredicates = new Set();
+		this.unaryFunctions = new Set();
 		this.editable = reduxProps["editable"];
 	}
 
 	addPredicate(name:string){
 		this.addUnaryPredicate(name);
+	}
+
+	addFunction(name:string){
+		this.addUnaryFunction(name);
 	}
 
 	getReduxProps(){
@@ -67,6 +74,10 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 
 	getPredicates(){
 		return this.unaryPredicates;
+	}
+
+	getFunctions(){
+		return this.unaryFunctions;
 	}
 
 	getMainPort():UnBinaryPortModel{
@@ -119,26 +130,39 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.increaseChangeCounter();
 	}
 
+	addUnaryFunctionToSet(name: string){
+		this.unaryFunctions.add(name);
+		this.increaseChangeCounter();
+	}
+
 	addUnaryPredicate(name: string) {
 		name = name.replace(/\s/g, "");
 		if (!this.unaryPredicates.has(name)) {
-			this.options.reduxProps["addUnaryPredicate"](name, this.getNodeName());
+			this.getReduxProps()["addUnaryPredicate"](name, this.getNodeName());
 			this.addUnaryPredicateToSet(name);
+		}
+	}
+
+	addUnaryFunction(name: string) {
+		name = name.replace(/\s/g, "");
+		if (!this.unaryFunctions.has(name)) {
+			this.getReduxProps()["addUnaryFunction"](name, this.getNodeName());
+			this.addUnaryFunctionToSet(name);
 		}
 	}
 
 	removeUnaryPredicate(name: string) {
 		if (this.unaryPredicates.has(name)) {
 			this.removeUnaryPredicateFromSet(name);
-			this.options.reduxProps["removeUnaryPredicate"](name, this.getNodeName());
+			this.getReduxProps()["removeUnaryPredicate"](name, this.getNodeName());
 		}
 	}
 
 	removeNodeFromMathView(){
 		for(let unaryPredicate of this.unaryPredicates){
-			this.options.reduxProps["removeUnaryPredicate"](unaryPredicate, this.getNodeName());
+			this.getReduxProps()["removeUnaryPredicate"](unaryPredicate, this.getNodeName());
 		}
-		this.options.reduxProps["removeDomainNode"](this.getNodeName());
+		this.getReduxProps()["removeDomainNode"](this.getNodeName());
 	}
 
 	removeUnaryPredicateFromSet(name: string){
@@ -172,7 +196,6 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	serialize() {
 		return {
 			...super.serialize(),
-			unaryPredicatesLength: this.unaryPredicates.size,
 			changeCounter: this.changeCounter,
 			appendPort: this.appendPort,
 			editable: this.editable

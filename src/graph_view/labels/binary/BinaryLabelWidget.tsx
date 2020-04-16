@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import FontAwesome from "react-fontawesome";
 import { BinaryLabelModel } from './BinaryLabelModel';
 import {DiagramEngine} from '@projectstorm/react-diagrams';
-import {ADDPORT, ADDPORTSELECTED} from "../../nodes/ConstantNames";
+import {ADDPORT, ADDPORTSELECTED, BOTH, FROM} from "../../nodes/ConstantNames";
 import {DropDownMenuWidget} from "../../nodes/DropDownMenuWidget";
 import {Port} from "../../nodes/unbinary/UnBinaryPortLabelWidget";
 
@@ -124,7 +124,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 					<PredicateButton onClick={() =>{
 						this.props.model.changeDirectionOfPredicate(predicateObject[0], predicateObject[1]);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome name={predicateObject[1]==="b"?'fas fa-arrows-alt-h':(predicateObject[1]==="f"?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></PredicateButton>
+					}}><FontAwesome name={predicateObject[1]===BOTH?'fas fa-arrows-alt-h':(predicateObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></PredicateButton>
 
 				<Predicate>
 					{predicateObject[0]}

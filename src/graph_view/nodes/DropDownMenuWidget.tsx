@@ -3,7 +3,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import FontAwesome from "react-fontawesome";
 import { DiagramEngine } from "@projectstorm/react-diagrams";
-import {ADDPORT} from "./ConstantNames";
+import {ADDFUNC, ADDPRED} from "./ConstantNames";
 import {canUsePredicateForGivenArity, getAvailablePredicatesForGivenArity} from "./functions";
 import {BinaryLabelModel} from "../labels/binary/BinaryLabelModel";
 
@@ -29,11 +29,9 @@ export const DropDownPorts = styled.div`
 export const DropDownTitleName = styled.div`
 		width: 100%;
 		flex-grow: 1;
-		padding: 5px 5px;
-				
-		&:hover {
-			background: rgba(256, 256, 256, 0.7);
-		}
+		padding: 3px 3px;
+		font-size:11px;
+		text-align:center;
 	`;
 
 export const DropDownButton = styled.div`
@@ -131,9 +129,14 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
         }
     }
 
-    addGivenInputElement(){
+    addGivenInputElement(element:string){
         if (!this.props.badNameForLanguageElement && this.textInput.value) {
-            this.props.model.addPredicate(this.textInput.value);
+            if(element === "P"){
+                this.props.model.addPredicate(this.textInput.value);
+            }
+            else{
+                this.props.model.addFunction(this.textInput.value);
+            }
             this.textInput.value = "";
             this.props.setStateBadNameForLanguageElement(true);
             this.props.engine.repaintCanvas();
@@ -146,7 +149,13 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                            cursor={this.props.model.isEditable() ? "pointer" : "move"}>
                 <DropDownPorts>
                     <DropDownContainer>
+                        <DropDownTitleName>
+                            Pred
+                        </DropDownTitleName>
                         {_.map(Array.from(getAvailablePredicatesForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates())), this.generateAvailablePredicate)}
+                        <DropDownTitleName>
+                            Func
+                        </DropDownTitleName>
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
                                 <input onChange={(e) => {
@@ -162,20 +171,23 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                            this.props.model.setLocked(false);
                                            this.setLockedParentIfNeeded(false);
                                        }}
-                                       onKeyDown={(e) => {
+                                       /*onKeyDown={(e) => {
                                            if (e.key === "Enter") {
                                                this.addGivenInputElement();
                                            }
-                                       }}
+                                       }}*/
                                        placeholder={"New predicate/function"} style={{
-                                    width: (this.props.widthOfInputElement+1) + "ch",
+                                    width: (this.props.widthOfInputElement===1?2:this.props.widthOfInputElement) + "ch",
                                     height: 20 + "px",
                                     border: this.props.badNameForLanguageElement ? "1px solid red" : "1px solid black"
                                 }}>
                                 </input>
                                 <DropDownButton onClick={() => {
-                                    this.addGivenInputElement();
-                                }}>{ADDPORT}</DropDownButton>
+                                    this.addGivenInputElement("P");
+                                }}>{ADDPRED}</DropDownButton>
+                                <DropDownButton onClick={() => {
+                                    this.addGivenInputElement("F");
+                                }}>{ADDFUNC}</DropDownButton>
                             </DropDownRowContainer>
                         </DropDownInputElement>
                     </DropDownContainer>

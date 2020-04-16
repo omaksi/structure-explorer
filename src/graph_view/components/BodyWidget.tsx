@@ -29,6 +29,7 @@ export interface BodyWidgetProps {
 	setConstantValueFromLink:any;
 	addBinaryPredicate:any;
 	removeBinaryPredicate:any;
+	changeDirectionOfBinaryRelation:any;
 	store:any;
 }
 
@@ -157,6 +158,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"addBinaryPredicate": this.props.addBinaryPredicate,
 			"removeBinaryPredicate": this.props.removeBinaryPredicate,
 			"setConstantValueFromLink": this.props.setConstantValueFromLink,
+			"changeDirectionOfBinaryRelation": this.props.changeDirectionOfBinaryRelation,
 			"editable": editableNodes,
 			"store": this.props.store
 		};

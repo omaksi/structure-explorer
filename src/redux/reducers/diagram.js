@@ -282,6 +282,7 @@ function syncPredicates(values) {
 }
 
 function syncDomain(values) {
+  console.log("vaL",values);
   let domain = (values.domain);
   let domainState = values.diagramState.domainNodes;
   let diagramModel = values.diagramState.diagramModel;

@@ -23,7 +23,12 @@ import {
   REMOVE_DOMAIN_NODE,
   ADD_CONSTANT_NODE,
   REMOVE_CONSTANT_NODE,
-  ADD_UNARY_PREDICATE, RENAME_CONSTANT_NODE, SET_CONSTANT_VALUE_FROM_LINK, REMOVE_UNARY_PREDICATE, ADD_BINARY_PREDICATE
+  ADD_UNARY_PREDICATE,
+  RENAME_CONSTANT_NODE,
+  SET_CONSTANT_VALUE_FROM_LINK,
+  REMOVE_UNARY_PREDICATE,
+  ADD_BINARY_PREDICATE,
+  REMOVE_BINARY_PREDICATE, CHANGE_DIRECTION_OF_BINARY_RELATION
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -34,7 +39,7 @@ import {
   RULE_PREDICATES_FUNCTIONS_VALUE,
   RULE_VARIABLE_VALUATION
 } from "../../constants/parser_start_rules";
-import {setConstants} from "../actions";
+import {BOTH, FROM, TO} from "../../graph_view/nodes/ConstantNames";
 
 let functions = require('./functions/functions');
 
@@ -95,23 +100,25 @@ function structureReducer(s, action, struct) {
       return state;
 
     case ADD_BINARY_PREDICATE:
-      addPredicate(action.predicateName,2, [action.sourceNodeName,action.targetNodeName]);
+      addPredicate(action.predicateName,2, [action.sourceNodeName,action.targetNodeName],BOTH);
       return state;
 
     case REMOVE_UNARY_PREDICATE:
-      let predName = action.predicateName+"/1";
-      let newPredInterpretationValue = "";
+      removePredicate(action.predicateName,1,[action.nodeName]);
+      return state;
 
-      for(let nodeNameArray of structure.iPredicate.get(predName)){
-        for(let nodeName of nodeNameArray){
-          if(nodeName!==action.nodeName){
-            newPredInterpretationValue+=nodeName+", ";
-          }
-        }
+    case REMOVE_BINARY_PREDICATE:
+      removePredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName]);
+      return state;
+
+    case CHANGE_DIRECTION_OF_BINARY_RELATION:
+      if(action.direction === FROM){
+        removePredicate(action.predicateName,2,[action.targetNodeName,action.sourceNodeName]);
       }
-      newPredInterpretationValue = newPredInterpretationValue.substring(0,newPredInterpretationValue.length-2);
-      functions.parseText(newPredInterpretationValue,state.predicates[predName],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
-      setPredicateValue(predName);
+      else if(action.direction === TO){
+        removePredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName]);
+      }
+      addPredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName],action.direction);
       return state;
 
     case SET_CONSTANT_VALUE:
@@ -289,21 +296,23 @@ function addUnaryPredicate(predicateName,nodeName){
   return newPredValue;
 }
 
-function addBinaryPredicate(predicateName,sourceNodeName,targetNodeName){
+function addBinaryPredicate(predicateName,newBinaryValue,sourceNodeName,targetNodeName){
   let predName = predicateName+"/2";
   let newPredValue = "";
 
   if(structure.iPredicate.has(predName)){
     for(let parsedArrayOfLanguageElements of structure.iPredicate.get(predName)){
-      newPredValue += "("+parsedArrayOfLanguageElements[0]+", "+parsedArrayOfLanguageElements[1]+"), ";
+      if((parsedArrayOfLanguageElements[0]!==sourceNodeName && parsedArrayOfLanguageElements[1]!==targetNodeName) && (parsedArrayOfLanguageElements[0]!==targetNodeName && parsedArrayOfLanguageElements[1]!==sourceNodeName)){
+        newPredValue += "("+parsedArrayOfLanguageElements[0]+", "+parsedArrayOfLanguageElements[1]+"), ";
+      }
     }
   }
-  newPredValue += "("+sourceNodeName+", "+targetNodeName+")";
+  newPredValue += newBinaryValue;
 
   return newPredValue;
 }
 
-function addPredicate(predicateName,predicateArity,nodeNames){
+function addPredicate(predicateName,predicateArity,nodeNames,direction=""){
   let predicateNameWithArity = predicateName+"/"+predicateArity;
   insertNewInputs();
   let predValue = "";
@@ -312,12 +321,69 @@ function addPredicate(predicateName,predicateArity,nodeNames){
     predValue = addUnaryPredicate(predicateName,nodeNames[0]);
   }
   else if(predicateArity === 2){
-    predValue = addBinaryPredicate(predicateName,nodeNames[0],nodeNames[1]);
+    let value;
+    if(direction === BOTH){
+      if(nodeNames[0] === nodeNames[1]){
+        value = "("+nodeNames[0]+", "+nodeNames[1]+")";
+      }
+      else{
+        value = "("+nodeNames[0]+", "+nodeNames[1]+"),"+" ("+nodeNames[1]+", "+nodeNames[0]+")";
+      }
+    }
+    else if(direction === FROM){
+      value = "("+nodeNames[0]+", "+nodeNames[1]+")";
+    }
+    else{
+      value = "("+nodeNames[1]+", "+nodeNames[0]+")";
+    }
+    predValue = addBinaryPredicate(predicateName,value,nodeNames[0],nodeNames[1]);
   }
 
   functions.parseText(predValue, state.predicates[predicateNameWithArity], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
   setPredicateValue(predicateNameWithArity);
 }
+
+function removePredicate(predicateName,predicateArity,nodeNames){
+  let predicateNameWithArity = predicateName+"/"+predicateArity;
+  let newPredInterpretationValue = "";
+
+  if(predicateArity === 1){
+    newPredInterpretationValue = removeUnaryPredicate(predicateName,nodeNames[0]);
+  }
+  else if(predicateArity === 2){
+    newPredInterpretationValue = removeBinaryPredicate(predicateName,nodeNames[0],nodeNames[1]);
+  }
+
+  functions.parseText(newPredInterpretationValue,state.predicates[predicateNameWithArity],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
+  setPredicateValue(predicateNameWithArity);
+}
+
+function removeUnaryPredicate(predicateName,nodeName){
+  let predName = predicateName+"/1";
+  let newPredInterpretationValue = "";
+
+  for(let nodeNameArray of structure.iPredicate.get(predName)){
+    for(let currNodeName of nodeNameArray){
+      if(currNodeName!==nodeName){
+        newPredInterpretationValue+=nodeName+", ";
+      }
+    }
+  }
+  return newPredInterpretationValue.substring(0,newPredInterpretationValue.length-2);
+}
+
+function removeBinaryPredicate(predicateName,sourceNode,targetNode){
+  let predName = predicateName+"/2";
+  let newPredInterpretationValue = "";
+
+  for(let currentNodeNameTuple of structure.iPredicate.get(predName)){
+    if(!(currentNodeNameTuple[0] === sourceNode && currentNodeNameTuple[1] === targetNode)){
+      newPredInterpretationValue+="("+currentNodeNameTuple[0]+", "+currentNodeNameTuple[1]+"), ";
+    }
+  }
+  return newPredInterpretationValue.substring(0,newPredInterpretationValue.length-2);
+}
+
 function setDomain() {
   if (!state.domain.parsed) {
     return;

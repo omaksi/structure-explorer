@@ -2,6 +2,7 @@ import { LabelModel} from '@projectstorm/react-diagrams-core';
 import { DeserializeEvent } from '@projectstorm/react-canvas-core';
 import {BaseModelListener} from '@projectstorm/react-canvas-core';
 import { LabelModelOptions, LabelModelGenerics } from '@projectstorm/react-diagrams';
+import {BOTH, FROM, TO} from "../../nodes/ConstantNames";
 
 export interface BinaryLabelModelOptions extends LabelModelOptions {
 	label?: string;
@@ -62,14 +63,14 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		name = name.replace(/\s/g, "");
 		if (!this.predicates.has(name)) {
 			// @ts-ignore
-			this.options.reduxProps["addBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
-			this.addUnaryPredicateToSet(name);
+			this.getReduxProps()["addBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
+			this.addBinaryPredicateToSet(name);
 		}
 
 	}
 
-	addUnaryPredicateToSet(name: string){
-		this.predicates.set(name,"b");
+	addBinaryPredicateToSet(name: string){
+		this.predicates.set(name,BOTH);
 		this.increaseChangeCounter();
 	}
 
@@ -104,7 +105,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		if(this.predicates.has(name)){
 			this.removeBinaryPredicateFromSet(name);
 			// @ts-ignore
-			this.options.reduxProps["removeBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
+			this.getReduxProps()["removeBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
 		}
 	}
 
@@ -113,16 +114,18 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	//f - from => means it goes from this node to another (so this node is first parameter)
 	//t - to => means it goes to this node from another (so this node is second parameter)
 	changeDirectionOfPredicate(name:string,currentDirection:string){
-		if(currentDirection === "b"){
-			this.predicates.set(name,"f");
+		if(currentDirection === BOTH){
+			this.predicates.set(name,FROM);
 		}
-		else if(currentDirection === "f"){
-			this.predicates.set(name,"t");
+		else if(currentDirection === FROM){
+			this.predicates.set(name,TO);
 		}
 		else{
-			this.predicates.set(name,"b");
+			this.predicates.set(name,BOTH);
 		}
 		this.increaseChangeCounter();
+		// @ts-ignore
+		this.getReduxProps()["changeDirectionOfBinaryRelation"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
 	}
 
 	changeEditableState(value:boolean){

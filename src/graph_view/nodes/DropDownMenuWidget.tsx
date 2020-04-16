@@ -101,7 +101,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
     checkBadElementName(elementName:string,arity:string){
         elementName = elementName.replace(/\s/g, "");
 
-        if(elementName === "" || elementName.includes(",") || elementName.includes("/")){
+        if(elementName === "" || elementName.includes(",") || elementName.includes("/") || elementName.includes("<") || elementName.includes(">")){
             this.props.setStateBadNameForLanguageElement(true);
             return;
         }
@@ -168,7 +168,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                            }
                                        }}
                                        placeholder={"New predicate/function"} style={{
-                                    width: (this.props.widthOfInputElement) + "ch",
+                                    width: (this.props.widthOfInputElement+1) + "ch",
                                     height: 20 + "px",
                                     border: this.props.badNameForLanguageElement ? "1px solid red" : "1px solid black"
                                 }}>

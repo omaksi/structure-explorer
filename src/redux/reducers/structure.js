@@ -34,6 +34,7 @@ import {
   RULE_PREDICATES_FUNCTIONS_VALUE,
   RULE_VARIABLE_VALUATION
 } from "../../constants/parser_start_rules";
+import {setConstants} from "../actions";
 
 let functions = require('./functions/functions');
 
@@ -59,7 +60,6 @@ function structureReducer(s, action, struct) {
   structure = struct;
   let input = action.itemType === PREDICATE ? state.predicates[action.name] : state.functions[action.name];
   switch (action.type) {
-
     case SET_CONSTANTS:
     case SET_PREDICATES:
     case SET_FUNCTIONS:
@@ -72,39 +72,45 @@ function structureReducer(s, action, struct) {
       return state;
 
     case REMOVE_CONSTANT_NODE:
-      console.log(state);
       deleteUnusedInputs();
-      //maybe need to rework
       return state;
 
     case SET_CONSTANT_VALUE_FROM_LINK:
-      if(state.constants[action.constantNodeName]){
-        setConstantValue(action.constantNodeName,action.domainNodeName);
-      }
-      else{
-        throw new DOMException("This constant node was considered as undefined"+action.constantNodeName);
-      }
+      setConstantValue(action.constantNodeName,action.domainNodeName);
       return state;
 
     case RENAME_CONSTANT_NODE:
-      state.constants[action.newName] = state.constants[action.oldName];
-      delete state.constants[action.oldName];
+      let newStateConstantObject = Object.keys(state.constants).map(key => {
+        let newKey = key === action.oldName?action.newName:key;
+        return { [newKey]: state.constants[key]}
+      });
+
+      state.constants = Object.assign({},...newStateConstantObject);
+      structure.iConstant.set(action.newName,state.constants[action.newName]);
       syncLanguageWithStructure();
       return state;
 
     case ADD_UNARY_PREDICATE:
-      addPredicate(action.predicateName,1,structure.iPredicate,[action.nodeName]);
+      addPredicate(action.predicateName,1,[action.nodeName]);
       return state;
 
     case ADD_BINARY_PREDICATE:
-      addPredicate(action.predicateName,2,structure.iPredicate, [action.sourceNodeName,action.targetNodeName]);
+      addPredicate(action.predicateName,2, [action.sourceNodeName,action.targetNodeName]);
       return state;
 
     case REMOVE_UNARY_PREDICATE:
       let predName = action.predicateName+"/1";
-      let currentPredValue = functions.replaceAllOccurrences(action.nodeName,"",state.predicates[predName].value);
+      let newPredInterpretationValue = "";
 
-      functions.parseText(currentPredValue,state.predicates[predName],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
+      for(let nodeNameArray of structure.iPredicate.get(predName)){
+        for(let nodeName of nodeNameArray){
+          if(nodeName!==action.nodeName){
+            newPredInterpretationValue+=nodeName+", ";
+          }
+        }
+      }
+      newPredInterpretationValue = newPredInterpretationValue.substring(0,newPredInterpretationValue.length-2);
+      functions.parseText(newPredInterpretationValue,state.predicates[predName],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
       setPredicateValue(predName);
       return state;
 
@@ -148,15 +154,20 @@ function structureReducer(s, action, struct) {
       return state;
 
     case RENAME_DOMAIN_NODE:
-      console.log("fullstate",state);
+      syncLanguageWithStructure();
+      let newDomainVal = "";
 
-      let currDomainState = functions.replaceAllOccurrences(action.oldName,action.newName,state.domain.value);
-
-      if (currDomainState.charAt(currDomainState.length - 1) === ",") {
-        currDomainState = currDomainState.substring(0, currDomainState.length - 1);
+      for(let nodeName of structure.domain){
+        if(nodeName===action.oldName){
+          newDomainVal+=action.newName+", ";
+        }
+        else{
+          newDomainVal+=nodeName+", ";
+        }
       }
+      newDomainVal = newDomainVal.substring(0, newDomainVal.length - 2);
 
-      functions.parseText(currDomainState, state.domain, {startRule: RULE_DOMAIN});
+      functions.parseText(newDomainVal, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
 
       Object.keys(state.constants).forEach(c => {
@@ -166,8 +177,6 @@ function structureReducer(s, action, struct) {
       });
       setConstantsValues();
 
-      console.log(state);
-
       Object.keys(state.predicates).forEach(p => {
         if (!state.predicates[p].parsed) {
           state.predicates[p].value = action.newName;
@@ -175,8 +184,6 @@ function structureReducer(s, action, struct) {
 
         }
       });
-
-
       setPredicatesValues();
 
       /*setFunctionsValues();
@@ -184,42 +191,35 @@ function structureReducer(s, action, struct) {
       return state;
 
     case ADD_DOMAIN_NODE:
-      let domainState = state.domain.value;
+      let domainState = Array.from(structure.domain).join(", ");
 
-     if (domainState.charAt(domainState.length - 1) === "," || !state.domain.parsed || state.domain.parsed.length === 0) {
-        domainState += action.nodeName;
-      } else {
-        domainState = domainState + "," + action.nodeName;
+      if(domainState.length !== 0){
+        domainState+=", ";
       }
+      domainState+=action.nodeName;
 
       functions.parseText(domainState, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
       return state;
 
     case REMOVE_DOMAIN_NODE:
-      let currentDomainState = state.domain.value;
+     let newDomainValue = "";
 
-      if(state.domain.parsed && state.domain.parsed.length === 1){
-        currentDomainState = "";
-      }
-
-      else{
-        currentDomainState = functions.replaceAllOccurrences(action.nodeName,"",currentDomainState);
-
-        if (currentDomainState.charAt(currentDomainState.length - 1) === ",") {
-          currentDomainState = currentDomainState.substring(0, currentDomainState.length - 1);
+      for(let domainElement of structure.domain.keys()){
+        if(domainElement!==action.nodeName){
+          newDomainValue+=domainElement+", ";
         }
       }
+      newDomainValue = newDomainValue.substring(0,newDomainValue.length - 2);
 
-      functions.parseText(currentDomainState, state.domain, {startRule: RULE_DOMAIN});
+      functions.parseText(newDomainValue, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
 
-      Object.keys(state.constants).forEach(c => {
+      Object.keys(structure.domain).forEach(c => {
         if(state.constants[c].value === action.oldName){
           state.constants[c].value = "";
         }
       });
-
       setConstantsValues();
       return state;
 
@@ -276,49 +276,47 @@ function structureReducer(s, action, struct) {
   }
 }
 
-function addUnaryPredicate(predicateName,structureIPredicate,nodeName){
+function addUnaryPredicate(predicateName,nodeName){
   let predName = predicateName+"/1";
   let newPredValue = "";
 
-  if(structureIPredicate.has(predName)){
-    for(let parsedArrayOfLanguageElements of structureIPredicate.get(predName)){
+  if(structure.iPredicate.has(predName)){
+    for(let parsedArrayOfLanguageElements of structure.iPredicate.get(predName)){
       newPredValue += parsedArrayOfLanguageElements[0]+", ";
     }
-    newPredValue = newPredValue.substring(0,newPredValue.length-2);
   }
   newPredValue += nodeName;
-
   return newPredValue;
 }
 
-function addBinaryPredicate(predicateName,structureIPredicate,sourceNodeName,targetNodeName){
+function addBinaryPredicate(predicateName,sourceNodeName,targetNodeName){
   let predName = predicateName+"/2";
   let newPredValue = "";
 
-  if(structureIPredicate.has(predName)){
-    for(let parsedArrayOfLanguageElements of structureIPredicate.get(predName)){
+  if(structure.iPredicate.has(predName)){
+    for(let parsedArrayOfLanguageElements of structure.iPredicate.get(predName)){
       newPredValue += "("+parsedArrayOfLanguageElements[0]+", "+parsedArrayOfLanguageElements[1]+"), ";
     }
-    newPredValue = newPredValue.substring(0,newPredValue.length-2);
   }
   newPredValue += "("+sourceNodeName+", "+targetNodeName+")";
 
   return newPredValue;
 }
 
-function addPredicate(predicateName,predicateArity,structureIPredicate,nodeNames){
+function addPredicate(predicateName,predicateArity,nodeNames){
+  let predicateNameWithArity = predicateName+"/"+predicateArity;
   insertNewInputs();
   let predValue = "";
 
   if(predicateArity === 1){
-    predValue = addUnaryPredicate(predicateName,structureIPredicate,nodeNames[0]);
+    predValue = addUnaryPredicate(predicateName,nodeNames[0]);
   }
   else if(predicateArity === 2){
-    predValue = addBinaryPredicate(predicateName,structureIPredicate,nodeNames[0],nodeNames[1]);
+    predValue = addBinaryPredicate(predicateName,nodeNames[0],nodeNames[1]);
   }
 
-  functions.parseText(predValue, state.predicates[predicateName+"/"+predicateArity], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
-  setPredicateValue(predValue);
+  functions.parseText(predValue, state.predicates[predicateNameWithArity], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
+  setPredicateValue(predicateNameWithArity);
 }
 function setDomain() {
   if (!state.domain.parsed) {
@@ -357,6 +355,7 @@ function deleteUnusedInputs() {
       delete state.constants[e];
     }
   });
+
   Object.keys(state.predicates).forEach(e => {
     if (!structure.language.hasPredicate(e)) {
       delete state.predicates[e];
@@ -376,8 +375,9 @@ function insertNewInputs() {
     }
   });
   structure.language.predicates.forEach((arity, predicate) => {
-    if (!state.predicates[predicate + '/' + arity])
+    if (!state.predicates[predicate + '/' + arity]) {
       state.predicates[predicate + '/' + arity] = predicateDefaultInput()
+    }
   });
   structure.language.functions.forEach((arity, func) => {
     if (!state.functions[func + '/' + arity]) {

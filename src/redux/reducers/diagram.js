@@ -306,11 +306,7 @@ function syncDomain(values) {
     }
   }
 
-  console.log(values);
-  console.log("domain",domain);
-
   domain.map(nodeName => {
-    console.log("node name",nodeName);
     if (!existingDomainNodes.includes(nodeName)) {
       let node = new UnBinaryNodeModel(nodeName, 'rgb(92,192,125)', {
         "addDomainNode":values.addDomainNode,

@@ -113,8 +113,9 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		})
 	}
 
-	clearPredicates(){
+	clearPredicates() {
 		this.unaryPredicates = new Set();
+		this.increaseChangeCounter();
 	}
 
 	getUnaryPredicates() {

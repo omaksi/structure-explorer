@@ -20,7 +20,8 @@ export function defaultState(){
     diagramEngine: new DiagramApplication(diagramModel).diagramEngine,
     domainNodes: new Map(),
     constantNodes: new Map(),
-    functionNodes: new Map(),
+    ternaryNodes: new Map(),
+    Quaternary: new Map(),
     editableNodes: false
   }
 }
@@ -225,65 +226,59 @@ function clearCertainNodeState(nodeState){
   nodeState.clear();
 }
 
-//atm refers all predicates to have unary level
 function syncPredicates(values) {
-  let predicatesObjects = values.structure.predicates;
-  let domainState = values.diagramState.domainNodes;
-  let portMap = new Map();
+  let predicatesInterpretationMap = values.structureObject.iPredicate;
+  let portMap = new Map([["1",new Map()],["2",new Map()],["3",new Map()],["4",new Map()]]);
 
-  if (predicatesObjects && Object.keys(predicatesObjects).length > 0) {
-    for (let [key, value] of Object.entries(predicatesObjects)) {
-      let parsedNodeValues = value.parsed;
-      if (parsedNodeValues) {
-        let keyWithoutArity = key.split('/')[0];
-        let arityWithoutKey = key.split('/')[1];
+  if (predicatesInterpretationMap && predicatesInterpretationMap.size > 0) {
+    for (let [key, value] of predicatesInterpretationMap.entries()) {
+      let keyWithoutArity = key.split('/')[0];
+      let arityWithoutKey = key.split('/')[1];
 
-        if (arityWithoutKey === '1') {
-          parsedNodeValues.map((currentNodeVal) => {
-            let currentNodeValue = currentNodeVal[0];
-            if (portMap.has(currentNodeValue)) {
-              portMap.get(currentNodeValue).add(keyWithoutArity);
-            } else {
-              portMap.set(currentNodeValue, new Set());
-              portMap.get(currentNodeValue).add(keyWithoutArity);
-            }
-          });
+      let portMapArity = portMap.get(arityWithoutKey);
+      for (let currentNodeVal of value) {
+        let currentNodeValue = currentNodeVal[0];
+        if (portMapArity.has(currentNodeValue)) {
+          portMapArity.get(currentNodeValue).add(keyWithoutArity);
         } else {
-
-        }
-      }
-
-      for (let [currentNodeName, currentNodeObject] of domainState.entries()) {
-
-        let setOfPredicatesForNode = portMap.get(currentNodeName);
-        let nodePredicates = currentNodeObject.getUnaryPredicates();
-
-        if (portMap.has(currentNodeName)) {
-          for(let predicateName of setOfPredicatesForNode){
-            if (!nodePredicates.has(predicateName)) {
-              currentNodeObject.addUnaryPredicateToSet(predicateName);
-            }
-          }
-        }
-
-        for (let predicate of nodePredicates) {
-          if (!setOfPredicatesForNode || !setOfPredicatesForNode.has(predicate)) {
-            currentNodeObject.removeUnaryPredicateFromSet(predicate);
-          }
+          portMapArity.set(currentNodeValue, new Set());
+          portMapArity.get(currentNodeValue).add(keyWithoutArity);
         }
       }
     }
   }
-  else{
-    for (let [currentNodeName,currentNodeObject] of domainState.entries()) {
+  syncUnaryPredicates(portMap.get("1"),values.diagramState.domainNodes);
+
+}
+
+function syncUnaryPredicates(portMap,domainState) {
+  for (let [currentNodeName, currentNodeObject] of domainState.entries()) {
+    let setOfUnaryPredicatesForNode = portMap.get(currentNodeName);
+
+    if (portMap.has(currentNodeName)) {
+      //added new predicates
+      let currentNodePredicates = currentNodeObject.getUnaryPredicates();
+      for (let predicateName of setOfUnaryPredicatesForNode) {
+        if (!currentNodePredicates.has(predicateName)) {
+          currentNodeObject.addUnaryPredicateToSet(predicateName);
+        }
+      }
+
+      //delete old predicates
+      for (let predicate of currentNodePredicates) {
+        if (!setOfUnaryPredicatesForNode.has(predicate)) {
+          currentNodeObject.removeUnaryPredicateFromSet(predicate);
+        }
+      }
+
+    } else {
       currentNodeObject.clearPredicates();
     }
   }
 }
 
 function syncDomain(values) {
-  console.log("vaL",values);
-  let domain = (values.domain);
+  let domain = (values.structureObject.domain);
   let domainState = values.diagramState.domainNodes;
   let diagramModel = values.diagramState.diagramModel;
   let diagramCanvas = values.diagramState.diagramEngine.getCanvas();
@@ -297,9 +292,8 @@ function syncDomain(values) {
   }
 
   let existingDomainNodes = [];
-
   for (let [nodeName, nodeObject] of domainState.entries()) {
-    if (domain.includes(nodeName)) {
+    if (domain.has(nodeName)) {
       existingDomainNodes.push(nodeName);
     } else {
       removeNodeState(nodeName, domainState);
@@ -307,7 +301,7 @@ function syncDomain(values) {
     }
   }
 
-  domain.map(nodeName => {
+  for(let nodeName of domain){
     if (!existingDomainNodes.includes(nodeName)) {
       let node = new UnBinaryNodeModel(nodeName, 'rgb(92,192,125)', {
         "addDomainNode":values.addDomainNode,
@@ -321,7 +315,7 @@ function syncDomain(values) {
       });
       createNode(node,nodeName,domainState,diagramModel,diagramCanvas);
     }
-  });
+  }
 }
 
 function removeWholeNode(node,diagramModel){

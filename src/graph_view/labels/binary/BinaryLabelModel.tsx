@@ -37,6 +37,25 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		this.predicates = new Map();
 		this.editable = true;
 		this.changeCounter = 0;
+		this.registerEvents();
+	}
+
+	registerEvents() {
+		let label = this;
+		this.registerListener({
+			entityRemoved(): void {
+				console.log("removed label");
+				console.log(label.getReduxProps());
+				label.removeLabelFromMathView();
+			}
+		})
+	}
+
+	removeLabelFromMathView(){
+		for(let [predicateName,direction] of this.predicates.entries()){
+			// @ts-ignore
+			this.getReduxProps()["removeBinaryPredicate"](predicateName, this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),direction);
+		}
 	}
 
 	setLabel(label: string) {

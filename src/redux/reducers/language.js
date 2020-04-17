@@ -77,7 +77,6 @@ function languageReducer(s, action, struct) {
       functions.parseText(returnParsedConstValues(), state.constants, {startRule: RULE_CONSTANTS});
       setConstants();
 
-      //sposobuje vymazanie ipredicates
       functions.parseText(returnParsedPredValues(), state.predicates, {startRule: RULE_PREDICATES});
       setPredicates();
 

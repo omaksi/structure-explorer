@@ -113,6 +113,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 				let constantNode: ConstantNodeModel = sourceNode  instanceof ConstantNodeModel ? sourceNode : targetNode instanceof ConstantNodeModel ? targetNode : null;
 
 				if(constantNode === null){
+					link.label.remove();
 					return;
 				}
 				constantNode.setConstantValueInMathView("");

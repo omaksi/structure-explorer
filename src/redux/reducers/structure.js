@@ -108,7 +108,16 @@ function structureReducer(s, action, struct) {
       return state;
 
     case REMOVE_BINARY_PREDICATE:
-      removePredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName]);
+      if(action.direction === FROM){
+        removePredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName]);
+      }
+      else if(action.direction === TO){
+        removePredicate(action.predicateName,2,[action.targetNodeName,action.sourceNodeName]);
+      }
+      else{
+        removePredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName]);
+        removePredicate(action.predicateName,2,[action.targetNodeName,action.sourceNodeName]);
+      }
       return state;
 
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
@@ -184,14 +193,8 @@ function structureReducer(s, action, struct) {
       });
       setConstantsValues();
 
-      Object.keys(state.predicates).forEach(p => {
-        if (!state.predicates[p].parsed) {
-          state.predicates[p].value = action.newName;
-        } else {
-
-        }
-      });
-      setPredicatesValues();
+      changePredicatesValues(action.oldName,action.newName);
+      rebuildPredicatesValuesFromParsedInterpretation();
 
       /*setFunctionsValues();
       setVariables();*/
@@ -222,6 +225,7 @@ function structureReducer(s, action, struct) {
       functions.parseText(newDomainValue, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
 
+      //toto mozem pretoze tu nie je input okno takze toto sa "neda" pokazit takym sposobom
       Object.keys(structure.domain).forEach(c => {
         if(state.constants[c].value === action.oldName){
           state.constants[c].value = "";
@@ -247,6 +251,7 @@ function structureReducer(s, action, struct) {
         }
       }
       return state;
+
     case TOGGLE_EDIT_DATABASE:
       if (input) {
         input.databaseEnabled = !input.databaseEnabled;
@@ -312,6 +317,42 @@ function addBinaryPredicate(predicateName,newBinaryValue,sourceNodeName,targetNo
   return newPredValue;
 }
 
+function changePredicatesValues(oldNodeName,newNodeName) {
+  for (let predKey of structure.iPredicate.keys()) {
+    let predicateArity = parseInt(predKey.split("/")[1]);
+    for(let nodeValue of structure.iPredicate.get(predKey)){
+      for(let i = 0;i<predicateArity;i++){
+        if(nodeValue[i] === oldNodeName){
+          nodeValue[i] = newNodeName;
+        }
+      }
+    }
+  }
+}
+
+function rebuildPredicatesValuesFromParsedInterpretation() {
+  for (let predKey of structure.iPredicate.keys()) {
+    let predicateArity = parseInt(predKey.split("/")[1]);
+    let newPredValue = "";
+    for (let nodeValue of structure.iPredicate.get(predKey)) {
+      if(predicateArity === 1){
+        newPredValue+=nodeValue[0]+", ";
+      }
+      else{
+        newPredValue+="(";
+        for(let i = 0;i<predicateArity;i++){
+          newPredValue+=nodeValue[i]+", ";
+        }
+        newPredValue = newPredValue.substring(0,newPredValue.length-2);
+        newPredValue+="), ";
+      }
+    }
+    newPredValue = newPredValue.substring(0,newPredValue.length-2);
+    functions.parseText(newPredValue, state.predicates[predKey], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
+    setPredicateValue(predKey);
+  }
+}
+
 function addPredicate(predicateName,predicateArity,nodeNames,direction=""){
   let predicateNameWithArity = predicateName+"/"+predicateArity;
   insertNewInputs();
@@ -358,14 +399,14 @@ function removePredicate(predicateName,predicateArity,nodeNames){
   setPredicateValue(predicateNameWithArity);
 }
 
-function removeUnaryPredicate(predicateName,nodeName){
+function removeUnaryPredicate(predicateName,removeNodeName){
   let predName = predicateName+"/1";
   let newPredInterpretationValue = "";
 
   for(let nodeNameArray of structure.iPredicate.get(predName)){
     for(let currNodeName of nodeNameArray){
-      if(currNodeName!==nodeName){
-        newPredInterpretationValue+=nodeName+", ";
+      if(currNodeName!==removeNodeName){
+        newPredInterpretationValue+=currNodeName+", ";
       }
     }
   }

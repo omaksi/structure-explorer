@@ -306,14 +306,16 @@ function addBinaryPredicate(predicateName,newBinaryValue,sourceNodeName,targetNo
   let newPredValue = "";
 
   if(structure.iPredicate.has(predName)){
+    console.log("have");
     for(let parsedArrayOfLanguageElements of structure.iPredicate.get(predName)){
-      if((parsedArrayOfLanguageElements[0]!==sourceNodeName && parsedArrayOfLanguageElements[1]!==targetNodeName) && (parsedArrayOfLanguageElements[0]!==targetNodeName && parsedArrayOfLanguageElements[1]!==sourceNodeName)){
+      console.log(parsedArrayOfLanguageElements);
+      if((parsedArrayOfLanguageElements[0]!==sourceNodeName || parsedArrayOfLanguageElements[1]!==targetNodeName) && (parsedArrayOfLanguageElements[0]!==targetNodeName || parsedArrayOfLanguageElements[1]!==sourceNodeName)){
         newPredValue += "("+parsedArrayOfLanguageElements[0]+", "+parsedArrayOfLanguageElements[1]+"), ";
       }
     }
   }
   newPredValue += newBinaryValue;
-
+  console.log("value is",newPredValue);
   return newPredValue;
 }
 

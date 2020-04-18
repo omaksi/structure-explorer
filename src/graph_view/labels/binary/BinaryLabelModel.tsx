@@ -44,8 +44,6 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		let label = this;
 		this.registerListener({
 			entityRemoved(): void {
-				console.log("removed label");
-				console.log(label.getReduxProps());
 				label.removeLabelFromMathView();
 			}
 		})

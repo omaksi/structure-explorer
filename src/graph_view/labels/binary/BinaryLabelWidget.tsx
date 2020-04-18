@@ -105,7 +105,10 @@ interface BinaryNodeWidgetState {
 }
 
 export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,BinaryNodeWidgetState> {
-	predicateTextInput:any;
+	sourceNodeName:string;
+	targetNodeName:string;
+
+
 	constructor(props: BinaryLabelWidgetProps) {
 		super(props);
 
@@ -116,15 +119,22 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		};
 		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
 		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
+
+		// @ts-ignore
+		this.sourceNodeName = this.props.model.getParent().getSourcePort().getNode().getNodeName();
+		// @ts-ignore
+		this.targetNodeName = this.props.model.getParent().getTargetPort().getNode().getNodeName();
 	}
 
 	generatePredicate = (predicateObject: string) => {
-			return (
+		return (
 				<PredicateRowContainer key={predicateObject[0]} >
+
+					{this.sourceNodeName !== this.targetNodeName?
 					<PredicateButton onClick={() =>{
 						this.props.model.changeDirectionOfPredicate(predicateObject[0], predicateObject[1]);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome name={predicateObject[1]===BOTH?'fas fa-arrows-alt-h':(predicateObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></PredicateButton>
+					}}><FontAwesome name={predicateObject[1]===BOTH?'fas fa-arrows-alt-h':(predicateObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></PredicateButton>:null}
 
 				<Predicate>
 					{predicateObject[0]}
@@ -149,8 +159,8 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		}
 	}
 
-	getWidestElement(firstNodeName:string,secondNodeName:string):number{
-		let width:number = firstNodeName.length+secondNodeName.length;
+	getWidestElement():number{
+		let width:number = this.sourceNodeName.length+this.targetNodeName.length;
 		let minimumWidth:number = 0;
 
 		if(this.state.renameActive){
@@ -164,8 +174,8 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 			if(width<predicateWidth){
 				width = predicateWidth;
 			}
-			if(this.predicateTextInput && this.predicateTextInput.value.length>width){
-				width = this.predicateTextInput.value.length;
+			if(this.state.inputElementTextLength>width){
+				width = this.state.inputElementTextLength;
 			}
 		}
 		return width;
@@ -180,13 +190,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 	}
 
 	render() {
-		let link = this.props.model.getParent();
-		// @ts-ignore
-		let sourceNodeName = link.getSourcePort().getNode().getNodeName();
-		// @ts-ignore
-		let targetNodeName = link.getTargetPort().getNode().getNodeName();
-
-		let width = this.getWidestElement(sourceNodeName, targetNodeName);
+		let width = this.getWidestElement();
 
 		return (
 			<div>
@@ -194,7 +198,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 								cursor={this.props.model.editable ? "pointer" : "move"}>
 					<Title>
 						<TitleName>
-							{sourceNodeName + " – " + targetNodeName}
+							{this.sourceNodeName + " – " + this.targetNodeName}
 						</TitleName>
 					</Title>
 					<Predicates>

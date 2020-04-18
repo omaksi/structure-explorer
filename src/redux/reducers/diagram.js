@@ -6,7 +6,7 @@ import {
   SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES, RENAME_CONSTANT_NODE, GET_PREDICATES
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
-import {UNBINARY} from "../../graph_view/nodes/ConstantNames";
+import {BOTH, FROM, TO, UNBINARY} from "../../graph_view/nodes/ConstantNames";
 import {ConstantNodeModel} from "../../graph_view/nodes/constant/ConstantNodeModel";
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
@@ -21,7 +21,7 @@ export function defaultState(){
     domainNodes: new Map(),
     constantNodes: new Map(),
     ternaryNodes: new Map(),
-    Quaternary: new Map(),
+    quaternaryNodes: new Map(),
     editableNodes: false
   }
 }
@@ -33,9 +33,9 @@ function diagramReducer(state, action) {
       return state;
     case SYNC_DIAGRAM:
       syncDomain(action.value);
+      syncLabels(state);
       syncPredicates(action.value);
       syncConstants(action.value);
-      syncLabels(state);
       return state;
     case ADD_DOMAIN_NODE:
       state.domainNodes.set(action.nodeName, action.nodeObject);
@@ -153,6 +153,15 @@ function createLink(sourcePort,targetPort,diagramModel){
   link.setSourcePort(sourcePort);
   link.setTargetPort(targetPort);
   diagramModel.addAll(link);
+  return link;
+}
+
+function createLabel(linkWhereLabelShouldBeAdded){
+  let label = new BinaryLinkModel({},false);
+  if(linkWhereLabelShouldBeAdded.getTargetPort().getNode() === linkWhereLabelShouldBeAdded.getSourcePort().getNode()){
+    label.setCurvyness(135);
+  }
+  linkWhereLabelShouldBeAdded.addLabel(label);
 }
 
 function syncConstants(values){
@@ -219,7 +228,8 @@ function removeNodeState(nodeName,nodeSet){
 function clearDiagramState(values){
   values.diagramState.domainNodes.clear();
   values.diagramState.constantNodes.clear();
-  values.diagramState.functionNodes.clear();
+  values.diagramState.ternaryNodes.clear();
+  values.diagramState.quaternaryNodes.clear();
 }
 
 function clearCertainNodeState(nodeState){
@@ -227,6 +237,7 @@ function clearCertainNodeState(nodeState){
 }
 
 function syncPredicates(values) {
+  console.log(values);
   let predicatesInterpretationMap = values.structureObject.iPredicate;
   let portMap = new Map([["1",new Map()],["2",new Map()],["3",new Map()],["4",new Map()]]);
 
@@ -236,8 +247,8 @@ function syncPredicates(values) {
       let arityWithoutKey = key.split('/')[1];
 
       let portMapArity = portMap.get(arityWithoutKey);
-      for (let currentNodeVal of value) {
-        let currentNodeValue = currentNodeVal[0];
+      for (let currentNodeValue of value) {
+          currentNodeValue = currentNodeValue.join(",");
         if (portMapArity.has(currentNodeValue)) {
           portMapArity.get(currentNodeValue).add(keyWithoutArity);
         } else {
@@ -248,7 +259,7 @@ function syncPredicates(values) {
     }
   }
   syncUnaryPredicates(portMap.get("1"),values.diagramState.domainNodes);
-
+  syncBinaryPredicates(portMap.get("2"),values.diagramState);
 }
 
 function syncUnaryPredicates(portMap,domainState) {
@@ -274,6 +285,79 @@ function syncUnaryPredicates(portMap,domainState) {
     } else {
       currentNodeObject.clearPredicates();
     }
+  }
+}
+
+function createBinaryLinks(portMap,existingLinksCombination,diagramState){
+  console.log("here",portMap);
+  let linksToChange = new Set();
+  for(let combination of portMap.keys()){
+    console.log("added");
+    let firstComb = combination.split(",")[0];
+    let secondComb = combination.split(",")[1];
+    let reversedComb = combination.split(",")[1]+","+combination.split(",")[0];
+    if(!existingLinksCombination.has(combination) && !existingLinksCombination.has(reversedComb)){
+      let sourcePort = diagramState.domainNodes.get(firstComb).getMainPort();
+      let targetPort = diagramState.domainNodes.get(secondComb).getMainPort();
+      linksToChange.add(createLink(sourcePort,targetPort,diagramState.diagramModel));
+      existingLinksCombination.add(combination);
+      existingLinksCombination.add(reversedComb);
+    }
+  }
+  return linksToChange;
+}
+
+function addPredicatesToBinaryLinks(portMap,nodeCombinationKey,reversedNodeCombinationKey,label){
+  if(portMap.has(nodeCombinationKey)){
+    for(let predicate of portMap.get(nodeCombinationKey)){
+      label.addBinaryPredicateToSetWithDirection(predicate,FROM);
+    }
+  }
+  if(portMap.has(reversedNodeCombinationKey)){
+    for(let predicate of portMap.get(reversedNodeCombinationKey)){
+      if(label.getPredicates().has(predicate)){
+        label.addBinaryPredicateToSetWithDirection(predicate,BOTH);
+      }
+      else{
+        label.addBinaryPredicateToSetWithDirection(predicate,TO);
+      }
+    }
+  }
+}
+
+function syncBinaryPredicates(portMap,diagramState) {
+  let linksToRemove = new Set();
+  let existingLinksCombination = new Set();
+
+  for(let link of diagramState.diagramModel.getLinks()){
+    let label = link.getLabel();
+    if(label){
+      let labelPredicates = label.getPredicates();
+      label.clearPredicates();
+      let nodeCombinationKey = label.getNodeCombinationKey();
+      let reversedNodeCombinationKey = label.getReversedNodeCombinationKey();
+
+      existingLinksCombination.add(nodeCombinationKey);
+      existingLinksCombination.add(reversedNodeCombinationKey);
+
+      addPredicatesToBinaryLinks(portMap,nodeCombinationKey,reversedNodeCombinationKey,label);
+
+      if(labelPredicates.size === 0){
+        linksToRemove.add(link);
+      }
+    }
+  }
+  let linksToChange = createBinaryLinks(portMap,existingLinksCombination,diagramState);
+  for(let link of linksToChange){
+    let label = link.getLabel();
+    addPredicatesToBinaryLinks(portMap,label.getNodeCombinationKey(),label.getReversedNodeCombinationKey(),label);
+  }
+  removeLinksToRemove(linksToRemove);
+}
+
+function removeLinksToRemove(linksToRemove){
+  for(let link of linksToRemove){
+    link.remove();
   }
 }
 

@@ -51,6 +51,28 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		})
 	}
 
+	getSourceDomainNode(){
+		return this.getParent().getSourcePort().getNode();
+	}
+
+	getTargetDomainNode(){
+		return this.getParent().getTargetPort().getNode();
+	}
+
+	getNodeCombinationKey(){
+		// @ts-ignore
+		return [this.getSourceDomainNode().getNodeName(),this.getTargetDomainNode().getNodeName()].join(",");
+	}
+
+	getReversedNodeCombinationKey(){
+		// @ts-ignore
+		return [this.getTargetDomainNode().getNodeName(),this.getSourceDomainNode().getNodeName()].join(",");
+	}
+
+	clearPredicates(){
+		this.getPredicates().clear();
+	}
+
 	removeLabelFromMathView(){
 		for(let [predicateName,direction] of this.predicates.entries()){
 			// @ts-ignore
@@ -90,6 +112,11 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 
 	addBinaryPredicateToSet(name: string){
 		this.predicates.set(name,BOTH);
+		this.increaseChangeCounter();
+	}
+
+	addBinaryPredicateToSetWithDirection(name: string,direction: string){
+		this.predicates.set(name,direction);
 		this.increaseChangeCounter();
 	}
 

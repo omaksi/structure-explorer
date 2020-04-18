@@ -121,6 +121,10 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 		});
 	}
 
+	setCurvyness(num:number){
+		this.getOptions().curvyness = num;
+	}
+
 	setCallReduxFunc(value:boolean){
 		this.callReduxFunc = value;
 	}
@@ -138,6 +142,10 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 			return [0, -this.options.curvyness];
 		}
 		return [0, this.options.curvyness];
+	}
+
+	getLabel(){
+		return this.label;
 	}
 
 	getSVGPath(): string {

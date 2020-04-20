@@ -139,7 +139,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 
 	componentDidMount(): void {
 		this.props.syncDiagram(this.props); //toto by malo byt zavolane predtym, inak to nerenderuje a new DiagramApplication dostava stary stav
-		this.body.focus();
+		this.focusOnBodyElement();
 	}
 
 	focusOnBodyElement(){
@@ -185,6 +185,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 				  onKeyDown={(e:any) => {
 					  if (e.key === "Escape") {
 						  this.props.diagramState.diagramEngine.getModel().clearSelection();
+						  this.props.diagramState.diagramEngine.repaintCanvas();
 					  }
 				  }}
 			>

@@ -4,6 +4,7 @@ import {Port as UnbinaryPort} from "../nodes/unbinary/UnBinaryPortLabelWidget";
 import {Node as ConstantNode, Title as ConstantTitle, TitleName as ConstantTitleName} from "../nodes/constant/ConstantNodeWidget";
 import {Node as QuaternaryNode} from "../nodes/quaternary/QuaternaryNodeWidget";
 import {Node as TernaryNode} from "../nodes/ternary/TernaryNodeWidget";
+import {ADDPORT} from "../nodes/ConstantNames";
 
 export const UnbinaryIcon = () =>{
     return(
@@ -16,7 +17,7 @@ export const UnbinaryIcon = () =>{
 
             <UnbinaryPorts>
             <UnbinaryPortsContainer>
-                <UnbinaryPort>+</UnbinaryPort>
+                <UnbinaryPort>{ADDPORT}</UnbinaryPort>
             </UnbinaryPortsContainer>
         </UnbinaryPorts>
         </UnbinaryNode>

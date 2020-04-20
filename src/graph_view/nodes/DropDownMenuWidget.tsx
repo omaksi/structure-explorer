@@ -6,7 +6,6 @@ import { DiagramEngine } from "@projectstorm/react-diagrams";
 import {ADDFUNC, ADDPRED, FUNCTION, PREDICATE} from "./ConstantNames";
 import {canUsePredicateForGivenArity, getAvailableLanguageElementForGivenArity} from "./functions";
 import {BinaryLabelModel} from "../labels/binary/BinaryLabelModel";
-import {UnBinaryNodeModel} from "./unbinary/UnBinaryNodeModel";
 
 export const DropDownModel = styled.div<{pointerEvents: string, cursor:string}>`
 		width: 100%;
@@ -145,10 +144,6 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
         this.props.model.getReduxProps()["focusOnBodyElement"]();
     }
 
-    componentDidUpdate(): void {
-        this.textInput.focus();
-    }
-
     addGivenInputElement(element:string){
         if (!this.props.badNameForLanguageElement && this.textInput.value) {
             if(element === "P"){
@@ -179,7 +174,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                         {_.map(Array.from(getAvailableLanguageElementForGivenArity((parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps(),this.props.model.getPredicates(),FUNCTION)), this.generateAvailablePredicate)}
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
-                                <input autoFocus onChange={(e) => {
+                                <input onChange={(e) => {
                                     this.checkBadElementName(e.target.value, this.props.arity);
                                     this.props.setStateInputElementTextLength(e.target.value.length);
                                 }}

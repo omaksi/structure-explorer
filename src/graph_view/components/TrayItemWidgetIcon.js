@@ -59,6 +59,8 @@ export const TernaryIcon = () =>{
                         size / 2 +
                         ` ` +
                         size / 2 +
+                        `,` +
+                        (size/2) +
                         `"/>
           </g>
         `

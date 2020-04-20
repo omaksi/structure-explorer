@@ -53,7 +53,9 @@ export class TernaryNodeWidget extends React.Component<QuaternaryNodeWidgetProps
 							this.props.size / 2 +
 							` ` +
 							this.props.size / 2 +
-							`"/>
+							`,` +
+							(this.props.size/2) +
+							` "/>
           </g>
         `
 					}}

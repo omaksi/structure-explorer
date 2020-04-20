@@ -14,3 +14,5 @@ export const ADDFUNC:string = "F";
 export const BOTH:string = "B";
 export const FROM:string = "F";
 export const TO:string = "T";
+export const PREDICATE:string ="P";
+export const FUNCTION:string = "F";

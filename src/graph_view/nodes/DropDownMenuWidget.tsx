@@ -3,9 +3,10 @@ import _ from 'lodash';
 import * as React from 'react';
 import FontAwesome from "react-fontawesome";
 import { DiagramEngine } from "@projectstorm/react-diagrams";
-import {ADDFUNC, ADDPRED} from "./ConstantNames";
-import {canUsePredicateForGivenArity, getAvailablePredicatesForGivenArity} from "./functions";
+import {ADDFUNC, ADDPRED, FUNCTION, PREDICATE} from "./ConstantNames";
+import {canUsePredicateForGivenArity, getAvailableLanguageElementForGivenArity} from "./functions";
 import {BinaryLabelModel} from "../labels/binary/BinaryLabelModel";
+import {UnBinaryNodeModel} from "./unbinary/UnBinaryNodeModel";
 
 export const DropDownModel = styled.div<{pointerEvents: string, cursor:string}>`
 		width: 100%;
@@ -87,6 +88,7 @@ export interface DropDownMenuWidgetProps {
     widthOfInputElement:number;
     modelName?:string;
     arity:string;
+    closeDropDown:any;
 }
 
 export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps> {
@@ -129,6 +131,13 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
         }
     }
 
+    componentDidMount(): void {
+        //will re-render link so the position will be correct
+        if(this.props.model instanceof BinaryLabelModel){
+            this.props.engine.repaintCanvas();
+        }
+    }
+
     addGivenInputElement(element:string){
         if (!this.props.badNameForLanguageElement && this.textInput.value) {
             if(element === "P"){
@@ -152,13 +161,14 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                         <DropDownTitleName>
                             Pred
                         </DropDownTitleName>
-                        {_.map(Array.from(getAvailablePredicatesForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates())), this.generateAvailablePredicate)}
+                        {_.map(Array.from(getAvailableLanguageElementForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates(),PREDICATE)), this.generateAvailablePredicate)}
                         <DropDownTitleName>
                             Func
                         </DropDownTitleName>
+                        {_.map(Array.from(getAvailableLanguageElementForGivenArity((parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps(),this.props.model.getPredicates(),FUNCTION)), this.generateAvailablePredicate)}
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
-                                <input onChange={(e) => {
+                                <input autoFocus onChange={(e) => {
                                     this.checkBadElementName(e.target.value, this.props.arity);
                                     this.props.setStateInputElementTextLength(e.target.value.length);
                                 }}
@@ -176,7 +186,12 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                                this.addGivenInputElement();
                                            }
                                        }}*/
-                                       placeholder={"New predicate/function"} style={{
+                                       onKeyDown={(e) => {
+                                           if (e.key === "Escape") {
+                                               this.props.closeDropDown();
+                                           }
+                                       }}
+                                       placeholder={"Add p/f"} style={{
                                     width: (this.props.widthOfInputElement===1?2:this.props.widthOfInputElement) + "ch",
                                     height: 20 + "px",
                                     border: this.props.badNameForLanguageElement ? "1px solid red" : "1px solid black"

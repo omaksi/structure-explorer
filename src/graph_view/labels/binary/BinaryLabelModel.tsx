@@ -2,7 +2,7 @@ import { LabelModel} from '@projectstorm/react-diagrams-core';
 import { DeserializeEvent } from '@projectstorm/react-canvas-core';
 import {BaseModelListener} from '@projectstorm/react-canvas-core';
 import { LabelModelOptions, LabelModelGenerics } from '@projectstorm/react-diagrams';
-import {BOTH, FROM, TO} from "../../nodes/ConstantNames";
+import {BOTH, FROM, PREDICATE, TO} from "../../nodes/ConstantNames";
 
 export interface BinaryLabelModelOptions extends LabelModelOptions {
 	label?: string;
@@ -22,6 +22,7 @@ export interface BinaryLabelModelGenerics extends LabelModelGenerics {
 
 export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	predicates: Map<string,string>;
+	functions: Map<string,string>;
 	editable: boolean;
 	changeCounter: number;
 
@@ -71,6 +72,11 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		this.getPredicates().clear();
 	}
 
+	clearFunctions(){
+		this.getPredicates().clear();
+	}
+
+
 	removeLabelFromMathView(){
 		for(let [predicateName,direction] of this.predicates.entries()){
 			// @ts-ignore
@@ -90,6 +96,10 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		return this.predicates;
 	}
 
+	getFunctions():Map<string,string>{
+		return this.functions;
+	}
+
 	setLockedParent(bool:boolean){
 		this.getParent().setLocked(bool);
 	}
@@ -105,11 +115,30 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 			this.getReduxProps()["addBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
 			this.addBinaryPredicateToSet(name);
 		}
+	}
 
+
+	addFunction(name:string){
+		name = name.replace(/\s/g, "");
+		if (!this.functions.has(name)) {
+			// @ts-ignore
+			this.getReduxProps()["addUnaryFunction"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
+			this.addBinaryPredicateToSet(name);
+		}
 	}
 
 	addBinaryPredicateToSet(name: string){
 		this.predicates.set(name,BOTH);
+		this.increaseChangeCounter();
+	}
+
+	addUnaryFunctionToSet(name: string){
+		this.functions.set(name,BOTH);
+		this.increaseChangeCounter();
+	}
+
+	addUnaryFunctionToSetWithDirection(name: string,direction: string){
+		this.functions.set(name,direction);
 		this.increaseChangeCounter();
 	}
 
@@ -120,20 +149,6 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 
 	increaseChangeCounter(){
 		this.changeCounter+=1;
-	}
-
-	getMaximumLengthOfPredicatesForGivenArity(arity:string):number{
-		let maxLength = 0;
-		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
-
-		if(predicates){
-			for(let predicateObject of predicates){
-				if(predicateObject.arity === arity && maxLength<predicateObject.name.length){
-					maxLength = predicateObject.name.length;
-				}
-			}
-		}
-		return maxLength;
 	}
 
 	isEditable(){

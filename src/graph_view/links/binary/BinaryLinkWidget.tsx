@@ -27,14 +27,14 @@ export class BinaryLinkWidget extends React.Component<BinaryLinkProps, BinaryLin
 	}
 
 	componentDidUpdate(): void {
-		this.props.link.setRenderedPaths(
-			this.refPaths.map(ref => {
-				return ref.current;
-			})
-		);
+		this.setRenderedLinkPath();
 	}
 
 	componentDidMount(): void {
+		this.setRenderedLinkPath();
+	}
+
+	setRenderedLinkPath(){
 		this.props.link.setRenderedPaths(
 			this.refPaths.map(ref => {
 				return ref.current;

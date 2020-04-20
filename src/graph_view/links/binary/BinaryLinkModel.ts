@@ -41,6 +41,7 @@ export interface BinaryLinkModelGenerics extends LinkModelGenerics {
 export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 	label:BinaryLabelModel;
 	callReduxFunc:boolean;
+	changeCounter: number;
 
 	constructor(options: BinaryLinkModelOptions = {},canCallReduxFunc:boolean = true) {
 		super({
@@ -52,6 +53,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 			...options
 		});
 
+		this.changeCounter = 0;
 		this.callReduxFunc = canCallReduxFunc;
 		let link:BinaryLinkModel = this;
 		// @ts-ignore
@@ -123,6 +125,10 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 
 	setCurvyness(num:number){
 		this.getOptions().curvyness = num;
+	}
+
+	increaseChangeCounter(){
+		this.changeCounter+=1;
 	}
 
 	setCallReduxFunc(value:boolean){
@@ -198,7 +204,8 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 			width: this.options.width,
 			color: this.options.color,
 			curvyness: this.options.curvyness,
-			selectedColor: this.options.selectedColor
+			selectedColor: this.options.selectedColor,
+			changeCounter: this.changeCounter
 		};
 	}
 
@@ -208,6 +215,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 		this.options.width = event.data.width;
 		this.options.curvyness = event.data.curvyness;
 		this.options.selectedColor = event.data.selectedColor;
+		this.changeCounter = event.data.changeCounter;
 	}
 
 	addLabel(label: LabelModel | string) {

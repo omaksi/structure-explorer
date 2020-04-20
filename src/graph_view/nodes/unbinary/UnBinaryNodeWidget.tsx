@@ -8,7 +8,7 @@ import { Port } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
 import {Predicate, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
 import {DropDownMenuWidget} from "../DropDownMenuWidget";
-import {getMaximumLengthOfPredicatesForGivenArity} from "../functions";
+import {getWidestElement} from "../functions";
 
 export interface UnBinaryNodeWidgetProps {
 	node: UnBinaryNodeModel;
@@ -109,6 +109,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.setBadNameState = this.setBadNameState.bind(this);
 		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
 		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
+		this.closeDropDown = this.closeDropDown.bind(this);
 	}
 
 	componentWillUnmount(): void {
@@ -183,18 +184,21 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		}
 	}
 
+	closeDropDown(){
+		this.setState({isDropDownMenu:false});
+		this.props.node.setLocked(false);
+		this.props.engine.getModel().clearSelection();
+		this.props.engine.repaintCanvas();
+	}
+
 	getWidestElement():number{
 		let width:number = this.state.nodeName.length;
+		let compareWidth:number = getWidestElement(this.state.isDropDownMenu,this.state.inputElementTextLength,this.props.node,width,"1","0");
 
-		if(this.state.isDropDownMenu){
-			let predicateWidth = getMaximumLengthOfPredicatesForGivenArity("1",this.props.node.getReduxProps());
-			if(width<predicateWidth){
-				width = predicateWidth;
-			}
-			if(this.state.inputElementTextLength>width){
-				width = this.state.inputElementTextLength;
-			}
+		if(compareWidth>width){
+			return compareWidth;
 		}
+
 		return width;
 	}
 
@@ -285,7 +289,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 										model={this.props.node}
 										engine={this.props.engine} modelName={this.props.node.getNodeName()}
 										badNameForLanguageElement={this.state.badNameForNewPredicate}
-										arity={"1"}/> : null
+										arity={"1"}
+										closeDropDown={this.closeDropDown}/> : null
 				}
 			</div>
 		)

@@ -60,17 +60,6 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		return this.getOptions().reduxProps;
 	}
 
-	getAllPredicateNames():Set<string>{
-		let predicateSet:Set<string> = new Set();
-		let predicates = this.getReduxProps()["store"].getState().language.predicates.parsed;
-
-		if(predicates){
-			for(let predicateObject of predicates){
-				predicateSet.add(predicateObject.name);
-			}
-		}
-		return predicateSet;
-	}
 
 	getPredicates(){
 		return this.unaryPredicates;

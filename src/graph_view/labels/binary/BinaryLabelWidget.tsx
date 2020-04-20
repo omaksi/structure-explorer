@@ -7,6 +7,7 @@ import {DiagramEngine} from '@projectstorm/react-diagrams';
 import {ADDPORT, ADDPORTSELECTED, BOTH, FROM} from "../../nodes/ConstantNames";
 import {DropDownMenuWidget} from "../../nodes/DropDownMenuWidget";
 import {Port} from "../../nodes/unbinary/UnBinaryPortLabelWidget";
+import {getWidestElement} from "../../nodes/functions";
 
 export interface BinaryLabelWidgetProps {
 	model: BinaryLabelModel;
@@ -108,7 +109,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 	sourceNodeName:string;
 	targetNodeName:string;
 
-
 	constructor(props: BinaryLabelWidgetProps) {
 		super(props);
 
@@ -119,6 +119,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		};
 		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
 		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
+		this.closeDropDown = this.closeDropDown.bind(this);
 
 		// @ts-ignore
 		this.sourceNodeName = this.props.model.getParent().getSourcePort().getNode().getNodeName();
@@ -161,23 +162,12 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 
 	getWidestElement():number{
 		let width:number = this.sourceNodeName.length+this.targetNodeName.length;
-		let minimumWidth:number = 0;
+		let compareWidth:number = getWidestElement(this.state.isDropDownMenu,this.state.inputElementTextLength,this.props.model,width,"2","1");
 
-		if(this.state.renameActive){
-			if(width<minimumWidth){
-				width = minimumWidth;
-			}
+		if(compareWidth>width){
+			return compareWidth;
 		}
 
-		if(this.state.isDropDownMenu){
-			let predicateWidth = this.props.model.getMaximumLengthOfPredicatesForGivenArity("2");
-			if(width<predicateWidth){
-				width = predicateWidth;
-			}
-			if(this.state.inputElementTextLength>width){
-				width = this.state.inputElementTextLength;
-			}
-		}
 		return width;
 	}
 
@@ -187,6 +177,13 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 
 	setBadNameForNewPredicateState(bool:boolean){
 		this.setState({badNameForNewPredicate: bool});
+	}
+
+	closeDropDown(){
+		this.setState({isDropDownMenu:false});
+		this.props.model.setLocked(false);
+		this.props.engine.getModel().clearSelection();
+		this.props.engine.repaintCanvas();
 	}
 
 	render() {
@@ -227,7 +224,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 										badNameForLanguageElement={this.state.badNameForNewPredicate}
 										setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState}
 										setStateInputElementTextLength={this.setInputElementTextLength}
-										widthOfInputElement={width} arity={"2"}/> : null
+										widthOfInputElement={width} arity={"2"} closeDropDown={this.closeDropDown}/> : null
 				}
 			</div>
 		)

@@ -172,7 +172,6 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 		return (
 			<Body ref={Body => this.body = Body} tabIndex={1} onKeyPress={(e: any) => {
 				let exclude = ['input', 'textarea'];
-
 				if (!exclude.includes(e.target.tagName.toLowerCase())) {
 					if (e.key === ';' || e.key === '`') {
 						editableNodes ? editableNodesFunction(false) : editableNodesFunction(true);
@@ -182,7 +181,13 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 						editableNodesFunction(true);
 					}
 				}
-			}}>
+			}}
+				  onKeyDown={(e:any) => {
+					  if (e.key === "Escape") {
+						  this.props.diagramState.diagramEngine.getModel().clearSelection();
+					  }
+				  }}
+			>
 				<Content>
 					<TrayWidget>
 						<Button title={"Pohyb po grafe (P)"} variant={"outline-primary"}

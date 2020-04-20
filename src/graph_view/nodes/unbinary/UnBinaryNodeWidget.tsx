@@ -185,10 +185,12 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	}
 
 	closeDropDown(){
-		this.setState({isDropDownMenu:false});
-		this.props.node.setLocked(false);
-		this.props.engine.getModel().clearSelection();
-		this.props.engine.repaintCanvas();
+		if(this.state.isDropDownMenu){
+			this.setState({isDropDownMenu:false});
+			this.props.node.setLocked(false);
+			this.props.engine.getModel().clearSelection();
+			this.props.engine.repaintCanvas();
+		}
 	}
 
 	getWidestElement():number{

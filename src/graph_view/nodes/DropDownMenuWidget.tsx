@@ -33,6 +33,7 @@ export const DropDownTitleName = styled.div`
 		padding: 3px 3px;
 		font-size:11px;
 		text-align:center;
+		cursor: context-menu;
 	`;
 
 export const DropDownButton = styled.div`
@@ -134,6 +135,8 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
     componentDidMount(): void {
         //will re-render link so the position will be correct
         if(this.props.model instanceof BinaryLabelModel){
+            // @ts-ignore
+            this.props.model.getParent().increaseChangeCounter();
             this.props.engine.repaintCanvas();
         }
     }

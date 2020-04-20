@@ -138,6 +138,14 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
         }
     }
 
+    componentWillUnmount(): void {
+        this.props.model.getReduxProps()["focusOnBodyElement"]();
+    }
+
+    componentDidUpdate(): void {
+        this.textInput.focus();
+    }
+
     addGivenInputElement(element:string){
         if (!this.props.badNameForLanguageElement && this.textInput.value) {
             if(element === "P"){

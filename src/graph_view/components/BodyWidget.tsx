@@ -134,10 +134,15 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 
 	constructor(props: any) {
 		super(props);
+		this.focusOnBodyElement = this.focusOnBodyElement.bind(this);
 	}
 
 	componentDidMount(): void {
 		this.props.syncDiagram(this.props); //toto by malo byt zavolane predtym, inak to nerenderuje a new DiagramApplication dostava stary stav
+		this.body.focus();
+	}
+
+	focusOnBodyElement(){
 		this.body.focus();
 	}
 
@@ -160,7 +165,8 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"setConstantValueFromLink": this.props.setConstantValueFromLink,
 			"changeDirectionOfBinaryRelation": this.props.changeDirectionOfBinaryRelation,
 			"editable": editableNodes,
-			"store": this.props.store
+			"store": this.props.store,
+			"focusOnBodyElement": this.focusOnBodyElement,
 		};
 
 		return (

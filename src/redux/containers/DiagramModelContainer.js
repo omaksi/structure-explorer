@@ -23,7 +23,7 @@ import {
   toggleEditableNodes,
   renameConstantNode,
   setConstantValueFromLink,
-  addBinaryPredicate, removeBinaryPredicate, changeDirectionOfBinaryRelation,
+  addBinaryPredicate, removeBinaryPredicate, changeDirectionOfBinaryRelation, addUnaryFunction, removeUnaryFunction,
 } from "../actions";
 import {connect} from 'react-redux';
 import {BodyWidget} from "../../graph_view/components/BodyWidget";
@@ -59,6 +59,8 @@ const mapDispatchOnProps = {
   toggleEditableNodes: toggleEditableNodes,
   setConstantValueFromLink: setConstantValueFromLink,
   addUnaryPredicate: addUnaryPredicate,
+  addUnaryFunction: addUnaryFunction,
+  removeUnaryFunction: removeUnaryFunction,
   removeUnaryPredicate: removeUnaryPredicate,
   addBinaryPredicate: addBinaryPredicate,
   removeBinaryPredicate: removeBinaryPredicate,

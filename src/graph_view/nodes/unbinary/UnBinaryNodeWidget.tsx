@@ -6,7 +6,7 @@ import { UnBinaryNodeModel } from './UnBinaryNodeModel';
 import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
 import { Port } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
-import {Predicate, PredicateRowContainer} from "../../labels/binary/BinaryLabelWidget";
+import {Element, ElementRowContainer} from "../../labels/binary/BinaryLabelWidget";
 import {DropDownMenuWidget} from "../DropDownMenuWidget";
 import {getWidestElement} from "../functions";
 
@@ -127,15 +127,15 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	generatePredicate = (predicate: string) => {
 		return (
 
-			<PredicateRowContainer key={predicate} >
-				<Predicate>
+			<ElementRowContainer key={predicate} >
+				<Element>
 					{predicate}
-				</Predicate>
+				</Element>
 				<PredicateButton onClick={() =>{
 					this.props.node.removeUnaryPredicate(predicate);
 					this.props.engine.repaintCanvas();
 				}}><FontAwesome name={"fas fa-trash"}/></PredicateButton>
-			</PredicateRowContainer>
+			</ElementRowContainer>
 		)
 	};
 

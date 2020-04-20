@@ -36,6 +36,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		});
 
 		this.predicates = new Map();
+		this.functions = new Map();
 		this.editable = true;
 		this.changeCounter = 0;
 		this.registerEvents();
@@ -111,9 +112,9 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	addPredicate(name:string){
 		name = name.replace(/\s/g, "");
 		if (!this.predicates.has(name)) {
-			// @ts-ignore
-			this.getReduxProps()["addBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
 			this.addBinaryPredicateToSet(name);
+			// @ts-ignore
+			this.getReduxProps()["addBinaryPredicate"](name, this.getParent().getSourcePort().getNode().getNodeName(), this.getParent().getTargetPort().getNode().getNodeName(), this.predicates.get(name));
 		}
 	}
 
@@ -121,9 +122,9 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	addFunction(name:string){
 		name = name.replace(/\s/g, "");
 		if (!this.functions.has(name)) {
+			this.addUnaryFunctionToSet(name);
 			// @ts-ignore
-			this.getReduxProps()["addUnaryFunction"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
-			this.addBinaryPredicateToSet(name);
+			this.getReduxProps()["addUnaryFunction"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.functions.get(name));
 		}
 	}
 
@@ -158,6 +159,19 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	removeBinaryPredicateFromSet(name: string){
 		this.predicates.delete(name);
 		this.increaseChangeCounter();
+	}
+
+	removeUnaryFunctionFromSet(name: string){
+		this.functions.delete(name);
+		this.increaseChangeCounter();
+	}
+
+	removeFunction(name:string){
+		if(this.functions.has(name)){
+			this.removeUnaryFunctionFromSet(name);
+			// @ts-ignore
+			this.getReduxProps()["removeUnaryFunction"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
+		}
 	}
 
 	removePredicate(name:string){

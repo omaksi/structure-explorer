@@ -92,6 +92,22 @@ export const addBinaryPredicate = (predicateName,sourceNodeName,targetNodeName) 
   targetNodeName
 });
 
+export const addUnaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'ADD_UNARY_FUNCTION',
+  functionName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
+export const removeUnaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'REMOVE_UNARY_FUNCTION',
+  functionName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
 export const removeBinaryPredicate = (predicateName,sourceNodeName,targetNodeName,direction) => ({
   type: 'REMOVE_BINARY_PREDICATE',
   predicateName,

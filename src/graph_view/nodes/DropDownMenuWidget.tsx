@@ -108,7 +108,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
         this.props.setStateBadNameForLanguageElement(!canUsePredicateForGivenArity(elementName,arity,this.props.model.getReduxProps()));
     }
 
-    generateAvailablePredicate = (predicate: string) => {
+    generateAvailableLanguageElement = (predicate: string) => {
         return (
             <DropDownRowContainer key={predicate} >
                 <DropDownLanguageElement onClick={() =>{
@@ -159,6 +159,8 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
     }
 
     render() {
+        let funcArity:number = parseInt(this.props.arity)-1;
+
         return (
             <DropDownModel pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
                            cursor={this.props.model.isEditable() ? "pointer" : "move"}>
@@ -167,11 +169,14 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                         <DropDownTitleName>
                             Pred
                         </DropDownTitleName>
-                        {_.map(Array.from(getAvailableLanguageElementForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates(),PREDICATE)), this.generateAvailablePredicate)}
-                        <DropDownTitleName>
+                        {_.map(Array.from(getAvailableLanguageElementForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates(),PREDICATE)), this.generateAvailableLanguageElement)}
+                        {funcArity !== 0?
+                            <DropDownTitleName>
                             Func
                         </DropDownTitleName>
-                        {_.map(Array.from(getAvailableLanguageElementForGivenArity((parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps(),this.props.model.getPredicates(),FUNCTION)), this.generateAvailablePredicate)}
+                            :null
+                        }
+                        {funcArity !== 0?_.map(Array.from(getAvailableLanguageElementForGivenArity((parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps(),this.props.model.getFunctions(),FUNCTION)), this.generateAvailableLanguageElement):null}
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
                                 <input onChange={(e) => {
@@ -187,17 +192,15 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                            this.props.model.setLocked(false);
                                            this.setLockedParentIfNeeded(false);
                                        }}
-                                       /*onKeyDown={(e) => {
-                                           if (e.key === "Enter") {
-                                               this.addGivenInputElement();
-                                           }
-                                       }}*/
                                        onKeyDown={(e) => {
                                            if (e.key === "Escape") {
                                                this.props.closeDropDown();
                                            }
+                                           else if (e.key === "Enter" && funcArity === 0) {
+                                               this.addGivenInputElement(PREDICATE);
+                                           }
                                        }}
-                                       placeholder={"Add p/f"} style={{
+                                       placeholder={funcArity!==0?"Add p/f":"Add predicate"} style={{
                                     width: (this.props.widthOfInputElement===1?2:this.props.widthOfInputElement) + "ch",
                                     height: 20 + "px",
                                     border: this.props.badNameForLanguageElement ? "1px solid red" : "1px solid black"
@@ -206,9 +209,13 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                 <DropDownButton onClick={() => {
                                     this.addGivenInputElement("P");
                                 }}>{ADDPRED}</DropDownButton>
-                                <DropDownButton onClick={() => {
-                                    this.addGivenInputElement("F");
-                                }}>{ADDFUNC}</DropDownButton>
+                                {
+                                    funcArity!==0?
+                                        <DropDownButton onClick={() => {
+                                            this.addGivenInputElement("F");
+                                        }}>{ADDFUNC}</DropDownButton>
+                                        :null
+                                }
                             </DropDownRowContainer>
                         </DropDownInputElement>
                     </DropDownContainer>

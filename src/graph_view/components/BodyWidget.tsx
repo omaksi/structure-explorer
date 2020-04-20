@@ -30,6 +30,8 @@ export interface BodyWidgetProps {
 	addBinaryPredicate:any;
 	removeBinaryPredicate:any;
 	changeDirectionOfBinaryRelation:any;
+	addUnaryFunction:any;
+	removeUnaryFunction:any;
 	store:any;
 }
 
@@ -64,7 +66,7 @@ export interface BodyWidgetProps {
 		}
 
 		else{
-			state = diagramState.functionNodes;
+			state = diagramState.ternaryNodes;
 		}
 
 		while(state.has('Node'+nodeCount)){
@@ -138,12 +140,14 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	}
 
 	componentDidMount(): void {
-		this.props.syncDiagram(this.props); //toto by malo byt zavolane predtym, inak to nerenderuje a new DiagramApplication dostava stary stav
+		this.props.syncDiagram(this.props);
 		this.focusOnBodyElement();
 	}
 
 	focusOnBodyElement(){
-		this.body.focus();
+		if(this.body){
+			this.body.focus();
+		}
 	}
 
 	render() {
@@ -160,6 +164,8 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"checkBadName": this.props.checkBadName,
 			"addUnaryPredicate": this.props.addUnaryPredicate,
 			"removeUnaryPredicate": this.props.removeUnaryPredicate,
+			"addUnaryFunction": this.props.addUnaryFunction,
+			"removeUnaryFunction": this.props.removeUnaryFunction,
 			"addBinaryPredicate": this.props.addBinaryPredicate,
 			"removeBinaryPredicate": this.props.removeBinaryPredicate,
 			"setConstantValueFromLink": this.props.setConstantValueFromLink,

@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import FontAwesome from "react-fontawesome";
 import { BinaryLabelModel } from './BinaryLabelModel';
 import {DiagramEngine} from '@projectstorm/react-diagrams';
-import {ADDPORT, ADDPORTSELECTED, BOTH, FROM} from "../../nodes/ConstantNames";
+import {ADDPORT, ADDPORTSELECTED, BOTH, FROM, FUNCTION, PREDICATE} from "../../nodes/ConstantNames";
 import {DropDownMenuWidget} from "../../nodes/DropDownMenuWidget";
 import {Port} from "../../nodes/unbinary/UnBinaryPortLabelWidget";
 import {getWidestElement} from "../../nodes/functions";
@@ -16,7 +16,7 @@ export interface BinaryLabelWidgetProps {
 	size?: number;
 }
 
-export const PredicatesNode = styled.div<{pointerEvents: string, cursor:string}>`
+export const ElementsNode = styled.div<{pointerEvents: string, cursor:string}>`
 		pointer-events: ${p => p.pointerEvents};
 		cursor: ${p => p.cursor};
 		width:100%;
@@ -32,7 +32,7 @@ export const PredicatesNode = styled.div<{pointerEvents: string, cursor:string}>
 
 	`;
 
-export const Predicate = styled.div`
+export const Element = styled.div`
 		min-width: 2em;
 		width: 100%;
 		height: 20px;
@@ -41,12 +41,12 @@ export const Predicate = styled.div`
 		text-align:center;
 	`;
 
-export const Predicates = styled.div`
+export const Elements = styled.div`
 		display: flex;
 		background-image: linear-gradient(rgba(256, 256, 256, 0.4), rgba(256, 256, 256, 0.5));
 	`;
 
-export const PredicateContainer = styled.div`
+export const ElementContainer = styled.div`
 		display: flex;
 		flex-direction: column;
 		flex-grow:1;
@@ -60,13 +60,13 @@ export const PredicateContainer = styled.div`
 		}
 	`;
 
-export const PredicateRowContainer = styled.div`
+export const ElementRowContainer = styled.div`
 		display: flex;
 		flex-direction: row;
 		flex: 1 0 0;
 	`;
 
-export const PredicateButton = styled.div`
+export const ElementButton = styled.div`
 		outline: none;
 		cursor: pointer;
 		height: 20px;
@@ -120,6 +120,9 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
 		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
 		this.closeDropDown = this.closeDropDown.bind(this);
+		this.generateElementType = this.generateElementType.bind(this);
+		this.generatePredicateComponent = this.generatePredicateComponent.bind(this);
+		this.generateFunctionComponent = this.generateFunctionComponent.bind(this);
 
 		// @ts-ignore
 		this.sourceNodeName = this.props.model.getParent().getSourcePort().getNode().getNodeName();
@@ -127,26 +130,34 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		this.targetNodeName = this.props.model.getParent().getTargetPort().getNode().getNodeName();
 	}
 
-	generatePredicate = (predicateObject: string) => {
+	generateElementType = (elementObject: string,type: string) => {
 		return (
-				<PredicateRowContainer key={predicateObject[0]} >
+				<ElementRowContainer key={elementObject[0]} >
 
 					{this.sourceNodeName !== this.targetNodeName?
-					<PredicateButton onClick={() =>{
-						this.props.model.changeDirectionOfPredicate(predicateObject[0], predicateObject[1]);
+					<ElementButton onClick={() =>{
+						this.props.model.changeDirectionOfPredicate(elementObject[0], elementObject[1]);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome name={predicateObject[1]===BOTH?'fas fa-arrows-alt-h':(predicateObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></PredicateButton>:null}
-
-				<Predicate>
-					{predicateObject[0]}
-				</Predicate>
-					<PredicateButton onClick={() =>{
-						this.props.model.removePredicate(predicateObject[0]);
+					}}><FontAwesome name={elementObject[1]===BOTH?'fas fa-arrows-alt-h':(elementObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></ElementButton>:null}
+					{type}
+				<Element>
+					{elementObject[0]}
+				</Element>
+					<ElementButton onClick={() =>{
+						this.props.model.removePredicate(elementObject[0]);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome name={"fas fa-trash"}/></PredicateButton>
-				</PredicateRowContainer>
+					}}><FontAwesome name={"fas fa-trash"}/></ElementButton>
+				</ElementRowContainer>
 			)
 		};
+
+	generatePredicateComponent(elementObject:string){
+			return this.generateElementType(elementObject,PREDICATE);
+	}
+
+	generateFunctionComponent(elementObject:string){
+		return this.generateElementType(elementObject,FUNCTION);
+	}
 
 	componentDidUpdate() {
 		this.setIsDropDownMenuAccordingBehaviour();
@@ -191,16 +202,17 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 
 		return (
 			<div>
-				<PredicatesNode pointerEvents={this.props.model.editable ? "all" : "none"}
-								cursor={this.props.model.editable ? "pointer" : "move"}>
+				<ElementsNode pointerEvents={this.props.model.editable ? "all" : "none"}
+							  cursor={this.props.model.editable ? "pointer" : "move"}>
 					<Title>
 						<TitleName>
 							{this.sourceNodeName + " – " + this.targetNodeName}
 						</TitleName>
 					</Title>
-					<Predicates>
-						<PredicateContainer>
-							{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicate)}
+					<Elements>
+						<ElementContainer>
+							{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicateComponent)}
+							{_.map(Array.from(this.props.model.getFunctions()), this.generateFunctionComponent)}
 							<Port onClick={() => {
 								if (this.state.isDropDownMenu) {
 									this.props.engine.getModel().clearSelection();
@@ -216,9 +228,9 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 							}}
 								  height={20}
 								  width={this.props.model.getOptions().name?0:20}>{this.state.isDropDownMenu ? ADDPORTSELECTED : ADDPORT}</Port>
-						</PredicateContainer>
-					</Predicates>
-				</PredicatesNode>
+						</ElementContainer>
+					</Elements>
+				</ElementsNode>
 				{(this.state.isDropDownMenu && this.props.model.getParent().isSelected()) ?
 					<DropDownMenuWidget model={this.props.model} engine={this.props.engine}
 										badNameForLanguageElement={this.state.badNameForNewPredicate}

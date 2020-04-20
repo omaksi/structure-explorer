@@ -1,12 +1,12 @@
 import {
   ADD_BINARY_PREDICATE,
-  ADD_CONSTANT_NODE,
+  ADD_CONSTANT_NODE, ADD_UNARY_FUNCTION,
   ADD_UNARY_PREDICATE,
   IMPORT_APP,
   LOCK_CONSTANTS,
   LOCK_FUNCTIONS,
   LOCK_PREDICATES,
-  REMOVE_CONSTANT_NODE, REMOVE_DOMAIN_NODE,
+  REMOVE_CONSTANT_NODE, REMOVE_DOMAIN_NODE, REMOVE_UNARY_FUNCTION,
   RENAME_CONSTANT_NODE, RENAME_DOMAIN_NODE,
   SET_CONSTANTS,
   SET_FUNCTIONS,
@@ -18,6 +18,7 @@ import {
   RULE_PREDICATES
 } from "../../constants/parser_start_rules";
 import {defaultInputData} from "../../constants";
+import {PREDICATE as PRED,FUNCTION as FUNC} from "../../graph_view/nodes/ConstantNames";
 
 let functions = require('./functions/functions');
 
@@ -55,10 +56,15 @@ function languageReducer(s, action, struct) {
       setConstants();
       return state;
     case ADD_UNARY_PREDICATE:
-      addPredicate(action.predicateName,1);
+      addLanguageElement(action.predicateName,1,PRED);
       return state;
     case ADD_BINARY_PREDICATE:
-      addPredicate(action.predicateName,2);
+      addLanguageElement(action.predicateName,2,PRED);
+      return state;
+    case ADD_UNARY_FUNCTION:
+      addLanguageElement(action.functionName,1,FUNC);
+      return state;
+    case REMOVE_UNARY_FUNCTION:
       return state;
     case ADD_CONSTANT_NODE:
       let newConstantVal = Array.from(structure.language.constants).join(", ");
@@ -161,28 +167,30 @@ function returnParsedFuncValues(){
   return newFuncValues;
 }
 
-function addPredicate(predicateName,predicateArity){
-  let predicateNameWithArity = predicateName+"/"+predicateArity;
-  let parsedPredicatesMap = structure.language.predicates;
-  let newPredValue = "";
+function addLanguageElement(elementName,elementArity,type){
+  let elementNameWithArity = elementName+"/"+elementArity;
+  let parsedElementMap = type===PRED?structure.language.predicates:structure.language.functions;
+  let newElemValue = "";
 
-  for(let [predValue,predArity] of parsedPredicatesMap.entries()){
-    newPredValue+=predValue+"/"+predArity+", ";
+  for(let [elemValue,elemArity] of parsedElementMap.entries()){
+    newElemValue+=elemValue+"/"+elemArity+", ";
   }
 
-  if(newPredValue.length!==0){
-    if(!parsedPredicatesMap.has(predicateName)) {
-      newPredValue += predicateNameWithArity;
+  if(newElemValue.length!==0){
+    if(!parsedElementMap.has(elementName)) {
+      newElemValue += elementNameWithArity;
     }
     else{
-      newPredValue = newPredValue.substring(0,newPredValue.length-2);
+      newElemValue = newElemValue.substring(0,newElemValue.length-2);
     }
   }
   else{
-    newPredValue = predicateNameWithArity;
+    newElemValue = elementNameWithArity;
   }
-  functions.parseText(newPredValue, state.predicates, {startRule: RULE_PREDICATES});
-  setPredicates();
+
+  let elemState = type===PRED?state.predicates:state.functions;
+  functions.parseText(newElemValue, elemState, {startRule: type===PRED?RULE_PREDICATES:RULE_FUNCTIONS});
+  type===PRED?setPredicates():setFunctions();
 }
 
 function setConstants() {

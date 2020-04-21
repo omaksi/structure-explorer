@@ -41,7 +41,7 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
           <g id="Layer_1">
           </g>
           <g id="Layer_2">
-            <polygon fill="rgb(92,192,125)" stroke="${
+            <polygon fill="rgb(255,255,0)" stroke="${
 							this.props.node.isSelected() ? 'rgb(0,192,255)' : '#000000'
 						}" stroke-width="2.5" stroke-miterlimit="10" points="10,` +
 							this.props.size / 2 +

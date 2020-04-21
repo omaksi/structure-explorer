@@ -55,21 +55,30 @@ export interface BodyWidgetProps {
 
 
 	function getAvailableCount(nodeType:string,diagramState:any):number {
-		let nodeCount = 0;
+		let nodeCount:number = 0;
+		let name: string = "";
 		let state:Map<string,object>;
 		if (nodeType === 'unbinary') {
 			state = diagramState.domainNodes;
+			name = "N";
 			}
 
 		else if(nodeType === 'constant'){
 			state = diagramState.constantNodes;
+			name = "C";
+		}
+
+		else if(nodeType === 'ternary'){
+			state = diagramState.ternaryNodes;
+			name = "T";
 		}
 
 		else{
-			state = diagramState.ternaryNodes;
+			state = diagramState.quaternaryNodes;
+			name = "Q";
 		}
 
-		while(state.has('Node'+nodeCount)){
+		while(state.has(name+nodeCount)){
 			nodeCount++;
 		}
 		return nodeCount;
@@ -87,11 +96,11 @@ export interface BodyWidgetProps {
 
 		let node: any;
 		if (data.type === 'unbinary') {
-			node = new UnBinaryNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxProps);
+			node = new UnBinaryNodeModel('N' + nodesCount, 'rgb(92,192,125)', reduxProps);
 			reduxProps.addDomainNode(node.getOptions().name,node);
 
 		} else if (data.type === 'constant') {
-			node = new ConstantNodeModel('Node' + nodesCount, 'rgb(92,192,125)', reduxProps);
+			node = new ConstantNodeModel('C' + nodesCount, 'rgb(92,192,125)', reduxProps);
 			reduxProps.addConstantNode(node.getOptions().name,node);
 		}
 
@@ -209,24 +218,27 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 						<ItemWidgetIcon model={{type: 'unbinary'}} clickFunction={createNode} element={this}
 										name="Pridaj unárny/binárny" color="rgb(125,192,125)"
 										reduxProps={reduxProps}
-										title={"Pridaj vrchol, ktorý predstavuje prvok domény. Tomuto prvku je možné následne pridať unárne predikáty a vytvarať binárne väzby"}
+										title={"Pridať vrchol, ktorý predstavuje prvok domény. Tomuto prvku je možné následne pridať unárne predikáty a vytvarať binárne väzby"}
 										children={<UnbinaryIcon/>}
 						/>
 						<ItemWidgetIcon model={{type: 'constant'}} clickFunction={createNode} element={this}
 										name="Pridaj konštantu" color="rgb(125,192,125)"
 										reduxProps={reduxProps}
+										title={"Pridať vrchol, ktorý predstavuje konštanty. Vytvorením linky priradíme konštante prvok domény"}
 										children={<ConstantIcon/>}
 						/>
 
 						<ItemWidgetIcon model={{type: 'ternary'}} clickFunction={createNode} element={this}
-										name="Pridaj ternárny" color="rgb(128,96,245)"
+										name= "Pridaj ternárny" color="rgb(128,96,245)"
 										reduxProps={reduxProps}
+										title={"Pridať vrchol, ktorý predstavuje ternárny vzťah pre predikáty a binárny vzťah pre funkcie"}
 										children={<TernaryIcon/>}
 						/>
 
 						<ItemWidgetIcon model={{type: 'quaternary'}} clickFunction={createNode} element={this}
 										name="Pridaj štvornárny" color="rgb(128,96,245)"
 										reduxProps={reduxProps}
+										title={"Pridať vrchol, ktorý predstavuje quaternárny vzťah pre predikáty a ternárny vzťah pre funkcie"}
 										children={<QuaternaryIcon/>}
 						/>
 

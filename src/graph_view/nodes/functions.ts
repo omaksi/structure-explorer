@@ -15,7 +15,6 @@ export function canUsePredicateForGivenArity(predName:string,predArity:string,re
 
 export function getAvailableLanguageElementForGivenArity(arity:string,reduxProps:any,modelSet:Set<string>,type:string):Set<string> {
     let languageElementSet: Set<string> = new Set();
-    console.log(reduxProps["store"].getState().structureObject);
     let languageElement = type === PREDICATE?reduxProps["store"].getState().structureObject.language.predicates:reduxProps["store"].getState().structureObject.language.functions;
 
     for(let [elementValue,elementArity] of languageElement.entries()){
@@ -24,8 +23,6 @@ export function getAvailableLanguageElementForGivenArity(arity:string,reduxProps
         }
     }
 
-
-    console.log(languageElementSet);
     return languageElementSet;
 }
 

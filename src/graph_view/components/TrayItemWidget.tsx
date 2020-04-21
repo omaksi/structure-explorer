@@ -8,6 +8,7 @@ export interface TrayItemWidgetProps {
 	element:any;
 	clickFunction:any;
 	reduxProps:any;
+	title:string;
 }
 
 export const BasicTray = styled.div`
@@ -26,6 +27,7 @@ export class ItemWidgetIcon extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (
 			<BasicTray
+				title={this.props.title}
 				color={this.props.color}
 				draggable={true}
 				onDragStart={event => {

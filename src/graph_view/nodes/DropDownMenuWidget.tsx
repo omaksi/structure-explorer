@@ -96,6 +96,8 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
 
     constructor(props:DropDownMenuWidgetProps) {
         super(props);
+        this.generatePredicateComponent = this.generatePredicateComponent.bind(this);
+        this.generateFunctionComponent = this.generateFunctionComponent.bind(this);
     }
 
     checkBadElementName(elementName:string,arity:string){
@@ -108,17 +110,22 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
         this.props.setStateBadNameForLanguageElement(!canUsePredicateForGivenArity(elementName,arity,this.props.model.getReduxProps()));
     }
 
-    generateAvailableLanguageElement = (predicate: string) => {
+    generatePredicateComponent(elementObject:string){
+        return this.generateAvailableLanguageElement(elementObject,PREDICATE);
+    }
+
+    generateFunctionComponent(elementObject:string){
+        return this.generateAvailableLanguageElement(elementObject,FUNCTION);
+    }
+
+    generateAvailableLanguageElement = (languageElement: string,type:string) => {
         return (
-            <DropDownRowContainer key={predicate} >
-                <DropDownLanguageElement onClick={() =>{
-                    this.props.model.addPredicate(predicate);
-                    this.props.engine.repaintCanvas();
-                }}>
-                    {predicate}
+            <DropDownRowContainer key={languageElement} >
+                <DropDownLanguageElement>
+                    {languageElement}
                 </DropDownLanguageElement>
-                <DropDownButton onClick={() =>{
-                    this.props.model.addPredicate(predicate);
+                <DropDownButton title={"Pridaj "+(type===PREDICATE?"predikát":"funkciu")} onClick={() =>{
+                    this.props.model.addPredicate(languageElement);
                     this.props.engine.repaintCanvas();
                 }}><FontAwesome name={"fas fa-plus"}/></DropDownButton>
             </DropDownRowContainer>
@@ -146,7 +153,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
 
     addGivenInputElement(element:string){
         if (!this.props.badNameForLanguageElement && this.textInput.value) {
-            if(element === "P"){
+            if(element === PREDICATE){
                 this.props.model.addPredicate(this.textInput.value);
             }
             else{
@@ -163,20 +170,20 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
 
         return (
             <DropDownModel pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
-                           cursor={this.props.model.isEditable() ? "pointer" : "move"}>
+                           cursor={this.props.model.isEditable() ? "pointer" : "move"}
+            >
                 <DropDownPorts>
                     <DropDownContainer>
-                        <DropDownTitleName>
+                        <DropDownTitleName title={"Zoznam použiteľných predikátov pre aritu "+this.props.arity}>
                             Pred
                         </DropDownTitleName>
-                        {_.map(Array.from(getAvailableLanguageElementForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates(),PREDICATE)), this.generateAvailableLanguageElement)}
+                        {_.map(Array.from(getAvailableLanguageElementForGivenArity(this.props.arity,this.props.model.getReduxProps(),this.props.model.getPredicates(),PREDICATE)), this.generatePredicateComponent)}
                         {funcArity !== 0?
-                            <DropDownTitleName>
-                            Func
-                        </DropDownTitleName>
-                            :null
+                            <DropDownTitleName title={"Zoznam použiteľných funkcií pre aritu "+funcArity}>
+                                Func
+                            </DropDownTitleName>:null
                         }
-                        {funcArity !== 0?_.map(Array.from(getAvailableLanguageElementForGivenArity((parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps(),this.props.model.getFunctions(),FUNCTION)), this.generateAvailableLanguageElement):null}
+                        {funcArity !== 0?_.map(Array.from(getAvailableLanguageElementForGivenArity((parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps(),this.props.model.getFunctions(),FUNCTION)), this.generateFunctionComponent):null}
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
                                 <input onChange={(e) => {
@@ -200,19 +207,19 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                                this.addGivenInputElement(PREDICATE);
                                            }
                                        }}
-                                       placeholder={funcArity!==0?"Add p/f":"Add predicate"} style={{
+                                       placeholder={funcArity!==0?"Add pred/func":"Add predicate"} style={{
                                     width: (this.props.widthOfInputElement===1?2:this.props.widthOfInputElement) + "ch",
                                     height: 20 + "px",
                                     border: this.props.badNameForLanguageElement ? "1px solid red" : "1px solid black"
                                 }}>
                                 </input>
-                                <DropDownButton onClick={() => {
-                                    this.addGivenInputElement("P");
+                                <DropDownButton title={"Pridaj nový predikát"} onClick={() => {
+                                    this.addGivenInputElement(PREDICATE);
                                 }}>{ADDPRED}</DropDownButton>
                                 {
                                     funcArity!==0?
-                                        <DropDownButton onClick={() => {
-                                            this.addGivenInputElement("F");
+                                        <DropDownButton title={"Pridaj novú funkciu"} onClick={() => {
+                                            this.addGivenInputElement(FUNCTION);
                                         }}>{ADDFUNC}</DropDownButton>
                                         :null
                                 }

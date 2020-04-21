@@ -123,11 +123,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		this.generateElementType = this.generateElementType.bind(this);
 		this.generatePredicateComponent = this.generatePredicateComponent.bind(this);
 		this.generateFunctionComponent = this.generateFunctionComponent.bind(this);
-
-		// @ts-ignore
-		this.sourceNodeName = this.props.model.getParent().getSourcePort().getNode().getNodeName();
-		// @ts-ignore
-		this.targetNodeName = this.props.model.getParent().getTargetPort().getNode().getNodeName();
 	}
 
 	generateElementType = (elementObject: string,type: string) => {
@@ -138,12 +133,11 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 					<ElementButton onClick={() =>{
 						this.props.model.changeDirectionOfPredicate(elementObject[0], elementObject[1]);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome name={elementObject[1]===BOTH?'fas fa-arrows-alt-h':(elementObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></ElementButton>:null}
-					{type}
-				<Element>
+					}}><FontAwesome title={"Smer "+(type===PREDICATE?"predikátu":"funkcie")} name={elementObject[1]===BOTH?'fas fa-arrows-alt-h':(elementObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></ElementButton>:null}
+				<Element title={type===PREDICATE?"Predikát":"Funkcia"}>
 					{elementObject[0]}
 				</Element>
-					<ElementButton onClick={() =>{
+					<ElementButton title={"Zmazať daný "+(type===PREDICATE?"predikát":"funkcia")+" z vrcholu"} onClick={() =>{
 						this.props.model.removePredicate(elementObject[0]);
 						this.props.engine.repaintCanvas();
 					}}><FontAwesome name={"fas fa-trash"}/></ElementButton>
@@ -198,13 +192,18 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 	}
 
 	render() {
+		// @ts-ignore
+		this.sourceNodeName = this.props.model.getParent().getSourcePort().getNode().getNodeName();
+		// @ts-ignore
+		this.targetNodeName = this.props.model.getParent().getTargetPort().getNode().getNodeName();
+
 		let width = this.getWidestElement();
 
 		return (
 			<div>
 				<ElementsNode pointerEvents={this.props.model.editable ? "all" : "none"}
 							  cursor={this.props.model.editable ? "pointer" : "move"}>
-					<Title>
+					<Title title={"Smerovanie predikátov/funkcií (od – do)"}>
 						<TitleName>
 							{this.sourceNodeName + " – " + this.targetNodeName}
 						</TitleName>
@@ -213,7 +212,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 						<ElementContainer>
 							{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicateComponent)}
 							{_.map(Array.from(this.props.model.getFunctions()), this.generateFunctionComponent)}
-							<Port onClick={() => {
+							<Port title={"Otvoriť/zatvoriť rozbaľovaciu ponuku"} onClick={() => {
 								if (this.state.isDropDownMenu) {
 									this.props.engine.getModel().clearSelection();
 									this.setState({isDropDownMenu: false});

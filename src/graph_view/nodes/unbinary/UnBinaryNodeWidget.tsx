@@ -126,7 +126,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 	generatePredicate = (predicate: string) => {
 		return (
-
 			<ElementRowContainer key={predicate} >
 				<Element>
 					{predicate}
@@ -216,7 +215,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					pointerEvents={this.props.node.isEditable() ? "auto" : "none"}
 					cursor={this.props.node.isEditable() ? "pointer" : "move"}
 				>
-					<Title>
+					<Title title={"Vytvoriť novú linku ťahaním/dvojklikom premenovať názov vrcholu"}>
 						<PortWidget style={{flexGrow: 1}} engine={this.props.engine}
 									port={this.props.node.getMainPort()}>
 							<TitleName onDoubleClick={() => {
@@ -265,7 +264,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 							{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
 							<PortWidget style={{flexGrow: 1}} engine={this.props.engine}
 										port={this.props.node.getAppendPort()}>
-								<Port onClick={() => {
+								<Port title={"Otvoriť/zatvoriť rozbaľovaciu ponuku"} onClick={() => {
 									if (this.state.isDropDownMenu) {
 										this.setState({isDropDownMenu: false});
 										this.props.engine.getModel().clearSelection();

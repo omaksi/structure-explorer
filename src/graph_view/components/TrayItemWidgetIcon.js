@@ -29,7 +29,7 @@ export const ConstantIcon = () =>{
         <ConstantNode style={{pointerEvents:"none"}}>
             <ConstantTitle>
                 <ConstantTitleName>
-                    Node
+                    Const
                 </ConstantTitleName>
             </ConstantTitle>
         </ConstantNode>
@@ -49,7 +49,7 @@ export const TernaryIcon = () =>{
           <g id="Layer_1">
           </g>
           <g id="Layer_2">
-            <polygon fill="rgb(92,192,125)" stroke="#000000" stroke-width="2.5" stroke-miterlimit="10" points="5,` +
+            <polygon fill="rgb(255,255,0)" stroke="#000000" stroke-width="2.5" stroke-miterlimit="10" points="5,` +
                         size / 2 +
                         ` ` +
                         size / 2 +
@@ -84,7 +84,7 @@ export const QuaternaryIcon = () =>{
           <g id="Layer_1">
           </g>
           <g id="Layer_2">
-            <polygon fill="rgb(92,192,125)" stroke="#000000" stroke-width="2.5" stroke-miterlimit="10" points="10,` +
+            <polygon fill="rgb(255,255,0)" stroke="#000000" stroke-width="2.5" stroke-miterlimit="10" points="10,` +
                         size / 2 +
                         ` ` +
                         size / 2 +

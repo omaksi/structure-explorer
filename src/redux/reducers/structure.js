@@ -126,7 +126,6 @@ function structureReducer(s, action, struct) {
       return state;
 
       case REMOVE_UNARY_FUNCTION:
-        console.log("name",action.sourceNodeName,action.functionName,action.targetNodeName,action.direction);
         removeLanguageElementInGivenDirection(action.functionName,action.direction,action.sourceNodeName,action.targetNodeName,FUNC);
         return state;
 
@@ -312,21 +311,37 @@ function removeLanguageElementInGivenDirection(elementName,direction,sourceNodeN
   removeLanguageElement(elementName, type===PRED?2:1, nodeNames, type);
 }
 
-function addTupleLanguageElement(elementName,newValue,sourceNodeName,targetNodeName,type){
+function addTupleLanguageElement(elementName,newValue,nodeNames,type){
   let elemName = elementName+"/2";
   let newElemValue = "";
-
   let structureInterpretationSet = type === PRED?structure.iPredicate:structure.iFunction;
 
   if(structureInterpretationSet.has(elemName)){
     for(let parsedArrayOfLanguageElements of structureInterpretationSet.get(elemName)){
-      if((parsedArrayOfLanguageElements[0]!==sourceNodeName || parsedArrayOfLanguageElements[1]!==targetNodeName) && (parsedArrayOfLanguageElements[0]!==targetNodeName || parsedArrayOfLanguageElements[1]!==sourceNodeName)){
+      if(nodeNames.join(",")!==parsedArrayOfLanguageElements.join(",")){
         newElemValue += "("+parsedArrayOfLanguageElements[0]+", "+parsedArrayOfLanguageElements[1]+"), ";
       }
     }
   }
   newElemValue += newValue;
   return newElemValue;
+}
+
+function addUnaryFunction(elementName,newValue,keyNodeNames,value) {
+  let elemName = elementName + "/1";
+  let newElemValue = "";
+
+  if (structure.iFunction.has(elemName)) {
+    let structureInterpretationSet = structure.iFunction.get(elemName);
+    for (let key in structureInterpretationSet) {
+      console.log(key[0]);
+      if (structureInterpretationSet.hasOwnProperty(key) && key !== JSON.stringify(keyNodeNames) && structureInterpretationSet[key]!==value) {
+        //newElemValue += "(" + parsedArrayOfLanguageElements[0] + ", " + parsedArrayOfLanguageElements[1] + "), ";
+      }
+    }
+  }
+    newElemValue += newValue;
+    return newElemValue;
 }
 
 function changePredicatesValues(oldNodeName,newNodeName) {
@@ -392,11 +407,11 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
       elementValue = addUnaryPredicate(elementName,nodeNames[0]);
     }
     else{
-      elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction),nodeNames[0],nodeNames[1],FUNC);
+      elementValue = addUnaryFunction(elementName,buildTupleValue(nodeNames,direction),nodeNames[0],nodeNames[1]);
     }
   }
   else if(elementArity === 2){
-    elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction),nodeNames[0],nodeNames[1],PRED);
+    elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction),nodeNames,PRED);
   }
 
   let elemState = type === PRED?state.predicates:state.functions;
@@ -420,8 +435,6 @@ function removeLanguageElement(elementName,elementArity,nodeNames,type){
 }
 
 function removeUnaryFunction(elementName,sourceNodeName,targetNodeName){
-  console.log(structure);
-  console.log(state);
 }
 
 function removeUnaryPredicate(predicateName,removeNodeName){
@@ -580,7 +593,6 @@ function removePredicateValue(predicateName, tuple) {
 }
 
 function setFunctionValue(functionName) {
-
   if (!state.functions[functionName] || !state.functions[functionName].parsed) {
     return;
   }

@@ -115,26 +115,22 @@ class Language {
   }
 
   hasPredicate(predicateName) {
-    let splited = predicateName.split('/');
-    if (splited.length !== 2) {
-      return this.predicates.has(splited[0]);
-
-    }
-    if (isNaN(parseInt(splited[1]))) {
-      return false;
-    }
-    return this.predicates.has(splited[0]) && this.predicates.get(splited[0]) === splited[1];
+    return this.hasInSet(predicateName,this.predicates);
   }
 
   hasFunction(functionName) {
-    let splited = functionName.split('/');
+    return this.hasInSet(functionName,this.functions);
+  }
+
+  hasInSet(elementName,givenSet){
+    let splited = elementName.split('/');
     if (splited.length !== 2) {
-      return this.functions.has(splited[0]);
+      return givenSet.has(splited[0]);
     }
     if (isNaN(parseInt(splited[1]))) {
       return false;
     }
-    return this.functions.has(splited[0]) && this.functions.get(splited[0]) === splited[1];
+    return givenSet.has(splited[0]) && givenSet.get(splited[0]).toString() === splited[1].toString();
   }
 
   /**

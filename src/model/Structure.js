@@ -173,22 +173,18 @@ class Structure {
    */
   setFunctionValue(functionName, params, value) {
     let fn = functionName.split('/')[0];
-    console.log(params);
     let stringifiedParams = JSON.stringify(params);
     if (params.length !== this.language.getFunction(fn)) {
       throw `Počet parametrov ${params} nezodpovedá arite funkcie`;
     }
-    let illegalItems = [...params, value].filter(item => !this.domain.has(item)); // prvky ktore nie su v domene
+    let illegalItems = [...params, value].filter(item => !this.domain.has(item));
     if (illegalItems.length > 0) {
       throw `Prvok ${illegalItems[0]} nie je v doméne štruktúry`;
     }
     if (!this.iFunction.has(functionName)) {
       this.iFunction.set(functionName, {});
     }
-    console.log("strugnifiedParams",stringifiedParams);
-    console.log("value",value);
     this.iFunction.get(functionName)[stringifiedParams] = value;
-    console.log(this.iFunction);
   }
 
   /**

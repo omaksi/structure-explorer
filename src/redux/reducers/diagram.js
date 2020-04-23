@@ -237,7 +237,6 @@ function clearCertainNodeState(nodeState){
 }
 
 function syncPredicates(values) {
-  console.log(values);
   let predicatesInterpretationMap = values.structureObject.iPredicate;
   let portMap = new Map([["1",new Map()],["2",new Map()],["3",new Map()],["4",new Map()]]);
 
@@ -289,10 +288,8 @@ function syncUnaryPredicates(portMap,domainState) {
 }
 
 function createBinaryLinks(portMap,existingLinksCombination,diagramState){
-  console.log("here",portMap);
   let linksToChange = new Set();
   for(let combination of portMap.keys()){
-    console.log("added");
     let firstComb = combination.split(",")[0];
     let secondComb = combination.split(",")[1];
     let reversedComb = combination.split(",")[1]+","+combination.split(",")[0];

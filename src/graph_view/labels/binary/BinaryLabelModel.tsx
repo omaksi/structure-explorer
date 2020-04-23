@@ -74,7 +74,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	}
 
 	clearFunctions(){
-		this.getPredicates().clear();
+		this.getFunctions().clear();
 	}
 
 
@@ -187,7 +187,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	//f - from => means it goes from this node to another (so this node is first parameter)
 	//t - to => means it goes to this node from another (so this node is second parameter)
 	changeDirectionOfBinaryRelation(name:string,currentDirection:string,type:string){
-		let givenSet = type === PREDICATE?this.predicates:this.functions;
+		let givenSet = type === PREDICATE?this.getPredicates():this.getFunctions();
 		if(currentDirection === BOTH){
 			givenSet.set(name,FROM);
 		}
@@ -199,7 +199,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		}
 		this.increaseChangeCounter();
 		// @ts-ignore
-		this.getReduxProps()["changeDirectionOfBinaryRelation"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name),type);
+		this.getReduxProps()["changeDirectionOfBinaryRelation"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),givenSet.get(name),type);
 	}
 
 	changeEditableState(value:boolean){

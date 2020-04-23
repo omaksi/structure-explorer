@@ -81,53 +81,53 @@ function structureReducer(s, action, struct) {
       return state;
 
     case SET_CONSTANT_VALUE_FROM_LINK:
-      setConstantValue(action.constantNodeName,action.domainNodeName);
+      setConstantValue(action.constantNodeName, action.domainNodeName);
       return state;
 
     case RENAME_CONSTANT_NODE:
       let newStateConstantObject = Object.keys(state.constants).map(key => {
-        let newKey = key === action.oldName?action.newName:key;
-        return { [newKey]: state.constants[key]}
+        let newKey = key === action.oldName ? action.newName : key;
+        return {[newKey]: state.constants[key]}
       });
 
-      state.constants = Object.assign({},...newStateConstantObject);
-      structure.iConstant.set(action.newName,state.constants[action.newName]);
+      state.constants = Object.assign({}, ...newStateConstantObject);
+      structure.iConstant.set(action.newName, state.constants[action.newName]);
       syncLanguageWithStructure();
       return state;
 
     case ADD_UNARY_PREDICATE:
-      addLanguageElement(action.predicateName,1,[action.nodeName],PRED);
+      addLanguageElement(action.predicateName, 1, [action.nodeName], PRED);
       return state;
 
     case ADD_BINARY_PREDICATE:
-      addLanguageElement(action.predicateName,2, [action.sourceNodeName,action.targetNodeName],PRED,BOTH);
+      addLanguageElement(action.predicateName, 2, [action.sourceNodeName, action.targetNodeName], PRED, BOTH);
       return state;
 
     case REMOVE_UNARY_PREDICATE:
-      removeLanguageElement(action.predicateName,1,[action.nodeName],PRED);
+      removeLanguageElement(action.predicateName, 1, [action.nodeName], PRED);
       return state;
 
     case REMOVE_BINARY_PREDICATE:
-      removeLanguageElementInGivenDirection(action.predicateName,action.direction,action.sourceNodeName,action.targetNodeName,PRED);
+      removeLanguageElementInGivenDirection(action.predicateName, action.direction, action.sourceNodeName, action.targetNodeName, PRED);
       return state;
 
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
-      if(action.direction === FROM){
-        removeLanguageElement(action.languageElementName,2,[action.targetNodeName,action.sourceNodeName],action.langType);
+      let arity = action.langType === PRED?2:1;
+      if (action.direction === FROM) {
+        removeLanguageElement(action.languageElementName, arity, [action.targetNodeName, action.sourceNodeName], action.langType);
+      } else if (action.direction === TO) {
+        removeLanguageElement(action.languageElementName, arity, [action.sourceNodeName, action.targetNodeName], action.langType);
       }
-      else if(action.direction === TO){
-        removeLanguageElement(action.languageElementName,2,[action.sourceNodeName,action.targetNodeName],action.langType);
-      }
-      addLanguageElement(action.languageElementName,2,[action.sourceNodeName,action.targetNodeName],action.langType,action.direction);
+      addLanguageElement(action.languageElementName, arity, [action.sourceNodeName, action.targetNodeName], action.langType, action.direction);
       return state;
 
     case ADD_UNARY_FUNCTION:
-      addLanguageElement(action.functionName,1,[action.sourceNodeName, action.targetNodeName],FUNC,action.direction);
+      addLanguageElement(action.functionName, 1, [action.sourceNodeName, action.targetNodeName], FUNC, action.direction);
       return state;
 
-      case REMOVE_UNARY_FUNCTION:
-        removeLanguageElementInGivenDirection(action.functionName,action.direction,action.sourceNodeName,action.targetNodeName,FUNC);
-        return state;
+    case REMOVE_UNARY_FUNCTION:
+      removeLanguageElementInGivenDirection(action.functionName, action.direction, action.sourceNodeName, action.targetNodeName, FUNC);
+      return state;
 
     case SET_CONSTANT_VALUE:
       setConstantValue(action.constantName, action.value);
@@ -172,12 +172,11 @@ function structureReducer(s, action, struct) {
       syncLanguageWithStructure();
       let newDomainVal = "";
 
-      for(let nodeName of structure.domain){
-        if(nodeName===action.oldName){
-          newDomainVal+=action.newName+", ";
-        }
-        else{
-          newDomainVal+=nodeName+", ";
+      for (let nodeName of structure.domain) {
+        if (nodeName === action.oldName) {
+          newDomainVal += action.newName + ", ";
+        } else {
+          newDomainVal += nodeName + ", ";
         }
       }
       newDomainVal = newDomainVal.substring(0, newDomainVal.length - 2);
@@ -186,13 +185,13 @@ function structureReducer(s, action, struct) {
       setDomain();
 
       Object.keys(state.constants).forEach(c => {
-        if(state.constants[c].value === action.oldName){
+        if (state.constants[c].value === action.oldName) {
           state.constants[c].value = action.newName;
         }
       });
       setConstantsValues();
 
-      changePredicatesValues(action.oldName,action.newName);
+      changePredicatesValues(action.oldName, action.newName);
       rebuildPredicatesValuesFromParsedInterpretation();
 
       /*setFunctionsValues();
@@ -202,31 +201,31 @@ function structureReducer(s, action, struct) {
     case ADD_DOMAIN_NODE:
       let domainState = Array.from(structure.domain).join(", ");
 
-      if(domainState.length !== 0){
-        domainState+=", ";
+      if (domainState.length !== 0) {
+        domainState += ", ";
       }
-      domainState+=action.nodeName;
+      domainState += action.nodeName;
 
       functions.parseText(domainState, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
       return state;
 
     case REMOVE_DOMAIN_NODE:
-     let newDomainValue = "";
+      let newDomainValue = "";
 
-      for(let domainElement of structure.domain.keys()){
-        if(domainElement!==action.nodeName){
-          newDomainValue+=domainElement+", ";
+      for (let domainElement of structure.domain.keys()) {
+        if (domainElement !== action.nodeName) {
+          newDomainValue += domainElement + ", ";
         }
       }
-      newDomainValue = newDomainValue.substring(0,newDomainValue.length - 2);
+      newDomainValue = newDomainValue.substring(0, newDomainValue.length - 2);
 
       functions.parseText(newDomainValue, state.domain, {startRule: RULE_DOMAIN});
       setDomain();
 
       //toto mozem pretoze tu nie je input okno takze toto sa "neda" pokazit takym sposobom
       Object.keys(structure.domain).forEach(c => {
-        if(state.constants[c].value === action.oldName){
+        if (state.constants[c].value === action.oldName) {
           state.constants[c].value = "";
         }
       });
@@ -318,7 +317,8 @@ function addTupleLanguageElement(elementName,newValue,nodeNames,type){
 
   if(structureInterpretationSet.has(elemName)){
     for(let parsedArrayOfLanguageElements of structureInterpretationSet.get(elemName)){
-      if(nodeNames.join(",")!==parsedArrayOfLanguageElements.join(",")){
+      let joinedNodeNames = nodeNames.join(",");
+      if(joinedNodeNames!==parsedArrayOfLanguageElements.join(",") && joinedNodeNames!==(parsedArrayOfLanguageElements[1]+","+parsedArrayOfLanguageElements[0])){
         newElemValue += "("+parsedArrayOfLanguageElements[0]+", "+parsedArrayOfLanguageElements[1]+"), ";
       }
     }
@@ -327,21 +327,48 @@ function addTupleLanguageElement(elementName,newValue,nodeNames,type){
   return newElemValue;
 }
 
-function addUnaryFunction(elementName,newValue,keyNodeNames,value) {
+function buildPreviousFunctionValuesWithoutCurrentValue(elementName,nodeNames,direction=BOTH){
   let elemName = elementName + "/1";
   let newElemValue = "";
 
   if (structure.iFunction.has(elemName)) {
-    let structureInterpretationSet = structure.iFunction.get(elemName);
-    for (let key in structureInterpretationSet) {
-      console.log(key[0]);
-      if (structureInterpretationSet.hasOwnProperty(key) && key !== JSON.stringify(keyNodeNames) && structureInterpretationSet[key]!==value) {
-        //newElemValue += "(" + parsedArrayOfLanguageElements[0] + ", " + parsedArrayOfLanguageElements[1] + "), ";
+    let structureInterpretationObject = structure.iFunction.get(elemName);
+    let joinedNodeNames = nodeNames.join(", ");
+
+    for (let key in structureInterpretationObject) {
+      if (structureInterpretationObject.hasOwnProperty(key)){
+        //attention - whitespace
+        let keyNodeNamesParsed = JSON.parse(key).join(", ")+(", "+structureInterpretationObject[key]);
+        if(keyNodeNamesParsed!== joinedNodeNames){
+          newElemValue+= addUnaryFuncValueBasedOnCondition(key,structureInterpretationObject,joinedNodeNames,direction)
+        }
       }
     }
   }
-    newElemValue += newValue;
-    return newElemValue;
+  return newElemValue;
+}
+
+function addUnaryFuncValueBasedOnCondition(key,structureInterpretationObject,joinedNodeNames,direction){
+  let parsedArray = JSON.parse(key);
+  let keyNodeNamesParsed = parsedArray[0]+", "+structureInterpretationObject[key];
+
+  if(keyNodeNamesParsed !== joinedNodeNames){
+    if(direction === BOTH && (structureInterpretationObject[key]+", "+parsedArray[0]) === joinedNodeNames){
+      return "";
+    }
+    else{
+      return "("+keyNodeNamesParsed+"), ";
+    }
+  }
+}
+
+function addUnaryFunction(elementName,newValue,nodeNames) {
+  return buildPreviousFunctionValuesWithoutCurrentValue(elementName,nodeNames)+newValue;
+}
+
+function removeUnaryFunction(elementName,nodeNames){
+  let newElemValue = buildPreviousFunctionValuesWithoutCurrentValue(elementName,nodeNames,FROM);
+  return newElemValue.substring(0,newElemValue.length-2);
 }
 
 function changePredicatesValues(oldNodeName,newNodeName) {
@@ -407,7 +434,7 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
       elementValue = addUnaryPredicate(elementName,nodeNames[0]);
     }
     else{
-      elementValue = addUnaryFunction(elementName,buildTupleValue(nodeNames,direction),nodeNames[0],nodeNames[1]);
+      elementValue = addUnaryFunction(elementName,buildTupleValue(nodeNames,direction),nodeNames);
     }
   }
   else if(elementArity === 2){
@@ -424,7 +451,7 @@ function removeLanguageElement(elementName,elementArity,nodeNames,type){
   let newElementInterpretationValue = "";
 
   if(elementArity === 1){
-    newElementInterpretationValue = type===PRED?removeUnaryPredicate(elementName,nodeNames[0]):removeUnaryFunction(elementName,nodeNames[0],nodeNames[1],FUNC);
+    newElementInterpretationValue = type===PRED?removeUnaryPredicate(elementName,nodeNames[0]):removeUnaryFunction(elementName,nodeNames);
   }
   else if(elementArity === 2){
     newElementInterpretationValue = removeBinaryPredicate(elementName,nodeNames[0],nodeNames[1],PRED);
@@ -432,9 +459,6 @@ function removeLanguageElement(elementName,elementArity,nodeNames,type){
 
   functions.parseText(newElementInterpretationValue,type===PRED?state.predicates[elementNameWithArity]:state.functions[elementNameWithArity],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
   type===PRED?setPredicateValue(elementNameWithArity):setFunctionValue(elementNameWithArity);
-}
-
-function removeUnaryFunction(elementName,sourceNodeName,targetNodeName){
 }
 
 function removeUnaryPredicate(predicateName,removeNodeName){

@@ -6,7 +6,7 @@ import {
   LOCK_CONSTANTS,
   LOCK_FUNCTIONS,
   LOCK_PREDICATES,
-  REMOVE_CONSTANT_NODE, REMOVE_DOMAIN_NODE, REMOVE_UNARY_FUNCTION,
+  REMOVE_CONSTANT_NODE, REMOVE_DOMAIN_NODE,
   RENAME_CONSTANT_NODE, RENAME_DOMAIN_NODE,
   SET_CONSTANTS,
   SET_FUNCTIONS,
@@ -63,8 +63,6 @@ function languageReducer(s, action, struct) {
       return state;
     case ADD_UNARY_FUNCTION:
       addLanguageElement(action.functionName,1,FUNC);
-      return state;
-    case REMOVE_UNARY_FUNCTION:
       return state;
     case ADD_CONSTANT_NODE:
       let newConstantVal = Array.from(structure.language.constants).join(", ");

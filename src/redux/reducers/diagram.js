@@ -6,7 +6,7 @@ import {
   SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES, RENAME_CONSTANT_NODE, GET_PREDICATES
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
-import {BOTH, FROM, TO, UNBINARY} from "../../graph_view/nodes/ConstantNames";
+import {BOTH, FROM, FUNCTION, PREDICATE, TO, UNBINARY} from "../../graph_view/nodes/ConstantNames";
 import {ConstantNodeModel} from "../../graph_view/nodes/constant/ConstantNodeModel";
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
@@ -35,6 +35,7 @@ function diagramReducer(state, action) {
       syncDomain(action.value);
       syncLabels(state);
       syncPredicates(action.value);
+      syncFunctions(action.value);
       syncConstants(action.value);
       return state;
     case ADD_DOMAIN_NODE:
@@ -236,29 +237,61 @@ function clearCertainNodeState(nodeState){
   nodeState.clear();
 }
 
-function syncPredicates(values) {
-  let predicatesInterpretationMap = values.structureObject.iPredicate;
-  let portMap = new Map([["1",new Map()],["2",new Map()],["3",new Map()],["4",new Map()]]);
+function syncLanguageElementType(values,type) {
+  let elementInterpretationMap = type === PREDICATE ? values.structureObject.iPredicate : values.structureObject.iFunction;
+  let portMap = new Map([["1", new Map()], ["2", new Map()], ["3", new Map()], ["4", new Map()]]);
 
-  if (predicatesInterpretationMap && predicatesInterpretationMap.size > 0) {
-    for (let [key, value] of predicatesInterpretationMap.entries()) {
+  if (elementInterpretationMap && elementInterpretationMap.size > 0) {
+    for (let [key, value] of elementInterpretationMap.entries()) {
       let keyWithoutArity = key.split('/')[0];
       let arityWithoutKey = key.split('/')[1];
-
       let portMapArity = portMap.get(arityWithoutKey);
-      for (let currentNodeValue of value) {
-          currentNodeValue = currentNodeValue.join(",");
-        if (portMapArity.has(currentNodeValue)) {
-          portMapArity.get(currentNodeValue).add(keyWithoutArity);
-        } else {
-          portMapArity.set(currentNodeValue, new Set());
-          portMapArity.get(currentNodeValue).add(keyWithoutArity);
-        }
+
+      if (type === PREDICATE) {
+        addToPredicatePortMap(portMapArity, value, keyWithoutArity);
+      } else {
+        addToFunctionPortMap(portMapArity, value, keyWithoutArity);
       }
     }
   }
+  return portMap;
+}
+
+function addToPredicatePortMap(portMapArity,value,keyWithoutArity) {
+  for (let currentNodeValue of value) {
+    currentNodeValue = currentNodeValue.join(",");
+    if (portMapArity.has(currentNodeValue)) {
+      portMapArity.get(currentNodeValue).add(keyWithoutArity);
+    } else {
+      portMapArity.set(currentNodeValue, new Set());
+      portMapArity.get(currentNodeValue).add(keyWithoutArity);
+    }
+  }
+}
+
+function addToFunctionPortMap(portMapArity,value,keyWithoutArity) {
+  for (let currentNodeValue in value) {
+    if (value.hasOwnProperty(currentNodeValue)) {
+      let currNodeValueParsed = JSON.parse(currentNodeValue).join(",") + ("," + value[currentNodeValue]);
+      if (portMapArity.has(currNodeValueParsed)) {
+        portMapArity.get(currNodeValueParsed).add(keyWithoutArity);
+      } else {
+        portMapArity.set(currNodeValueParsed, new Set());
+        portMapArity.get(currNodeValueParsed).add(keyWithoutArity);
+      }
+    }
+  }
+}
+
+function syncPredicates(values) {
+  let portMap = syncLanguageElementType(values,PREDICATE);
   syncUnaryPredicates(portMap.get("1"),values.diagramState.domainNodes);
-  syncBinaryPredicates(portMap.get("2"),values.diagramState);
+  syncBinaryLinkElement(portMap.get("2"),values.diagramState,PREDICATE);
+ }
+
+function syncFunctions(values) {
+  let portMap = syncLanguageElementType(values,FUNCTION);
+  syncBinaryLinkElement(portMap.get("1"),values.diagramState,FUNCTION);
 }
 
 function syncUnaryPredicates(portMap,domainState) {
@@ -304,42 +337,44 @@ function createBinaryLinks(portMap,existingLinksCombination,diagramState){
   return linksToChange;
 }
 
-function addPredicatesToBinaryLinks(portMap,nodeCombinationKey,reversedNodeCombinationKey,label){
+function addLanguageElementToBinaryLinks(portMap,nodeCombinationKey,reversedNodeCombinationKey,label,type){
   if(portMap.has(nodeCombinationKey)){
-    for(let predicate of portMap.get(nodeCombinationKey)){
-      label.addBinaryPredicateToSetWithDirection(predicate,FROM);
+    for(let languageElement of portMap.get(nodeCombinationKey)){
+      type === PREDICATE?label.addBinaryPredicateToSetWithDirection(languageElement,FROM):label.addUnaryFunctionToSetWithDirection(languageElement,FROM);
     }
   }
   if(portMap.has(reversedNodeCombinationKey)){
-    for(let predicate of portMap.get(reversedNodeCombinationKey)){
-      if(label.getPredicates().has(predicate)){
-        label.addBinaryPredicateToSetWithDirection(predicate,BOTH);
+    for(let languageElement of portMap.get(reversedNodeCombinationKey)){
+      let labelLanguageSet = type === PREDICATE?label.getPredicates():label.getFunctions();
+      if(labelLanguageSet.has(languageElement)){
+        type === PREDICATE?label.addBinaryPredicateToSetWithDirection(languageElement,BOTH):label.addUnaryFunctionToSetWithDirection(languageElement,BOTH);
       }
       else{
-        label.addBinaryPredicateToSetWithDirection(predicate,TO);
+        type === PREDICATE?label.addBinaryPredicateToSetWithDirection(languageElement,TO):label.addUnaryFunctionToSetWithDirection(languageElement,TO);
       }
     }
   }
 }
 
-function syncBinaryPredicates(portMap,diagramState) {
+function syncBinaryLinkElement(portMap,diagramState,type) {
   let linksToRemove = new Set();
   let existingLinksCombination = new Set();
 
   for(let link of diagramState.diagramModel.getLinks()){
     let label = link.getLabel();
     if(label){
-      let labelPredicates = label.getPredicates();
-      label.clearPredicates();
+      let labelLanguageSet = type===PREDICATE?label.getPredicates():label.getFunctions();
+
+      type === PREDICATE?label.clearPredicates():label.clearFunctions();
       let nodeCombinationKey = label.getNodeCombinationKey();
       let reversedNodeCombinationKey = label.getReversedNodeCombinationKey();
 
       existingLinksCombination.add(nodeCombinationKey);
       existingLinksCombination.add(reversedNodeCombinationKey);
 
-      addPredicatesToBinaryLinks(portMap,nodeCombinationKey,reversedNodeCombinationKey,label);
+      addLanguageElementToBinaryLinks(portMap,nodeCombinationKey,reversedNodeCombinationKey,label,type);
 
-      if(labelPredicates.size === 0){
+      if(labelLanguageSet.size === 0){
         linksToRemove.add(link);
       }
     }
@@ -347,9 +382,10 @@ function syncBinaryPredicates(portMap,diagramState) {
   let linksToChange = createBinaryLinks(portMap,existingLinksCombination,diagramState);
   for(let link of linksToChange){
     let label = link.getLabel();
-    addPredicatesToBinaryLinks(portMap,label.getNodeCombinationKey(),label.getReversedNodeCombinationKey(),label);
+    addLanguageElementToBinaryLinks(portMap,label.getNodeCombinationKey(),label.getReversedNodeCombinationKey(),label,type);
   }
-  removeLinksToRemove(linksToRemove);
+  //removeLinksToRemove(linksToRemove);
+  return linksToRemove;
 }
 
 function removeLinksToRemove(linksToRemove){

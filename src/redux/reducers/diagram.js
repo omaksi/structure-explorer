@@ -6,7 +6,7 @@ import {
   SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES, RENAME_CONSTANT_NODE, GET_PREDICATES
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
-import {BOTH, FROM, FUNCTION, PREDICATE, TO, UNBINARY} from "../../graph_view/nodes/ConstantNames";
+import {BASIC_CURVYNESS, BOTH, FROM, FUNCTION, PREDICATE, TO, UNBINARY} from "../../graph_view/nodes/ConstantNames";
 import {ConstantNodeModel} from "../../graph_view/nodes/constant/ConstantNodeModel";
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
@@ -160,7 +160,7 @@ function createLink(sourcePort,targetPort,diagramModel){
 function createLabel(linkWhereLabelShouldBeAdded){
   let label = new BinaryLinkModel({},false);
   if(linkWhereLabelShouldBeAdded.getTargetPort().getNode() === linkWhereLabelShouldBeAdded.getSourcePort().getNode()){
-    label.setCurvyness(135);
+    label.setCurvyness(BASIC_CURVYNESS);
   }
   linkWhereLabelShouldBeAdded.addLabel(label);
 }
@@ -329,7 +329,12 @@ function createBinaryLinks(portMap,existingLinksCombination,diagramState){
     if(!existingLinksCombination.has(combination) && !existingLinksCombination.has(reversedComb)){
       let sourcePort = diagramState.domainNodes.get(firstComb).getMainPort();
       let targetPort = diagramState.domainNodes.get(secondComb).getMainPort();
-      linksToChange.add(createLink(sourcePort,targetPort,diagramState.diagramModel));
+      if(sourcePort === targetPort){
+        linksToChange.add(createLink(sourcePort,sourcePort.getNode().getAppendPort(),diagramState.diagramModel));
+      }
+      else{
+        linksToChange.add(createLink(sourcePort,targetPort,diagramState.diagramModel));
+      }
       existingLinksCombination.add(combination);
       existingLinksCombination.add(reversedComb);
     }

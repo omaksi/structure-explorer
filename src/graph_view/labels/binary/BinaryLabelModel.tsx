@@ -83,6 +83,10 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 			// @ts-ignore
 			this.getReduxProps()["removeBinaryPredicate"](predicateName, this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),direction);
 		}
+		for(let [functionName,direction] of this.functions.entries()){
+			// @ts-ignore
+			this.getReduxProps()["removeUnaryFunction"](functionName, this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),direction);
+		}
 	}
 
 	setLabel(label: string) {

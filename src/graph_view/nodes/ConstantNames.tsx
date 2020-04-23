@@ -16,3 +16,4 @@ export const FROM:string = "F";
 export const TO:string = "T";
 export const PREDICATE:string ="P";
 export const FUNCTION:string = "F";
+export const BASIC_CURVYNESS:number = 85;

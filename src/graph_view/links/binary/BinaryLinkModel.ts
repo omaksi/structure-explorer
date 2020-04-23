@@ -12,6 +12,7 @@ import {BinaryLabelModel} from "../../labels/binary/BinaryLabelModel";
 import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
 import {ConstantNodeModel} from "../../nodes/constant/ConstantNodeModel";
 import {ConstantPortModel} from "../../nodes/constant/ConstantPortModel";
+import {BASIC_CURVYNESS} from "../../nodes/ConstantNames";
 
 export interface BinaryLinkModelListener extends LinkModelListener {
 	// @ts-ignore
@@ -68,7 +69,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 
 				if (sourceNode instanceof UnBinaryNodeModel && targetNode instanceof UnBinaryNodeModel) {
 					if(sourceNode === targetNode) {
-						link.getOptions().curvyness = 135;
+						link.getOptions().curvyness = BASIC_CURVYNESS;
 						}
 					link.label = new BinaryLabelModel({},sourceNode.getOptions().reduxProps,sourceNode.getNodeName()+" - "+targetNode.getNodeName());
 					link.addLabel(link.label);

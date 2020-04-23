@@ -1,4 +1,5 @@
-import { LinkModel, PortModel, DefaultLinkModel, PortModelAlignment } from '@projectstorm/react-diagrams';
+import { LinkModel, PortModel, PortModelAlignment } from '@projectstorm/react-diagrams';
+import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
 
 export class TernaryPortModel extends PortModel {
 	constructor(alignment: PortModelAlignment) {
@@ -10,6 +11,6 @@ export class TernaryPortModel extends PortModel {
 	}
 
 	createLinkModel(): LinkModel {
-		return new DefaultLinkModel();
+		return new BinaryLinkModel();
 	}
 }

@@ -104,39 +104,30 @@ function structureReducer(s, action, struct) {
       return state;
 
     case REMOVE_UNARY_PREDICATE:
-      removePredicate(action.predicateName,1,[action.nodeName]);
+      removeLanguageElement(action.predicateName,1,[action.nodeName],PRED);
       return state;
 
     case REMOVE_BINARY_PREDICATE:
-      if(action.direction === FROM){
-        removePredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName]);
-      }
-      else if(action.direction === TO){
-        removePredicate(action.predicateName,2,[action.targetNodeName,action.sourceNodeName]);
-      }
-      else{
-        removePredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName]);
-        removePredicate(action.predicateName,2,[action.targetNodeName,action.sourceNodeName]);
-      }
+      removeLanguageElementInGivenDirection(action.predicateName,action.direction,action.sourceNodeName,action.targetNodeName,PRED);
       return state;
 
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
       if(action.direction === FROM){
-        removePredicate(action.predicateName,2,[action.targetNodeName,action.sourceNodeName]);
+        removeLanguageElement(action.languageElementName,2,[action.targetNodeName,action.sourceNodeName],action.langType);
       }
       else if(action.direction === TO){
-        removePredicate(action.predicateName,2,[action.sourceNodeName,action.targetNodeName]);
+        removeLanguageElement(action.languageElementName,2,[action.sourceNodeName,action.targetNodeName],action.langType);
       }
-      addLanguageElement(action.predicateName,2,[action.sourceNodeName,action.targetNodeName],PRED,action.direction);
+      addLanguageElement(action.languageElementName,2,[action.sourceNodeName,action.targetNodeName],action.langType,action.direction);
       return state;
 
     case ADD_UNARY_FUNCTION:
-      console.log(action.direction);
       addLanguageElement(action.functionName,1,[action.sourceNodeName, action.targetNodeName],FUNC,action.direction);
       return state;
 
       case REMOVE_UNARY_FUNCTION:
-
+        console.log("name",action.sourceNodeName,action.functionName,action.targetNodeName,action.direction);
+        removeLanguageElementInGivenDirection(action.functionName,action.direction,action.sourceNodeName,action.targetNodeName,FUNC);
         return state;
 
     case SET_CONSTANT_VALUE:
@@ -310,6 +301,17 @@ function addUnaryPredicate(predicateName,nodeName){
   return newPredValue;
 }
 
+function removeLanguageElementInGivenDirection(elementName,direction,sourceNodeName,targetNodeName,type) {
+  let nodeNames = [sourceNodeName, targetNodeName]; //FROM direction
+
+  if (direction === TO) {
+    nodeNames = [targetNodeName,sourceNodeName];
+  } else {
+    removeLanguageElement(elementName, type===PRED?2:1, [targetNodeName, sourceNodeName], type); //deleting BOTH direction, starting with TO direction
+  }
+  removeLanguageElement(elementName, type===PRED?2:1, nodeNames, type);
+}
+
 function addTupleLanguageElement(elementName,newValue,sourceNodeName,targetNodeName,type){
   let elemName = elementName+"/2";
   let newElemValue = "";
@@ -390,7 +392,6 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
       elementValue = addUnaryPredicate(elementName,nodeNames[0]);
     }
     else{
-      console.log("smer",direction);
       elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction),nodeNames[0],nodeNames[1],FUNC);
     }
   }
@@ -403,19 +404,24 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
   type === PRED?setPredicateValue(languageElementNameWithArity):setFunctionValue(languageElementNameWithArity);
 }
 
-function removePredicate(predicateName,predicateArity,nodeNames){
-  let predicateNameWithArity = predicateName+"/"+predicateArity;
-  let newPredInterpretationValue = "";
+function removeLanguageElement(elementName,elementArity,nodeNames,type){
+  let elementNameWithArity = elementName+"/"+elementArity;
+  let newElementInterpretationValue = "";
 
-  if(predicateArity === 1){
-    newPredInterpretationValue = removeUnaryPredicate(predicateName,nodeNames[0]);
+  if(elementArity === 1){
+    newElementInterpretationValue = type===PRED?removeUnaryPredicate(elementName,nodeNames[0]):removeUnaryFunction(elementName,nodeNames[0],nodeNames[1],FUNC);
   }
-  else if(predicateArity === 2){
-    newPredInterpretationValue = removeBinaryPredicate(predicateName,nodeNames[0],nodeNames[1]);
+  else if(elementArity === 2){
+    newElementInterpretationValue = removeBinaryPredicate(elementName,nodeNames[0],nodeNames[1],PRED);
   }
 
-  functions.parseText(newPredInterpretationValue,state.predicates[predicateNameWithArity],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
-  setPredicateValue(predicateNameWithArity);
+  functions.parseText(newElementInterpretationValue,type===PRED?state.predicates[elementNameWithArity]:state.functions[elementNameWithArity],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
+  type===PRED?setPredicateValue(elementNameWithArity):setFunctionValue(elementNameWithArity);
+}
+
+function removeUnaryFunction(elementName,sourceNodeName,targetNodeName){
+  console.log(structure);
+  console.log(state);
 }
 
 function removeUnaryPredicate(predicateName,removeNodeName){
@@ -574,6 +580,7 @@ function removePredicateValue(predicateName, tuple) {
 }
 
 function setFunctionValue(functionName) {
+
   if (!state.functions[functionName] || !state.functions[functionName].parsed) {
     return;
   }

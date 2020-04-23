@@ -128,7 +128,7 @@ export interface BodyWidgetProps {
 		if (clicked) {
 			let canvasWidth = diagramEngine.getCanvas().clientWidth;
 			let canvasHeight = diagramEngine.getCanvas().clientHeight;
-			point = {x: Math.random()*(canvasWidth-canvasWidth*0.1)+canvasWidth*0.05, y: Math.random()*(canvasHeight-canvasHeight*0.2)+canvasHeight*0.05};
+			point = {x: Math.random()*(canvasWidth-canvasWidth*0.2)+canvasWidth*0.05, y: Math.random()*(canvasHeight-canvasHeight*0.2)+canvasHeight*0.05};
 		} else {
 			point = diagramEngine.getRelativeMousePoint(event);
 		}
@@ -137,8 +137,6 @@ export interface BodyWidgetProps {
 		diagramEngine.getModel().addNode(node);
 		element.forceUpdate();
 	}
-
-
 
 export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	body: any;

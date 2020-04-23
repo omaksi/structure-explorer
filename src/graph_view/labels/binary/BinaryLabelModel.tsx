@@ -168,17 +168,17 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 
 	removeFunction(name:string){
 		if(this.functions.has(name)){
-			this.removeUnaryFunctionFromSet(name);
 			// @ts-ignore
-			this.getReduxProps()["removeUnaryFunction"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
+			this.getReduxProps()["removeUnaryFunction"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.functions.get(name));
+			this.removeUnaryFunctionFromSet(name);
 		}
 	}
 
 	removePredicate(name:string){
 		if(this.predicates.has(name)){
-			this.removeBinaryPredicateFromSet(name);
 			// @ts-ignore
 			this.getReduxProps()["removeBinaryPredicate"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
+			this.removeBinaryPredicateFromSet(name);
 		}
 	}
 
@@ -186,19 +186,20 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	//b - both
 	//f - from => means it goes from this node to another (so this node is first parameter)
 	//t - to => means it goes to this node from another (so this node is second parameter)
-	changeDirectionOfPredicate(name:string,currentDirection:string){
+	changeDirectionOfBinaryRelation(name:string,currentDirection:string,type:string){
+		let givenSet = type === PREDICATE?this.predicates:this.functions;
 		if(currentDirection === BOTH){
-			this.predicates.set(name,FROM);
+			givenSet.set(name,FROM);
 		}
 		else if(currentDirection === FROM){
-			this.predicates.set(name,TO);
+			givenSet.set(name,TO);
 		}
 		else{
-			this.predicates.set(name,BOTH);
+			givenSet.set(name,BOTH);
 		}
 		this.increaseChangeCounter();
 		// @ts-ignore
-		this.getReduxProps()["changeDirectionOfBinaryRelation"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name));
+		this.getReduxProps()["changeDirectionOfBinaryRelation"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.predicates.get(name),type);
 	}
 
 	changeEditableState(value:boolean){

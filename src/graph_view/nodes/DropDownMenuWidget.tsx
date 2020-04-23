@@ -125,7 +125,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                     {languageElement}
                 </DropDownLanguageElement>
                 <DropDownButton title={"Pridaj "+(type===PREDICATE?"predikát":"funkciu")} onClick={() =>{
-                    this.props.model.addPredicate(languageElement);
+                    type === PREDICATE?this.props.model.addPredicate(languageElement):this.props.model.addFunction(languageElement);
                     this.props.engine.repaintCanvas();
                 }}><FontAwesome name={"fas fa-plus"}/></DropDownButton>
             </DropDownRowContainer>

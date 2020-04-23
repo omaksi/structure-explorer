@@ -128,17 +128,16 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 	generateElementType = (elementObject: string,type: string) => {
 		return (
 				<ElementRowContainer key={elementObject[0]} >
-
 					{this.sourceNodeName !== this.targetNodeName?
 					<ElementButton onClick={() =>{
-						this.props.model.changeDirectionOfPredicate(elementObject[0], elementObject[1]);
+						this.props.model.changeDirectionOfBinaryRelation(elementObject[0], elementObject[1],type);
 						this.props.engine.repaintCanvas();
 					}}><FontAwesome title={"Smer "+(type===PREDICATE?"predikátu":"funkcie")} name={elementObject[1]===BOTH?'fas fa-arrows-alt-h':(elementObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></ElementButton>:null}
 				<Element title={type===PREDICATE?"Predikát":"Funkcia"}>
 					{elementObject[0]}
 				</Element>
-					<ElementButton title={"Zmazať daný "+(type===PREDICATE?"predikát":"funkcia")+" z vrcholu"} onClick={() =>{
-						this.props.model.removePredicate(elementObject[0]);
+					<ElementButton title={"Zmazať "+(type===PREDICATE?"daný predikát":"danú funkciu")+" z vrcholu"} onClick={() =>{
+						type===PREDICATE?this.props.model.removePredicate(elementObject[0]):this.props.model.removeFunction(elementObject[0]);
 						this.props.engine.repaintCanvas();
 					}}><FontAwesome name={"fas fa-trash"}/></ElementButton>
 				</ElementRowContainer>

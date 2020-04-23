@@ -116,12 +116,13 @@ export const removeBinaryPredicate = (predicateName,sourceNodeName,targetNodeNam
   direction
 });
 
-export const changeDirectionOfBinaryRelation = (predicateName,sourceNodeName,targetNodeName,direction) => ({
+export const changeDirectionOfBinaryRelation = (languageElementName,sourceNodeName,targetNodeName,direction,langType) => ({
   type: 'CHANGE_DIRECTION_OF_BINARY_RELATION',
-  predicateName,
+  languageElementName,
   sourceNodeName,
   targetNodeName,
-  direction
+  direction,
+  langType
 });
 
 

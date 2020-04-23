@@ -173,6 +173,7 @@ class Structure {
    */
   setFunctionValue(functionName, params, value) {
     let fn = functionName.split('/')[0];
+    console.log(params);
     let stringifiedParams = JSON.stringify(params);
     if (params.length !== this.language.getFunction(fn)) {
       throw `Počet parametrov ${params} nezodpovedá arite funkcie`;
@@ -184,7 +185,10 @@ class Structure {
     if (!this.iFunction.has(functionName)) {
       this.iFunction.set(functionName, {});
     }
+    console.log("strugnifiedParams",stringifiedParams);
+    console.log("value",value);
     this.iFunction.get(functionName)[stringifiedParams] = value;
+    console.log(this.iFunction);
   }
 
   /**

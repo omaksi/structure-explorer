@@ -26,7 +26,6 @@ interface UnBinaryNodeWidgetState {
 	nodeName?:string;
 	badName?:boolean;
 	isDropDownMenu?:boolean;
-	badNameForNewPredicate?:boolean;
 	inputElementTextLength?:number;
 }
 
@@ -92,8 +91,6 @@ export const PredicateButton = styled.div`
 	`;
 
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
-	_isMounted:boolean = true;
-
 	constructor(props: UnBinaryNodeWidgetProps) {
 		super(props);
 
@@ -102,22 +99,12 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			titleChanged: false,
 			nodeName: this.props.node.getOptions().name,
 			badName: false,
-			badNameForNewPredicate: false,
 			isDropDownMenu: false,
 			inputElementTextLength: 0
 		};
 		this.setBadNameState = this.setBadNameState.bind(this);
-		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
 		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
 		this.closeDropDown = this.closeDropDown.bind(this);
-	}
-
-	componentWillUnmount(): void {
-		//this._isMounted = false;
-	}
-
-	componentDidMount(): void {
-		this._isMounted = true;
 	}
 
 	componentDidUpdate(): void {
@@ -139,17 +126,11 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	};
 
 	cancelRenameNode() {
-		if(!this._isMounted){
-			return;
-		}
 		this.setState({renameActive: false, nodeName: this.props.node.getNodeName(), badName: false});
 		this.props.node.setLocked(false);
 	}
 
 	renameNode(nodeName:string) {
-		if(!this._isMounted){
-			return;
-		}
 		this.props.node.setLocked(false);
 
 		if (nodeName !== this.props.node.getNodeName()) {
@@ -170,10 +151,6 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 	setInputElementTextLength(length: number){
 		this.setState({inputElementTextLength:length});
-	}
-
-	setBadNameForNewPredicateState(bool:boolean){
-		this.setState({badNameForNewPredicate: bool});
 	}
 
 	setIsDropDownMenuAccordingBehaviour(){
@@ -222,7 +199,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 								if (this.state.isDropDownMenu) {
 									this.setState({isDropDownMenu: false});
 								}
-								if (!this.state.renameActive && this._isMounted) {
+								if (!this.state.renameActive) {
 									this.setState({renameActive: true});
 									this.props.node.setLocked(true);
 									this.props.engine.getModel().clearSelection();
@@ -286,10 +263,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				{(this.state.isDropDownMenu && this.props.node.isSelected()) ?
 					<DropDownMenuWidget widthOfInputElement={width}
 										setStateInputElementTextLength={this.setInputElementTextLength}
-										setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState}
 										model={this.props.node}
 										engine={this.props.engine} modelName={this.props.node.getNodeName()}
-										badNameForLanguageElement={this.state.badNameForNewPredicate}
 										arity={"1"}
 										closeDropDown={this.closeDropDown}/> : null
 				}

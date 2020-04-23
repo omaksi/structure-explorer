@@ -1,12 +1,25 @@
 import {FUNCTION, PREDICATE} from "./ConstantNames";
 
-export function canUsePredicateForGivenArity(predName:string,predArity:string,reduxProps:any):boolean{
-    let predicates = reduxProps["store"].getState().language.predicates.parsed;
+export function canUseNameForGivenArityAndType(predName:string,predArity:string,reduxProps:any,type:string):boolean{
+    let structureObject = reduxProps["store"].getState().structureObject.language;
 
-    if(predicates){
-        for(let predicateObject of predicates){
-            if(predicateObject.name === predName){
-                return predicateObject.arity === predArity;
+    if(structureObject.constants && structureObject.constants.has(predName)){
+        console.log("already as constant");
+        return false;
+    }
+
+    let givenSet = type === PREDICATE?structureObject.functions:structureObject.predicates;
+    if(givenSet && givenSet.has(predName)){
+        console.log("cant use");
+        return false;
+    }
+
+    let finalSet = type === PREDICATE?structureObject.predicates:structureObject.functions;
+
+    if(finalSet){
+        for(let elementObject of finalSet){
+            if(elementObject.name === predName){
+                return elementObject.arity === predArity;
             }
         }
     }
@@ -22,9 +35,9 @@ export function getAvailableLanguageElementForGivenArity(arity:string,reduxProps
             languageElementSet.add(elementValue);
         }
     }
-
     return languageElementSet;
 }
+
 
 export function getMaxLengthForGivenLanguageElementWithArity(arity:string,type:string,reduxProps:any):number{
     let maxLength = 0;

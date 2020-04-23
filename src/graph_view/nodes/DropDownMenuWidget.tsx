@@ -4,7 +4,7 @@ import * as React from 'react';
 import FontAwesome from "react-fontawesome";
 import { DiagramEngine } from "@projectstorm/react-diagrams";
 import {ADDFUNC, ADDPRED, FUNCTION, PREDICATE} from "./ConstantNames";
-import {canUsePredicateForGivenArity, getAvailableLanguageElementForGivenArity} from "./functions";
+import {canUseNameForGivenArityAndType, getAvailableLanguageElementForGivenArity} from "./functions";
 import {BinaryLabelModel} from "../labels/binary/BinaryLabelModel";
 
 export const DropDownModel = styled.div<{pointerEvents: string, cursor:string}>`
@@ -82,8 +82,6 @@ export const DropDownLanguageElement = styled.div`
 export interface DropDownMenuWidgetProps {
     model: any;
     engine: DiagramEngine;
-    badNameForLanguageElement:boolean;
-    setStateBadNameForLanguageElement:any;
     setStateInputElementTextLength:any;
     widthOfInputElement:number;
     modelName?:string;
@@ -91,27 +89,43 @@ export interface DropDownMenuWidgetProps {
     closeDropDown:any;
 }
 
-export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps> {
+interface DropDownMenuWidgetState {
+    badNameForLanguageElement:boolean;
+}
+
+export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,DropDownMenuWidgetState> {
     textInput:HTMLInputElement;
 
     constructor(props:DropDownMenuWidgetProps) {
         super(props);
         this.generatePredicateComponent = this.generatePredicateComponent.bind(this);
         this.generateFunctionComponent = this.generateFunctionComponent.bind(this);
+        this.setStateBadNameForLanguageElement = this.setStateBadNameForLanguageElement.bind(this);
+
+        this.state = {
+            badNameForLanguageElement:true
+        }
     }
 
-    checkBadElementName(elementName:string,arity:string){
+    checkBadElementName(elementName:string){
         elementName = elementName.replace(/\s/g, "");
 
         if(elementName === "" || elementName.includes(",") || elementName.includes("/") || elementName.includes("<") || elementName.includes(">")){
-            this.props.setStateBadNameForLanguageElement(true);
+            this.setStateBadNameForLanguageElement(true);
             return;
         }
-        this.props.setStateBadNameForLanguageElement(!canUsePredicateForGivenArity(elementName,arity,this.props.model.getReduxProps()));
+        else{
+            this.setStateBadNameForLanguageElement(false);
+        }
     }
 
     generatePredicateComponent(elementObject:string){
         return this.generateAvailableLanguageElement(elementObject,PREDICATE);
+    }
+
+
+    setStateBadNameForLanguageElement(bool:boolean){
+        this.setState({badNameForLanguageElement: bool});
     }
 
     generateFunctionComponent(elementObject:string){
@@ -151,17 +165,30 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
         this.props.model.getReduxProps()["focusOnBodyElement"]();
     }
 
-    addGivenInputElement(element:string){
-        if (!this.props.badNameForLanguageElement && this.textInput.value) {
-            if(element === PREDICATE){
-                this.props.model.addPredicate(this.textInput.value);
+    addGivenInputElement(type:string) {
+        if(this.textInput.value){
+            this.checkBadElementName(this.textInput.value);
+        }
+        else{
+            this.setStateBadNameForLanguageElement(true);
+        }
+
+        if (!this.state.badNameForLanguageElement) {
+            if(canUseNameForGivenArityAndType(this.textInput.value, type === PREDICATE ? this.props.arity : ((parseInt(this.props.arity) - 1).toString()), this.props.model.getReduxProps(), type)) {
+                if (!this.state.badNameForLanguageElement) {
+                    if (type === PREDICATE) {
+                        this.props.model.addPredicate(this.textInput.value);
+                    } else {
+                        this.props.model.addFunction(this.textInput.value);
+                    }
+                    this.textInput.value = "";
+                    this.setStateBadNameForLanguageElement(true);
+                    this.props.engine.repaintCanvas();
+                }
             }
             else{
-                this.props.model.addFunction(this.textInput.value);
+                this.setStateBadNameForLanguageElement(true);
             }
-            this.textInput.value = "";
-            this.props.setStateBadNameForLanguageElement(true);
-            this.props.engine.repaintCanvas();
         }
     }
 
@@ -187,7 +214,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
                                 <input onChange={(e) => {
-                                    this.checkBadElementName(e.target.value, this.props.arity);
+                                    this.checkBadElementName(e.target.value);
                                     this.props.setStateInputElementTextLength(e.target.value.length);
                                 }}
                                        ref={(input) => this.textInput = input}
@@ -210,7 +237,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps>
                                        placeholder={funcArity!==0?"Add pred/func":"Add predicate"} style={{
                                     width: (this.props.widthOfInputElement===1?2:this.props.widthOfInputElement) + "ch",
                                     height: 20 + "px",
-                                    border: this.props.badNameForLanguageElement ? "1px solid red" : "1px solid black"
+                                    border: this.state.badNameForLanguageElement ? "1px solid red" : "1px solid black"
                                 }}>
                                 </input>
                                 <DropDownButton title={"Pridaj nový predikát"} onClick={() => {

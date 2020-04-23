@@ -117,7 +117,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 			badNameForNewPredicate: false,
 			inputElementTextLength: 0
 		};
-		this.setBadNameForNewPredicateState = this.setBadNameForNewPredicateState.bind(this);
 		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
 		this.closeDropDown = this.closeDropDown.bind(this);
 		this.generateElementType = this.generateElementType.bind(this);
@@ -179,10 +178,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		this.setState({inputElementTextLength:length});
 	}
 
-	setBadNameForNewPredicateState(bool:boolean){
-		this.setState({badNameForNewPredicate: bool});
-	}
-
 	closeDropDown(){
 		this.setState({isDropDownMenu:false});
 		this.props.model.setLocked(false);
@@ -220,7 +215,7 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 									this.props.engine.getModel().clearSelection();
 									this.props.model.setSelected(true);
 									this.props.model.getParent().setSelected(true);
-									this.setState({isDropDownMenu: true, badNameForNewPredicate: true});
+									this.setState({isDropDownMenu: true});
 									this.props.engine.repaintCanvas();
 								}
 							}}
@@ -232,7 +227,6 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 				{(this.state.isDropDownMenu && this.props.model.getParent().isSelected()) ?
 					<DropDownMenuWidget model={this.props.model} engine={this.props.engine}
 										badNameForLanguageElement={this.state.badNameForNewPredicate}
-										setStateBadNameForLanguageElement={this.setBadNameForNewPredicateState}
 										setStateInputElementTextLength={this.setInputElementTextLength}
 										widthOfInputElement={width} arity={"2"} closeDropDown={this.closeDropDown}/> : null
 				}

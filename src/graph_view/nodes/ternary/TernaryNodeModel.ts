@@ -1,10 +1,8 @@
-import {PortModelAlignment } from '@projectstorm/react-diagrams';
-import {TernaryPortModel} from "./TernaryPortModel";
-import {BasicNodeModel, BasicNodeModelOptions} from "../BasicNodeModel";
+import {BaseNodeModel, BaseNodeModelOptions} from "../BaseNodeModel";
 
-export class TernaryNodeModel extends BasicNodeModel {
+export class TernaryNodeModel extends BaseNodeModel {
 
-	constructor(options?: BasicNodeModelOptions);
+	constructor(options?: BaseNodeModelOptions);
 	constructor(options: any = {}) {
 		super({
 			type: 'ternary',
@@ -13,6 +11,5 @@ export class TernaryNodeModel extends BasicNodeModel {
 	}
 
 	removeNodeFromMathView(){
-		console.log("calling this");
 	}
 }

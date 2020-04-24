@@ -109,7 +109,7 @@ export interface BodyWidgetProps {
 		}
 
 		else if (data.type === 'quaternary') {
-			node = new QuaternaryNodeModel();
+			node = new QuaternaryNodeModel({reduxProps:reduxProps,numberOfPorts:4});
 		}
 
 		else {

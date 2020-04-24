@@ -9,17 +9,17 @@ export interface DefaultPortLabelProps {
     width: number;
 }
 
-    export const PortLabel = styled.div`
+export const PortLabel = styled.div`
 		display: flex;
 		margin-top: 1px;
 		align-items: center;
 		width:100%;
-	`;
+`;
 
-    export const Label = styled.div`
+export const Label = styled.div`
 		padding: 0 5px;
 		flex-grow: 1;
-	`;
+`;
 
 export const Port = styled.div<{ width: number; height: number }>`
         font-size: 11px;

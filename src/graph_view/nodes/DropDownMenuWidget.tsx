@@ -197,8 +197,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
 
         return (
             <DropDownModel pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
-                           cursor={this.props.model.isEditable() ? "pointer" : "move"}
-            >
+                           cursor={this.props.model.isEditable() ? "pointer" : "move"}>
                 <DropDownPorts>
                     <DropDownContainer>
                         <DropDownTitleName title={"Zoznam použiteľných predikátov pre aritu "+this.props.arity}>

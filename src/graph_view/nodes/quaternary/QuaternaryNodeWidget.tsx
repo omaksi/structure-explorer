@@ -4,7 +4,7 @@ import { DiagramEngine, PortModelAlignment, PortWidget } from '@projectstorm/rea
 import styled from '@emotion/styled';
 
 export interface QuaternaryNodeWidgetProps {
-	node: QuaternaryNodeModel;
+	model: QuaternaryNodeModel;
 	engine: DiagramEngine;
 	size?: number;
 }
@@ -21,17 +21,21 @@ export interface QuaternaryNodeWidgetProps {
 		}
 	`;
 
-	export const Node = styled.div<{ size: number}>`
-			position: 'relative';
-			width: ${p => p.size};
-			height: ${p => p.size};
-			`;
+export const Node = styled.div<{ size: number, pointerEvents: string, cursor:string}>`
+	position: 'relative';
+	pointer-events: ${p => p.pointerEvents};
+	cursor: ${p => p.cursor};
+	width: ${p => p.size};
+	height: ${p => p.size};
+	`;
 
 export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetProps> {
 	render() {
 
 		return (
-			<Node size={this.props.size}>
+			<Node size={this.props.size}
+				  pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
+				  cursor={this.props.model.isEditable() ? "pointer" : "move"}>
 				<svg
 					width={this.props.size}
 					height={this.props.size}
@@ -42,7 +46,7 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
           </g>
           <g id="Layer_2">
             <polygon fill="rgb(255,255,0)" stroke="${
-							this.props.node.isSelected() ? 'rgb(0,192,255)' : '#000000'
+							this.props.model.isSelected() ? 'rgb(0,192,255)' : '#000000'
 						}" stroke-width="2.5" stroke-miterlimit="10" points="10,` +
 							this.props.size / 2 +
 							` ` +
@@ -66,7 +70,7 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 						left: -8,
 						position: 'absolute'
 					}}
-					port={this.props.node.getPort(PortModelAlignment.LEFT)}
+					port={this.props.model.getPort(PortModelAlignment.LEFT)}
 					engine={this.props.engine}>
 					<Port />
 				</PortWidget>
@@ -76,7 +80,7 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 						top: -8,
 						position: 'absolute'
 					}}
-					port={this.props.node.getPort(PortModelAlignment.TOP)}
+					port={this.props.model.getPort(PortModelAlignment.TOP)}
 					engine={this.props.engine}>
 					<Port />
 				</PortWidget>
@@ -86,7 +90,7 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 						top: this.props.size / 2 - 8,
 						position: 'absolute'
 					}}
-					port={this.props.node.getPort(PortModelAlignment.RIGHT)}
+					port={this.props.model.getPort(PortModelAlignment.RIGHT)}
 					engine={this.props.engine}>
 					<Port />
 				</PortWidget>
@@ -96,7 +100,7 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 						top: this.props.size - 8,
 						position: 'absolute'
 					}}
-					port={this.props.node.getPort(PortModelAlignment.BOTTOM)}
+					port={this.props.model.getPort(PortModelAlignment.BOTTOM)}
 					engine={this.props.engine}>
 					<Port />
 				</PortWidget>

@@ -2,10 +2,10 @@ import * as React from 'react';
 import { ConstantNodeModel } from './ConstantNodeModel';
 import {DiagramEngine, PortWidget} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
-import {CONSTANT, UNBINARY} from "../ConstantNames";
+import {CONSTANT} from "../ConstantNames";
 
 export interface ConstantNodeWidgetProps {
-	node: ConstantNodeModel;
+	model: ConstantNodeModel;
 	engine: DiagramEngine;
 	renameConstantNode:any;
 	removeConstantNode:any;
@@ -63,36 +63,35 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 		this.state = {
 			renameActive: false,
 			titleChanged: false,
-			nodeName: this.props.node.getOptions().name,
+			nodeName: this.props.model.getOptions().name,
 			badName: false
 		};
 		this.setBadNameState = this.setBadNameState.bind(this);
 	}
 
 	cancelRenameNode() {
-		this.setState({renameActive: false, nodeName: this.props.node.getNodeName(), badName: false});
-		this.props.node.setLocked(false);
+		this.setState({renameActive: false, nodeName: this.props.model.getNodeName(), badName: false});
+		this.props.model.setLocked(false);
 	}
 
 	renameNode(nodeName:string) {
-		this.props.node.setLocked(false);
+		this.props.model.setLocked(false);
 
-		if (nodeName !== this.props.node.getNodeName()) {
+		if (nodeName !== this.props.model.getNodeName()) {
 			if (!this.state.badName) {
-				this.props.renameConstantNode(this.props.node.getNodeName(),nodeName);
-				this.props.node.renameNode(nodeName);
+				this.props.renameConstantNode(this.props.model.getNodeName(),nodeName);
+				this.props.model.renameNode(nodeName);
 			} else {
-				this.setState({nodeName: this.props.node.getNodeName()});
+				this.setState({nodeName: this.props.model.getNodeName()});
 			}
 		}
-		this.setState({nodeName: this.props.node.getNodeName()});
+		this.setState({nodeName: this.props.model.getNodeName()});
 		this.setState({renameActive: false});
 		this.setState({badName: false});
 	}
 
 	getWidestElement():number{
-		let width:number = this.state.nodeName.length;
-		let minimumWidth:number = this.props.node.getNodeName().length;
+		let width:number = this.props.model.getNodeName().length;
 
 		if(this.state.renameActive){
 			return width;
@@ -110,22 +109,22 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 		return (
 			<Node
 				data-basic-node-name={this.props.name}
-				selected={this.props.node.isSelected()}
-				background={this.props.node.getOptions().color}
-				pointerEvents={this.props.node.isEditable()?"auto":"none"}
-				cursor={this.props.node.isEditable()?"pointer":"move"}
+				selected={this.props.model.isSelected()}
+				background={this.props.model.getOptions().color}
+				pointerEvents={this.props.model.isEditable()?"auto":"none"}
+				cursor={this.props.model.isEditable()?"pointer":"move"}
 			>
 				<Title>
-					<PortWidget engine={this.props.engine} port={this.props.node.getMainPort()}>
+					<PortWidget engine={this.props.engine} port={this.props.model.getMainPort()}>
 						<TitleName onDoubleClick={() => {
 							if (!this.state.renameActive) {
 								this.setState({renameActive: true});
-								this.props.node.setLocked(true);
+								this.props.model.setLocked(true);
 								this.props.engine.getModel().clearSelection();
-								this.props.node.setSelected(true);
+								this.props.model.setSelected(true);
 							}
 						}}>
-							{!this.state.renameActive ? this.props.node.getNodeName() :
+							{!this.state.renameActive ? this.props.model.getNodeName() :
 								<input autoFocus onBlur={() => {
 									let name = this.state.nodeName.replace(/\s/g, "");
 									this.renameNode(name);
@@ -149,7 +148,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 									   onChange={(e) => {
 										   this.setState({nodeName: e.target.value});
 										   let name = e.target.value.replace(/\s/g, "");
-										   this.props.checkBadName(name, this.props.node.getNodeName(), this.setBadNameState, CONSTANT);
+										   this.props.checkBadName(name, this.props.model.getNodeName(), this.setBadNameState, CONSTANT);
 									   }}/>
 							}
 						</TitleName>

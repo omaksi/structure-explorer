@@ -10,7 +10,7 @@ export class QuaternaryNodeFactory extends AbstractReactFactory<QuaternaryNodeMo
 	}
 
 	generateReactWidget(event:any): JSX.Element {
-		return <QuaternaryNodeWidget engine={this.engine} size={50} node={event.model} />;
+		return <QuaternaryNodeWidget engine={this.engine} size={50} model={event.model} />;
 	}
 
 	generateModel(event:any) {

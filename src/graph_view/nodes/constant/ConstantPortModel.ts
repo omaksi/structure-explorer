@@ -1,4 +1,4 @@
-import {LinkModel, DefaultLinkModel, PortModelAlignment, PortModel, DiagramEngine} from '@projectstorm/react-diagrams';
+import {LinkModel, PortModelAlignment, PortModel} from '@projectstorm/react-diagrams';
 import _ from "lodash";
 import {ADDPORT} from "../ConstantNames";
 import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
@@ -39,12 +39,4 @@ export class ConstantPortModel extends PortModel {
 		}
 		return true;
 	}
-
-	checkIfExists(link:LinkModel){
-		for (let existingLink of _.values(this.getLinks())) {
-			if(link.getSourcePort() === existingLink.getSourcePort() && link.getTargetPort() === existingLink.getTargetPort()){
-			}
-		}
-	}
-
 }

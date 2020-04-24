@@ -1,18 +1,15 @@
-import { NodeModel, NodeModelGenerics, PortModelAlignment } from '@projectstorm/react-diagrams';
-import { QuaternaryPortModel } from './QuaternaryPortModel';
+import {BaseNodeModel, BaseNodeModelOptions} from "../BaseNodeModel";
 
-export interface QuaternaryNodeModelGenerics {
-	PORT: QuaternaryPortModel;
-}
+export class QuaternaryNodeModel extends BaseNodeModel {
 
-export class QuaternaryNodeModel extends NodeModel<NodeModelGenerics & QuaternaryNodeModelGenerics> {
-	constructor() {
+	constructor(options?: BaseNodeModelOptions);
+	constructor(options: any = {}) {
 		super({
-			type: 'quaternary'
+			type: 'quaternary',
+			...options
 		});
-		this.addPort(new QuaternaryPortModel(PortModelAlignment.TOP));
-		this.addPort(new QuaternaryPortModel(PortModelAlignment.LEFT));
-		this.addPort(new QuaternaryPortModel(PortModelAlignment.BOTTOM));
-		this.addPort(new QuaternaryPortModel(PortModelAlignment.RIGHT));
+	}
+
+	removeNodeFromMathView(){
 	}
 }

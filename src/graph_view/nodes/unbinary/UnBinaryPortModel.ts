@@ -14,7 +14,7 @@ export class UnBinaryPortModel extends PortModel {
 	}
 
 	setPortAlignment(alignment:PortModelAlignment){
-		this.options.alignment = alignment;
+		this.getOptions().alignment = alignment;
 	}
 
 	createLinkModel(): LinkModel {

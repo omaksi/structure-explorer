@@ -10,7 +10,7 @@ export class TernaryNodeFactory extends AbstractReactFactory<TernaryNodeModel, D
 	}
 
 	generateReactWidget(event:any): JSX.Element {
-		return <TernaryNodeWidget engine={this.engine} size={50} node={event.model} />;
+		return <TernaryNodeWidget engine={this.engine} size={50} model={event.model} />;
 	}
 
 	generateModel(event:any) {

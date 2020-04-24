@@ -11,7 +11,7 @@ import {DropDownMenuWidget} from "../DropDownMenuWidget";
 import {getWidestElement} from "../functions";
 
 export interface UnBinaryNodeWidgetProps {
-	node: UnBinaryNodeModel;
+	model: UnBinaryNodeModel;
 	engine: DiagramEngine;
 	renameDomainNode:any;
 	removeDomainNode:any;
@@ -46,7 +46,7 @@ export const Node = styled.div<{ background: string; selected: boolean, pointerE
 
 export const Title = styled.div`
 		width: 100%;
-		background: rgba(256, 256, 256, 0.45);
+		background: rgba(255, 255, 255, 0.45);
 		display: flex;
 		white-space: nowrap;
 		justify-items: center;
@@ -59,13 +59,13 @@ export const TitleName = styled.div`
 		padding: 5px 5px;
 				
 		&:hover {
-			background: rgba(256, 256, 256, 0.7);
+			background: rgba(255, 255, 255, 0.7);
 		}
 	`;
 
 export const Ports = styled.div`
 		display: flex;
-		background-image: linear-gradient(rgba(256, 256, 256, 0.55), rgba(256, 256, 256, 0.65));
+		background-image: linear-gradient(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.65));
 	`;
 
 export const PortsContainer = styled.div`
@@ -97,7 +97,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.state = {
 			renameActive: false,
 			titleChanged: false,
-			nodeName: this.props.node.getOptions().name,
+			nodeName: this.props.model.getOptions().name,
 			badName: false,
 			isDropDownMenu: false,
 			inputElementTextLength: 0
@@ -118,7 +118,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					{predicate}
 				</Element>
 				<PredicateButton onClick={() =>{
-					this.props.node.removeUnaryPredicate(predicate);
+					this.props.model.removeUnaryPredicate(predicate);
 					this.props.engine.repaintCanvas();
 				}}><FontAwesome name={"fas fa-trash"}/></PredicateButton>
 			</ElementRowContainer>
@@ -126,21 +126,21 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	};
 
 	cancelRenameNode() {
-		this.setState({renameActive: false, nodeName: this.props.node.getNodeName(), badName: false});
-		this.props.node.setLocked(false);
+		this.setState({renameActive: false, nodeName: this.props.model.getNodeName(), badName: false});
+		this.props.model.setLocked(false);
 	}
 
 	renameNode(nodeName:string) {
-		this.props.node.setLocked(false);
+		this.props.model.setLocked(false);
 
-		if (nodeName !== this.props.node.getNodeName()) {
+		if (nodeName !== this.props.model.getNodeName()) {
 			if (!this.state.badName) {
-				this.props.renameDomainNode(this.props.node.getNodeName(),nodeName);
-				this.props.node.renameNode(nodeName);
+				this.props.renameDomainNode(this.props.model.getNodeName(),nodeName);
+				this.props.model.renameNode(nodeName);
 			}
 		}
 
-		this.setState({nodeName: this.props.node.getNodeName()});
+		this.setState({nodeName: this.props.model.getNodeName()});
 		this.setState({renameActive: false});
 		this.setState({badName: false});
 	}
@@ -154,16 +154,16 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 	}
 
 	setIsDropDownMenuAccordingBehaviour(){
-		if(!this.props.node.isSelected() && this.state.isDropDownMenu){
+		if(!this.props.model.isSelected() && this.state.isDropDownMenu){
 			this.setState({isDropDownMenu:false});
-			this.props.node.setLocked(false);
+			this.props.model.setLocked(false);
 		}
 	}
 
 	closeDropDown(){
 		if(this.state.isDropDownMenu){
 			this.setState({isDropDownMenu:false});
-			this.props.node.setLocked(false);
+			this.props.model.setLocked(false);
 			this.props.engine.getModel().clearSelection();
 			this.props.engine.repaintCanvas();
 		}
@@ -171,7 +171,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 
 	getWidestElement():number{
 		let width:number = this.state.nodeName.length;
-		let compareWidth:number = getWidestElement(this.state.isDropDownMenu,this.state.inputElementTextLength,this.props.node,width,"1","0");
+		let compareWidth:number = getWidestElement(this.state.isDropDownMenu,this.state.inputElementTextLength,this.props.model,width,"1","0");
 
 		if(compareWidth>width){
 			return compareWidth;
@@ -187,26 +187,26 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			<div>
 				<Node
 					data-basic-node-name={this.props.name}
-					selected={this.props.node.isSelected()}
-					background={this.props.node.getOptions().color}
-					pointerEvents={this.props.node.isEditable() ? "auto" : "none"}
-					cursor={this.props.node.isEditable() ? "pointer" : "move"}
+					selected={this.props.model.isSelected()}
+					background={this.props.model.getOptions().color}
+					pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
+					cursor={this.props.model.isEditable() ? "pointer" : "move"}
 				>
 					<Title title={"Vytvoriť novú linku ťahaním/dvojklikom premenovať názov vrcholu"}>
 						<PortWidget style={{flexGrow: 1}} engine={this.props.engine}
-									port={this.props.node.getMainPort()}>
+									port={this.props.model.getMainPort()}>
 							<TitleName onDoubleClick={() => {
 								if (this.state.isDropDownMenu) {
 									this.setState({isDropDownMenu: false});
 								}
 								if (!this.state.renameActive) {
 									this.setState({renameActive: true});
-									this.props.node.setLocked(true);
+									this.props.model.setLocked(true);
 									this.props.engine.getModel().clearSelection();
-									this.props.node.setSelected(true);
+									this.props.model.setSelected(true);
 								}
 							}}>
-								{!this.state.renameActive ? this.props.node.getNodeName() :
+								{!this.state.renameActive ? this.props.model.getNodeName() :
 									<input autoFocus onBlur={() => {
 										let name = this.state.nodeName.replace(/\s/g, "");
 										this.renameNode(name);
@@ -230,7 +230,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 										   onChange={(e) => {
 											   this.setState({nodeName: e.target.value});
 											   let name: string = e.target.value.replace(/\s/g, "");
-											   this.props.checkBadName(name, this.props.node.getNodeName(), this.setBadNameState, UNBINARY);
+											   this.props.checkBadName(name, this.props.model.getNodeName(), this.setBadNameState, UNBINARY);
 										   }}/>
 								}
 							</TitleName>
@@ -238,9 +238,9 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					</Title>
 					<Ports>
 						<PortsContainer>
-							{_.map(Array.from(this.props.node.getUnaryPredicates()), this.generatePredicate)}
+							{_.map(Array.from(this.props.model.getUnaryPredicates()), this.generatePredicate)}
 							<PortWidget style={{flexGrow: 1}} engine={this.props.engine}
-										port={this.props.node.getAppendPort()}>
+										port={this.props.model.getAppendPort()}>
 								<Port title={"Otvoriť/zatvoriť rozbaľovaciu ponuku"} onClick={() => {
 									if (this.state.isDropDownMenu) {
 										this.setState({isDropDownMenu: false});
@@ -249,22 +249,22 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 									} else {
 										this.setState({isDropDownMenu: true, badNameForNewPredicate: true});
 										this.props.engine.getModel().clearSelection();
-										this.props.node.setSelected(true);
+										this.props.model.setSelected(true);
 										this.props.engine.repaintCanvas();
 									}
 								}}
 									  height={20}
-									  width={this.props.node.getOptions().name.length * 20}>{this.state.isDropDownMenu ? ADDPORTSELECTED : ADDPORT}</Port>
+									  width={this.props.model.getOptions().name.length * 20}>{this.state.isDropDownMenu ? ADDPORTSELECTED : ADDPORT}</Port>
 							</PortWidget>
 						</PortsContainer>
 					</Ports>
 				</Node>
 
-				{(this.state.isDropDownMenu && this.props.node.isSelected()) ?
+				{(this.state.isDropDownMenu && this.props.model.isSelected()) ?
 					<DropDownMenuWidget widthOfInputElement={width}
 										setStateInputElementTextLength={this.setInputElementTextLength}
-										model={this.props.node}
-										engine={this.props.engine} modelName={this.props.node.getNodeName()}
+										model={this.props.model}
+										engine={this.props.engine} modelName={this.props.model.getNodeName()}
 										arity={"1"}
 										closeDropDown={this.closeDropDown}/> : null
 				}

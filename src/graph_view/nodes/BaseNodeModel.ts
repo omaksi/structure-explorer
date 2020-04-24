@@ -1,31 +1,30 @@
-import {TernaryPortModel} from "./ternary/TernaryPortModel";
 import {BasePositionModelOptions} from "@projectstorm/react-canvas-core";
 import {NodeModel, NodeModelGenerics, PortModelAlignment} from "@projectstorm/react-diagrams";
 import {UnBinaryPortModel} from "./unbinary/UnBinaryPortModel";
 import _ from "lodash";
 import {NaryRelationPortModel} from "./NaryRelationPortModel";
 
-export interface BasicNodeModelGenerics {
-    PORT: TernaryPortModel;
-    OPTIONS: BasicNodeModelOptions;
+export interface BaseNodeModelGenerics {
+    PORT: NaryRelationPortModel;
+    OPTIONS: BaseNodeModelOptions;
 }
 
-export interface BasicNodeModelOptions extends BasePositionModelOptions {
+export interface BaseNodeModelOptions extends BasePositionModelOptions {
     name?: string;
     color?: string;
     numberOfPorts: number;
     reduxProps:any;
 }
 
-export abstract class BasicNodeModel extends NodeModel<NodeModelGenerics & BasicNodeModelGenerics> {
+export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGenerics> {
     changeCounter: number;
     editable:boolean;
     predicates: Set<string>;
     functions: Set<string>;
     parameterPorts: Array<any>;
 
-    protected constructor(options?: BasicNodeModelOptions);
-    protected constructor(options: any = {}) {
+    constructor(options?: BaseNodeModelOptions);
+    constructor(options: any = {}) {
         super({
             ...options
         });

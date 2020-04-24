@@ -1,7 +1,7 @@
-import {LinkModel, PortModel, PortModelAlignment} from '@projectstorm/react-diagrams';
 import {BinaryLinkModel} from "../links/binary/BinaryLinkModel";
 import {ADDPORT} from "./ConstantNames";
 import {UnBinaryNodeModel} from "./unbinary/UnBinaryNodeModel";
+import { PortModelAlignment, PortModel, LinkModel } from "@projectstorm/react-diagrams";
 
 export class NaryRelationPortModel extends PortModel {
     constructor(alignment: PortModelAlignment = PortModelAlignment.LEFT) {

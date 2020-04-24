@@ -1,13 +1,11 @@
-import createEngine,{PortModelAlignment, DiagramModel, DiagramEngine, DefaultDiagramState } from '@projectstorm/react-diagrams';
+import createEngine,{DiagramModel, DiagramEngine, DefaultDiagramState } from '@projectstorm/react-diagrams';
 import {UnBinaryNodeFactory} from "./nodes/unbinary/UnBinaryNodeFactory";
 import {ConstantNodeFactory} from "./nodes/constant/ConstantNodeFactory";
 import {BinaryLabelFactory} from "./labels/binary/BinaryLabelFactory";
 import { SimplePortFactory } from './nodes/SimplePortFactory';
 import {BinaryLinkFactory} from "./links/binary/BinaryLinkFactory";
-import {QuaternaryPortModel} from "./nodes/quaternary/QuaternaryPortModel";
 import {QuaternaryNodeFactory} from "./nodes/quaternary/QuaternaryNodeFactory";
 import {TernaryNodeFactory} from "./nodes/ternary/TernaryNodeFactory";
-import {TernaryPortModel} from "./nodes/ternary/TernaryPortModel";
 import {NaryRelationPortModel} from "./nodes/NaryRelationPortModel";
 
 export class DiagramApplication {
@@ -21,8 +19,6 @@ export class DiagramApplication {
 
 		//Custom ports access
 		this.diagramEngine.getPortFactories().registerFactory(new SimplePortFactory('nary', config => new NaryRelationPortModel()));
-		this.diagramEngine.getPortFactories().registerFactory(new SimplePortFactory('quaternary', config => new QuaternaryPortModel(PortModelAlignment.LEFT)));
-		this.diagramEngine.getPortFactories().registerFactory(new SimplePortFactory('ternary', config => new TernaryPortModel(PortModelAlignment.LEFT)));
 		//Custom nodes access
 		this.diagramEngine.getNodeFactories().registerFactory(new QuaternaryNodeFactory());
 		this.diagramEngine.getNodeFactories().registerFactory(new UnBinaryNodeFactory());

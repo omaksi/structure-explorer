@@ -54,7 +54,6 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		return this.getOptions().reduxProps;
 	}
 
-
 	getPredicates(){
 		return this.unaryPredicates;
 	}
@@ -138,7 +137,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	}
 
 	getNodeName() {
-		return this.options.name;
+		return this.getOptions().name;
 	}
 
 	getAppendPort() {
@@ -146,7 +145,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	}
 
 	renameNode(name: string) {
-		this.options.name = name;
+		this.getOptions().name = name;
 	}
 
 	removePort(port: UnBinaryPortModel): void {

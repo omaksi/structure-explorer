@@ -1,7 +1,6 @@
 import {LinkModel, PortModelAlignment, PortModel} from '@projectstorm/react-diagrams';
 import _ from "lodash";
 import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
-import {UnBinaryNodeModel} from "./UnBinaryNodeModel";
 import {ADDPORT} from "../ConstantNames";
 
 

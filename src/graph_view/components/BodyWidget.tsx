@@ -105,7 +105,7 @@ export interface BodyWidgetProps {
 		}
 
 		else if(data.type === 'ternary'){
-			node = new TernaryNodeModel();
+			node = new TernaryNodeModel({reduxProps:reduxProps,numberOfPorts:3});
 		}
 
 		else if (data.type === 'quaternary') {

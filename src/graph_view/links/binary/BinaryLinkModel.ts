@@ -13,6 +13,9 @@ import {UnBinaryNodeModel} from "../../nodes/unbinary/UnBinaryNodeModel";
 import {ConstantNodeModel} from "../../nodes/constant/ConstantNodeModel";
 import {ConstantPortModel} from "../../nodes/constant/ConstantPortModel";
 import {BASIC_CURVYNESS} from "../../nodes/ConstantNames";
+import {BaseNodeModel} from "../../nodes/BaseNodeModel";
+import {TernaryNodeModel} from "../../nodes/ternary/TernaryNodeModel";
+import {QuaternaryNodeModel} from "../../nodes/quaternary/QuaternaryNodeModel";
 
 export interface BinaryLinkModelListener extends LinkModelListener {
 	// @ts-ignore
@@ -103,6 +106,19 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 						link.setCallReduxFunc(true);
 					}
 				}
+
+				else if((sourceNode instanceof UnBinaryNodeModel && (targetNode instanceof TernaryNodeModel || targetNode instanceof QuaternaryNodeModel)) || ((sourceNode instanceof TernaryNodeModel || sourceNode instanceof QuaternaryNodeModel) && targetNode instanceof UnBinaryNodeModel)){
+					let unbinaryNode: UnBinaryNodeModel = sourceNode instanceof UnBinaryNodeModel ? sourceNode : targetNode instanceof UnBinaryNodeModel ? targetNode : null;
+					let ternaryNode: TernaryNodeModel = sourceNode instanceof TernaryNodeModel? sourceNode: targetNode instanceof TernaryNodeModel? targetNode: null;
+					let quaternaryNode: QuaternaryNodeModel = sourceNode instanceof QuaternaryNodeModel? sourceNode: targetNode instanceof QuaternaryNodeModel? targetNode: null;
+
+					if(!quaternaryNode){
+
+					}
+					if(!ternaryNode){
+
+					}
+				}
 			},
 
 			entityRemoved(event:any): void {
@@ -116,7 +132,9 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 				let constantNode: ConstantNodeModel = sourceNode  instanceof ConstantNodeModel ? sourceNode : targetNode instanceof ConstantNodeModel ? targetNode : null;
 
 				if(constantNode === null){
-					link.label.remove();
+					if(link.label){
+						link.label.remove();
+					}
 					return;
 				}
 				constantNode.setConstantValueInMathView("");

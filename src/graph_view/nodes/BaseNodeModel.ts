@@ -21,7 +21,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     editable:boolean;
     predicates: Set<string>;
     functions: Set<string>;
-    parameterPorts: Array<any>;
+    parameterPorts: Map<NaryRelationPortModel,UnBinaryPortModel>;
 
     constructor(options?: BaseNodeModelOptions);
     constructor(options: any = {}) {
@@ -32,7 +32,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         this.changeCounter = 0;
         this.predicates = new Set();
         this.functions = new Set();
-        this.parameterPorts = new Array<any>(this.getNumberOfPorts());
+        this.parameterPorts = new Map<NaryRelationPortModel,UnBinaryPortModel>();
         this.editable = this.getReduxProps()["editable"];
         this.registerEvents();
         this.registerParameterPorts();
@@ -41,8 +41,24 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     registerParameterPorts(){
         let directions = [PortModelAlignment.TOP,PortModelAlignment.LEFT,PortModelAlignment.RIGHT,PortModelAlignment.BOTTOM];
         for(let i = 0;i<this.getNumberOfPorts();i++){
-            this.parameterPorts[i] = this.addPort(new NaryRelationPortModel(directions[i]));
+            this.parameterPorts.set(this.addPort(new NaryRelationPortModel(directions[i])),null);
         }
+    }
+
+    getNodeNameCombination(){
+        let value = "";
+        for(let val of this.parameterPorts.values()){
+            value+=val+",";
+        }
+        return value.substring(0,value.length-2);
+    }
+
+    removeValueFromPort(port:NaryRelationPortModel){
+        this.parameterPorts.set(port,null);
+    }
+
+    addValueToPort(port:NaryRelationPortModel,valuePort:UnBinaryPortModel){
+        this.parameterPorts.set(port,valuePort);
     }
 
     increaseChangeCounter(){

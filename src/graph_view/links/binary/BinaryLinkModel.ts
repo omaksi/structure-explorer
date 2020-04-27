@@ -117,8 +117,13 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					let previousCombination:string = naryNode.getNodeNameCombination();
 
 					removeLinkIfCondition(naryPort,link);
+					//ak bola predosla kombinacia, tu zmazeme zo struktury
 					if(naryNode && previousCombination){
+
 					}
+					//nastavme hodnotu
+					naryNode.setValueToPort(naryPort,unbinaryNode);
+					//pridajme novu ak je celistva
 				}
 			},
 
@@ -131,14 +136,23 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 				let targetNode = link.getTargetPort().getNode();
 
 				let constantNode: ConstantNodeModel = sourceNode  instanceof ConstantNodeModel ? sourceNode : targetNode instanceof ConstantNodeModel ? targetNode : null;
+				let naryNode:BaseNodeModel = (sourceNode instanceof TernaryNodeModel || sourceNode instanceof QuaternaryNodeModel)?sourceNode:(targetNode instanceof TernaryNodeModel || targetNode instanceof QuaternaryNodeModel)?targetNode:null;
 
-				if(constantNode === null){
+
+				if(constantNode){
+					constantNode.setConstantValueInMathView("");
+				}
+				else if(naryNode){
+					let naryPort:NaryRelationPortModel = targetNode === naryNode?link.getTargetPort():link.getSourcePort();
+					let previousCombination = naryNode.getNodeNameCombination();
+					naryNode.removeValueFromPort(naryPort);
+					naryNode.removePredFuncFromMathView(previousCombination);
+				}
+				else{
 					if(link.label){
 						link.label.remove();
 					}
-					return;
 				}
-				constantNode.setConstantValueInMathView("");
 			}
 		});
 	}

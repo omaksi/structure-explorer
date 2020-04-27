@@ -77,7 +77,6 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		this.getFunctions().clear();
 	}
 
-
 	removeLabelFromMathView(){
 		for(let [predicateName,direction] of this.predicates.entries()){
 			// @ts-ignore
@@ -121,7 +120,6 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 			this.getReduxProps()["addBinaryPredicate"](name, this.getParent().getSourcePort().getNode().getNodeName(), this.getParent().getTargetPort().getNode().getNodeName(), this.predicates.get(name));
 		}
 	}
-
 
 	addFunction(name:string){
 		name = name.replace(/\s/g, "");

@@ -29,7 +29,6 @@ export const ElementsNode = styled.div<{pointerEvents: string, cursor:string}>`
 		overflow: visible;
 		font-size: 12px;
 		font-weight: bold;
-
 	`;
 
 export const Element = styled.div`

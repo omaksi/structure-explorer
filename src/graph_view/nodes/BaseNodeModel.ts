@@ -3,6 +3,8 @@ import {NodeModel, NodeModelGenerics, PortModelAlignment} from "@projectstorm/re
 import {UnBinaryPortModel} from "./unbinary/UnBinaryPortModel";
 import _ from "lodash";
 import {NaryRelationPortModel} from "./NaryRelationPortModel";
+import {UnBinaryNodeModel} from "./unbinary/UnBinaryNodeModel";
+import {FUNCTION, PREDICATE} from "./ConstantNames";
 
 export interface BaseNodeModelGenerics {
     PORT: NaryRelationPortModel;
@@ -21,7 +23,8 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     editable:boolean;
     predicates: Set<string>;
     functions: Set<string>;
-    parameterPorts: Map<NaryRelationPortModel,UnBinaryPortModel>;
+    parameterPorts: Map<NaryRelationPortModel,UnBinaryNodeModel>;
+    parameterPortsArray: Array<NaryRelationPortModel>;
 
     constructor(options?: BaseNodeModelOptions);
     constructor(options: any = {}) {
@@ -32,28 +35,33 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         this.changeCounter = 0;
         this.predicates = new Set();
         this.functions = new Set();
-        this.parameterPorts = new Map<NaryRelationPortModel,UnBinaryPortModel>();
+        this.parameterPorts = new Map<NaryRelationPortModel,UnBinaryNodeModel>();
+        this.parameterPortsArray = new Array<NaryRelationPortModel>(this.getNumberOfPorts());
         this.editable = this.getReduxProps()["editable"];
         this.registerEvents();
         this.registerParameterPorts();
     }
 
     registerParameterPorts(){
-        let directions = [PortModelAlignment.TOP,PortModelAlignment.LEFT,PortModelAlignment.RIGHT,PortModelAlignment.BOTTOM];
+        let directions = [PortModelAlignment.LEFT,PortModelAlignment.RIGHT,PortModelAlignment.TOP,PortModelAlignment.BOTTOM];
         for(let i = 0;i<this.getNumberOfPorts();i++){
-            this.parameterPorts.set(this.addPort(new NaryRelationPortModel(directions[i])),null);
+            let port = this.addPort(new NaryRelationPortModel(directions[i]));
+            this.parameterPorts.set(port,null);
+            this.parameterPortsArray[i] = port;
         }
     }
 
     getNodeNameCombination(){
         let value = "";
-        for(let val of this.parameterPorts.values()){
-            if(!val){
+
+        for(let i = 0; i<this.parameterPortsArray.length;i++){
+            let portValue:UnBinaryNodeModel = this.parameterPorts.get(this.parameterPortsArray[i]);
+            if(!portValue){
                 return "";
             }
-            value+=val+",";
+            value+=portValue.getNodeName()+",";
         }
-        return value.substring(0,value.length-2);
+        return value.substring(0,value.length-1);
     }
 
     getValueOfPort(port:NaryRelationPortModel){
@@ -63,12 +71,27 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         return null;
     }
 
+    getValueNameOfPort(port:NaryRelationPortModel){
+        if(this.parameterPorts.has(port)){
+            return this.parameterPorts.get(port).getNodeName();
+        }
+        return null;
+    }
+
     removeValueFromPort(port:NaryRelationPortModel){
         this.parameterPorts.set(port,null);
     }
 
-    addValueToPort(port:NaryRelationPortModel,valuePort:UnBinaryPortModel){
-        this.parameterPorts.set(port,valuePort);
+    removePredFuncFromMathView(previousValue:string){
+        if(previousValue){
+         //remove by calling action
+        }
+    }
+
+    setValueToPort(port:NaryRelationPortModel,valueNode:UnBinaryNodeModel){
+        this.parameterPorts.set(port,valueNode);
+        console.log("new value",valueNode.getNodeName());
+        console.log(this.getNodeNameCombination());
     }
 
     increaseChangeCounter(){
@@ -114,6 +137,13 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
             changeCounter: this.changeCounter,
             editable: this.editable
         };
+    }
+
+    getPortByIndex(index:number){
+        if(index<0 || index>= this.getNumberOfPorts()){
+            return null;
+        }
+        return this.parameterPortsArray[index];
     }
 
     deserialize(event: any) {
@@ -172,10 +202,41 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     }
 
     addPredicate(name:string){
-        throw new Error("This method should be implemented in child");
+        name = name.replace(/\s/g, "");
+        if (!this.predicates.has(name)) {
+            this.addPredicateToSet(name);
+            this.addElementToMathView(name,PREDICATE);
+        }
     }
 
     addFunction(name: string) {
+        name = name.replace(/\s/g, "");
+        if (!this.functions.has(name)) {
+            this.addFunctionToSet(name);
+            this.addElementToMathView(name,FUNCTION);
+        }
+    }
+
+    removePredicate(name:string){
+        if(this.predicates.has(name)){
+            this.removeElementFromMathView(name,PREDICATE);
+        }
+        this.removePredicateFromSet(name);
+    }
+
+    removeFunction(name:string){
+        if(this.functions.has(name)){
+            this.removeElementFromMathView(name,FUNCTION);
+        }
+        this.removeFunctionFromSet(name);
+    }
+
+
+    addElementToMathView(name:string,type:string){
+        throw new Error("This method should be implemented in child");
+    }
+
+    removeElementFromMathView(name:string,type:string){
         throw new Error("This method should be implemented in child");
     }
 

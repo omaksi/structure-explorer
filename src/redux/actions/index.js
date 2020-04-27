@@ -45,12 +45,6 @@ export const syncDiagram = (value) => ({
   value
 });
 
-export const getPredicates = (set,arity) =>({
-  type:'GET_PREDICATES',
-  set,
-  arity
-});
-
 export const removeConstantNode = (nodeName) => ({
   type: 'REMOVE_CONSTANT_NODE',
   nodeName
@@ -83,6 +77,16 @@ export const addQuaternaryNode = (nodeName,nodeObject) => ({
   type: 'ADD_QUATERNARY_NODE',
   nodeName,
   nodeObject
+});
+
+export const removeTernaryNode = (nodeName) => ({
+  type: 'REMOVE_TERNARY_NODE',
+  nodeName
+});
+
+export const removeQuaternaryNode = (nodeName) => ({
+  type: 'REMOVE_QUATERNARY_NODE',
+  nodeName
 });
 
 export const addUnaryPredicate = (predicateName,nodeName) => ({

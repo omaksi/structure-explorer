@@ -13,6 +13,7 @@ import FontAwesome from "react-fontawesome";
 import {Button} from 'react-bootstrap';
 import {ConstantIcon, QuaternaryIcon, TernaryIcon, UnbinaryIcon} from "./TrayItemWidgetIcon";
 import {importDiagramState} from "../../redux/actions";
+import {CONSTANTNODE, QUATERNARYNODE, TERNARYNODE, UNBINARYNODE} from "../nodes/ConstantNames";
 
 export interface BodyWidgetProps {
 	syncDiagram:any;
@@ -63,22 +64,22 @@ export interface BodyWidgetProps {
 		let state:Map<string,object>;
 		if (nodeType === 'unbinary') {
 			state = diagramState.domainNodes;
-			name = "N";
+			name = UNBINARYNODE;
 			}
 
 		else if(nodeType === 'constant'){
 			state = diagramState.constantNodes;
-			name = "C";
+			name = CONSTANTNODE;
 		}
 
 		else if(nodeType === 'ternary'){
 			state = diagramState.ternaryNodes;
-			name = "T";
+			name = TERNARYNODE;
 		}
 
 		else{
 			state = diagramState.quaternaryNodes;
-			name = "Q";
+			name = QUATERNARYNODE;
 		}
 
 		while(state.has(name+nodeCount)){
@@ -99,21 +100,21 @@ export interface BodyWidgetProps {
 
 		let node: any;
 		if (data.type === 'unbinary') {
-			node = new UnBinaryNodeModel('N' + nodesCount, 'rgb(92,192,125)', reduxProps);
+			node = new UnBinaryNodeModel(UNBINARYNODE + nodesCount, 'rgb(92,192,125)', reduxProps);
 			reduxProps.addDomainNode(node.getOptions().name,node);
 
 		} else if (data.type === 'constant') {
-			node = new ConstantNodeModel('C' + nodesCount, 'rgb(92,192,125)', reduxProps);
+			node = new ConstantNodeModel(CONSTANTNODE + nodesCount, 'rgb(92,192,125)', reduxProps);
 			reduxProps.addConstantNode(node.getOptions().name,node);
 		}
 
 		else if(data.type === 'ternary'){
-			node = new TernaryNodeModel({reduxProps:reduxProps,numberOfPorts:3});
+			node = new TernaryNodeModel({name:TERNARYNODE+nodesCount,reduxProps:reduxProps,numberOfPorts:3});
 			reduxProps.addTernaryNode(node.getOptions().name,node);
 		}
 
 		else if (data.type === 'quaternary') {
-			node = new QuaternaryNodeModel({reduxProps:reduxProps,numberOfPorts:4});
+			node = new QuaternaryNodeModel({name:QUATERNARYNODE+nodesCount,reduxProps:reduxProps,numberOfPorts:4});
 			reduxProps.addQuaternaryNode(node.getOptions().name,node);
 		}
 
@@ -147,7 +148,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	}
 
 	componentDidMount(): void {
-		if(!this.props.diagramState.imported) {
+		if(this.props.diagramState.imported) {
 			this.props.store.dispatch(importDiagramState(this.props.store.getState()));
 		}
 		else{
@@ -173,9 +174,11 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 
 		let reduxProps = {
 			"addDomainNode": this.props.addDomainNode,
+			"addConstantNode": this.props.addConstantNode,
+			"addTernaryNode": this.props.addTernaryNode,
+			"addQuaternaryNode": this.props.addQuaternaryNode,
 			"renameDomainNode": this.props.renameDomainNode,
 			"removeDomainNode": this.props.removeDomainNode,
-			"addConstantNode": this.props.addConstantNode,
 			"renameConstantNode": this.props.renameConstantNode,
 			"removeConstantNode": this.props.removeConstantNode,
 			"checkBadName": this.props.checkBadName,

@@ -3,12 +3,11 @@ import React from 'react';
 import {Col, Row} from 'react-bootstrap';
 import {Provider} from 'react-redux';
 import ExpressionsContainer from './redux/containers/ExpressionsContainer';
-import {importAppState} from "./redux/actions";
+import {importAppState, importDiagramState} from "./redux/actions";
 import {DEFAULT_FILE_NAME} from "./constants";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
 import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
-import {Body} from "./graph_view/components/BodyWidget";
 
 interface AppProps{
   store:any;
@@ -38,16 +37,34 @@ class App extends React.Component<AppProps,AppState> {
     this.setDiagramToggledState = this.setDiagramToggledState.bind(this);
     this.setTeacherModeState = this.setTeacherModeState.bind(this);
     this.setExerciseNameState = this.setExerciseNameState.bind(this);
+    this.makeCordNodes = this.makeCordNodes.bind(this);
   }
 
+  makeCordNodes(diagramState:any){
+    let nodeState = new Map([["domainNodes", diagramState.domainNodes],["constantNodes", diagramState.constantNodes],["ternaryNodes", diagramState.ternaryNodes],["quaternaryNodes",diagramState.quaternaryNodes]]);
+    let nodesCoords:any = {};
+
+    for(let mapName of nodeState.keys()){
+      for(let [nodeName,nodeObject] of nodeState.get(mapName).entries()){
+        if(!nodesCoords.hasOwnProperty(mapName)){
+          nodesCoords[mapName] = {};
+        }
+        nodesCoords[mapName][nodeName] = {width:nodeObject.width,height:nodeObject.height};
+      }
+    }
+    return nodesCoords;
+  }
 
   exportState() {
     let state = this.props.store.getState();
+    let diagramCordState = this.makeCordNodes(state.diagramState);
+
     let json = JSON.stringify({
       common: state.common,
       language: state.language,
       structure: state.structure,
-      expressions: state.expressions
+      expressions: state.expressions,
+      diagramCordState: diagramCordState
     });
 
     return {
@@ -63,7 +80,7 @@ class App extends React.Component<AppProps,AppState> {
 
     let store = this.props.store;
     fr.onload = function (e) {
-      store.dispatch(importAppState(e.target.result));
+      store.dispatch(importAppState(e.target.result,store.getState().diagramState));
     };
     fr.readAsText(file);
   }

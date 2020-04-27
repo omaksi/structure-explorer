@@ -33,14 +33,16 @@ function checkImportedState(state:any) {
 function root(state = defaultState, action:any) {
     if (action.type === IMPORT_APP) {
         try {
+            console.log(action);
             state = JSON.parse(action.content);
             checkImportedState(state);
             state.structureObject = new Structure(new Language());
             state.structure.variables.object = new Map();
+            state.diagramState = action.diagramState;
         } catch (e) {
             console.error(e);
         }
-        state.diagramState = diagramDefaultState();
+
     }
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action, state.structureObject);

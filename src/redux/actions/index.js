@@ -73,6 +73,18 @@ export const addDomainNode = (nodeName,nodeObject) => ({
   nodeObject
 });
 
+export const addTernaryNode = (nodeName,nodeObject) => ({
+  type: 'ADD_TERNARY_NODE',
+  nodeName,
+  nodeObject
+});
+
+export const addQuaternaryNode = (nodeName,nodeObject) => ({
+  type: 'ADD_QUATERNARY_NODE',
+  nodeName,
+  nodeObject
+});
+
 export const addUnaryPredicate = (predicateName,nodeName) => ({
   type: 'ADD_UNARY_PREDICATE',
   predicateName,
@@ -267,11 +279,16 @@ export const toggleTeacherMode = () => ({
   type: 'TOGGLE_TEACHER_MODE'
 });
 
-export const importAppState = (content) => ({
+export const importAppState = (content,diagramState) => ({
   type: 'IMPORT_APP',
-  content
+  content,
+  diagramState
 });
 
+export const importDiagramState = (state) => ({
+  type: 'IMPORT_DIAGRAM_STATE',
+  state
+});
 export const toggleEditableNodes = (value) => ({
   type: 'TOGGLE_EDITABLE_NODES',
   value

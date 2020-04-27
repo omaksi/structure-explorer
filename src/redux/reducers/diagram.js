@@ -1,9 +1,17 @@
 import {
   ADD_CONSTANT_NODE,
-  ADD_DOMAIN_NODE, RENAME_DOMAIN_NODE, CHECK_BAD_NAME, REMOVE_CONSTANT_NODE,
+  ADD_DOMAIN_NODE,
+  RENAME_DOMAIN_NODE,
+  CHECK_BAD_NAME,
+  REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
-  SYNC_DIAGRAM, SYNC_MATH_STATE, TOGGLE_EDITABLE_NODES, RENAME_CONSTANT_NODE, GET_PREDICATES
+  SYNC_DIAGRAM,
+  SYNC_MATH_STATE,
+  TOGGLE_EDITABLE_NODES,
+  RENAME_CONSTANT_NODE,
+  ADD_QUATERNARY_NODE,
+  ADD_TERNARY_NODE, IMPORT_APP, IMPORT_DIAGRAM_STATE
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
 import {BASIC_CURVYNESS, BOTH, FROM, FUNCTION, PREDICATE, TO, UNBINARY} from "../../graph_view/nodes/ConstantNames";
@@ -50,6 +58,12 @@ function diagramReducer(state, action) {
     case REMOVE_CONSTANT_NODE:
       state.constantNodes.delete(action.nodeName);
       return state;
+    case ADD_TERNARY_NODE:
+      state.ternaryNodes.set(action.nodeName,action.nodeObject);
+      return state;
+    case ADD_QUATERNARY_NODE:
+      state.quaternaryNodes.set(action.nodeName,action.nodeObject);
+      return state;
     case CHECK_BAD_NAME:
       checkIfNameCanBeUsed(state, action);
       return state;
@@ -79,9 +93,43 @@ function diagramReducer(state, action) {
       }
       state.diagramEngine.repaintCanvas();
       return {...state, editableNodes: action.value};
+
+    case IMPORT_APP:
+      return {...state,diagramCordState:JSON.parse(action.content).diagramCordState,imported:true};
+
+    case IMPORT_DIAGRAM_STATE:
+      syncDomain(action.state);
+      syncLabels(state);
+      syncPredicates(action.state);
+      syncFunctions(action.state);
+      syncConstants(action.state);
+      syncNodesCords(state);
+      return {...state,imported:false};
     default:
       return state;
   }
+}
+
+function syncNodesCords(state){
+  let nodeState = new Map([["domainNodes", state.domainNodes],["constantNodes", state.constantNodes],["ternaryNodes", state.ternaryNodes],["quaternaryNodes",state.quaternaryNodes]]);
+  let diagramCordState = state.diagramCordState;
+
+  for(let mapName of nodeState.keys()){
+    for(let [nodeName,nodeObject] of nodeState.get(mapName).entries()){
+      if(diagramCordState.hasOwnProperty(mapName)){
+        if(diagramCordState[mapName].hasOwnProperty(nodeName)){
+          let cord = diagramCordState[mapName][nodeName];
+          console.log(nodeObject.position);
+          nodeObject.setPosition(cord.width,cord.height);
+          /*for(let portObject of Object.values(nodeObject.getPorts())){
+            portObject.reportPosition();
+          }*/
+          console.log(nodeObject.position);
+        }
+      }
+    }
+  }
+  state.diagramEngine.repaintCanvas();
 }
 
 function syncLabels(state){

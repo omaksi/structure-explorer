@@ -12,10 +12,13 @@ import {TernaryNodeModel} from "../nodes/ternary/TernaryNodeModel";
 import FontAwesome from "react-fontawesome";
 import {Button} from 'react-bootstrap';
 import {ConstantIcon, QuaternaryIcon, TernaryIcon, UnbinaryIcon} from "./TrayItemWidgetIcon";
+import {importDiagramState} from "../../redux/actions";
 
 export interface BodyWidgetProps {
 	syncDiagram:any;
 	addDomainNode:any;
+	addTernaryNode:any;
+	addQuaternaryNode:any;
 	renameDomainNode:any;
 	removeDomainNode:any;
 	addConstantNode:any;
@@ -106,19 +109,16 @@ export interface BodyWidgetProps {
 
 		else if(data.type === 'ternary'){
 			node = new TernaryNodeModel({reduxProps:reduxProps,numberOfPorts:3});
+			reduxProps.addTernaryNode(node.getOptions().name,node);
 		}
 
 		else if (data.type === 'quaternary') {
 			node = new QuaternaryNodeModel({reduxProps:reduxProps,numberOfPorts:4});
+			reduxProps.addQuaternaryNode(node.getOptions().name,node);
 		}
 
 		else {
-			node = new DefaultNodeModel('Node' + nodesCount, 'rgb(0,192,255)');
-			node.addOutPort('Out');
-		}
-
-		if(node === null){
-			throw new DOMException("Node cannot be null, possible leak of unknown type");
+			throw new Error("Node cannot be null, possible leak of unknown type");
 		}
 
 		let point;
@@ -147,8 +147,18 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	}
 
 	componentDidMount(): void {
-		this.props.syncDiagram(this.props);
+		if(!this.props.diagramState.imported) {
+			this.props.store.dispatch(importDiagramState(this.props.store.getState()));
+		}
+		else{
+			this.props.syncDiagram(this.props);
+		}
 		this.focusOnBodyElement();
+	}
+	componentDidUpdate(): void {
+		if(this.props.diagramState.imported){
+			this.props.store.dispatch(importDiagramState(this.props.store.getState()));
+		}
 	}
 
 	focusOnBodyElement(){

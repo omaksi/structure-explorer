@@ -16,6 +16,7 @@ import {BASIC_CURVYNESS} from "../../nodes/ConstantNames";
 import {BaseNodeModel} from "../../nodes/BaseNodeModel";
 import {TernaryNodeModel} from "../../nodes/ternary/TernaryNodeModel";
 import {QuaternaryNodeModel} from "../../nodes/quaternary/QuaternaryNodeModel";
+import {NaryRelationPortModel} from "../../nodes/NaryRelationPortModel";
 
 export interface BinaryLinkModelListener extends LinkModelListener {
 	// @ts-ignore
@@ -60,6 +61,16 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 		this.changeCounter = 0;
 		this.callReduxFunc = canCallReduxFunc;
 		let link:BinaryLinkModel = this;
+		let removeLinkIfCondition = (port:PortModel,link:LinkModel) =>{
+			let numberOfLinks: number = Object.keys(port.getLinks()).length;
+			if (numberOfLinks > 1) {
+				for (let linkObject of Object.values(port.getLinks())) {
+					if (linkObject !== link) {
+						linkObject.remove();
+					}
+				}
+			}
+		};
 		// @ts-ignore
 		this.registerListener({
 			targetPortChanged(event: BaseEntityEvent<LinkModel> & { port: PortModel | null }): void {
@@ -85,23 +96,15 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					let constantPort: ConstantPortModel = constantNode.getMainPort();
 
 					if (constantPort === null || constantPort === undefined) {
-						throw new DOMException("Constant port can not be null, probably problem in initialization");
+						throw new Error("Constant port can not be null, probably problem in initialization");
 					}
 
-					let numberOfLinks: number = Object.keys(constantPort.getLinks()).length;
-					if (numberOfLinks > 1) {
-						for (let [linkKeyName, linkObject] of Object.entries(constantPort.getLinks())) {
-							if (linkObject !== link) {
-								linkObject.remove();
-							}
-						}
-					}
+					removeLinkIfCondition(constantPort,link);
 
 					//When link is created through Redux Action, another Action would be called and error would be thrown, so if it is created with some Redux Action we will not allow this Action to be dispatched
 					if(link.isCallReduxFunc()){
 						constantNode.setConstantValueInMathView(unbinaryNode.getNodeName());
 					}
-
 					else{
 						link.setCallReduxFunc(true);
 					}
@@ -109,14 +112,12 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 
 				else if((sourceNode instanceof UnBinaryNodeModel && (targetNode instanceof TernaryNodeModel || targetNode instanceof QuaternaryNodeModel)) || ((sourceNode instanceof TernaryNodeModel || sourceNode instanceof QuaternaryNodeModel) && targetNode instanceof UnBinaryNodeModel)){
 					let unbinaryNode: UnBinaryNodeModel = sourceNode instanceof UnBinaryNodeModel ? sourceNode : targetNode instanceof UnBinaryNodeModel ? targetNode : null;
-					let ternaryNode: TernaryNodeModel = sourceNode instanceof TernaryNodeModel? sourceNode: targetNode instanceof TernaryNodeModel? targetNode: null;
-					let quaternaryNode: QuaternaryNodeModel = sourceNode instanceof QuaternaryNodeModel? sourceNode: targetNode instanceof QuaternaryNodeModel? targetNode: null;
+					let naryNode:BaseNodeModel = (sourceNode instanceof TernaryNodeModel || sourceNode instanceof QuaternaryNodeModel)?sourceNode:(targetNode instanceof TernaryNodeModel || targetNode instanceof QuaternaryNodeModel)?targetNode:null;
+					let naryPort: NaryRelationPortModel = link.getSourcePort() instanceof NaryRelationPortModel?link.getSourcePort():link.getTargetPort() instanceof NaryRelationPortModel?link.getTargetPort():null;
+					let previousCombination:string = naryNode.getNodeNameCombination();
 
-					if(!quaternaryNode){
-
-					}
-					if(!ternaryNode){
-
+					removeLinkIfCondition(naryPort,link);
+					if(naryNode && previousCombination){
 					}
 				}
 			},

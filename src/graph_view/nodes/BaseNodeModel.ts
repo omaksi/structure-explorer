@@ -48,9 +48,19 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     getNodeNameCombination(){
         let value = "";
         for(let val of this.parameterPorts.values()){
+            if(!val){
+                return "";
+            }
             value+=val+",";
         }
         return value.substring(0,value.length-2);
+    }
+
+    getValueOfPort(port:NaryRelationPortModel){
+        if(this.parameterPorts.has(port)){
+            return this.parameterPorts.get(port);
+        }
+        return null;
     }
 
     removeValueFromPort(port:NaryRelationPortModel){

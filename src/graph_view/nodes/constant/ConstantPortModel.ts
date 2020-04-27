@@ -2,6 +2,7 @@ import {LinkModel, PortModelAlignment, PortModel} from '@projectstorm/react-diag
 import _ from "lodash";
 import {ADDPORT} from "../ConstantNames";
 import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
+import {NaryRelationPortModel} from "../NaryRelationPortModel";
 
 export class ConstantPortModel extends PortModel {
 	constructor(name: string) {
@@ -25,6 +26,10 @@ export class ConstantPortModel extends PortModel {
 		}
 
 		if(port.getParent().getOptions().type==='constant') {
+			return false;
+		}
+
+		if(port instanceof NaryRelationPortModel){
 			return false;
 		}
 

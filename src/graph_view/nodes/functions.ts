@@ -6,22 +6,20 @@ export function canUseNameForGivenArityAndType(predName:string,predArity:string,
     let structureObject = reduxProps["store"].getState().structureObject.language;
 
     if(structureObject.constants && structureObject.constants.has(predName)){
-        console.log("already as constant");
         return false;
     }
 
     let givenSet = type === PREDICATE?structureObject.functions:structureObject.predicates;
     if(givenSet && givenSet.has(predName)){
-        console.log("cant use");
         return false;
     }
 
     let finalSet = type === PREDICATE?structureObject.predicates:structureObject.functions;
 
     if(finalSet){
-        for(let elementObject of finalSet){
-            if(elementObject.name === predName){
-                return elementObject.arity === predArity;
+        for(let [langaugeElementName,languageElementArity] of finalSet.entries()){
+            if(langaugeElementName === predName){
+                return languageElementArity === predArity;
             }
         }
     }
@@ -42,17 +40,23 @@ function setNodeBadNameIfStateContainsNodeWithSameName(state:Map<string,any>,new
 function parseText(name:string,setNodeBadName:any,startRule:any){
     try{
         parser.parse(name, {startRule: startRule});
+        setNodeBadName(false);
+        return false;
     }
     catch (e) {
         setNodeBadName(true);
+        return true;
     }
+}
+export function setPredFuncBadNameIfRegexViolated(name:string,setBadName:any){
+   return parseText(name,setBadName,RULE_CONSTANTS);
 }
 
 function setDomainBadNameIfRegexViolated(newName:string,setNodeBadName:any){
     parseText(newName,setNodeBadName,RULE_DOMAIN)
 }
 
-function setOthersBadNameIfRegexViolated(newName:string,setNodeBadName:any){
+function setConstantsBadNameIfRegexViolated(newName:string,setNodeBadName:any){
     parseText(newName,setNodeBadName,RULE_CONSTANTS);
 }
 
@@ -72,7 +76,7 @@ export function canUseNameForNode(oldName:string,newName:string,setNodeBadName:a
     if(setNodeBadNameIfStateContainsNodeWithSameName(nodeType === UNBINARY?diagramState.domainNodes:diagramState.constantNodes,newName,setNodeBadName)){
         return;
     }
-    nodeType === UNBINARY?setDomainBadNameIfRegexViolated(newName,setNodeBadName):setOthersBadNameIfRegexViolated(newName, setNodeBadName);
+    nodeType === UNBINARY?setDomainBadNameIfRegexViolated(newName,setNodeBadName):setConstantsBadNameIfRegexViolated(newName, setNodeBadName);
 }
 
 export function getAvailableLanguageElementForGivenArity(arity:string,reduxProps:any,modelSet:Set<string>,type:string):Set<string> {

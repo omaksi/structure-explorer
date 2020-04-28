@@ -49,7 +49,7 @@ class App extends React.Component<AppProps,AppState> {
         if(!nodesCoords.hasOwnProperty(mapName)){
           nodesCoords[mapName] = {};
         }
-        nodesCoords[mapName][nodeName] = {width:nodeObject.width,height:nodeObject.height};
+        nodesCoords[mapName][nodeName] = {x:nodeObject.position.x,y:nodeObject.position.y};
       }
     }
     return nodesCoords;

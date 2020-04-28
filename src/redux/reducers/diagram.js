@@ -119,12 +119,7 @@ function syncNodesCords(state){
       if(diagramCordState.hasOwnProperty(mapName)){
         if(diagramCordState[mapName].hasOwnProperty(nodeName)){
           let cord = diagramCordState[mapName][nodeName];
-          console.log(nodeObject.position);
-          nodeObject.setPosition(cord.width,cord.height);
-          /*for(let portObject of Object.values(nodeObject.getPorts())){
-            portObject.reportPosition();
-          }*/
-          console.log(nodeObject.position);
+          nodeObject.setPosition(cord.x,cord.y);
         }
       }
     }
@@ -192,7 +187,8 @@ function createNode(nodeObject,nodeName,nameOfSet,diagramModel,diagramCanvas){
   let canvasWidth = diagramCanvas.clientWidth;
   let canvasHeight = diagramCanvas.clientHeight;
 
-  nodeObject.setPosition(Math.random() * (canvasWidth - canvasWidth * 0.1) + canvasWidth * 0.05, Math.random() * (canvasHeight - canvasHeight * 0.1) + canvasHeight * 0.05);
+  nodeObject.setPosition(Math.random() * (canvasWidth - canvasWidth * 0.2) + canvasWidth * 0.05, Math.random() * (canvasHeight - canvasHeight * 0.2) + canvasHeight * 0.05);
+
   addNodeState(nodeName, nodeObject, nameOfSet);
   diagramModel.addNode(nodeObject);
 }

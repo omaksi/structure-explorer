@@ -1,4 +1,6 @@
-import {FUNCTION, PREDICATE} from "./ConstantNames";
+import {FUNCTION, PREDICATE, UNBINARY} from "./ConstantNames";
+import {RULE_CONSTANTS, RULE_DOMAIN} from "../../constants/parser_start_rules";
+let parser = require('../../parser/grammar');
 
 export function canUseNameForGivenArityAndType(predName:string,predArity:string,reduxProps:any,type:string):boolean{
     let structureObject = reduxProps["store"].getState().structureObject.language;
@@ -24,6 +26,53 @@ export function canUseNameForGivenArityAndType(predName:string,predArity:string,
         }
     }
     return true;
+}
+
+function setNodeBadNameIfStateContainsNodeWithSameName(state:Map<string,any>,newName:string,setNodeBadName:any){
+    if(state.has(newName)){
+        setNodeBadName(true);
+        return true;
+    }
+    else{
+        setNodeBadName(false);
+        return false;
+    }
+}
+
+function parseText(name:string,setNodeBadName:any,startRule:any){
+    try{
+        parser.parse(name, {startRule: startRule});
+    }
+    catch (e) {
+        setNodeBadName(true);
+    }
+}
+
+function setDomainBadNameIfRegexViolated(newName:string,setNodeBadName:any){
+    parseText(newName,setNodeBadName,RULE_DOMAIN)
+}
+
+function setOthersBadNameIfRegexViolated(newName:string,setNodeBadName:any){
+    parseText(newName,setNodeBadName,RULE_CONSTANTS);
+}
+
+export function canUseNameForNode(oldName:string,newName:string,setNodeBadName:any,reduxProps:any,nodeType:string){
+    let diagramState = reduxProps["store"].getState().diagramState;
+
+    if(oldName === newName){
+        setNodeBadName(false);
+        return;
+    }
+
+    if(newName.length === 0 ){
+        setNodeBadName(true);
+        return;
+    }
+
+    if(setNodeBadNameIfStateContainsNodeWithSameName(nodeType === UNBINARY?diagramState.domainNodes:diagramState.constantNodes,newName,setNodeBadName)){
+        return;
+    }
+    nodeType === UNBINARY?setDomainBadNameIfRegexViolated(newName,setNodeBadName):setOthersBadNameIfRegexViolated(newName, setNodeBadName);
 }
 
 export function getAvailableLanguageElementForGivenArity(arity:string,reduxProps:any,modelSet:Set<string>,type:string):Set<string> {

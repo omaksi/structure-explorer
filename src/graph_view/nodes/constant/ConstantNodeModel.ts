@@ -55,6 +55,10 @@ export class ConstantNodeModel extends NodeModel<NodeModelGenerics & ConstantNod
 		}
 	}
 
+	getReduxProps(){
+		return this.options.reduxProps;
+	}
+
 	isEditable():boolean{
 		return this.editable;
 	}

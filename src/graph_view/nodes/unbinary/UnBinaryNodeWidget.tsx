@@ -8,7 +8,7 @@ import { Port } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
 import {Element, ElementRowContainer} from "../../labels/binary/BinaryLabelWidget";
 import {DropDownMenuWidget} from "../DropDownMenuWidget";
-import {getWidestElement} from "../functions";
+import {canUseNameForNode, getWidestElement} from "../functions";
 
 export interface UnBinaryNodeWidgetProps {
 	model: UnBinaryNodeModel;
@@ -102,7 +102,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 			isDropDownMenu: false,
 			inputElementTextLength: 0
 		};
-		this.setBadNameState = this.setBadNameState.bind(this);
+		this.setBadNodeNameState = this.setBadNodeNameState.bind(this);
 		this.setInputElementTextLength = this.setInputElementTextLength.bind(this);
 		this.closeDropDown = this.closeDropDown.bind(this);
 	}
@@ -145,7 +145,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 		this.setState({badName: false});
 	}
 
-	setBadNameState(bool: boolean) {
+	setBadNodeNameState(bool: boolean) {
 		this.setState({badName: bool});
 	}
 
@@ -230,7 +230,7 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 										   onChange={(e) => {
 											   this.setState({nodeName: e.target.value});
 											   let name: string = e.target.value.replace(/\s/g, "");
-											   this.props.checkBadName(name, this.props.model.getNodeName(), this.setBadNameState, UNBINARY);
+											   canUseNameForNode(this.props.model.getNodeName(),name,this.setBadNodeNameState,this.props.model.getReduxProps(),UNBINARY);
 										   }}/>
 								}
 							</TitleName>

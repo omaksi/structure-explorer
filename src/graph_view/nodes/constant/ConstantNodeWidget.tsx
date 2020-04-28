@@ -2,7 +2,8 @@ import * as React from 'react';
 import { ConstantNodeModel } from './ConstantNodeModel';
 import {DiagramEngine, PortWidget} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
-import {CONSTANT} from "../ConstantNames";
+import {CONSTANT, UNBINARY} from "../ConstantNames";
+import {canUseNameForNode} from "../functions";
 
 export interface ConstantNodeWidgetProps {
 	model: ConstantNodeModel;
@@ -66,7 +67,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 			nodeName: this.props.model.getOptions().name,
 			badName: false
 		};
-		this.setBadNameState = this.setBadNameState.bind(this);
+		this.setBadNodeNameState = this.setBadNodeNameState.bind(this);
 	}
 
 	cancelRenameNode() {
@@ -99,7 +100,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 		return width;
 	}
 
-	setBadNameState(bool: boolean) {
+	setBadNodeNameState(bool: boolean) {
 		this.setState({badName: bool});
 	}
 
@@ -148,7 +149,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 									   onChange={(e) => {
 										   this.setState({nodeName: e.target.value});
 										   let name = e.target.value.replace(/\s/g, "");
-										   this.props.checkBadName(name, this.props.model.getNodeName(), this.setBadNameState, CONSTANT);
+										   canUseNameForNode(this.props.model.getNodeName(),name,this.setBadNodeNameState,this.props.model.getReduxProps(),CONSTANT);
 									   }}/>
 							}
 						</TitleName>

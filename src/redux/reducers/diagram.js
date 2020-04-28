@@ -154,17 +154,12 @@ function checkIfNameCanBeUsed(state,action){
     return;
   }
 
-  if(action.newName.includes(",")){
-    action.nodeBadNameSetState(true);
-    return;
-  }
-
   if(action.newName.length === 0 ){
     action.nodeBadNameSetState(true);
     return;
   }
 
-  if(action.newName.includes(",")){
+  if(action.newName.includes(",") || action.newName.includes("(") || action.newName.includes(")")){
     action.nodeBadNameSetState(true);
     return;
   }
@@ -233,7 +228,7 @@ function syncConstants(values,focusOnBodyFunc){
           "addConstantNode": values.addConstantNode,
           "renameConstantNode": values.renameConstantNode,
           "removeConstantNode": values.removeConstantNode,
-          "setConstantValueFromLink": this.props.setConstantValueFromLink,
+          "setConstantValueFromLink": values.setConstantValueFromLink,
           "focusOnBodyElement": focusOnBodyFunc,
           "checkBadName":values.checkBadName,
           "store": values.store,

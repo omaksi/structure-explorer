@@ -40,9 +40,10 @@ export const syncMathState = () => ({
   type: 'SYNC_MATH_STATE'
 });
 
-export const syncDiagram = (value) => ({
+export const syncDiagram = (value,focusOnBodyFunc) => ({
   type: 'SYNC_DIAGRAM',
-  value
+  value,
+  focusOnBodyFunc
 });
 
 export const removeConstantNode = (nodeName) => ({
@@ -108,8 +109,36 @@ export const addBinaryPredicate = (predicateName,sourceNodeName,targetNodeName) 
   targetNodeName
 });
 
+export const addTernaryPredicate = (predicateName,nodeName) => ({
+  type: 'ADD_TERNARY_PREDICATE',
+  predicateName,
+  nodeName
+});
+
+export const addQuaternaryPredicate = (predicateName,nodeName) => ({
+  type: 'ADD_QUATERNARY_PREDICATE',
+  predicateName,
+  nodeName
+});
+
 export const addUnaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
   type: 'ADD_UNARY_FUNCTION',
+  functionName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
+export const addBinaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'ADD_BINARY_FUNCTION',
+  functionName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
+export const addTernaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'ADD_TERNARY_FUNCTION',
   functionName,
   sourceNodeName,
   targetNodeName,
@@ -127,6 +156,38 @@ export const removeUnaryFunction = (functionName,sourceNodeName,targetNodeName,d
 export const removeBinaryPredicate = (predicateName,sourceNodeName,targetNodeName,direction) => ({
   type: 'REMOVE_BINARY_PREDICATE',
   predicateName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
+export const removeBinaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'REMOVE_BINARY_FUNCTION',
+  functionName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
+export const removeTernaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'REMOVE_TERNARY_FUNCTION',
+  functionName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
+export const removeTernaryPredicate = (functionName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'REMOVE_TERNARY_PREDICATE',
+  functionName,
+  sourceNodeName,
+  targetNodeName,
+  direction
+});
+
+export const removeQuaternaryPredicate = (functionName,sourceNodeName,targetNodeName,direction) => ({
+  type: 'REMOVE_QUATERNARY_PREDICATE',
+  functionName,
   sourceNodeName,
   targetNodeName,
   direction
@@ -289,9 +350,10 @@ export const importAppState = (content,diagramState) => ({
   diagramState
 });
 
-export const importDiagramState = (state) => ({
+export const importDiagramState = (state,focusOnBodyFunc) => ({
   type: 'IMPORT_DIAGRAM_STATE',
-  state
+  state,
+  focusOnBodyFunc
 });
 export const toggleEditableNodes = (value) => ({
   type: 'TOGGLE_EDITABLE_NODES',

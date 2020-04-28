@@ -162,14 +162,7 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 						<g id="Layer_1">
 						</g>
 						<g id="Layer_2">
-							<polygon /*onMouseEnter={() => {
-								this.setColor("rgba(255,255,0,0.5)")
-							}}
-									 onMouseLeave={() => {
-										 this.setColor("rgb(255,255,0)")
-									 }} onClick={() => {
-								this.setState({isDropDownMenu: !this.state.isDropDownMenu})
-							}}*/
+							<polygon
 									 points={"5," + this.props.size / 2 + " " + this.props.size / 2 + ",0" + " " + this.props.size + "," + this.props.size / 2 + " " + this.props.size / 2 + "," + this.props.size / 2}
 									 style={{
 										 fill: this.state.color,
@@ -179,10 +172,6 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 									 }}/>
 						</g>
 					</svg>
-					<ToggleButton>
-						{/*this.state.isDropDownMenu?ADDPORTSELECTED:ADDPORT*/}
-					</ToggleButton>
-
 					<PortWidget
 						style={{
 							top: this.props.size / 2 - 9,
@@ -221,6 +210,8 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 						<ElementContainer>
 							{_.map(Array.from(this.props.model.getPredicates()), this.generatePredicateComponent)}
 							{_.map(Array.from(this.props.model.getFunctions()), this.generateFunctionComponent)}
+							<PortWidget engine={this.props.engine}
+										port={this.props.model.getAppendPort()}>
 							<PortClassic title={"Otvoriť/zatvoriť rozbaľovaciu ponuku"} onClick={() => {
 								if (this.state.isDropDownMenu) {
 									this.props.engine.getModel().clearSelection();
@@ -235,6 +226,7 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 							}}
 										 height={20}
 										 width={this.props.model.getOptions().name ? 0 : 20}>{this.state.isDropDownMenu ? ADDPORTSELECTED : ADDPORT}</PortClassic>
+							</PortWidget>
 						</ElementContainer>
 					</Elements>
 				</NaryNodeList>

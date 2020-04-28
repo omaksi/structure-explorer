@@ -1,4 +1,5 @@
 import {BaseNodeModel, BaseNodeModelOptions} from "../BaseNodeModel";
+import {NaryRelationPortModel} from "../NaryRelationPortModel";
 
 export class TernaryNodeModel extends BaseNodeModel {
 

@@ -2,8 +2,6 @@ import {LinkModel, PortModelAlignment, PortModel} from '@projectstorm/react-diag
 import _ from "lodash";
 import {BinaryLinkModel} from "../../links/binary/BinaryLinkModel";
 import {ADDPORT} from "../ConstantNames";
-import {NaryRelationPortModel} from "../NaryRelationPortModel";
-
 
 export class UnBinaryPortModel extends PortModel {
 	constructor(name: string) {

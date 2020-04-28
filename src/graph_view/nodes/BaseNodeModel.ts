@@ -4,7 +4,7 @@ import {UnBinaryPortModel} from "./unbinary/UnBinaryPortModel";
 import _ from "lodash";
 import {NaryRelationPortModel} from "./NaryRelationPortModel";
 import {UnBinaryNodeModel} from "./unbinary/UnBinaryNodeModel";
-import {FUNCTION, PREDICATE} from "./ConstantNames";
+import {ADDPORT, FUNCTION, PREDICATE} from "./ConstantNames";
 
 export interface BaseNodeModelGenerics {
     PORT: NaryRelationPortModel;
@@ -25,6 +25,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     functions: Set<string>;
     parameterPorts: Map<NaryRelationPortModel,UnBinaryNodeModel>;
     parameterPortsArray: Array<NaryRelationPortModel>;
+    appendPort: NaryRelationPortModel;
 
     constructor(options?: BaseNodeModelOptions);
     constructor(options: any = {}) {
@@ -40,12 +41,13 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         this.editable = this.getReduxProps()["editable"];
         this.registerEvents();
         this.registerParameterPorts();
+        this.registerAppendPort();
     }
 
     registerParameterPorts(){
         let directions = [PortModelAlignment.LEFT,PortModelAlignment.RIGHT,PortModelAlignment.TOP,PortModelAlignment.BOTTOM];
         for(let i = 0;i<this.getNumberOfPorts();i++){
-            let port = this.addPort(new NaryRelationPortModel(directions[i]));
+            let port = this.addPort(new NaryRelationPortModel(directions[i],directions[i]));
             this.parameterPorts.set(port,null);
             this.parameterPortsArray[i] = port;
         }
@@ -169,6 +171,10 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         return this.getOptions().name;
     }
 
+    getAppendPort(){
+        return this.appendPort;
+    }
+
     renameNode(name: string) {
         this.getOptions().name = name;
     }
@@ -242,5 +248,12 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
 
     getReduxProps(){
         return this.getOptions().reduxProps;
+    }
+
+    registerAppendPort() {
+        let port = new NaryRelationPortModel(ADDPORT);
+        port.setMaximumLinks(0);
+        this.addPort(port);
+        this.appendPort = port;
     }
 }

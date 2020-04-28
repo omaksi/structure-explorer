@@ -4,15 +4,18 @@ import {UnBinaryNodeModel} from "./unbinary/UnBinaryNodeModel";
 import { PortModelAlignment, PortModel, LinkModel } from "@projectstorm/react-diagrams";
 
 export class NaryRelationPortModel extends PortModel {
-    constructor(alignment: PortModelAlignment = PortModelAlignment.LEFT) {
+    constructor(name:string ="default",alignment: PortModelAlignment = PortModelAlignment.LEFT) {
         super({
             type: 'nary',
-            name: alignment,
+            name: name,
             alignment: alignment
         });
     }
 
     createLinkModel(): LinkModel {
+        if (this.getMaximumLinks() === 0) {
+            return null;
+        }
         return new BinaryLinkModel();
     }
 

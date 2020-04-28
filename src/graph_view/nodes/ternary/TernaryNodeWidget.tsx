@@ -186,7 +186,8 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 					<PortWidget
 						style={{
 							top: this.props.size / 2 - 9,
-							left: -10,
+							left: 50+"%",
+							marginLeft: -35+"px",
 							position: 'absolute'
 						}}
 						port={this.props.model.getPortByIndex(0)}
@@ -204,7 +205,8 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 					</PortWidget>
 					<PortWidget
 						style={{
-							right: -10,
+							right: 50+"%",
+							marginRight: -38+"px",
 							top: this.props.size / 2 - 10,
 							position: 'absolute'
 						}}

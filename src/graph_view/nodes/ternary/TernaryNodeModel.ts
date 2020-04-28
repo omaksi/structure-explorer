@@ -11,5 +11,9 @@ export class TernaryNodeModel extends BaseNodeModel {
 	}
 
 	removeNodeFromMathView(){
+		let nodeCombination:string = this.getNodeNameCombination();
+		if(nodeCombination){
+
+		}
 	}
 }

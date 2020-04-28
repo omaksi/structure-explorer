@@ -39,12 +39,12 @@ const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState
 
         <ModalComponent exportState={exportState} modalShowState={modalShowState} setExerciseNameState={setExerciseNameState} setModalShowState={setModelShowState}/>
 
-        <ButtonGroup>
+        {/*<ButtonGroup>
         <Button variant={'outline-success'} size='lg' title='Učiteľský mód' className={(teacherModeState?'active':'')} onClick={() => setTeacherModeState()}>
             <FontAwesome name='fas fa-user-edit'/>
             <span className={'hidden-on-medium-and-lower'}>&nbsp;Učiteľský mód</span>
         </Button>
-        </ButtonGroup>
+        </ButtonGroup>*/}
     </ButtonToolbar>
 );
 

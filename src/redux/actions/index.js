@@ -202,15 +202,6 @@ export const changeDirectionOfBinaryRelation = (languageElementName,sourceNodeNa
   langType
 });
 
-
-export const checkBadName = (newName,oldName,nodeBadNameSetState,nodeType) => ({
-  type: 'CHECK_BAD_NAME',
-  newName,
-  oldName,
-  nodeBadNameSetState,
-  nodeType
-});
-
 export const setConstantValue = (value, constantName) => ({
   type: 'SET_CONSTANT_VALUE',
   constantName,

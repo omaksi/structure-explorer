@@ -42,7 +42,6 @@ export interface BodyWidgetProps {
 	setConstantValueFromLink:any;
 	changeDirectionOfBinaryRelation:any;
 	diagramState:any;
-	checkBadName:any;
 	store:any;
 }
 
@@ -179,7 +178,6 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"removeQuaternaryPredicate": this.props.removeQuaternaryPredicate,
 			"setConstantValueFromLink": this.props.setConstantValueFromLink,
 			"changeDirectionOfBinaryRelation": this.props.changeDirectionOfBinaryRelation,
-			"checkBadName": this.props.checkBadName,
 			"focusOnBodyElement": this.focusOnBodyElement,
 			"editable": this.props.diagramState.editableNodes,
 			"store": this.props.store,

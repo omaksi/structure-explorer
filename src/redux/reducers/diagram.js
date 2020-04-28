@@ -2,7 +2,6 @@ import {
   ADD_CONSTANT_NODE,
   ADD_DOMAIN_NODE,
   RENAME_DOMAIN_NODE,
-  CHECK_BAD_NAME,
   REMOVE_CONSTANT_NODE,
   REMOVE_DOMAIN_NODE,
   SET_DIAGRAM,
@@ -63,9 +62,6 @@ function diagramReducer(state, action) {
       return state;
     case ADD_QUATERNARY_NODE:
       state.quaternaryNodes.set(action.nodeName,action.nodeObject);
-      return state;
-    case CHECK_BAD_NAME:
-      checkIfNameCanBeUsed(state, action);
       return state;
     case RENAME_DOMAIN_NODE:
       state.domainNodes.set(action.newName, state.domainNodes.get(action.oldName));
@@ -148,39 +144,6 @@ function deleteAllLabels(action) {
   }
 }
 
-function checkIfNameCanBeUsed(state,action){
-  if(action.oldName === action.newName){
-    action.nodeBadNameSetState(false);
-    return;
-  }
-
-  if(action.newName.length === 0 ){
-    action.nodeBadNameSetState(true);
-    return;
-  }
-
-  if(action.newName.includes(",") || action.newName.includes("(") || action.newName.includes(")")){
-    action.nodeBadNameSetState(true);
-    return;
-  }
-
-  let nodes;
-  if(action.nodeType === UNBINARY){
-    nodes = state.domainNodes;
-  }
-  //REWORK
-  else{
-    nodes = state.constantNodes;
-  }
-
-  if(nodes.has(action.newName)){
-    action.nodeBadNameSetState(true);
-  }
-  else{
-    action.nodeBadNameSetState(false);
-  }
-}
-
 function createNode(nodeObject,nodeName,nameOfSet,diagramModel,diagramCanvas){
   let canvasWidth = diagramCanvas.clientWidth;
   let canvasHeight = diagramCanvas.clientHeight;
@@ -230,7 +193,6 @@ function syncConstants(values,focusOnBodyFunc){
           "removeConstantNode": values.removeConstantNode,
           "setConstantValueFromLink": values.setConstantValueFromLink,
           "focusOnBodyElement": focusOnBodyFunc,
-          "checkBadName":values.checkBadName,
           "store": values.store,
         });
         createNode(node,nodeName,constantState,diagramModel,diagramCanvas);
@@ -481,7 +443,6 @@ function syncDomain(values,focusOnBodyFunc) {
         "changeDirectionOfBinaryRelation": values.changeDirectionOfBinaryRelation,
         "focusOnBodyElement": focusOnBodyFunc,
         "editable":values.diagramState.editableNodes,
-        "checkBadName":values.checkBadName,
         "store":values.store,
       });
       createNode(node,nodeName,domainState,diagramModel,diagramCanvas);

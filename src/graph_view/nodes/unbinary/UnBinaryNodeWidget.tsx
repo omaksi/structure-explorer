@@ -15,7 +15,6 @@ export interface UnBinaryNodeWidgetProps {
 	engine: DiagramEngine;
 	renameDomainNode:any;
 	removeDomainNode:any;
-	checkBadName:any;
 	name?:string;
 	size?: number;
 }

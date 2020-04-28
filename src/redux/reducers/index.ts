@@ -9,6 +9,7 @@ import diagramReducer,{ defaultState as diagramDefaultState } from "./diagram";
 import {defaultState as expressionsDefaultState} from "./expressions";
 import {defaultState as structureDefaultState} from "./structure";
 import {defaultState as languageDefaultState} from "./language";
+import { DiagramModel } from "@projectstorm/react-diagrams";
 
 const defaultState = {
     structureObject: new Structure(new Language()),
@@ -33,7 +34,6 @@ function checkImportedState(state:any) {
 function root(state = defaultState, action:any) {
     if (action.type === IMPORT_APP) {
         try {
-            console.log(action);
             state = JSON.parse(action.content);
             checkImportedState(state);
             state.structureObject = new Structure(new Language());

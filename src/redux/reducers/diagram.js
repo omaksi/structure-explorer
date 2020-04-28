@@ -40,11 +40,11 @@ function diagramReducer(state, action) {
       state.diagramModel = action.diagramModel;
       return state;
     case SYNC_DIAGRAM:
-      syncDomain(action.value);
+      syncDomain(action.value,action.focusOnBodyFunc);
       syncLabels(state);
       syncPredicates(action.value);
       syncFunctions(action.value);
-      syncConstants(action.value);
+      syncConstants(action.value,action.focusOnBodyFunc);
       return state;
     case ADD_DOMAIN_NODE:
       state.domainNodes.set(action.nodeName, action.nodeObject);
@@ -95,14 +95,17 @@ function diagramReducer(state, action) {
       return {...state, editableNodes: action.value};
 
     case IMPORT_APP:
-      return {...state,diagramCordState:JSON.parse(action.content).diagramCordState,imported:true};
+      let diagramModel = new DiagramModel();
+      state.diagramEngine.setModel(diagramModel);
+      clearDiagramState(state);
+      return {...state,diagramModel:diagramModel,diagramCordState:JSON.parse(action.content).diagramCordState,imported:true};
 
     case IMPORT_DIAGRAM_STATE:
-      syncDomain(action.state);
+      syncDomain(action.state,action.focusOnBodyFunc);
       syncLabels(state);
       syncPredicates(action.state);
       syncFunctions(action.state);
-      syncConstants(action.state);
+      syncConstants(action.state,action.focusOnBodyFunc);
       syncNodesCords(state);
       return {...state,imported:false};
     default:
@@ -209,7 +212,7 @@ function createLabel(linkWhereLabelShouldBeAdded){
   linkWhereLabelShouldBeAdded.addLabel(label);
 }
 
-function syncConstants(values){
+function syncConstants(values,focusOnBodyFunc){
   if(values.structure.constants!== null){
     let constantObjects = new Map(Object.entries(values.structure.constants));
     let constantState = values.diagramState.constantNodes;
@@ -230,9 +233,10 @@ function syncConstants(values){
           "addConstantNode": values.addConstantNode,
           "renameConstantNode": values.renameConstantNode,
           "removeConstantNode": values.removeConstantNode,
+          "setConstantValueFromLink": this.props.setConstantValueFromLink,
+          "focusOnBodyElement": focusOnBodyFunc,
           "checkBadName":values.checkBadName,
-          "editable":values.diagramState.editableNodes,
-          "setConstantValueFromLink":values.setConstantValueFromLink
+          "store": values.store,
         });
         createNode(node,nodeName,constantState,diagramModel,diagramCanvas);
         if(nodeProperties.value.length!==0){
@@ -270,11 +274,11 @@ function removeNodeState(nodeName,nodeSet){
   nodeSet.delete(nodeName);
 }
 
-function clearDiagramState(values){
-  values.diagramState.domainNodes.clear();
-  values.diagramState.constantNodes.clear();
-  values.diagramState.ternaryNodes.clear();
-  values.diagramState.quaternaryNodes.clear();
+function clearDiagramState(diagramState){
+  diagramState.domainNodes.clear();
+  diagramState.constantNodes.clear();
+  diagramState.ternaryNodes.clear();
+  diagramState.quaternaryNodes.clear();
 }
 
 function clearCertainNodeState(nodeState){
@@ -443,7 +447,7 @@ function removeLinksToRemove(linksToRemove){
   }
 }
 
-function syncDomain(values) {
+function syncDomain(values,focusOnBodyFunc) {
   let domain = (values.structureObject.domain);
   let domainState = values.diagramState.domainNodes;
   let diagramModel = values.diagramState.diagramModel;
@@ -473,11 +477,17 @@ function syncDomain(values) {
         "addDomainNode":values.addDomainNode,
         "renameDomainNode": values.renameDomainNode,
         "removeDomainNode":values.removeDomainNode,
-        "checkBadName":values.checkBadName,
         "addUnaryPredicate":values.addUnaryPredicate,
+        "addUnaryFunction": values.addUnaryFunction,
+        "addBinaryPredicate": values.addBinaryPredicate,
         "removeUnaryPredicate":values.removeUnaryPredicate,
+        "removeUnaryFunction": values.removeUnaryFunction,
+        "removeBinaryPredicate": values.removeBinaryPredicate,
+        "changeDirectionOfBinaryRelation": values.changeDirectionOfBinaryRelation,
+        "focusOnBodyElement": focusOnBodyFunc,
+        "editable":values.diagramState.editableNodes,
+        "checkBadName":values.checkBadName,
         "store":values.store,
-        "editable":values.diagramState.editableNodes
       });
       createNode(node,nodeName,domainState,diagramModel,diagramCanvas);
     }

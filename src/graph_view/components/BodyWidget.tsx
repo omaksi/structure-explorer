@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { TrayWidget } from './TrayWidget';
 import {ItemWidgetIcon} from './TrayItemWidget';
-import { DefaultNodeModel} from '@projectstorm/react-diagrams';
 import { CanvasWidget} from '@projectstorm/react-canvas-core';
 import { MainCanvasWidget} from './MainCanvasWidget';
 import styled from '@emotion/styled';
@@ -25,17 +24,25 @@ export interface BodyWidgetProps {
 	addConstantNode:any;
 	renameConstantNode:any;
 	removeConstantNode:any;
-	diagramState:any;
-	checkBadName:any;
 	addUnaryPredicate:any;
+	addUnaryFunction:any;
+	addBinaryPredicate:any;
+	addBinaryFunction:any;
+	addTernaryPredicate:any;
+	addTernaryFunction:any;
+	addQuaternaryPredicate:any;
 	removeUnaryPredicate:any;
+	removeUnaryFunction:any;
+	removeBinaryPredicate:any;
+	removeBinaryFunction:any;
+	removeTernaryPredicate:any;
+	removeTernaryFunction:any;
+	removeQuaternaryPredicate:any;
 	toggleEditableNodes:any;
 	setConstantValueFromLink:any;
-	addBinaryPredicate:any;
-	removeBinaryPredicate:any;
 	changeDirectionOfBinaryRelation:any;
-	addUnaryFunction:any;
-	removeUnaryFunction:any;
+	diagramState:any;
+	checkBadName:any;
 	store:any;
 }
 
@@ -60,7 +67,7 @@ export interface BodyWidgetProps {
 
 	function getAvailableCount(nodeType:string,diagramState:any):number {
 		let nodeCount:number = 0;
-		let name: string = "";
+		let name: string;
 		let state:Map<string,object>;
 		if (nodeType === 'unbinary') {
 			state = diagramState.domainNodes;
@@ -141,10 +148,42 @@ export interface BodyWidgetProps {
 
 export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	body: any;
+	reduxProps: any;
 
 	constructor(props: any) {
 		super(props);
 		this.focusOnBodyElement = this.focusOnBodyElement.bind(this);
+
+		this.reduxProps = {
+			"addDomainNode": this.props.addDomainNode,
+			"addConstantNode": this.props.addConstantNode,
+			"addTernaryNode": this.props.addTernaryNode,
+			"addQuaternaryNode": this.props.addQuaternaryNode,
+			"renameDomainNode": this.props.renameDomainNode,
+			"removeDomainNode": this.props.removeDomainNode,
+			"renameConstantNode": this.props.renameConstantNode,
+			"removeConstantNode": this.props.removeConstantNode,
+			"addUnaryPredicate": this.props.addUnaryPredicate,
+			"addUnaryFunction": this.props.addUnaryFunction,
+			"addBinaryPredicate": this.props.addBinaryPredicate,
+			"addBinaryFunction" : this.props.addBinaryFunction,
+			"addTernaryPredicate": this.props.addTernaryPredicate,
+			"addTernaryFunction" : this.props.addTernaryFunction,
+			"addQuaternaryPredicate": this.props.addQuaternaryPredicate,
+			"removeUnaryPredicate": this.props.removeUnaryPredicate,
+			"removeUnaryFunction": this.props.removeUnaryFunction,
+			"removeBinaryPredicate": this.props.removeBinaryPredicate,
+			"removeBinaryFunction" : this.props.removeBinaryFunction,
+			"removeTernaryPredicate" : this.props.removeTernaryPredicate,
+			"removeTernaryFunction" : this.props.removeTernaryFunction,
+			"removeQuaternaryPredicate": this.props.removeQuaternaryPredicate,
+			"setConstantValueFromLink": this.props.setConstantValueFromLink,
+			"changeDirectionOfBinaryRelation": this.props.changeDirectionOfBinaryRelation,
+			"checkBadName": this.props.checkBadName,
+			"focusOnBodyElement": this.focusOnBodyElement,
+			"editable": this.props.diagramState.editableNodes,
+			"store": this.props.store,
+		};
 	}
 
 	componentDidMount(): void {
@@ -152,13 +191,13 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			this.props.store.dispatch(importDiagramState(this.props.store.getState()));
 		}
 		else{
-			this.props.syncDiagram(this.props);
+			this.props.syncDiagram(this.props,this.focusOnBodyElement);
 		}
 		this.focusOnBodyElement();
 	}
 	componentDidUpdate(): void {
 		if(this.props.diagramState.imported){
-			this.props.store.dispatch(importDiagramState(this.props.store.getState()));
+			this.props.store.dispatch(importDiagramState({...this.props.store.getState(),...this.reduxProps},this.focusOnBodyElement));
 		}
 	}
 
@@ -171,29 +210,6 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	render() {
 		let editableNodes = this.props.diagramState.editableNodes;
 		let editableNodesFunction = this.props.toggleEditableNodes;
-
-		let reduxProps = {
-			"addDomainNode": this.props.addDomainNode,
-			"addConstantNode": this.props.addConstantNode,
-			"addTernaryNode": this.props.addTernaryNode,
-			"addQuaternaryNode": this.props.addQuaternaryNode,
-			"renameDomainNode": this.props.renameDomainNode,
-			"removeDomainNode": this.props.removeDomainNode,
-			"renameConstantNode": this.props.renameConstantNode,
-			"removeConstantNode": this.props.removeConstantNode,
-			"checkBadName": this.props.checkBadName,
-			"addUnaryPredicate": this.props.addUnaryPredicate,
-			"removeUnaryPredicate": this.props.removeUnaryPredicate,
-			"addUnaryFunction": this.props.addUnaryFunction,
-			"removeUnaryFunction": this.props.removeUnaryFunction,
-			"addBinaryPredicate": this.props.addBinaryPredicate,
-			"removeBinaryPredicate": this.props.removeBinaryPredicate,
-			"setConstantValueFromLink": this.props.setConstantValueFromLink,
-			"changeDirectionOfBinaryRelation": this.props.changeDirectionOfBinaryRelation,
-			"editable": editableNodes,
-			"store": this.props.store,
-			"focusOnBodyElement": this.focusOnBodyElement,
-		};
 
 		return (
 			<Body ref={Body => this.body = Body} tabIndex={1} onKeyPress={(e: any) => {
@@ -228,27 +244,27 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 
 						<ItemWidgetIcon model={{type: 'unbinary'}} clickFunction={createNode} element={this}
 										name="Pridaj unárny/binárny" color="rgb(125,192,125)"
-										reduxProps={reduxProps}
+										reduxProps={this.reduxProps}
 										title={"Pridať vrchol, ktorý predstavuje prvok domény. Tomuto prvku je možné následne pridať unárne predikáty a vytvarať binárne väzby"}
 										children={<UnbinaryIcon/>}
 						/>
 						<ItemWidgetIcon model={{type: 'constant'}} clickFunction={createNode} element={this}
 										name="Pridaj konštantu" color="rgb(125,192,125)"
-										reduxProps={reduxProps}
+										reduxProps={this.reduxProps}
 										title={"Pridať vrchol, ktorý predstavuje konštanty. Vytvorením linky priradíme konštante prvok domény"}
 										children={<ConstantIcon/>}
 						/>
 
 						<ItemWidgetIcon model={{type: 'ternary'}} clickFunction={createNode} element={this}
 										name= "Pridaj ternárny" color="rgb(128,96,245)"
-										reduxProps={reduxProps}
+										reduxProps={this.reduxProps}
 										title={"Pridať vrchol, ktorý predstavuje ternárny vzťah pre predikáty a binárny vzťah pre funkcie"}
 										children={<TernaryIcon/>}
 						/>
 
 						<ItemWidgetIcon model={{type: 'quaternary'}} clickFunction={createNode} element={this}
 										name="Pridaj štvornárny" color="rgb(128,96,245)"
-										reduxProps={reduxProps}
+										reduxProps={this.reduxProps}
 										title={"Pridať vrchol, ktorý predstavuje quaternárny vzťah pre predikáty a ternárny vzťah pre funkcie"}
 										children={<QuaternaryIcon/>}
 						/>
@@ -256,7 +272,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 					</TrayWidget>
 					<Layer
 						onDrop={event => {
-							createNode(this, event, reduxProps, false);
+							createNode(this, event, this.reduxProps, false);
 						}}
 						onDragOver={event => {
 							event.preventDefault();

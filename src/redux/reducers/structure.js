@@ -31,7 +31,7 @@ import {
   CHANGE_DIRECTION_OF_BINARY_RELATION,
   ADD_UNARY_FUNCTION,
   REMOVE_UNARY_FUNCTION,
-  ADD_TERNARY_PREDICATE
+  ADD_TERNARY_PREDICATE, REMOVE_TERNARY_PREDICATE, REMOVE_BINARY_FUNCTION
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -117,6 +117,14 @@ function structureReducer(s, action, struct) {
 
     case REMOVE_BINARY_PREDICATE:
       removeLanguageElementInGivenDirection(action.predicateName, action.direction, action.sourceNodeName, action.targetNodeName, PRED);
+      return state;
+
+    case REMOVE_TERNARY_PREDICATE:
+      removeLanguageElement(action.predicateName,3,action.nodeName,PRED);
+      return state;
+
+    case REMOVE_BINARY_FUNCTION:
+      removeLanguageElement(action.predicateName,2,action.nodeName,FUNC);
       return state;
 
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
@@ -335,7 +343,7 @@ function addTupleLanguageElement(elementName,newValue,nodeNames,type){
   return newElemValue;
 }
 
-function addNaryLanguageElement(elementName,arity,nodeNames,type){
+function buildNaryLanguageElement(elementName,arity,nodeNames,type){
   let elemName = elementName+"/"+arity;
   let newElemValue = "";
   let structureInterpretationSet = type === PRED?structure.iPredicate:structure.iFunction;
@@ -348,7 +356,6 @@ function addNaryLanguageElement(elementName,arity,nodeNames,type){
       }
     }
   }
-  newElemValue += "("+(nodeNames.join(", "))+")";
   return newElemValue;
 }
 
@@ -452,7 +459,7 @@ function buildTupleValue(nodeNames,direction){
 function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""){
   let languageElementNameWithArity = elementName+"/"+elementArity;
   insertNewInputs();
-  let elementValue = "";
+  let elementValue;
 
   if(elementArity === 1){
     if(type === PRED){
@@ -462,11 +469,12 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
       elementValue = addUnaryFunction(elementName,buildTupleValue(nodeNames,direction),nodeNames);
     }
   }
-  else if(elementArity === 2){
+  else if(type === PRED && elementArity === 2){
     elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction),nodeNames,PRED);
   }
   else{
-    elementValue = addNaryLanguageElement(elementName,elementArity,nodeNames,type);
+    elementValue = buildNaryLanguageElement(elementName,elementArity,nodeNames,type);
+    elementValue += "("+(nodeNames.join(", "))+")";
   }
 
   let elemState = type === PRED?state.predicates:state.functions;
@@ -476,16 +484,23 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
 
 function removeLanguageElement(elementName,elementArity,nodeNames,type){
   let elementNameWithArity = elementName+"/"+elementArity;
-  let newElementInterpretationValue = "";
+  let elementValue;
 
   if(elementArity === 1){
-    newElementInterpretationValue = type===PRED?removeUnaryPredicate(elementName,nodeNames[0]):removeUnaryFunction(elementName,nodeNames);
+    elementValue = type===PRED?removeUnaryPredicate(elementName,nodeNames[0]):removeUnaryFunction(elementName,nodeNames);
   }
-  else if(elementArity === 2){
-    newElementInterpretationValue = removeBinaryPredicate(elementName,nodeNames[0],nodeNames[1],PRED);
+  else if(type === PRED && elementArity === 2){
+    elementValue = removeBinaryPredicate(elementName,nodeNames[0],nodeNames[1],PRED);
   }
 
-  functions.parseText(newElementInterpretationValue,type===PRED?state.predicates[elementNameWithArity]:state.functions[elementNameWithArity],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
+  else{
+    elementValue = buildNaryLanguageElement(elementName,elementArity,nodeNames,type);
+    elementValue = elementValue.substring(0,elementValue.length-2);
+  }
+
+  console.log(elementValue);
+  console.log(state.predicates);
+  functions.parseText(elementValue,type===PRED?state.predicates[elementNameWithArity]:state.functions[elementNameWithArity],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
   type===PRED?setPredicateValue(elementNameWithArity):setFunctionValue(elementNameWithArity);
 }
 

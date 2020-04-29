@@ -177,12 +177,10 @@ export const removeTernaryFunction = (functionName,sourceNodeName,targetNodeName
   direction
 });
 
-export const removeTernaryPredicate = (functionName,sourceNodeName,targetNodeName,direction) => ({
+export const removeTernaryPredicate = (predicateName,nodeName) => ({
   type: 'REMOVE_TERNARY_PREDICATE',
-  functionName,
-  sourceNodeName,
-  targetNodeName,
-  direction
+  predicateName,
+  nodeName
 });
 
 export const removeQuaternaryPredicate = (functionName,sourceNodeName,targetNodeName,direction) => ({

@@ -104,8 +104,6 @@ interface DropDownMenuWidgetState {
 
 export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,DropDownMenuWidgetState> {
     textInput:HTMLInputElement;
-    predicateButton:HTMLElement;
-    functionButton:HTMLElement;
 
     constructor(props:DropDownMenuWidgetProps) {
         super(props);
@@ -261,12 +259,12 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                                     border: this.state.badNameForLanguageElement ? "1px solid red" : "1px solid black"
                                 }}>
                                 </input>
-                                <DropDownButton color={this.state.canAddAsPredicate?"#00ff80":"red"} ref={(button) => this.predicateButton = button} title={this.state.predicateButtonTitle} onClick={() => {
+                                <DropDownButton color={this.state.canAddAsPredicate?"#00ff80":"red"} title={this.state.predicateButtonTitle} onClick={() => {
                                     this.addGivenInputElement(PREDICATE);
                                 }}>{ADDPRED}</DropDownButton>
                                 {
                                     funcArity!==0?
-                                        <DropDownButton color={this.state.canAddAsFunction?"#00ff80":"red"} ref={(button) => this.functionButton = button} title={this.state.functionButtonTitle} onClick={() => {
+                                        <DropDownButton color={this.state.canAddAsFunction?"#00ff80":"red"} title={this.state.functionButtonTitle} onClick={() => {
                                             this.addGivenInputElement(FUNCTION);
                                         }}>{ADDFUNC}</DropDownButton>
                                         :null

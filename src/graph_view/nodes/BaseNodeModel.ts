@@ -47,7 +47,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     registerParameterPorts(){
         let directions = [PortModelAlignment.LEFT,PortModelAlignment.RIGHT,PortModelAlignment.TOP,PortModelAlignment.BOTTOM];
         for(let i = 0;i<this.getNumberOfPorts();i++){
-            let port = this.addPort(new NaryRelationPortModel(directions[i],directions[i]));
+            let port = this.addPort(new NaryRelationPortModel("port"+i,directions[i]));
             this.parameterPorts.set(port,null);
             this.parameterPortsArray[i] = port;
         }

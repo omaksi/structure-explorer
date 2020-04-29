@@ -498,8 +498,6 @@ function removeLanguageElement(elementName,elementArity,nodeNames,type){
     elementValue = elementValue.substring(0,elementValue.length-2);
   }
 
-  console.log(elementValue);
-  console.log(state.predicates);
   functions.parseText(elementValue,type===PRED?state.predicates[elementNameWithArity]:state.functions[elementNameWithArity],{startRule:RULE_PREDICATES_FUNCTIONS_VALUE});
   type===PRED?setPredicateValue(elementNameWithArity):setFunctionValue(elementNameWithArity);
 }

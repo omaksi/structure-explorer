@@ -39,7 +39,7 @@ export const DropDownTitleName = styled.div`
 		cursor: context-menu;
 	`;
 
-export const DropDownButton = styled.div`
+export const DropDownButton = styled.div<{color: string}>`
 		outline: none;
 		cursor: pointer;
 		height: 20px;
@@ -50,7 +50,7 @@ export const DropDownButton = styled.div`
 		padding-right:0.2em;
 		
 		&:hover {
-			background: #00ff80;
+			background: ${p => p.color};
 		}
 	`;
 
@@ -95,10 +95,17 @@ export interface DropDownMenuWidgetProps {
 
 interface DropDownMenuWidgetState {
     badNameForLanguageElement:boolean;
+    canAddAsPredicate:boolean;
+    canAddAsFunction:boolean;
+    inputTitle:string,
+    predicateButtonTitle:string,
+    functionButtonTitle:string,
 }
 
 export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,DropDownMenuWidgetState> {
     textInput:HTMLInputElement;
+    predicateButton:HTMLElement;
+    functionButton:HTMLElement;
 
     constructor(props:DropDownMenuWidgetProps) {
         super(props);
@@ -107,13 +114,23 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
         this.setStateBadNameForLanguageElement = this.setStateBadNameForLanguageElement.bind(this);
 
         this.state = {
-            badNameForLanguageElement:true
+            badNameForLanguageElement:true,
+            canAddAsFunction:true,
+            canAddAsPredicate:true,
+            inputTitle:"Zadaj názov pre predikát alebo funkciu",
+            predicateButtonTitle:"Pridaj nový predikát",
+            functionButtonTitle:"Pridaj novú funkciu",
         }
     }
 
     setStateBadNameForPredFunc(elementName:string){
         elementName = elementName.replace(/\s/g, "");
-        return setPredFuncBadNameIfRegexViolated(elementName,this.setStateBadNameForLanguageElement);
+        if(setPredFuncBadNameIfRegexViolated(elementName,this.setStateBadNameForLanguageElement)){
+            this.setState({inputTitle:"Zadaný názov nie je v správnom tvare"});
+            return true;
+        }
+        this.setState({inputTitle:"Zadaj názov pre predikát alebo funkciu"});
+        return false;
     }
 
     generatePredicateComponent(elementObject:string){
@@ -135,7 +152,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                 <DropDownLanguageElement>
                     {languageElement}
                 </DropDownLanguageElement>
-                <DropDownButton title={"Pridaj "+(type===PREDICATE?"predikát":"funkciu")} onClick={() =>{
+                <DropDownButton color={type === PREDICATE?this.state.canAddAsPredicate?"#00ff80":"red":this.state.canAddAsFunction?"#00ff80":"red"} title={"Pridaj "+(type===PREDICATE?"predikát":"funkciu")} onClick={() =>{
                     type === PREDICATE?this.props.model.addPredicate(languageElement):this.props.model.addFunction(languageElement);
                     this.props.engine.repaintCanvas();
                 }}><FontAwesome name={"fas fa-plus"}/></DropDownButton>
@@ -162,6 +179,26 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
         this.props.model.getReduxProps()["focusOnBodyElement"]();
     }
 
+    setCanUseForGivenType(type:string){
+        if(canUseNameForGivenArityAndType(this.textInput.value, type === PREDICATE ? this.props.arity : ((parseInt(this.props.arity) - 1).toString()), this.props.model.getReduxProps(), type)){
+            if(type === PREDICATE){
+                this.setState({canAddAsPredicate:true,predicateButtonTitle:"Pridaj nový predikát"});
+            }
+            else{
+                this.setState({canAddAsFunction:true,functionButtonTitle:"Pridaj novú funkciu"});
+            }
+
+        }
+        else{
+            if(type === PREDICATE){
+                this.setState({canAddAsPredicate:false,predicateButtonTitle:"Predikát nejde pridať, predikát alebo funkcia s daným menom už existuje pre iný typ alebo pre inú aritu"});
+            }
+            else{
+                this.setState({canAddAsFunction:false,functionButtonTitle:"Funkciu nejde pridať, predikát alebo funkcia s daným menom už existuje pre iný typ alebo pre inú aritu"});
+            }
+        }
+    }
+
     addGivenInputElement(type:string) {
         if(!this.setStateBadNameForPredFunc(this.textInput.value.replace(/\s/g, "")) && canUseNameForGivenArityAndType(this.textInput.value, type === PREDICATE ? this.props.arity : ((parseInt(this.props.arity) - 1).toString()), this.props.model.getReduxProps(), type)){
             if (type === PREDICATE) {
@@ -172,9 +209,6 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
             this.textInput.value = "";
             this.setStateBadNameForLanguageElement(true);
             this.props.engine.repaintCanvas();
-        }
-        else{
-            this.setStateBadNameForLanguageElement(true);
         }
     }
 
@@ -198,9 +232,11 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                         {funcArity !== 0?_.map(Array.from(getAvailableLanguageElementForGivenArity((parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps(),this.props.model.getFunctions(),FUNCTION)), this.generateFunctionComponent):null}
                         <DropDownInputElement>
                             <DropDownRowContainer key={"lastPredicateOption"}>
-                                <input onChange={(e) => {
+                                <input title={this.state.inputTitle} onChange={(e) => {
                                     this.setStateBadNameForPredFunc(e.target.value);
                                     this.props.setStateInputElementTextLength(e.target.value.length);
+                                    this.setCanUseForGivenType(PREDICATE);
+                                    this.setCanUseForGivenType(FUNCTION);
                                 }}
                                        ref={(input) => this.textInput = input}
                                        onFocus={() => {
@@ -225,12 +261,12 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                                     border: this.state.badNameForLanguageElement ? "1px solid red" : "1px solid black"
                                 }}>
                                 </input>
-                                <DropDownButton title={"Pridaj nový predikát"} onClick={() => {
+                                <DropDownButton color={this.state.canAddAsPredicate?"#00ff80":"red"} ref={(button) => this.predicateButton = button} title={this.state.predicateButtonTitle} onClick={() => {
                                     this.addGivenInputElement(PREDICATE);
                                 }}>{ADDPRED}</DropDownButton>
                                 {
                                     funcArity!==0?
-                                        <DropDownButton title={"Pridaj novú funkciu"} onClick={() => {
+                                        <DropDownButton color={this.state.canAddAsFunction?"#00ff80":"red"} ref={(button) => this.functionButton = button} title={this.state.functionButtonTitle} onClick={() => {
                                             this.addGivenInputElement(FUNCTION);
                                         }}>{ADDFUNC}</DropDownButton>
                                         :null

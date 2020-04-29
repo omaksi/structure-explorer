@@ -11,12 +11,6 @@ export class TernaryNodeModel extends BaseNodeModel {
 		});
 	}
 
-	removeNodeFromMathView(){
-		let nodeCombination:string = this.getNodeNameCombination();
-		if(nodeCombination){
-		}
-	}
-
 	removeElementFromMathView(name: string, type: string) {
 		let removeElementFunction = type === PREDICATE?this.getReduxProps()["removeTernaryPredicate"]:this.getReduxProps()["removeBinaryFunction"];
 		removeElementFunction(name,this.getNodeNameCombination());

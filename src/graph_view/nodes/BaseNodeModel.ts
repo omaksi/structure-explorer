@@ -56,6 +56,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     getNodeNameCombination(){
         let value:any = [];
 
+        //console.log("paramports",this.parameterPorts);
         for(let i = 0; i<this.parameterPortsArray.length;i++){
             let portValue:UnBinaryNodeModel = this.parameterPorts.get(this.parameterPortsArray[i]);
             if(!portValue){
@@ -82,12 +83,6 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
 
     removeValueFromPort(port:NaryRelationPortModel){
         this.parameterPorts.set(port,null);
-    }
-
-    removePredFuncFromMathView(previousValue:string){
-        if(previousValue){
-         //remove by calling action
-        }
     }
 
     setValueToPort(port:NaryRelationPortModel,valueNode:UnBinaryNodeModel){
@@ -203,10 +198,6 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         this.increaseChangeCounter();
     }
 
-    removeNodeFromMathView(){
-        throw new Error("This method should be implemented in child");
-    }
-
     addPredicate(name:string){
         name = name.replace(/\s/g, "");
         if (!this.predicates.has(name)) {
@@ -239,6 +230,15 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
             this.removeElementFromMathView(name,FUNCTION);
         }
         this.removeFunctionFromSet(name);
+    }
+
+    removeNodeFromMathView(){
+        for(let predicate of this.getPredicates()){
+            this.removeElementFromMathView(predicate,PREDICATE);
+        }
+        for(let func of this.getFunctions()){
+            this.removeElementFromMathView(func,FUNCTION);
+        }
     }
 
     representNodeInMathView(){

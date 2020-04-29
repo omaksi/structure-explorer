@@ -114,17 +114,16 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					let unbinaryNode: UnBinaryNodeModel = sourceNode instanceof UnBinaryNodeModel ? sourceNode : targetNode instanceof UnBinaryNodeModel ? targetNode : null;
 					let naryNode:BaseNodeModel = (sourceNode instanceof TernaryNodeModel || sourceNode instanceof QuaternaryNodeModel)?sourceNode:(targetNode instanceof TernaryNodeModel || targetNode instanceof QuaternaryNodeModel)?targetNode:null;
 					let naryPort: NaryRelationPortModel = link.getSourcePort() instanceof NaryRelationPortModel?link.getSourcePort():link.getTargetPort() instanceof NaryRelationPortModel?link.getTargetPort():null;
-					let previousCombination:string = naryNode.getNodeNameCombination();
+					let previousCombination:any = naryNode.getNodeNameCombination();
 
-					removeLinkIfCondition(naryPort,link);
-					//ak bola predosla kombinacia, tu zmazeme zo struktury
+					console.log("previous",previousCombination);
 					if(naryNode && previousCombination){
-
+						console.log("yes removeNodeFromMathView",naryNode.getPredicates());
+						naryNode.removeNodeFromMathView();
 					}
+					removeLinkIfCondition(naryPort,link);
 					naryNode.setValueToPort(naryPort,unbinaryNode);
-					console.log("here we are");
 					if(naryNode.getNodeNameCombination()){
-						console.log("yes we have");
 						naryNode.representNodeInMathView();
 					}
 				}
@@ -147,9 +146,10 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 				}
 				else if(naryNode){
 					let naryPort:NaryRelationPortModel = targetNode === naryNode?link.getTargetPort():link.getSourcePort();
-					let previousCombination = naryNode.getNodeNameCombination();
-					naryNode.removeValueFromPort(naryPort);
-					naryNode.removePredFuncFromMathView(previousCombination);
+					if(naryNode.getNodeNameCombination()){
+						naryNode.removeNodeFromMathView();
+						naryNode.removeValueFromPort(naryPort);
+					}
 				}
 				else{
 					if(link.label){

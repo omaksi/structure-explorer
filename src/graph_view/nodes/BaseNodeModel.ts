@@ -54,16 +54,16 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     }
 
     getNodeNameCombination(){
-        let value = "";
+        let value:any = [];
 
         for(let i = 0; i<this.parameterPortsArray.length;i++){
             let portValue:UnBinaryNodeModel = this.parameterPorts.get(this.parameterPortsArray[i]);
             if(!portValue){
-                return "";
+                return null;
             }
-            value+=portValue.getNodeName()+",";
+            value.push(portValue.getNodeName());
         }
-        return value.substring(0,value.length-1);
+        return value;
     }
 
     getValueOfPort(port:NaryRelationPortModel){
@@ -211,7 +211,9 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         name = name.replace(/\s/g, "");
         if (!this.predicates.has(name)) {
             this.addPredicateToSet(name);
-            this.addElementToMathView(name,PREDICATE);
+            if(this.getNodeNameCombination()){
+                this.addElementToMathView(name,PREDICATE);
+            }
         }
     }
 
@@ -219,7 +221,9 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         name = name.replace(/\s/g, "");
         if (!this.functions.has(name)) {
             this.addFunctionToSet(name);
-            this.addElementToMathView(name,FUNCTION);
+            if(this.getNodeNameCombination()){
+                this.addElementToMathView(name,FUNCTION);
+            }
         }
     }
 
@@ -237,6 +241,14 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         this.removeFunctionFromSet(name);
     }
 
+    representNodeInMathView(){
+        for(let predicate of this.getPredicates()){
+            this.addElementToMathView(predicate,PREDICATE);
+        }
+        for(let func of this.getFunctions()){
+            this.addElementToMathView(func,FUNCTION);
+        }
+    }
 
     addElementToMathView(name:string,type:string){
         throw new Error("This method should be implemented in child");

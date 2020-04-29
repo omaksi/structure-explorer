@@ -27,7 +27,11 @@ import {
   SET_CONSTANT_VALUE_FROM_LINK,
   REMOVE_UNARY_PREDICATE,
   ADD_BINARY_PREDICATE,
-  REMOVE_BINARY_PREDICATE, CHANGE_DIRECTION_OF_BINARY_RELATION, ADD_UNARY_FUNCTION, REMOVE_UNARY_FUNCTION
+  REMOVE_BINARY_PREDICATE,
+  CHANGE_DIRECTION_OF_BINARY_RELATION,
+  ADD_UNARY_FUNCTION,
+  REMOVE_UNARY_FUNCTION,
+  ADD_TERNARY_PREDICATE
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -101,6 +105,10 @@ function structureReducer(s, action, struct) {
 
     case ADD_BINARY_PREDICATE:
       addLanguageElement(action.predicateName, 2, [action.sourceNodeName, action.targetNodeName], PRED, BOTH);
+      return state;
+
+    case ADD_TERNARY_PREDICATE:
+      addLanguageElement(action.predicateName,3,action.nodeName,PRED);
       return state;
 
     case REMOVE_UNARY_PREDICATE:
@@ -327,6 +335,23 @@ function addTupleLanguageElement(elementName,newValue,nodeNames,type){
   return newElemValue;
 }
 
+function addNaryLanguageElement(elementName,arity,nodeNames,type){
+  let elemName = elementName+"/"+arity;
+  let newElemValue = "";
+  let structureInterpretationSet = type === PRED?structure.iPredicate:structure.iFunction;
+
+  if(structureInterpretationSet.has(elemName)){
+    for(let parsedArrayOfLanguageElement of structureInterpretationSet.get(elemName)){
+      let joinedParsedLanguageElement = parsedArrayOfLanguageElement.join(", ");
+      if(joinedParsedLanguageElement!==nodeNames.join(", ")){
+        newElemValue += "("+(joinedParsedLanguageElement)+"), ";
+      }
+    }
+  }
+  newElemValue += "("+(nodeNames.join(", "))+")";
+  return newElemValue;
+}
+
 function buildPreviousFunctionValuesWithoutCurrentValue(elementName,nodeNames,direction=BOTH){
   let elemName = elementName + "/1";
   let newElemValue = "";
@@ -439,6 +464,9 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
   }
   else if(elementArity === 2){
     elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction),nodeNames,PRED);
+  }
+  else{
+    elementValue = addNaryLanguageElement(elementName,elementArity,nodeNames,type);
   }
 
   let elemState = type === PRED?state.predicates:state.functions;

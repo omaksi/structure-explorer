@@ -1,5 +1,5 @@
 import {BaseNodeModel, BaseNodeModelOptions} from "../BaseNodeModel";
-import {NaryRelationPortModel} from "../NaryRelationPortModel";
+import {PREDICATE} from "../ConstantNames";
 
 export class TernaryNodeModel extends BaseNodeModel {
 
@@ -16,5 +16,10 @@ export class TernaryNodeModel extends BaseNodeModel {
 		if(nodeCombination){
 
 		}
+	}
+
+	addElementToMathView(name:string,type:string){
+		let addElementFunc = type === PREDICATE?this.getReduxProps()["addTernaryPredicate"]:this.getReduxProps()["addBinaryFunction"];
+		addElementFunc(name,this.getNodeNameCombination());
 	}
 }

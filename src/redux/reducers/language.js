@@ -1,6 +1,6 @@
 import {
   ADD_BINARY_PREDICATE,
-  ADD_CONSTANT_NODE, ADD_UNARY_FUNCTION,
+  ADD_CONSTANT_NODE, ADD_TERNARY_PREDICATE, ADD_UNARY_FUNCTION,
   ADD_UNARY_PREDICATE,
   IMPORT_APP,
   LOCK_CONSTANTS,
@@ -60,6 +60,9 @@ function languageReducer(s, action, struct) {
       return state;
     case ADD_BINARY_PREDICATE:
       addLanguageElement(action.predicateName,2,PRED);
+      return state;
+    case ADD_TERNARY_PREDICATE:
+      addLanguageElement(action.predicateName,3,PRED);
       return state;
     case ADD_UNARY_FUNCTION:
       addLanguageElement(action.functionName,1,FUNC);

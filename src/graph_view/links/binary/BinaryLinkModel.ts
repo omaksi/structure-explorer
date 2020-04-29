@@ -121,9 +121,12 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					if(naryNode && previousCombination){
 
 					}
-					//nastavme hodnotu
 					naryNode.setValueToPort(naryPort,unbinaryNode);
-					//pridajme novu ak je celistva
+					console.log("here we are");
+					if(naryNode.getNodeNameCombination()){
+						console.log("yes we have");
+						naryNode.representNodeInMathView();
+					}
 				}
 			},
 

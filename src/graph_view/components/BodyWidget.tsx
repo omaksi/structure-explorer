@@ -197,6 +197,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 		if(this.props.diagramState.imported){
 			this.props.store.dispatch(importDiagramState({...this.props.store.getState(),...this.reduxProps},this.focusOnBodyElement));
 		}
+		this.reduxProps["editable"] = this.props.diagramState.editableNodes;
 	}
 
 	focusOnBodyElement(){

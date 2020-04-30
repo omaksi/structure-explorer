@@ -10,7 +10,7 @@ import {
   TOGGLE_EDITABLE_NODES,
   RENAME_CONSTANT_NODE,
   ADD_QUATERNARY_NODE,
-  ADD_TERNARY_NODE, IMPORT_APP, IMPORT_DIAGRAM_STATE
+  ADD_TERNARY_NODE, IMPORT_APP, IMPORT_DIAGRAM_STATE, REMOVE_QUATERNARY_NODE, REMOVE_TERNARY_NODE
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
 import {BASIC_CURVYNESS, BOTH, FROM, FUNCTION, PREDICATE, TO, UNBINARY} from "../../graph_view/nodes/ConstantNames";
@@ -56,6 +56,12 @@ function diagramReducer(state, action) {
       return state;
     case REMOVE_CONSTANT_NODE:
       state.constantNodes.delete(action.nodeName);
+      return state;
+    case REMOVE_TERNARY_NODE:
+      state.ternaryNodes.delete(action.nodeName);
+      return state;
+    case REMOVE_QUATERNARY_NODE:
+      state.quaternaryNodes.delete(action.nodeName);
       return state;
     case ADD_TERNARY_NODE:
       state.ternaryNodes.set(action.nodeName,action.nodeObject);

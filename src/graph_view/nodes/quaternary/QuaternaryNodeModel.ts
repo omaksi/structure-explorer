@@ -20,4 +20,8 @@ export class QuaternaryNodeModel extends BaseNodeModel {
 		let addElementFunction = type === PREDICATE?this.getReduxProps()["addQuaternaryPredicate"]:this.getReduxProps()["addTernaryFunction"];
 		addElementFunction(name,this.getNodeNameCombination());
 	}
+
+	removeNodeFromGraphView(){
+		this.getReduxProps()["removeQuaternaryNode"](this.getNodeName());
+	}
 }

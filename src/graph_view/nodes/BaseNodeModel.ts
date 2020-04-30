@@ -150,8 +150,13 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         this.registerListener({
             entityRemoved(): void {
                 node.removeNodeFromMathView();
+                node.removeNodeFromGraphView();
             }
         })
+    }
+
+    removeNodeFromGraphView(){
+        throw new Error("This method should be implemented in child");
     }
 
     changeEditableState(value:boolean){

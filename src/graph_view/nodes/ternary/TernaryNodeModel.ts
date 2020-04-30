@@ -20,4 +20,8 @@ export class TernaryNodeModel extends BaseNodeModel {
 		let addElementFunction = type === PREDICATE?this.getReduxProps()["addTernaryPredicate"]:this.getReduxProps()["addBinaryFunction"];
 		addElementFunction(name,this.getNodeNameCombination());
 	}
+
+	removeNodeFromGraphView(){
+		this.getReduxProps()["removeTernaryNode"](this.getNodeName());
+	}
 }

@@ -17,13 +17,15 @@ import {CONSTANTNODE, QUATERNARYNODE, TERNARYNODE, UNBINARYNODE} from "../nodes/
 export interface BodyWidgetProps {
 	syncDiagram:any;
 	addDomainNode:any;
+	addConstantNode:any;
 	addTernaryNode:any;
 	addQuaternaryNode:any;
 	renameDomainNode:any;
-	removeDomainNode:any;
-	addConstantNode:any;
 	renameConstantNode:any;
+	removeDomainNode:any;
 	removeConstantNode:any;
+	removeTernaryNode:any;
+	removeQuaternaryNode:any;
 	addUnaryPredicate:any;
 	addUnaryFunction:any;
 	addBinaryPredicate:any;
@@ -162,6 +164,8 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			"removeDomainNode": this.props.removeDomainNode,
 			"renameConstantNode": this.props.renameConstantNode,
 			"removeConstantNode": this.props.removeConstantNode,
+			"removeTernaryNode": this.props.removeTernaryNode,
+			"removeQuaternaryNode": this.props.removeQuaternaryNode,
 			"addUnaryPredicate": this.props.addUnaryPredicate,
 			"addUnaryFunction": this.props.addUnaryFunction,
 			"addBinaryPredicate": this.props.addBinaryPredicate,

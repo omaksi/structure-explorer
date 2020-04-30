@@ -205,7 +205,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                 this.props.model.addFunction(this.textInput.value);
             }
             this.textInput.value = "";
-            this.setStateBadNameForLanguageElement(true);
+            this.setState({badNameForLanguageElement:true,canAddAsFunction:true,canAddAsPredicate:true});
             this.props.engine.repaintCanvas();
         }
     }

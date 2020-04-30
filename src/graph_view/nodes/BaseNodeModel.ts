@@ -198,9 +198,10 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         name = name.replace(/\s/g, "");
         if (!this.predicates.has(name)) {
             this.addPredicateToSet(name);
-            if(this.getNodeNameCombination()){
-                this.addElementToMathView(name,PREDICATE);
-            }
+
+            /*if(this.getNodeNameCombination()){*/
+            this.addElementToMathView(name,PREDICATE);
+           /*}*/
         }
     }
 
@@ -208,9 +209,9 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         name = name.replace(/\s/g, "");
         if (!this.functions.has(name)) {
             this.addFunctionToSet(name);
-            if(this.getNodeNameCombination()){
+            /*if(this.getNodeNameCombination()){*/
                 this.addElementToMathView(name,FUNCTION);
-            }
+            /*}*/
         }
     }
 

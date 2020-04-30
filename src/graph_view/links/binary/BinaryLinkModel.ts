@@ -116,9 +116,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					let naryPort: NaryRelationPortModel = link.getSourcePort() instanceof NaryRelationPortModel?link.getSourcePort():link.getTargetPort() instanceof NaryRelationPortModel?link.getTargetPort():null;
 					let previousCombination:any = naryNode.getNodeNameCombination();
 
-					console.log("previous",previousCombination);
 					if(naryNode && previousCombination){
-						console.log("yes removeNodeFromMathView",naryNode.getPredicates());
 						naryNode.removeNodeFromMathView();
 					}
 					removeLinkIfCondition(naryPort,link);

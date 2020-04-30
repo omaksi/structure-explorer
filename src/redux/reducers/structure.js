@@ -488,6 +488,9 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
     elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction),nodeNames,PRED);
   }
   else{
+    if(!nodeNames){
+      return;
+    }
     elementValue = buildNaryLanguageElement(elementName,elementArity,nodeNames,type);
     elementValue += "("+(nodeNames.join(", "))+")";
   }
@@ -509,6 +512,9 @@ function removeLanguageElement(elementName,elementArity,nodeNames,type){
   }
 
   else{
+    if(!nodeNames){
+      return;
+    }
     elementValue = buildNaryLanguageElement(elementName,elementArity,nodeNames,type);
     elementValue = elementValue.substring(0,elementValue.length-2);
   }

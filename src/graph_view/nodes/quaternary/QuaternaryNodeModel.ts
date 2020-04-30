@@ -1,4 +1,5 @@
 import {BaseNodeModel, BaseNodeModelOptions} from "../BaseNodeModel";
+import {PREDICATE} from "../ConstantNames";
 
 export class QuaternaryNodeModel extends BaseNodeModel {
 
@@ -10,6 +11,13 @@ export class QuaternaryNodeModel extends BaseNodeModel {
 		});
 	}
 
-	removeNodeFromMathView(){
+	removeElementFromMathView(name: string, type: string) {
+		let removeElementFunction = type === PREDICATE?this.getReduxProps()["removeQuaternaryPredicate"]:this.getReduxProps()["removeTernaryFunction"];
+		removeElementFunction(name,this.getNodeNameCombination());
+	}
+
+	addElementToMathView(name:string,type:string){
+		let addElementFunction = type === PREDICATE?this.getReduxProps()["addQuaternaryPredicate"]:this.getReduxProps()["addTernaryFunction"];
+		addElementFunction(name,this.getNodeNameCombination());
 	}
 }

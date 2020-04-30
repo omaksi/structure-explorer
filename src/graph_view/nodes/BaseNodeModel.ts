@@ -55,8 +55,6 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
 
     getNodeNameCombination(){
         let value:any = [];
-
-        //console.log("paramports",this.parameterPorts);
         for(let i = 0; i<this.parameterPortsArray.length;i++){
             let portValue:UnBinaryNodeModel = this.parameterPorts.get(this.parameterPortsArray[i]);
             if(!portValue){
@@ -87,8 +85,6 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
 
     setValueToPort(port:NaryRelationPortModel,valueNode:UnBinaryNodeModel){
         this.parameterPorts.set(port,valueNode);
-        console.log("new value",valueNode.getNodeName());
-        console.log(this.getNodeNameCombination());
     }
 
     increaseChangeCounter(){

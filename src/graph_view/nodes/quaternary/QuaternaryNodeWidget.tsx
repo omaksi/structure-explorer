@@ -116,8 +116,7 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 	}
 
 	getWidestElement(): number {
-		return 10;
-		let width: number = this.state.nodeName.length;
+		let width: number = 3;
 		let compareWidth: number = getWidestElement(this.state.isDropDownMenu, this.state.inputElementTextLength, this.props.model, width, "1", "0");
 
 		if (compareWidth > width) {

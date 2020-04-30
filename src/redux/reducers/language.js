@@ -1,6 +1,7 @@
 import {
+  ADD_BINARY_FUNCTION,
   ADD_BINARY_PREDICATE,
-  ADD_CONSTANT_NODE, ADD_TERNARY_PREDICATE, ADD_UNARY_FUNCTION,
+  ADD_CONSTANT_NODE, ADD_QUATERNARY_PREDICATE, ADD_TERNARY_FUNCTION, ADD_TERNARY_PREDICATE, ADD_UNARY_FUNCTION,
   ADD_UNARY_PREDICATE,
   IMPORT_APP,
   LOCK_CONSTANTS,
@@ -45,9 +46,9 @@ function languageReducer(s, action, struct) {
       return state;
     case SET_PREDICATES:
       functions.parseText(action.value, state.predicates, {startRule: RULE_PREDICATES});
-        setPredicates();
-        setConstants();
-        setFunctions();
+      setPredicates();
+      setConstants();
+      setFunctions();
       return state;
     case SET_FUNCTIONS:
       functions.parseText(action.value, state.functions, {startRule: RULE_FUNCTIONS});
@@ -56,24 +57,33 @@ function languageReducer(s, action, struct) {
       setConstants();
       return state;
     case ADD_UNARY_PREDICATE:
-      addLanguageElement(action.predicateName,1,PRED);
+      addLanguageElement(action.predicateName, 1, PRED);
       return state;
     case ADD_BINARY_PREDICATE:
-      addLanguageElement(action.predicateName,2,PRED);
+      addLanguageElement(action.predicateName, 2, PRED);
       return state;
     case ADD_TERNARY_PREDICATE:
-      addLanguageElement(action.predicateName,3,PRED);
+      addLanguageElement(action.predicateName, 3, PRED);
+      return state;
+    case ADD_QUATERNARY_PREDICATE:
+      addLanguageElement(action.predicateName, 4, PRED);
       return state;
     case ADD_UNARY_FUNCTION:
-      addLanguageElement(action.functionName,1,FUNC);
+      addLanguageElement(action.functionName, 1, FUNC);
+      return state;
+    case ADD_BINARY_FUNCTION:
+      addLanguageElement(action.functionName, 2, FUNC);
+      return state;
+    case ADD_TERNARY_FUNCTION:
+      addLanguageElement(action.functionName, 3, FUNC);
       return state;
     case ADD_CONSTANT_NODE:
       let newConstantVal = Array.from(structure.language.constants).join(", ");
 
-      if(newConstantVal.length !== 0){
-        newConstantVal+=", ";
+      if (newConstantVal.length !== 0) {
+        newConstantVal += ", ";
       }
-      newConstantVal+=action.nodeName;
+      newConstantVal += action.nodeName;
 
       functions.parseText(newConstantVal, state.constants, {startRule: RULE_CONSTANTS});
       setConstants();
@@ -95,12 +105,12 @@ function languageReducer(s, action, struct) {
     case REMOVE_CONSTANT_NODE:
       let newConstVal = "";
 
-      for(let constantName of structure.language.constants.keys()){
-        if(constantName!==action.nodeName){
-          newConstVal+=constantName+", ";
+      for (let constantName of structure.language.constants.keys()) {
+        if (constantName !== action.nodeName) {
+          newConstVal += constantName + ", ";
         }
       }
-      newConstVal = newConstVal.substring(0,newConstVal.length-2);
+      newConstVal = newConstVal.substring(0, newConstVal.length - 2);
 
       functions.parseText(newConstVal, state.constants, {startRule: RULE_CONSTANTS});
       setConstants();
@@ -109,15 +119,14 @@ function languageReducer(s, action, struct) {
     case RENAME_CONSTANT_NODE:
       let newConsVal = "";
 
-      for(let constantName of structure.language.constants.keys()){
-        if(constantName===action.oldName){
-          newConsVal+=action.newName+", ";
-        }
-        else{
-          newConsVal+=constantName+", ";
+      for (let constantName of structure.language.constants.keys()) {
+        if (constantName === action.oldName) {
+          newConsVal += action.newName + ", ";
+        } else {
+          newConsVal += constantName + ", ";
         }
       }
-      newConsVal = newConsVal.substring(0,newConsVal.length-2);
+      newConsVal = newConsVal.substring(0, newConsVal.length - 2);
 
       functions.parseText(newConsVal, state.constants, {startRule: RULE_CONSTANTS});
       setConstants();

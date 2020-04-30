@@ -129,20 +129,16 @@ export const addUnaryFunction = (functionName,sourceNodeName,targetNodeName,dire
   direction
 });
 
-export const addBinaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+export const addBinaryFunction = (functionName,nodeName) => ({
   type: 'ADD_BINARY_FUNCTION',
   functionName,
-  sourceNodeName,
-  targetNodeName,
-  direction
+  nodeName
 });
 
-export const addTernaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+export const addTernaryFunction = (functionName,nodeName) => ({
   type: 'ADD_TERNARY_FUNCTION',
   functionName,
-  sourceNodeName,
-  targetNodeName,
-  direction
+  nodeName
 });
 
 export const removeUnaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
@@ -169,12 +165,10 @@ export const removeBinaryFunction = (functionName,sourceNodeName,targetNodeName,
   direction
 });
 
-export const removeTernaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+export const removeTernaryFunction = (functionName,nodeName) => ({
   type: 'REMOVE_TERNARY_FUNCTION',
   functionName,
-  sourceNodeName,
-  targetNodeName,
-  direction
+  nodeName
 });
 
 export const removeTernaryPredicate = (predicateName,nodeName) => ({
@@ -183,12 +177,10 @@ export const removeTernaryPredicate = (predicateName,nodeName) => ({
   nodeName
 });
 
-export const removeQuaternaryPredicate = (functionName,sourceNodeName,targetNodeName,direction) => ({
+export const removeQuaternaryPredicate = (predicateName,nodeName) => ({
   type: 'REMOVE_QUATERNARY_PREDICATE',
-  functionName,
-  sourceNodeName,
-  targetNodeName,
-  direction
+  predicateName,
+  nodeName
 });
 
 export const changeDirectionOfBinaryRelation = (languageElementName,sourceNodeName,targetNodeName,direction,langType) => ({

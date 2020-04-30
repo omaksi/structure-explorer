@@ -31,7 +31,11 @@ import {
   CHANGE_DIRECTION_OF_BINARY_RELATION,
   ADD_UNARY_FUNCTION,
   REMOVE_UNARY_FUNCTION,
-  ADD_TERNARY_PREDICATE, REMOVE_TERNARY_PREDICATE, REMOVE_BINARY_FUNCTION
+  ADD_TERNARY_PREDICATE,
+  REMOVE_TERNARY_PREDICATE,
+  REMOVE_BINARY_FUNCTION,
+  ADD_QUATERNARY_PREDICATE,
+  REMOVE_QUATERNARY_PREDICATE, REMOVE_TERNARY_FUNCTION
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -111,6 +115,10 @@ function structureReducer(s, action, struct) {
       addLanguageElement(action.predicateName,3,action.nodeName,PRED);
       return state;
 
+    case ADD_QUATERNARY_PREDICATE:
+      addLanguageElement(action.predicateName, 4,action.nodeName,PRED);
+      return state;
+
     case REMOVE_UNARY_PREDICATE:
       removeLanguageElement(action.predicateName, 1, [action.nodeName], PRED);
       return state;
@@ -123,8 +131,15 @@ function structureReducer(s, action, struct) {
       removeLanguageElement(action.predicateName,3,action.nodeName,PRED);
       return state;
 
+    case REMOVE_QUATERNARY_PREDICATE:
+      removeLanguageElement(action.predicateName,4,action.nodeName,PRED);
+      return state;
+
     case REMOVE_BINARY_FUNCTION:
       removeLanguageElement(action.predicateName,2,action.nodeName,FUNC);
+      return state;
+    case REMOVE_TERNARY_FUNCTION:
+      removeLanguageElement(action.functionName,3,action.nodeName,FUNC);
       return state;
 
     case CHANGE_DIRECTION_OF_BINARY_RELATION:

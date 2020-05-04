@@ -29,6 +29,7 @@ import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
 import {DiagramApplication} from "../../graph_view/DiagramAplication";
 import _ from "lodash";
 import {TernaryNodeModel} from "../../graph_view/nodes/ternary/TernaryNodeModel";
+import {QuaternaryNodeModel} from "../../graph_view/nodes/quaternary/QuaternaryNodeModel";
 
 export function defaultState(){
   let diagramModel = new DiagramModel();
@@ -344,7 +345,7 @@ function syncPredicates(values) {
      let nodeName = getNodeName(nodesOfType,type);
 
      if (!nodes.has(nodePortMapCombination)) {
-       let node = new TernaryNodeModel({name:nodeName,reduxProps:reduxProps,numberOfPorts:type === TERNARY?3:4});
+       let node = type === TERNARY?new TernaryNodeModel({name:nodeName,reduxProps:reduxProps,numberOfPorts:3}):new QuaternaryNodeModel({name:nodeName,reduxProps:reduxProps,numberOfPorts:4});
        createNode(node,nodeName,nodesOfType,diagramState.diagramModel,diagramState.diagramEngine.getCanvas());
        createLinksForNaryNodes(node,nodePortMapCombination.split(","),diagramState.domainNodes,diagramState.diagramModel);
        nodes.set(nodePortMapCombination,node);

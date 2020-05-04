@@ -115,9 +115,9 @@ function diagramReducer(state, action) {
     case IMPORT_DIAGRAM_STATE:
       syncDomain(action.state,action.focusOnBodyFunc);
       syncLabels(state);
-      syncPredicates(action.state);
-      syncFunctions(action.state);
-      syncConstants(action.state,action.focusOnBodyFunc);
+      syncPredicates({...action.state,...action.focusOnBodyFunc});
+      syncFunctions({...action.state,...action.focusOnBodyFunc});
+      syncConstants({...action.state,...action.focusOnBodyFunc});
       syncNodesCords(state);
       return {...state,imported:false};
     default:
@@ -186,7 +186,7 @@ function createLabel(linkWhereLabelShouldBeAdded){
   linkWhereLabelShouldBeAdded.addLabel(label);
 }
 
-function syncConstants(values,focusOnBodyFunc){
+function syncConstants(values){
   if(values.structure.constants!== null){
     let constantObjects = new Map(Object.entries(values.structure.constants));
     let constantState = values.diagramState.constantNodes;
@@ -208,7 +208,7 @@ function syncConstants(values,focusOnBodyFunc){
           "renameConstantNode": values.renameConstantNode,
           "removeConstantNode": values.removeConstantNode,
           "setConstantValueFromLink": values.setConstantValueFromLink,
-          "focusOnBodyElement": focusOnBodyFunc,
+          "focusOnBodyElement": values.focusOnBodyFunc,
           "store": values.store,
         });
         createNode(node,nodeName,constantState,diagramModel,diagramCanvas);
@@ -304,20 +304,22 @@ function addToFunctionPortMap(portMapArity,value,keyWithoutArity) {
   }
 }
 
-function syncPredicates(values,focusOnBodyFunc) {
+function syncPredicates(values) {
   let portMap = syncLanguageElementType(values,PREDICATE);
   syncUnaryPredicates(portMap.get("1"),values.diagramState.domainNodes);
   syncBinaryLinkElement(portMap.get("2"),values.diagramState,PREDICATE);
-  syncNaryPredicates(portMap.get("3"),values,values.diagramState,focusOnBodyFunc,TERNARY);
+  syncNaryLanguageElements(portMap.get("3"),values,values.diagramState,values.focusOnBodyFunc,TERNARY,PREDICATE);
+  syncNaryLanguageElements(portMap.get("4"),values,values.diagramState,values.focusOnBodyFunc,QUATERNARY,PREDICATE);
  }
 
- function syncNaryPredicates(portMap,values,diagramState,focusOnBodyFunc,type) {
+ function syncNaryLanguageElements(portMap,values,diagramState,focusOnBodyFunc,type,typeElement) {
    let nodes = new Map();
    let nodesOfType = type === TERNARY ? diagramState.ternaryNodes : diagramState.quaternaryNodes;
 
    for (let node of nodesOfType.values()) {
      let nodeValue = node.getNodeNameCombination();
      if (nodeValue) {
+       typeElement === PREDICATE?node.clearPredicates():node.clearFunctions();
        nodes.set(nodeValue.join(","), node);
      }
    }
@@ -325,25 +327,33 @@ function syncPredicates(values,focusOnBodyFunc) {
    let reduxProps = {
      "addTernaryNode":values.addTernaryNode,
      "removeTernaryNode":values.removeTernaryNode,
+     "addQuaternaryNode":values.addQuaternaryNode,
+     "removeQuaternaryNode":values.removeQuaternaryNode,
      "addTernaryPredicate":values.addTernaryPredicate,
      "addBinaryFunction":values.addBinaryFunction,
      "removeTernaryPredicate":values.removeTernaryPredicate,
      "removeBinaryFunction":values.removeBinaryFunction,
+     "addQuaternaryPredicate":values.addQuaternaryPredicate,
+     "removeQuaternaryPredicate":values.removeQuaternaryPredicate,
      "focusOnBodyElement": focusOnBodyFunc,
      "editable": values.diagramState.editableNodes,
      "store": values.store
    };
 
    for (let [nodePortMapCombination, nodePortMapCombinationSet] of portMap.entries()) {
+     let nodeName = getNodeName(nodesOfType,type);
+
      if (!nodes.has(nodePortMapCombination)) {
-       let nodeName = getNodeName(nodesOfType,type);
-       let node = new TernaryNodeModel({name:nodeName,reduxProps:reduxProps,numberOfPorts:3});
+       let node = new TernaryNodeModel({name:nodeName,reduxProps:reduxProps,numberOfPorts:type === TERNARY?3:4});
        createNode(node,nodeName,nodesOfType,diagramState.diagramModel,diagramState.diagramEngine.getCanvas());
        createLinksForNaryNodes(node,nodePortMapCombination.split(","),diagramState.domainNodes,diagramState.diagramModel);
+       nodes.set(nodePortMapCombination,node);
      }
 
-     //let naryNode =
-
+     let naryNode = nodes.get(nodePortMapCombination);
+     for(let element of nodePortMapCombinationSet){
+       typeElement === PREDICATE?naryNode.addPredicateToSet(element):naryNode.addFunctionToSet(element);
+     }
    }
  }
 
@@ -365,6 +375,8 @@ function syncPredicates(values,focusOnBodyFunc) {
 function syncFunctions(values) {
   let portMap = syncLanguageElementType(values,FUNCTION);
   syncBinaryLinkElement(portMap.get("1"),values.diagramState,FUNCTION);
+  syncNaryLanguageElements(portMap.get("2"),values,values.diagramState,values.focusOnBodyFunc,TERNARY,FUNCTION);
+  syncNaryLanguageElements(portMap.get("3"),values,values.diagramState,values.focusOnBodyFunc,QUATERNARY,FUNCTION);
 }
 
 function syncUnaryPredicates(portMap,domainState) {

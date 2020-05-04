@@ -369,14 +369,39 @@ function addTupleLanguageElement(elementName,newValue,nodeNames,type){
 
 function buildNaryLanguageElement(elementName,arity,nodeNames,type){
   let elemName = elementName+"/"+arity;
-  let newElemValue = "";
-  let structureInterpretationSet = type === PRED?structure.iPredicate:structure.iFunction;
 
+  if(type === PRED){
+    return buildNaryPredicateValue(structure.iPredicate,elemName,nodeNames);
+  }
+ return buildNaryFunctionValue(structure.iFunction,elemName,nodeNames);
+}
+
+function buildNaryPredicateValue(structureInterpretationSet,elemName,nodeNames){
+  let newElemValue = "";
   if(structureInterpretationSet.has(elemName)){
     for(let parsedArrayOfLanguageElement of structureInterpretationSet.get(elemName)){
       let joinedParsedLanguageElement = parsedArrayOfLanguageElement.join(", ");
       if(joinedParsedLanguageElement!==nodeNames.join(", ")){
         newElemValue += "("+(joinedParsedLanguageElement)+"), ";
+      }
+    }
+  }
+  return newElemValue;
+}
+
+function buildNaryFunctionValue(structureInterpretationSet,elemName,nodeNames){
+  let newElemValue = "";
+  if(structureInterpretationSet.has(elemName)) {
+    let structureInterpretationObject = structure.iFunction.get(elemName);
+    let joinedNodeNames = nodeNames.join(", ");
+
+    for (let key in structureInterpretationObject) {
+      if (structureInterpretationObject.hasOwnProperty(key)) {
+
+        let keyNodeNamesParsed = JSON.parse(key).join(", ") + (", " + structureInterpretationObject[key]);
+        if (keyNodeNamesParsed !== joinedNodeNames) {
+          newElemValue += "(" + (keyNodeNamesParsed) + "), ";
+        }
       }
     }
   }
@@ -396,7 +421,7 @@ function buildPreviousFunctionValuesWithoutCurrentValue(elementName,nodeNames,di
         //attention - whitespace
         let keyNodeNamesParsed = JSON.parse(key).join(", ")+(", "+structureInterpretationObject[key]);
         if(keyNodeNamesParsed!== joinedNodeNames){
-          newElemValue+= addUnaryFuncValueBasedOnCondition(key,structureInterpretationObject,joinedNodeNames,direction)
+          newElemValue+= addUnaryFuncValueBasedOnCondition(key,structureInterpretationObject,joinedNodeNames,direction);
         }
       }
     }

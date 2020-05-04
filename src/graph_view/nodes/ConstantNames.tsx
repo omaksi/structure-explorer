@@ -21,3 +21,5 @@ export const UNBINARYNODE:string = "N";
 export const CONSTANTNODE:string = "C";
 export const TERNARYNODE:string = "T";
 export const QUATERNARYNODE:string = "Q";
+export const TERNARY = "T";
+export const QUATERNARY = "Q";

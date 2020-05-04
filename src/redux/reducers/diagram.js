@@ -13,12 +13,22 @@ import {
   ADD_TERNARY_NODE, IMPORT_APP, IMPORT_DIAGRAM_STATE, REMOVE_QUATERNARY_NODE, REMOVE_TERNARY_NODE
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
-import {BASIC_CURVYNESS, BOTH, FROM, FUNCTION, PREDICATE, TO, UNBINARY} from "../../graph_view/nodes/ConstantNames";
+import {
+  BASIC_CURVYNESS,
+  BOTH,
+  FROM,
+  FUNCTION,
+  PREDICATE, QUATERNARY,
+  TERNARY,
+  TO,
+  UNBINARY
+} from "../../graph_view/nodes/ConstantNames";
 import {ConstantNodeModel} from "../../graph_view/nodes/constant/ConstantNodeModel";
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import {BinaryLinkModel} from "../../graph_view/links/binary/BinaryLinkModel";
 import {DiagramApplication} from "../../graph_view/DiagramAplication";
 import _ from "lodash";
+import {TernaryNodeModel} from "../../graph_view/nodes/ternary/TernaryNodeModel";
 
 export function defaultState(){
   let diagramModel = new DiagramModel();
@@ -41,8 +51,8 @@ function diagramReducer(state, action) {
     case SYNC_DIAGRAM:
       syncDomain(action.value,action.focusOnBodyFunc);
       syncLabels(state);
-      syncPredicates(action.value);
-      syncFunctions(action.value);
+      syncPredicates(action.value,action.focusOnBodyFunc);
+      syncFunctions(action.value,action.focusOnBodyFunc);
       syncConstants(action.value,action.focusOnBodyFunc);
       return state;
     case ADD_DOMAIN_NODE:
@@ -150,13 +160,13 @@ function deleteAllLabels(action) {
   }
 }
 
-function createNode(nodeObject,nodeName,nameOfSet,diagramModel,diagramCanvas){
+function createNode(nodeObject,nodeName,nodeSet,diagramModel,diagramCanvas){
   let canvasWidth = diagramCanvas.clientWidth;
   let canvasHeight = diagramCanvas.clientHeight;
 
   nodeObject.setPosition(Math.random() * (canvasWidth - canvasWidth * 0.2) + canvasWidth * 0.05, Math.random() * (canvasHeight - canvasHeight * 0.2) + canvasHeight * 0.05);
 
-  addNodeState(nodeName, nodeObject, nameOfSet);
+  addNodeState(nodeName, nodeObject, nodeSet);
   diagramModel.addNode(nodeObject);
 }
 
@@ -294,25 +304,56 @@ function addToFunctionPortMap(portMapArity,value,keyWithoutArity) {
   }
 }
 
-function syncPredicates(values) {
+function syncPredicates(values,focusOnBodyFunc) {
   let portMap = syncLanguageElementType(values,PREDICATE);
-  console.log("portMapFull",portMap);
   syncUnaryPredicates(portMap.get("1"),values.diagramState.domainNodes);
   syncBinaryLinkElement(portMap.get("2"),values.diagramState,PREDICATE);
-  syncNaryPredicates(portMap.get("3"),values.diagramState);
+  syncNaryPredicates(portMap.get("3"),values,values.diagramState,focusOnBodyFunc,TERNARY);
  }
 
- function syncNaryPredicates(portMap,diagramState){
-  let ternaryNodes = new Map();
+ function syncNaryPredicates(portMap,values,diagramState,focusOnBodyFunc,type) {
+   let nodes = new Map();
+   let nodesOfType = type === TERNARY ? diagramState.ternaryNodes.values() : diagramState.quaternaryNodes.values();
 
-  for(let ternaryNode of diagramState.ternaryNodes.values()){
-    let ternaryNodeValue = ternaryNode.getNodeNameCombination();
-    if(ternaryNodeValue){
-      ternaryNodes.set(ternaryNodeValue,ternaryNode);
-    }
+   console.log("val", values);
+
+   for (let node of nodesOfType) {
+     let nodeValue = node.getNodeNameCombination();
+     if (nodeValue) {
+       nodes.set(nodeValue.join(","), node);
+     }
+   }
+
+   let reduxProps = {
+     "addTernaryNode":values.addTernaryNode,
+     "removeTernaryNode":values.removeTernaryNode,
+     "addTernaryPredicate":values.addTernaryPredicate,
+     "addBinaryFunction":values.addBinaryFunction,
+     "removeTernaryPredicate":values.removeTernaryPredicate,
+     "removeBinaryFunction":values.removeBinaryFunction,
+     "focusOnBodyElement": focusOnBodyFunc,
+     "editable": values.diagramState.editableNodes,
+     "store": values.store
+   };
+
+   for (let [nodePortMapCombination, nodePortMapCombinationSet] of portMap.entries()) {
+     if (nodes.has(nodePortMapCombination)) {
+
+     } else {
+       let nodeName = getNodeName(diagramState.ternaryNodes,TERNARY);
+       let node = new TernaryNodeModel({name:nodeName,reduxProps:reduxProps,numberOfPorts:3});
+       createNode(node,nodeName,diagramState.ternaryNodes,diagramState.diagramModel,diagramState.diagramEngine.getCanvas());
+     }
+   }
+ }
+
+ function getNodeName(diagramStateNodesOfType,type){
+  let name = type;
+  let index = 0;
+  while(diagramStateNodesOfType.has(name+index)){
+    index++;
   }
-
-   console.log("portMap",portMap);
+  return name+index;
  }
 
 function syncFunctions(values) {

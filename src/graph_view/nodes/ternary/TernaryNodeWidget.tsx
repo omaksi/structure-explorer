@@ -184,15 +184,6 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 					</PortWidget>
 					<PortWidget
 						style={{
-							top: -15,
-							position: 'absolute'
-						}}
-						port={this.props.model.getPortByIndex(2)}
-						engine={this.props.engine}>
-						<Port title={"Tretí parameter"}/>
-					</PortWidget>
-					<PortWidget
-						style={{
 							right: 50+"%",
 							marginRight: -38+"px",
 							top: this.props.size / 2 - 10,
@@ -201,6 +192,15 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 						port={this.props.model.getPortByIndex(1)}
 						engine={this.props.engine}>
 						<Port title={"Druhý parameter"}/>
+					</PortWidget>
+					<PortWidget
+						style={{
+							top: -15,
+							position: 'absolute'
+						}}
+						port={this.props.model.getPortByIndex(2)}
+						engine={this.props.engine}>
+						<Port title={"Tretí parameter"}/>
 					</PortWidget>
 				</Node>
 				<NaryNodeList pointerEvents={this.props.model.isEditable() ? "auto" : "none"}

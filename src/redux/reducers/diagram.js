@@ -313,11 +313,9 @@ function syncPredicates(values,focusOnBodyFunc) {
 
  function syncNaryPredicates(portMap,values,diagramState,focusOnBodyFunc,type) {
    let nodes = new Map();
-   let nodesOfType = type === TERNARY ? diagramState.ternaryNodes.values() : diagramState.quaternaryNodes.values();
+   let nodesOfType = type === TERNARY ? diagramState.ternaryNodes : diagramState.quaternaryNodes;
 
-   console.log("val", values);
-
-   for (let node of nodesOfType) {
+   for (let node of nodesOfType.values()) {
      let nodeValue = node.getNodeNameCombination();
      if (nodeValue) {
        nodes.set(nodeValue.join(","), node);
@@ -337,14 +335,22 @@ function syncPredicates(values,focusOnBodyFunc) {
    };
 
    for (let [nodePortMapCombination, nodePortMapCombinationSet] of portMap.entries()) {
-     if (nodes.has(nodePortMapCombination)) {
-
-     } else {
-       let nodeName = getNodeName(diagramState.ternaryNodes,TERNARY);
+     if (!nodes.has(nodePortMapCombination)) {
+       let nodeName = getNodeName(nodesOfType,type);
        let node = new TernaryNodeModel({name:nodeName,reduxProps:reduxProps,numberOfPorts:3});
-       createNode(node,nodeName,diagramState.ternaryNodes,diagramState.diagramModel,diagramState.diagramEngine.getCanvas());
+       createNode(node,nodeName,nodesOfType,diagramState.diagramModel,diagramState.diagramEngine.getCanvas());
+       createLinksForNaryNodes(node,nodePortMapCombination.split(","),diagramState.domainNodes,diagramState.diagramModel);
      }
+
+     //let naryNode =
+
    }
+ }
+
+ function createLinksForNaryNodes(naryNode,nodeNames,domainNodes,diagramModel){
+  for(let i = 0; i<naryNode.getNumberOfPorts();i++){
+    createLink(naryNode.getPortByIndex(i),domainNodes.get(nodeNames[i]).getMainPort(),diagramModel);
+  }
  }
 
  function getNodeName(diagramStateNodesOfType,type){

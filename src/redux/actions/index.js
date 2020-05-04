@@ -157,12 +157,10 @@ export const removeBinaryPredicate = (predicateName,sourceNodeName,targetNodeNam
   direction
 });
 
-export const removeBinaryFunction = (functionName,sourceNodeName,targetNodeName,direction) => ({
+export const removeBinaryFunction = (functionName,nodeName) => ({
   type: 'REMOVE_BINARY_FUNCTION',
   functionName,
-  sourceNodeName,
-  targetNodeName,
-  direction
+  nodeName
 });
 
 export const removeTernaryFunction = (functionName,nodeName) => ({

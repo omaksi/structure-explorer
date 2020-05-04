@@ -144,8 +144,9 @@ function structureReducer(s, action, struct) {
       return state;
 
     case REMOVE_BINARY_FUNCTION:
-      removeLanguageElement(action.predicateName,2,action.nodeName,FUNC);
+      removeLanguageElement(action.functionName,2,action.nodeName,FUNC);
       return state;
+
     case REMOVE_TERNARY_FUNCTION:
       removeLanguageElement(action.functionName,3,action.nodeName,FUNC);
       return state;

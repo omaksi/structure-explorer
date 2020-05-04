@@ -48,34 +48,34 @@ function diagramReducer(state, action) {
     case ADD_DOMAIN_NODE:
       state.domainNodes.set(action.nodeName, action.nodeObject);
       return state;
+    case RENAME_DOMAIN_NODE:
+      state.domainNodes.set(action.newName, state.domainNodes.get(action.oldName));
+      state.domainNodes.delete(action.oldName);
+      return state;
     case REMOVE_DOMAIN_NODE:
       state.domainNodes.delete(action.nodeName);
       return state;
     case ADD_CONSTANT_NODE:
       state.constantNodes.set(action.nodeName, action.nodeObject);
       return state;
+    case RENAME_CONSTANT_NODE:
+      state.constantNodes.set(action.newName, state.constantNodes.get(action.oldName));
+      state.constantNodes.delete(action.oldName);
+      return state;
     case REMOVE_CONSTANT_NODE:
       state.constantNodes.delete(action.nodeName);
-      return state;
-    case REMOVE_TERNARY_NODE:
-      state.ternaryNodes.delete(action.nodeName);
-      return state;
-    case REMOVE_QUATERNARY_NODE:
-      state.quaternaryNodes.delete(action.nodeName);
       return state;
     case ADD_TERNARY_NODE:
       state.ternaryNodes.set(action.nodeName,action.nodeObject);
       return state;
+    case REMOVE_TERNARY_NODE:
+      state.ternaryNodes.delete(action.nodeName);
+      return state;
     case ADD_QUATERNARY_NODE:
       state.quaternaryNodes.set(action.nodeName,action.nodeObject);
       return state;
-    case RENAME_DOMAIN_NODE:
-      state.domainNodes.set(action.newName, state.domainNodes.get(action.oldName));
-      state.domainNodes.delete(action.oldName);
-      return state;
-    case RENAME_CONSTANT_NODE:
-      state.constantNodes.set(action.newName, state.constantNodes.get(action.oldName));
-      state.constantNodes.delete(action.oldName);
+    case REMOVE_QUATERNARY_NODE:
+      state.quaternaryNodes.delete(action.nodeName);
       return state;
     case SYNC_MATH_STATE:
       deleteAllLabels(state);
@@ -296,8 +296,23 @@ function addToFunctionPortMap(portMapArity,value,keyWithoutArity) {
 
 function syncPredicates(values) {
   let portMap = syncLanguageElementType(values,PREDICATE);
+  console.log("portMapFull",portMap);
   syncUnaryPredicates(portMap.get("1"),values.diagramState.domainNodes);
   syncBinaryLinkElement(portMap.get("2"),values.diagramState,PREDICATE);
+  syncNaryPredicates(portMap.get("3"),values.diagramState);
+ }
+
+ function syncNaryPredicates(portMap,diagramState){
+  let ternaryNodes = new Map();
+
+  for(let ternaryNode of diagramState.ternaryNodes.values()){
+    let ternaryNodeValue = ternaryNode.getNodeNameCombination();
+    if(ternaryNodeValue){
+      ternaryNodes.set(ternaryNodeValue,ternaryNode);
+    }
+  }
+  
+   console.log("portMap",portMap);
  }
 
 function syncFunctions(values) {

@@ -195,7 +195,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
     }
 
     removeFunctionFromSet(name: string){
-        this.predicates.delete(name);
+        this.functions.delete(name);
         this.increaseChangeCounter();
     }
 

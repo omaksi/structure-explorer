@@ -311,7 +311,7 @@ function syncPredicates(values) {
       ternaryNodes.set(ternaryNodeValue,ternaryNode);
     }
   }
-  
+
    console.log("portMap",portMap);
  }
 

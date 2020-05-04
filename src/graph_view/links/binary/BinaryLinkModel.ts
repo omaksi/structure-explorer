@@ -17,6 +17,7 @@ import {BaseNodeModel} from "../../nodes/BaseNodeModel";
 import {TernaryNodeModel} from "../../nodes/ternary/TernaryNodeModel";
 import {QuaternaryNodeModel} from "../../nodes/quaternary/QuaternaryNodeModel";
 import {NaryRelationPortModel} from "../../nodes/NaryRelationPortModel";
+import { DiagramModel } from '@projectstorm/react-diagrams';
 
 export interface BinaryLinkModelListener extends LinkModelListener {
 	// @ts-ignore
@@ -71,6 +72,18 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 				}
 			}
 		};
+
+		let existNodeWithSameCombination = (nodeCombination:[string],diagramModel:DiagramModel,naryNode:BaseNodeModel) => {
+			for(let node of Object.values(diagramModel.getNodes())){
+				if((node instanceof TernaryNodeModel || node instanceof QuaternaryNodeModel) && naryNode !== node){
+					if(JSON.stringify(node.getNodeNameCombination()) === JSON.stringify(nodeCombination)){
+						return true;
+					}
+				}
+			}
+			return false;
+
+		};
 		// @ts-ignore
 		this.registerListener({
 			targetPortChanged(event: BaseEntityEvent<LinkModel> & { port: PortModel | null }): void {
@@ -119,10 +132,17 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 					if(naryNode && previousCombination){
 						naryNode.removeNodeFromMathView();
 					}
+
 					removeLinkIfCondition(naryPort,link);
 					naryNode.setValueToPort(naryPort,unbinaryNode);
-					if(naryNode.getNodeNameCombination()){
-						naryNode.representNodeInMathView();
+					let naryNodeCombination = naryNode.getNodeNameCombination();
+					if(naryNodeCombination){
+						if(existNodeWithSameCombination(naryNodeCombination,link.getSourcePort().getNode().getParent(),naryNode)){
+							link.remove();
+						}
+						else{
+							naryNode.representNodeInMathView();
+						}
 					}
 				}
 			},

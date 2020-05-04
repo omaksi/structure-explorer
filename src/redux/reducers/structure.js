@@ -35,7 +35,7 @@ import {
   REMOVE_TERNARY_PREDICATE,
   REMOVE_BINARY_FUNCTION,
   ADD_QUATERNARY_PREDICATE,
-  REMOVE_QUATERNARY_PREDICATE, REMOVE_TERNARY_FUNCTION
+  REMOVE_QUATERNARY_PREDICATE, REMOVE_TERNARY_FUNCTION, ADD_TERNARY_FUNCTION, ADD_BINARY_FUNCTION
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -117,6 +117,14 @@ function structureReducer(s, action, struct) {
 
     case ADD_QUATERNARY_PREDICATE:
       addLanguageElement(action.predicateName, 4,action.nodeName,PRED);
+      return state;
+
+    case ADD_BINARY_FUNCTION:
+      addLanguageElement(action.functionName,2,action.nodeName,FUNC);
+      return state;
+
+    case ADD_TERNARY_FUNCTION:
+      addLanguageElement(action.functionName,3,action.nodeName,FUNC);
       return state;
 
     case REMOVE_UNARY_PREDICATE:

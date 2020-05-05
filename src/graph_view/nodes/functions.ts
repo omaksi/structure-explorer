@@ -2,15 +2,15 @@ import {FUNCTION, PREDICATE, UNBINARY} from "./ConstantNames";
 import {RULE_CONSTANTS, RULE_DOMAIN} from "../../constants/parser_start_rules";
 let parser = require('../../parser/grammar');
 
-export function canUseNameForGivenArityAndType(predName:string,predArity:string,reduxProps:any,type:string):boolean{
+export function canUseNameForGivenArityAndType(elementName:string,elementArity:string,reduxProps:any,type:string):boolean{
     let structureObject = reduxProps["store"].getState().structureObject.language;
 
-    if(structureObject.constants && structureObject.constants.has(predName)){
+    if(structureObject.constants && structureObject.constants.has(elementName)){
         return false;
     }
 
     let givenSet = type === PREDICATE?structureObject.functions:structureObject.predicates;
-    if(givenSet && givenSet.has(predName)){
+    if(givenSet && givenSet.has(elementName)){
         return false;
     }
 
@@ -18,8 +18,8 @@ export function canUseNameForGivenArityAndType(predName:string,predArity:string,
 
     if(finalSet){
         for(let [langaugeElementName,languageElementArity] of finalSet.entries()){
-            if(langaugeElementName === predName){
-                return languageElementArity === predArity;
+            if(langaugeElementName === elementName){
+                return languageElementArity.toString() === elementArity;
             }
         }
     }

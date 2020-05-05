@@ -50,11 +50,13 @@ function diagramReducer(state, action) {
       state.diagramModel = action.diagramModel;
       return state;
     case SYNC_DIAGRAM:
-      syncDomain(action.value,action.focusOnBodyFunc);
+      let value = {...action.value,focusOnBodyFunc:action.focusOnBodyFunc};
+      console.log(value);
+      syncDomain(value);
       syncLabels(state);
-      syncPredicates(action.value,action.focusOnBodyFunc);
-      syncFunctions(action.value,action.focusOnBodyFunc);
-      syncConstants(action.value,action.focusOnBodyFunc);
+      syncPredicates(value);
+      syncFunctions(value);
+      syncConstants(value);
       return state;
     case ADD_DOMAIN_NODE:
       state.domainNodes.set(action.nodeName, action.nodeObject);
@@ -112,7 +114,7 @@ function diagramReducer(state, action) {
       clearDiagramState(state);
       return {...state,diagramModel:diagramModel,diagramCordState:JSON.parse(action.content).diagramCordState,imported:true};
     case IMPORT_DIAGRAM_STATE:
-      let values = {...action.state,...action.focusOnBodyFunc};
+      let values = {...action.state,focusOnBodyFunc:action.focusOnBodyFunc};
       syncDomain(values);
       syncLabels(values.diagramState);
       syncPredicates(values);
@@ -328,7 +330,7 @@ function syncPredicates(values) {
   syncNaryLanguageElements(portMap.get("4"),values,values.diagramState,values.focusOnBodyFunc,QUATERNARY,PREDICATE);
  }
 
- function syncNaryLanguageElements(portMap,values,diagramState,focusOnBodyFunc,type,typeElement) {
+ function syncNaryLanguageElements(portMap,values,diagramState,type,typeElement) {
    let nodes = new Map();
    let nodesOfType = type === TERNARY ? diagramState.ternaryNodes : diagramState.quaternaryNodes;
 
@@ -352,7 +354,7 @@ function syncPredicates(values) {
      "removeBinaryFunction":values.removeBinaryFunction,
      "addQuaternaryPredicate":values.addQuaternaryPredicate,
      "removeQuaternaryPredicate":values.removeQuaternaryPredicate,
-     "focusOnBodyElement": focusOnBodyFunc,
+     "focusOnBodyElement": values.focusOnBodyFunc,
      "editable": values.diagramState.editableNodes,
      "store": values.store
    };
@@ -392,8 +394,8 @@ function syncPredicates(values) {
 function syncFunctions(values) {
   let portMap = syncLanguageElementType(values,FUNCTION);
   syncBinaryLinkElement(portMap.get("1"),values.diagramState,FUNCTION);
-  syncNaryLanguageElements(portMap.get("2"),values,values.diagramState,values.focusOnBodyFunc,TERNARY,FUNCTION);
-  syncNaryLanguageElements(portMap.get("3"),values,values.diagramState,values.focusOnBodyFunc,QUATERNARY,FUNCTION);
+  syncNaryLanguageElements(portMap.get("2"),values,values.diagramState,TERNARY,FUNCTION);
+  syncNaryLanguageElements(portMap.get("3"),values,values.diagramState,QUATERNARY,FUNCTION);
 }
 
 function syncUnaryPredicates(portMap,domainState) {

@@ -3,7 +3,7 @@ import { ConstantNodeModel } from './ConstantNodeModel';
 import {DiagramEngine, PortWidget} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import {CONSTANT, UNBINARY} from "../ConstantNames";
-import {canUseNameForNode} from "../functions";
+import {canUseNameForNode, selectOnlyCurrentGraphElement} from "../functions";
 
 export interface ConstantNodeWidgetProps {
 	model: ConstantNodeModel;
@@ -114,9 +114,7 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 				pointerEvents={this.props.model.isEditable()?"auto":"none"}
 				cursor={this.props.model.isEditable()?"pointer":"move"}
 				onClick={() => {
-					this.props.engine.getModel().clearSelection();
-					this.props.model.setSelected(true);
-					this.props.engine.repaintCanvas();
+					selectOnlyCurrentGraphElement(this.props.model,this.props.engine);
 				}}>
 				<Title>
 					<PortWidget engine={this.props.engine} port={this.props.model.getMainPort()}>

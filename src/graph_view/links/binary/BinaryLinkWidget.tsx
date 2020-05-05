@@ -4,6 +4,7 @@ import { BinaryLinkModel } from './BinaryLinkModel';
 import { BinaryLinkPointWidget } from './BinaryLinkPointWidget';
 import { BinaryLinkSegmentWidget } from './BinaryLinkSegmentWidget';
 import { MouseEvent } from 'react';
+import {clearAllWithoutCurrentModel} from "../../nodes/functions";
 
 export interface BinaryLinkProps {
 	link: BinaryLinkModel;
@@ -32,6 +33,7 @@ export class BinaryLinkWidget extends React.Component<BinaryLinkProps, BinaryLin
 
 	componentDidMount(): void {
 		this.setRenderedLinkPath();
+		clearAllWithoutCurrentModel(this.props.link,this.props.diagramEngine);
 	}
 
 	setRenderedLinkPath(){

@@ -17,6 +17,7 @@ export class ConstantPortModel extends PortModel {
 		if (this.getMaximumLinks() === 0) {
 			return null;
 		}
+		this.getParentCanvasModel().clearSelection();
 		return new BinaryLinkModel();
 	}
 

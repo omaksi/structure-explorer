@@ -5,7 +5,7 @@ import { TernaryNodeModel } from './TernaryNodeModel';
 import {
 	DropDownMenuWidget
 } from "../DropDownMenuWidget";
-import { getWidestElement } from '../functions';
+import {getWidestElement, selectOnlyCurrentGraphElement} from '../functions';
 import {ADDPORT, ADDPORTSELECTED, FUNCTION, PREDICATE} from "../ConstantNames";
 import {ElementContainer} from "../../labels/binary/BinaryLabelWidget";
 import {Port as PortClassic} from "../../nodes/unbinary/UnBinaryPortLabelWidget";
@@ -154,7 +154,10 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 			<Element>
 				<Node size={this.props.size}
 					  pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
-					  cursor={this.props.model.isEditable() ? "pointer" : "move"}>
+					  cursor={this.props.model.isEditable() ? "pointer" : "move"}
+					  onClick={() => {
+						  selectOnlyCurrentGraphElement(this.props.model,this.props.engine);
+					  }}>
 
 
 					<svg width={this.props.size} height={this.props.size}>

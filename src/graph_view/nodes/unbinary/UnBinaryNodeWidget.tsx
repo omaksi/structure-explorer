@@ -8,7 +8,7 @@ import { Port } from "./UnBinaryPortLabelWidget";
 import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
 import {Element, ElementRowContainer} from "../../labels/binary/BinaryLabelWidget";
 import {DropDownMenuWidget} from "../DropDownMenuWidget";
-import {canUseNameForNode, getWidestElement} from "../functions";
+import {canUseNameForNode, getWidestElement, selectOnlyCurrentGraphElement} from "../functions";
 
 export interface UnBinaryNodeWidgetProps {
 	model: UnBinaryNodeModel;
@@ -190,6 +190,9 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					background={this.props.model.getOptions().color}
 					pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
 					cursor={this.props.model.isEditable() ? "pointer" : "move"}
+					onClick={() => {
+						selectOnlyCurrentGraphElement(this.props.model,this.props.engine);
+					}}
 				>
 					<Title title={"Vytvoriť novú linku ťahaním/dvojklikom premenovať názov vrcholu"}>
 						<PortWidget style={{flexGrow: 1}} engine={this.props.engine}
@@ -204,7 +207,8 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 									this.props.engine.getModel().clearSelection();
 									this.props.model.setSelected(true);
 								}
-							}}>
+							}}
+							>
 								{!this.state.renameActive ? this.props.model.getNodeName() :
 									<input autoFocus onBlur={() => {
 										let name = this.state.nodeName.replace(/\s/g, "");

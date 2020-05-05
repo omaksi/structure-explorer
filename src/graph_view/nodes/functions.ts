@@ -1,5 +1,6 @@
 import {FUNCTION, PREDICATE, UNBINARY} from "./ConstantNames";
 import {RULE_CONSTANTS, RULE_DOMAIN} from "../../constants/parser_start_rules";
+import { DiagramModel, DiagramEngine } from "@projectstorm/react-diagrams";
 let parser = require('../../parser/grammar');
 
 export function canUseNameForGivenArityAndType(elementName:string,elementArity:string,reduxProps:any,type:string):boolean{
@@ -24,6 +25,22 @@ export function canUseNameForGivenArityAndType(elementName:string,elementArity:s
         }
     }
     return true;
+}
+
+export function selectOnlyCurrentGraphElement(currentModel:any,engine:DiagramEngine){
+    engine.getModel().clearSelection();
+    currentModel.setSelected(true);
+    engine.repaintCanvas();
+}
+
+export function clearAllWithoutCurrentModel(currentModel:any,engine:DiagramEngine){
+    let selectedElements = engine.getModel().getSelectedEntities();
+    for(let graphObject of selectedElements){
+        if(graphObject!==currentModel){
+            graphObject.setSelected(false);
+        }
+    }
+    engine.repaintCanvas();
 }
 
 function setNodeBadNameIfStateContainsNodeWithSameName(state:Map<string,any>,newName:string,setNodeBadName:any){

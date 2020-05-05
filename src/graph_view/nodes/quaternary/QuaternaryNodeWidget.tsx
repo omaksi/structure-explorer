@@ -9,7 +9,7 @@ import {ADDPORT, ADDPORTSELECTED, FUNCTION, PREDICATE} from "../ConstantNames";
 import {DropDownMenuWidget} from "../DropDownMenuWidget";
 import {NaryNodeList} from "../ternary/TernaryNodeWidget";
 import {NaryListWidget} from "../NaryListWidget";
-import { getWidestElement } from '../functions';
+import {getWidestElement, selectOnlyCurrentGraphElement} from '../functions';
 
 export interface QuaternaryNodeWidgetProps {
 	model: QuaternaryNodeModel;
@@ -131,7 +131,10 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 			<Element>
 				<Node size={this.props.size}
 					  pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
-					  cursor={this.props.model.isEditable() ? "pointer" : "move"}>
+					  cursor={this.props.model.isEditable() ? "pointer" : "move"}
+					  onClick={() => {
+						  selectOnlyCurrentGraphElement(this.props.model,this.props.engine);
+					  }}>
 
 
 					<svg width={this.props.size} height={this.props.size}>

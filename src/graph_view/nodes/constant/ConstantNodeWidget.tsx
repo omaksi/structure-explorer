@@ -113,7 +113,11 @@ export class ConstantNodeWidget extends React.Component<ConstantNodeWidgetProps,
 				background={this.props.model.getOptions().color}
 				pointerEvents={this.props.model.isEditable()?"auto":"none"}
 				cursor={this.props.model.isEditable()?"pointer":"move"}
-			>
+				onClick={() => {
+					this.props.engine.getModel().clearSelection();
+					this.props.model.setSelected(true);
+					this.props.engine.repaintCanvas();
+				}}>
 				<Title>
 					<PortWidget engine={this.props.engine} port={this.props.model.getMainPort()}>
 						<TitleName onDoubleClick={() => {

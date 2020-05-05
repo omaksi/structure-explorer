@@ -326,12 +326,13 @@ function syncPredicates(values) {
   let portMap = syncLanguageElementType(values,PREDICATE);
   syncUnaryPredicates(portMap.get("1"),values.diagramState.domainNodes);
   syncBinaryLinkElement(portMap.get("2"),values.diagramState,PREDICATE);
-  syncNaryLanguageElements(portMap.get("3"),values,values.diagramState,values.focusOnBodyFunc,TERNARY,PREDICATE);
-  syncNaryLanguageElements(portMap.get("4"),values,values.diagramState,values.focusOnBodyFunc,QUATERNARY,PREDICATE);
+  syncNaryLanguageElements(portMap.get("3"),values,TERNARY,PREDICATE);
+  syncNaryLanguageElements(portMap.get("4"),values,QUATERNARY,PREDICATE);
  }
 
- function syncNaryLanguageElements(portMap,values,diagramState,type,typeElement) {
+ function syncNaryLanguageElements(portMap,values,type,typeElement) {
    let nodes = new Map();
+   let diagramState = values.diagramState;
    let nodesOfType = type === TERNARY ? diagramState.ternaryNodes : diagramState.quaternaryNodes;
 
    for (let node of nodesOfType.values()) {
@@ -394,8 +395,8 @@ function syncPredicates(values) {
 function syncFunctions(values) {
   let portMap = syncLanguageElementType(values,FUNCTION);
   syncBinaryLinkElement(portMap.get("1"),values.diagramState,FUNCTION);
-  syncNaryLanguageElements(portMap.get("2"),values,values.diagramState,TERNARY,FUNCTION);
-  syncNaryLanguageElements(portMap.get("3"),values,values.diagramState,QUATERNARY,FUNCTION);
+  syncNaryLanguageElements(portMap.get("2"),values,TERNARY,FUNCTION);
+  syncNaryLanguageElements(portMap.get("3"),values,QUATERNARY,FUNCTION);
 }
 
 function syncUnaryPredicates(portMap,domainState) {

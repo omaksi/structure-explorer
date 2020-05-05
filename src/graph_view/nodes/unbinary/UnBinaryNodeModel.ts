@@ -22,6 +22,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 	appendPort: UnBinaryPortModel;
 	mainPort: UnBinaryPortModel;
 	editable:boolean;
+	canSelectNode:boolean;
 
 	constructor(name: string, color: string, reduxProps: any);
 	constructor(options?: UnBinaryNodeModelOptions);
@@ -43,6 +44,7 @@ export class UnBinaryNodeModel extends NodeModel<NodeModelGenerics & UnBinaryNod
 		this.registerEvents();
 		this.changeCounter = 0;
 		this.unaryPredicates = new Set();
+		this.canSelectNode = true;
 		this.editable = reduxProps["editable"];
 	}
 

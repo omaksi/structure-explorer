@@ -51,7 +51,6 @@ function diagramReducer(state, action) {
       return state;
     case SYNC_DIAGRAM:
       let value = {...action.value,focusOnBodyFunc:action.focusOnBodyFunc};
-      console.log(value);
       syncDomain(value);
       syncLabels(state);
       syncPredicates(value);

@@ -191,7 +191,12 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 					pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
 					cursor={this.props.model.isEditable() ? "pointer" : "move"}
 					onClick={() => {
-						selectOnlyCurrentGraphElement(this.props.model,this.props.engine);
+						if(this.props.model.canSelectNode){
+							selectOnlyCurrentGraphElement(this.props.model,this.props.engine);
+						}
+						else{
+							this.props.model.canSelectNode = true;
+						}
 					}}
 				>
 					<Title title={"Vytvoriť novú linku ťahaním/dvojklikom premenovať názov vrcholu"}>

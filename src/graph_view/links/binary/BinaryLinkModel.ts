@@ -18,6 +18,7 @@ import {TernaryNodeModel} from "../../nodes/ternary/TernaryNodeModel";
 import {QuaternaryNodeModel} from "../../nodes/quaternary/QuaternaryNodeModel";
 import {NaryRelationPortModel} from "../../nodes/NaryRelationPortModel";
 import { DiagramModel } from '@projectstorm/react-diagrams';
+import {selectOnlyCurrentGraphElement} from "../../nodes/functions";
 
 export interface BinaryLinkModelListener extends LinkModelListener {
 	// @ts-ignore
@@ -97,6 +98,7 @@ export class BinaryLinkModel extends LinkModel<BinaryLinkModelGenerics> {
 				if (sourceNode instanceof UnBinaryNodeModel && targetNode instanceof UnBinaryNodeModel) {
 					if(sourceNode === targetNode) {
 						link.getOptions().curvyness = BASIC_CURVYNESS;
+						sourceNode.canSelectNode = false;
 						}
 					link.label = new BinaryLabelModel({},sourceNode.getOptions().reduxProps,sourceNode.getNodeName()+" - "+targetNode.getNodeName());
 					link.addLabel(link.label);

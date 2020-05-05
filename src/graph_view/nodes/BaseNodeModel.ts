@@ -65,6 +65,27 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         return value;
     }
 
+    getNodeParameters(){
+        let value:any = [];
+        for(let i = 0; i<this.parameterPortsArray.length;i++){
+            let portValue:UnBinaryNodeModel = this.parameterPorts.get(this.parameterPortsArray[i]);
+            if(!portValue){
+                return null;
+            }
+            if(i!==this.parameterPortsArray.length-1){
+                value.push(portValue.getNodeName());
+            }
+        }
+        return value;
+    }
+
+    getNodeValue(){
+        if(this.getNodeNameCombination()){
+            return this.parameterPorts.get(this.parameterPortsArray[this.parameterPortsArray.length-1]);
+        }
+        return null;
+    }
+
     getValueOfPort(port:NaryRelationPortModel){
         if(this.parameterPorts.has(port)){
             return this.parameterPorts.get(port);

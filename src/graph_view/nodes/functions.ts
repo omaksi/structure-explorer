@@ -1,6 +1,6 @@
 import {FUNCTION, PREDICATE, UNBINARY} from "./ConstantNames";
 import {RULE_CONSTANTS, RULE_DOMAIN} from "../../constants/parser_start_rules";
-import { DiagramModel, DiagramEngine } from "@projectstorm/react-diagrams";
+import {DiagramEngine } from "@projectstorm/react-diagrams";
 let parser = require('../../parser/grammar');
 
 export function canUseNameForGivenArityAndType(elementName:string,elementArity:string,reduxProps:any,type:string):boolean{
@@ -25,6 +25,20 @@ export function canUseNameForGivenArityAndType(elementName:string,elementArity:s
         }
     }
     return true;
+}
+
+export function functionIsAlreadyDefinedForGivenFunction(functionParameters:[string],functionValue:string,functionName:string,reduxProps:any):boolean{
+    let functionInterpretation = reduxProps["store"].getState().structureObject.iFunction;
+
+    if(functionInterpretation.has(functionName)){
+        console.log(functionInterpretation.get(functionName));
+        for(let [funcParameters,funcValue] of Object.entries(functionInterpretation.get(functionName))){
+            if(funcParameters === JSON.stringify(functionParameters)){
+                return funcValue!==functionValue;
+            }
+        }
+    }
+    return false;
 }
 
 export function selectOnlyCurrentGraphElement(currentModel:any,engine:DiagramEngine){

@@ -167,16 +167,18 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 							top: this.props.size - 8,
 							position: 'absolute'
 						}}
-						port={this.props.model.getPortByIndex(3)}
+						port={this.props.model.getPortByIndex(1)}
 						engine={this.props.engine}>
 						<Port title={"Druhý parameter"} />
 					</PortWidget>
+
 					<PortWidget
 						style={{
 							right: 50+"%",
 							marginRight: -32+"px",
 							top: this.props.size / 2 - 9,
 							position: 'absolute'
+
 						}}
 						port={this.props.model.getPortByIndex(2)}
 						engine={this.props.engine}>
@@ -187,10 +189,11 @@ export class QuaternaryNodeWidget extends React.Component<QuaternaryNodeWidgetPr
 							top: -8,
 							position: 'absolute'
 						}}
-						port={this.props.model.getPortByIndex(1)}
+						port={this.props.model.getPortByIndex(3)}
 						engine={this.props.engine}>
 						<Port title={"Štvrtý parameter"} />
 					</PortWidget>
+
 				</Node>
 				<NaryNodeList pointerEvents={this.props.model.isEditable() ? "auto" : "none"}
 							  cursor={this.props.model.isEditable() ? "pointer" : "move"} s>

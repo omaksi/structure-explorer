@@ -1,9 +1,9 @@
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
-import {Button, ButtonGroup, ButtonToolbar, Form} from 'react-bootstrap';
+import {Button, ButtonGroup, ButtonToolbar} from 'react-bootstrap';
 import ModalComponent from '../components_parts/ModalComponent';
 
-const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (
+const ButtonToolbarComponent = ({clearGraphSelection,exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (
     <ButtonToolbar>
 
         <ButtonGroup className='mr-lg-2'>
@@ -19,7 +19,7 @@ const ButtonToolbarComponent = ({exportState,setExerciseNameState,modalShowState
         </ButtonGroup>
 
         <ButtonGroup className='mr-lg-2'>
-        <Button variant='secondary' size='lg' title='Exportovať cvičenie' onClick={() => setModelShowState(true)}>
+        <Button variant='secondary' size='lg' title='Exportovať cvičenie' onClick={() => {setModelShowState(true);clearGraphSelection();}}>
             <FontAwesome name='fas fa-file-export'/>
             <span className={'hidden-on-medium-and-lower'}>&nbsp;Exportovať</span>
         </Button>

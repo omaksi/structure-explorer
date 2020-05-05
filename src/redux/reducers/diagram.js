@@ -10,7 +10,7 @@ import {
   TOGGLE_EDITABLE_NODES,
   RENAME_CONSTANT_NODE,
   ADD_QUATERNARY_NODE,
-  ADD_TERNARY_NODE, IMPORT_APP, IMPORT_DIAGRAM_STATE, REMOVE_QUATERNARY_NODE, REMOVE_TERNARY_NODE
+  ADD_TERNARY_NODE, IMPORT_APP, IMPORT_DIAGRAM_STATE, REMOVE_QUATERNARY_NODE, REMOVE_TERNARY_NODE, CLEAR_GRAPH_SELECTION
 } from "../actions/action_types";
 import {UnBinaryNodeModel} from "../../graph_view/nodes/unbinary/UnBinaryNodeModel";
 import {
@@ -106,13 +106,11 @@ function diagramReducer(state, action) {
       }
       state.diagramEngine.repaintCanvas();
       return {...state, editableNodes: action.value};
-
     case IMPORT_APP:
       let diagramModel = new DiagramModel();
       state.diagramEngine.setModel(diagramModel);
       clearDiagramState(state);
       return {...state,diagramModel:diagramModel,diagramCordState:JSON.parse(action.content).diagramCordState,imported:true};
-
     case IMPORT_DIAGRAM_STATE:
       let values = {...action.state,...action.focusOnBodyFunc};
       syncDomain(values);
@@ -122,6 +120,9 @@ function diagramReducer(state, action) {
       syncConstants(values);
       syncNodesCords(values.diagramState);
       return {...state,imported:false};
+    case CLEAR_GRAPH_SELECTION:
+      state.diagramModel.clearSelection();
+      return state;
     default:
       return state;
   }

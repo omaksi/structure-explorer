@@ -215,6 +215,10 @@ export const setFunctionValueText = (value, functionName) => ({
   functionName
 });
 
+export const clearGraphSelection = () => ({
+  type: 'CLEAR_GRAPH_SELECTION'
+});
+
 export const setDiagramModel = (model) => ({
   type: 'SET_MODEL',
   model

@@ -3,7 +3,7 @@ import React from 'react';
 import {Col, Row} from 'react-bootstrap';
 import {Provider} from 'react-redux';
 import ExpressionsContainer from './redux/containers/ExpressionsContainer';
-import {importAppState} from "./redux/actions";
+import {clearGraphSelection, importAppState} from "./redux/actions";
 import {DEFAULT_FILE_NAME} from "./constants";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
@@ -38,6 +38,7 @@ class App extends React.Component<AppProps,AppState> {
     this.setTeacherModeState = this.setTeacherModeState.bind(this);
     this.setExerciseNameState = this.setExerciseNameState.bind(this);
     this.makeCordNodes = this.makeCordNodes.bind(this);
+    this.clearGraphSelection = this.clearGraphSelection.bind(this);
   }
 
   makeCordNodes(diagramState:any){
@@ -104,12 +105,16 @@ class App extends React.Component<AppProps,AppState> {
     this.props.toggleTeacherMode();
   }
 
+  clearGraphSelection(){
+    this.props.store.dispatch(clearGraphSelection());
+  }
+
   render() {
     return (
         <Provider store={this.props.store}>
           <div className='app'>
             <Row className={'navbar'}>
-                  <ButtonToolbarComponent exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
+                  <ButtonToolbarComponent clearGraphSelection={this.clearGraphSelection} exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
             </Row>
               {!this.state.diagramToggled? (
                   <MathSystemContainer/>

@@ -331,6 +331,7 @@ function syncPredicates(values) {
      "addQuaternaryNode":values.addQuaternaryNode,
      "removeQuaternaryNode":values.removeQuaternaryNode,
      "addTernaryPredicate":values.addTernaryPredicate,
+     "removeTernaryFunction":values.removeTernaryFunction,
      "addBinaryFunction":values.addBinaryFunction,
      "removeTernaryPredicate":values.removeTernaryPredicate,
      "removeBinaryFunction":values.removeBinaryFunction,

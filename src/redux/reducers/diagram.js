@@ -114,12 +114,13 @@ function diagramReducer(state, action) {
       return {...state,diagramModel:diagramModel,diagramCordState:JSON.parse(action.content).diagramCordState,imported:true};
 
     case IMPORT_DIAGRAM_STATE:
-      syncDomain(action.state,action.focusOnBodyFunc);
-      syncLabels(state);
-      syncPredicates({...action.state,...action.focusOnBodyFunc});
-      syncFunctions({...action.state,...action.focusOnBodyFunc});
-      syncConstants({...action.state,...action.focusOnBodyFunc});
-      syncNodesCords(state);
+      let values = {...action.state,...action.focusOnBodyFunc};
+      syncDomain(values);
+      syncLabels(values.diagramState);
+      syncPredicates(values);
+      syncFunctions(values);
+      syncConstants(values);
+      syncNodesCords(values.diagramState);
       return {...state,imported:false};
     default:
       return state;
@@ -129,12 +130,25 @@ function diagramReducer(state, action) {
 function syncNodesCords(state){
   let nodeState = new Map([["domainNodes", state.domainNodes],["constantNodes", state.constantNodes],["ternaryNodes", state.ternaryNodes],["quaternaryNodes",state.quaternaryNodes]]);
   let diagramCordState = state.diagramCordState;
+  let naryNodeMap = new Map();
+
+  for (let nodeTypeMap of nodeState.values()) {
+    if(nodeTypeMap === "ternaryNodes" || nodeTypeMap === "quaternaryNodes"){
+      for(let node of nodeTypeMap.values()){
+        let nodeValue = node.getNodeNameCombination();
+        if (nodeValue) {
+          naryNodeMap.set(nodeValue.join(","), node);
+        }
+      }
+    }
+  }
 
   for(let mapName of nodeState.keys()){
     for(let [nodeName,nodeObject] of nodeState.get(mapName).entries()){
       if(diagramCordState.hasOwnProperty(mapName)){
-        if(diagramCordState[mapName].hasOwnProperty(nodeName)){
-          let cord = diagramCordState[mapName][nodeName];
+        let nodeNameInObject = (mapName === "domainNodes" || mapName === "constantNodes")?nodeName:nodeObject.getNodeNameCombination();
+        if(diagramCordState[mapName].hasOwnProperty(nodeNameInObject)){
+          let cord = diagramCordState[mapName][nodeNameInObject];
           nodeObject.setPosition(cord.x,cord.y);
         }
       }
@@ -486,7 +500,7 @@ function removeLinksToRemove(linksToRemove){
   }
 }
 
-function syncDomain(values,focusOnBodyFunc) {
+function syncDomain(values) {
   let domain = (values.structureObject.domain);
   let domainState = values.diagramState.domainNodes;
   let diagramModel = values.diagramState.diagramModel;
@@ -523,7 +537,7 @@ function syncDomain(values,focusOnBodyFunc) {
         "removeUnaryFunction": values.removeUnaryFunction,
         "removeBinaryPredicate": values.removeBinaryPredicate,
         "changeDirectionOfBinaryRelation": values.changeDirectionOfBinaryRelation,
-        "focusOnBodyElement": focusOnBodyFunc,
+        "focusOnBodyElement": values.focusOnBodyFunc,
         "editable":values.diagramState.editableNodes,
         "store":values.store,
       });

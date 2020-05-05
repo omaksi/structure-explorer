@@ -33,7 +33,9 @@ export class UnBinaryPortModel extends PortModel {
 
 	canLinkToPort(port: PortModel): boolean {
 		for (let link of _.values(this.getLinks())) {
-			if (link.getSourcePort() === this && link.getTargetPort() === port) {
+			if ((link.getSourcePort() === this && link.getTargetPort() === port) || (link.getSourcePort() === port && link.getTargetPort() === this)) {
+				// @ts-ignore
+				this.getParent().canSelectNode = false;
 				return false;
 			}
 		}

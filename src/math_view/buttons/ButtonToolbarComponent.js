@@ -2,6 +2,7 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {Button, ButtonGroup, ButtonToolbar} from 'react-bootstrap';
 import ModalComponent from '../components_parts/ModalComponent';
+import {HelpGraphButton} from "./HelpGraphButton";
 
 const ButtonToolbarComponent = ({clearGraphSelection,exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (
     <ButtonToolbar>
@@ -36,6 +37,12 @@ const ButtonToolbarComponent = ({clearGraphSelection,exportState,setExerciseName
             <span className={'hidden-on-medium-and-lower'}>&nbsp;Importovať</span>
         </Button>
         </ButtonGroup>
+
+        {diagramToggledState ?
+            <ButtonGroup>
+                <HelpGraphButton/>
+            </ButtonGroup>: null
+        }
 
         <ModalComponent exportState={exportState} modalShowState={modalShowState} setExerciseNameState={setExerciseNameState} setModalShowState={setModelShowState}/>
 

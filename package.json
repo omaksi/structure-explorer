@@ -1,6 +1,6 @@
 {
   "name": "fol-graphexplorer",
-  "version": "4.7.3",
+  "version": "5.2.0",
   "private": true,
   "dependencies": {
     "@emotion/core": "^10.0.28",

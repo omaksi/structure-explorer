@@ -8,6 +8,7 @@ import {DEFAULT_FILE_NAME} from "./constants";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
 import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
+import {HelpGraphButton} from "./math_view/buttons/HelpGraphButton";
 
 interface AppProps{
   store:any;
@@ -116,14 +117,13 @@ class App extends React.Component<AppProps,AppState> {
             <Row className={'navbar'}>
                   <ButtonToolbarComponent clearGraphSelection={this.clearGraphSelection} exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
             </Row>
-              {!this.state.diagramToggled? (
-                  <MathSystemContainer/>
-                  ):
+              {this.state.diagramToggled? (
                   <Row className='reactDiagram'>
                     <Col sm={12} >
                       <DiagramModelContainer store={this.props.store}/>
                     </Col>
                   </Row>
+                  ):<MathSystemContainer/>
               }
             <Row>
               <Col sm={12}>

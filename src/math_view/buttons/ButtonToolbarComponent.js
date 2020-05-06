@@ -2,13 +2,15 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {Button, ButtonGroup, ButtonToolbar} from 'react-bootstrap';
 import ModalComponent from '../components_parts/ModalComponent';
-import {HelpGraphButton} from "./HelpGraphButton";
+import HelpGraphButton from "./HelpGraphButton";
 
-const ButtonToolbarComponent = ({clearGraphSelection,exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (
+const ButtonToolbarComponent = ({setCollapseHelpGraphButton,collapseHelpGraphButton,clearGraphSelection,exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (
     <ButtonToolbar>
-
         <ButtonGroup className='mr-lg-2'>
-        <Button variant='outline-primary' size='lg' title='Prepnúť na matematický pohľad' className={diagramToggledState?'':' active'} onClick={() => setDiagramToggledState(false)}>
+        <Button variant='outline-primary' size='lg' title='Prepnúť na matematický pohľad' className={diagramToggledState?'':' active'} onClick={() => {
+            setDiagramToggledState(false);
+            setCollapseHelpGraphButton(false);
+        }}>
             <FontAwesome name='fas fa-list'/>
             <span className={'hidden-on-medium-and-lower'}>&nbsp;Matematika</span>
         </Button>
@@ -40,7 +42,7 @@ const ButtonToolbarComponent = ({clearGraphSelection,exportState,setExerciseName
 
         {diagramToggledState ?
             <ButtonGroup className='mr-lg-2'>
-                <HelpGraphButton/>
+                <HelpGraphButton collapseHelpGraphButton={collapseHelpGraphButton} setCollapseHelpGraphButton={setCollapseHelpGraphButton}/>
             </ButtonGroup>: null
         }
 

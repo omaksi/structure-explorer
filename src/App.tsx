@@ -8,7 +8,7 @@ import {DEFAULT_FILE_NAME} from "./constants";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
 import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
-import {HelpGraphButton} from "./math_view/buttons/HelpGraphButton";
+import HelpGraphCollapse from "./math_view/buttons/HelpGraphCollapse";
 
 interface AppProps{
   store:any;
@@ -20,6 +20,7 @@ interface AppState {
   modalShow:boolean;
   diagramToggled:boolean;
   exerciseName:string;
+  collapseHelpGraphButton:boolean;
 }
 
 class App extends React.Component<AppProps,AppState> {
@@ -29,6 +30,7 @@ class App extends React.Component<AppProps,AppState> {
     this.state = {
       modalShow: false,
       diagramToggled:true,
+      collapseHelpGraphButton:false,
       exerciseName:''
     };
 
@@ -40,6 +42,11 @@ class App extends React.Component<AppProps,AppState> {
     this.setExerciseNameState = this.setExerciseNameState.bind(this);
     this.makeCordNodes = this.makeCordNodes.bind(this);
     this.clearGraphSelection = this.clearGraphSelection.bind(this);
+    this.setCollapseHelpGraphButton = this.setCollapseHelpGraphButton.bind(this);
+  }
+
+  setCollapseHelpGraphButton(bool:boolean){
+    this.setState({collapseHelpGraphButton:bool})
   }
 
   makeCordNodes(diagramState:any){
@@ -115,7 +122,8 @@ class App extends React.Component<AppProps,AppState> {
         <Provider store={this.props.store}>
           <div className='app'>
             <Row className={'navbar'}>
-                  <ButtonToolbarComponent clearGraphSelection={this.clearGraphSelection} exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
+                  <ButtonToolbarComponent setCollapseHelpGraphButton={this.setCollapseHelpGraphButton} collapseHelpGraphButton={this.state.collapseHelpGraphButton} clearGraphSelection={this.clearGraphSelection} exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
+                  <HelpGraphCollapse collapsed={this.state.collapseHelpGraphButton}/>
             </Row>
               {this.state.diagramToggled? (
                   <Row className='reactDiagram'>

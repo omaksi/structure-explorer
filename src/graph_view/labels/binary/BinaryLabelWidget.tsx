@@ -8,6 +8,7 @@ import {ADDPORT, ADDPORTSELECTED, BOTH, FROM, FUNCTION, PREDICATE} from "../../n
 import {DropDownMenuWidget} from "../../nodes/DropDownMenuWidget";
 import {Port} from "../../nodes/unbinary/UnBinaryPortLabelWidget";
 import {getWidestElement} from "../../nodes/functions";
+import { Button } from "react-bootstrap";
 
 export interface BinaryLabelWidgetProps {
 	model: BinaryLabelModel;
@@ -65,21 +66,6 @@ export const ElementRowContainer = styled.div`
 		flex: 1 0 0;
 	`;
 
-export const ElementButton = styled.div`
-		outline: none;
-		cursor: pointer;
-		height: 20px;
-		background: rgba(white, 0.1);
-		color: black;
-		text-align:center;
-		padding-left:0.2em;
-		padding-right:0.2em;
-
-		&:hover {
-			background: #00ff80;
-		}
-	`;
-
 export const Title = styled.div`
 		width: 100%;
 		background: rgba(256, 256, 256, 0.15);
@@ -127,17 +113,17 @@ export class BinaryLabelWidget extends React.Component<BinaryLabelWidgetProps,Bi
 		return (
 				<ElementRowContainer key={elementObject[0]} >
 					{this.sourceNodeName !== this.targetNodeName?
-					<ElementButton onClick={() =>{
+					<Button className={'btn-graph'} variant={"outline-warning"} onClick={() =>{
 						this.props.model.changeDirectionOfBinaryRelation(elementObject[0], elementObject[1],type);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome title={"Smer "+(type===PREDICATE?"predikátu":"funkcie")} name={elementObject[1]===BOTH?'fas fa-arrows-alt-h':(elementObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></ElementButton>:null}
+					}}><FontAwesome title={"Smer "+(type===PREDICATE?"predikátu":"funkcie")} name={elementObject[1]===BOTH?'fas fa-arrows-alt-h':(elementObject[1]===FROM?"fas fa-long-arrow-alt-right":"fas fa-long-arrow-alt-left")}/></Button>:null}
 				<Element title={type===PREDICATE?"Predikát":"Funkcia"}>
 					{elementObject[0]}
 				</Element>
-					<ElementButton title={"Zmazať "+(type===PREDICATE?"daný predikát":"danú funkciu")+" z vrcholu"} onClick={() =>{
+					<Button className={'btn-graph'} variant={"outline-warning"} title={"Zmazať "+(type===PREDICATE?"daný predikát":"danú funkciu")+" z vrcholu"} onClick={() =>{
 						type===PREDICATE?this.props.model.removePredicate(elementObject[0]):this.props.model.removeFunction(elementObject[0]);
 						this.props.engine.repaintCanvas();
-					}}><FontAwesome name={"fas fa-trash"}/></ElementButton>
+					}}><FontAwesome name={"fas fa-trash"}/></Button>
 				</ElementRowContainer>
 			)
 		};

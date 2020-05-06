@@ -65,13 +65,6 @@ export const Elements = styled.div`
 		background-image: linear-gradient(rgba(256, 256, 256, 0.4), rgba(256, 256, 256, 0.5));
 	`;
 
-export const ToggleButton = styled.div`
-	position:absolute;
-	top: 5px;
-	font-size: 12px;
-	pointer-events: none;
-`;
-
 export const Node = styled.div<{ size: number, pointerEvents: string, cursor:string}>`
 	position: 'relative';
 	pointer-events: ${p => p.pointerEvents};
@@ -114,10 +107,6 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 			this.setState({isDropDownMenu: false});
 			this.props.model.setLocked(false);
 		}
-	}
-
-	setColor(color: any) {
-		this.setState({color: color});
 	}
 
 	closeDropDown() {

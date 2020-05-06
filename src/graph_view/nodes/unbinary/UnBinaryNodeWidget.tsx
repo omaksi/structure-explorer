@@ -9,6 +9,7 @@ import {ADDPORT, ADDPORTSELECTED, UNBINARY} from "../ConstantNames";
 import {Element, ElementRowContainer} from "../../labels/binary/BinaryLabelWidget";
 import {DropDownMenuWidget} from "../DropDownMenuWidget";
 import {canUseNameForNode, getWidestElement, selectOnlyCurrentGraphElement} from "../functions";
+import { Button } from 'react-bootstrap';
 
 export interface UnBinaryNodeWidgetProps {
 	model: UnBinaryNodeModel;
@@ -74,21 +75,6 @@ export const PortsContainer = styled.div`
 		flex: 1 0 0;
 	`;
 
-export const PredicateButton = styled.div`
-		outline: none;
-		cursor: pointer;
-		height: 20px;
-		background: rgba(white, 0.1);
-		color: black;
-		text-align:center;
-		padding-left:0.2em;
-		padding-right:0.2em;
-		
-		&:hover {
-			background: #00ff80;
-		}
-	`;
-
 export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,UnBinaryNodeWidgetState> {
 	constructor(props: UnBinaryNodeWidgetProps) {
 		super(props);
@@ -116,10 +102,10 @@ export class UnBinaryNodeWidget extends React.Component<UnBinaryNodeWidgetProps,
 				<Element>
 					{predicate}
 				</Element>
-				<PredicateButton onClick={() =>{
+				<Button className={'btn-graph'} variant={"outline-success"} onClick={() =>{
 					this.props.model.removeUnaryPredicate(predicate);
 					this.props.engine.repaintCanvas();
-				}}><FontAwesome name={"fas fa-trash"}/></PredicateButton>
+				}}><FontAwesome name={"fas fa-trash"}/></Button>
 			</ElementRowContainer>
 		)
 	};

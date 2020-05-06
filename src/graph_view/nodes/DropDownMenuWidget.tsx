@@ -10,6 +10,7 @@ import {
     setPredFuncBadNameIfRegexViolated
 } from "./functions";
 import {BinaryLabelModel} from "../labels/binary/BinaryLabelModel";
+import { Button } from "react-bootstrap";
 
 export const DropDownModel = styled.div<{pointerEvents: string, cursor:string}>`
 		width: 100%;
@@ -37,21 +38,6 @@ export const DropDownTitleName = styled.div`
 		font-size:11px;
 		text-align:center;
 		cursor: context-menu;
-	`;
-
-export const DropDownButton = styled.div<{color: string}>`
-		outline: none;
-		cursor: pointer;
-		height: 20px;
-		background: rgba(white, 0.1);
-		color: black;
-		text-align:center;
-		padding-left:0.2em;
-		padding-right:0.2em;
-		
-		&:hover {
-			background: ${p => p.color};
-		}
 	`;
 
 export const DropDownContainer = styled.div`
@@ -154,12 +140,15 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                 alreadyDefined = functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(FROM),this.props.model.getFunctionValue(FROM),languageElement+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps()) && functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(TO),this.props.model.getFunctionValue(TO),languageElement+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps());
             }
         }
+
+        let canAdd = type === PREDICATE?this.state.canAddAsPredicate:this.state.canAddAsFunction;
+
         return (
             <DropDownRowContainer key={languageElement} >
                 <DropDownLanguageElement>
                     {languageElement}
                 </DropDownLanguageElement>
-                <DropDownButton color={(type===FUNCTION && alreadyDefined)?"red":"#00ff80"} title={(type===FUNCTION && alreadyDefined)?"Funkcia nemôže byť viackrát definovaná pre rovnaký(é) parameter(tre)":("Pridaj "+(type===PREDICATE?"predikát":"funkciu"))} onClick={() =>{
+                <Button className={'btn-graph'} variant={canAdd?"outline-success":"outline-danger"} title={(type===FUNCTION && alreadyDefined)?"Funkcia nemôže byť viackrát definovaná pre rovnaký(é) parameter(tre)":("Pridaj "+(type===PREDICATE?"predikát":"funkciu"))} onClick={() =>{
                     if(type === PREDICATE){
                         this.props.model.addPredicate(languageElement)
                     }
@@ -169,7 +158,7 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                         }
                     }
                     this.props.engine.repaintCanvas();
-                }}><FontAwesome name={"fas fa-plus"}/></DropDownButton>
+                }}><FontAwesome name={"fas fa-plus"}/></Button>
             </DropDownRowContainer>
         )
     };
@@ -266,11 +255,10 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                                 <input title={this.state.inputTitle} onChange={(e) => {
                                     let elName:string = e.target.value.replace(/\s/g, "");
                                     this.props.setStateInputElementTextLength(e.target.value.length);
-                                    if(!this.setStateBadNameForPredFunc(elName)){
-                                        this.setCanUseForGivenType(PREDICATE,elName);
-                                        if(this.props.arity!=="1"){
-                                            this.setCanUseForGivenType(FUNCTION,elName);
-                                        }
+                                    this.setStateBadNameForPredFunc(elName);
+                                    this.setCanUseForGivenType(PREDICATE,elName);
+                                    if(this.props.arity!=="1"){
+                                        this.setCanUseForGivenType(FUNCTION,elName);
                                     }
                                 }}
                                        ref={(input) => this.textInput = input}
@@ -296,14 +284,14 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
                                     border: this.state.badNameForLanguageElement ? "1px solid red" : "1px solid black"
                                 }}>
                                 </input>
-                                <DropDownButton color={this.state.canAddAsPredicate?"#00ff80":"red"} title={this.state.predicateButtonTitle} onClick={() => {
+                                <Button className={'btn-graph'} variant={this.state.canAddAsPredicate?"outline-success":"outline-danger"} disabled={!this.state.canAddAsPredicate} title={this.state.predicateButtonTitle} onClick={() => {
                                     this.addGivenInputElement(PREDICATE);
-                                }}>{ADDPRED}</DropDownButton>
+                                }}>{ADDPRED}</Button>
                                 {
                                     funcArity!==0?
-                                        <DropDownButton color={this.state.canAddAsFunction?"#00ff80":"red"} title={this.state.functionButtonTitle} onClick={() => {
+                                        <Button className={'btn-graph'} variant={this.state.canAddAsFunction?"outline-success":"outline-danger"} disabled={!this.state.canAddAsFunction} title={this.state.functionButtonTitle} onClick={() => {
                                             this.addGivenInputElement(FUNCTION);
-                                        }}>{ADDFUNC}</DropDownButton>
+                                        }}>{ADDFUNC}</Button>
                                         :null
                                 }
                             </DropDownRowContainer>

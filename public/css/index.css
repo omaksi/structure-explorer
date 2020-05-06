@@ -10,6 +10,16 @@ body{
     box-shadow: none !important;;
 }
 
+.btn-graph {
+    outline: none;
+    color: black;
+    text-align:center;
+    font-size:13px;
+    padding:0 0.3em;
+    font-weight: bold;
+    border:0;
+}
+
 .no-padding-right {
     padding-right: 0 !important;
 }

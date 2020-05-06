@@ -5,6 +5,7 @@ import _ from "lodash";
 import {NaryRelationPortModel} from "./NaryRelationPortModel";
 import {UnBinaryNodeModel} from "./unbinary/UnBinaryNodeModel";
 import {ADDPORT, FUNCTION, PREDICATE} from "./ConstantNames";
+import {functionIsAlreadyDefinedForGivenFunction} from "./functions";
 
 export interface BaseNodeModelGenerics {
     PORT: NaryRelationPortModel;
@@ -79,9 +80,9 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         return value;
     }
 
-    getNodeValue(){
+    getNodeValue():string{
         if(this.getNodeNameCombination()){
-            return this.parameterPorts.get(this.parameterPortsArray[this.parameterPortsArray.length-1]);
+            return this.parameterPorts.get(this.parameterPortsArray[this.parameterPortsArray.length-1]).getNodeName();
         }
         return null;
     }
@@ -268,8 +269,17 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         for(let predicate of this.getPredicates()){
             this.addElementToMathView(predicate,PREDICATE);
         }
+        let functionsToDelete:Set<string> = new Set();
         for(let func of this.getFunctions()){
-            this.addElementToMathView(func,FUNCTION);
+            if(!functionIsAlreadyDefinedForGivenFunction(this.getNodeParameters(),this.getNodeValue(),func+"/"+(this.getNumberOfPorts()-1).toString(),this.getReduxProps())){
+                this.addElementToMathView(func,FUNCTION);
+            }
+            else{
+                functionsToDelete.add(func);
+            }
+        }
+        for(let func of functionsToDelete){
+            this.removeFunctionFromSet(func);
         }
     }
 

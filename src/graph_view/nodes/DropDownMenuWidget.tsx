@@ -149,7 +149,6 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
         if(type === FUNCTION && this.props.arity!=="1" && this.props.arity!=="2"){
             alreadyDefined = functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(),this.props.model.getNodeValue(),languageElement+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps());
         }
-
         return (
             <DropDownRowContainer key={languageElement} >
                 <DropDownLanguageElement>

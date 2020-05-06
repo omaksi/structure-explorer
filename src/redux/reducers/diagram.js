@@ -430,7 +430,11 @@ function createBinaryLinks(portMap,existingLinksCombination,diagramState){
     let firstComb = combination.split(",")[0];
     let secondComb = combination.split(",")[1];
     let reversedComb = combination.split(",")[1]+","+combination.split(",")[0];
+    console.log("comb",firstComb,secondComb);
     if(!existingLinksCombination.has(combination) && !existingLinksCombination.has(reversedComb)){
+      if(!diagramState.domainNodes.has(firstComb) || !diagramState.domainNodes.has(secondComb)){
+        return;
+      }
       let sourcePort = diagramState.domainNodes.get(firstComb).getMainPort();
       let targetPort = diagramState.domainNodes.get(secondComb).getMainPort();
       if(sourcePort === targetPort){

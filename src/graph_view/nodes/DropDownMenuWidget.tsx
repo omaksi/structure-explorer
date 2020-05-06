@@ -141,14 +141,13 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
             }
         }
 
-        let canAdd = type === PREDICATE?this.state.canAddAsPredicate:this.state.canAddAsFunction;
 
         return (
             <DropDownRowContainer key={languageElement} >
                 <DropDownLanguageElement>
                     {languageElement}
                 </DropDownLanguageElement>
-                <Button className={'btn-graph'} variant={canAdd?"outline-success":"outline-danger"} title={(type===FUNCTION && alreadyDefined)?"Funkcia nemôže byť viackrát definovaná pre rovnaký(é) parameter(tre)":("Pridaj "+(type===PREDICATE?"predikát":"funkciu"))} onClick={() =>{
+                <Button className={'btn-graph'} variant={type===PREDICATE?"outline-success":!alreadyDefined?"outline-success":"outline-danger"} disabled={type===FUNCTION && alreadyDefined} title={(type===FUNCTION && alreadyDefined)?"Funkcia nemôže byť viackrát definovaná pre rovnaký(é) parameter(tre)":("Pridaj "+(type===PREDICATE?"predikát":"funkciu"))} onClick={() =>{
                     if(type === PREDICATE){
                         this.props.model.addPredicate(languageElement)
                     }

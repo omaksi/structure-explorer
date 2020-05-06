@@ -13,7 +13,7 @@ const ModalComponent = ({modalShowState,setModalShowState,setExerciseNameState,e
             <div className='form-inline'>
                 <div className='form-group'>
                     <label htmlFor="exercise-name">Názov cvičenia: </label>
-                    <input style={{borderRadius:0}} type="text" className="form-control" id="exercise-name"
+                    <input type="text" className="form-control" id="exercise-name"
                            placeholder={DEFAULT_FILE_NAME}
                            onChange={(e) => setExerciseNameState(e.target.value)}/>
                 </div>

@@ -39,7 +39,7 @@ const ButtonToolbarComponent = ({clearGraphSelection,exportState,setExerciseName
         </ButtonGroup>
 
         {diagramToggledState ?
-            <ButtonGroup>
+            <ButtonGroup className='mr-lg-2'>
                 <HelpGraphButton/>
             </ButtonGroup>: null
         }

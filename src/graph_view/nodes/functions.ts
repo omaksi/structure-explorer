@@ -31,7 +31,6 @@ export function functionIsAlreadyDefinedForGivenFunction(functionParameters:[str
     let functionInterpretation = reduxProps["store"].getState().structureObject.iFunction;
 
     if(functionInterpretation.has(functionName)){
-        console.log(functionInterpretation.get(functionName));
         for(let [funcParameters,funcValue] of Object.entries(functionInterpretation.get(functionName))){
             if(funcParameters === JSON.stringify(functionParameters)){
                 return funcValue!==functionValue;

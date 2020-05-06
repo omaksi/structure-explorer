@@ -80,7 +80,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         return value;
     }
 
-    getNodeValue():string{
+    getFunctionValue():string{
         if(this.getNodeNameCombination()){
             return this.parameterPorts.get(this.parameterPortsArray[this.parameterPortsArray.length-1]).getNodeName();
         }
@@ -225,10 +225,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         name = name.replace(/\s/g, "");
         if (!this.predicates.has(name)) {
             this.addPredicateToSet(name);
-
-            /*if(this.getNodeNameCombination()){*/
             this.addElementToMathView(name,PREDICATE);
-           /*}*/
         }
     }
 
@@ -236,9 +233,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         name = name.replace(/\s/g, "");
         if (!this.functions.has(name)) {
             this.addFunctionToSet(name);
-            /*if(this.getNodeNameCombination()){*/
-                this.addElementToMathView(name,FUNCTION);
-            /*}*/
+            this.addElementToMathView(name,FUNCTION);
         }
     }
 
@@ -271,7 +266,7 @@ export class BaseNodeModel extends NodeModel<NodeModelGenerics & BaseNodeModelGe
         }
         let functionsToDelete:Set<string> = new Set();
         for(let func of this.getFunctions()){
-            if(!functionIsAlreadyDefinedForGivenFunction(this.getNodeParameters(),this.getNodeValue(),func+"/"+(this.getNumberOfPorts()-1).toString(),this.getReduxProps())){
+            if(!functionIsAlreadyDefinedForGivenFunction(this.getNodeParameters(),this.getFunctionValue(),func+"/"+(this.getNumberOfPorts()-1).toString(),this.getReduxProps())){
                 this.addElementToMathView(func,FUNCTION);
             }
             else{

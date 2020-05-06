@@ -3,6 +3,7 @@ import { DeserializeEvent } from '@projectstorm/react-canvas-core';
 import {BaseModelListener} from '@projectstorm/react-canvas-core';
 import { LabelModelOptions, LabelModelGenerics } from '@projectstorm/react-diagrams';
 import {BOTH, FROM, PREDICATE, TO} from "../../nodes/ConstantNames";
+import {functionIsAlreadyDefinedForGivenFunction} from "../../nodes/functions";
 
 export interface BinaryLabelModelOptions extends LabelModelOptions {
 	label?: string;
@@ -125,6 +126,15 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		name = name.replace(/\s/g, "");
 		if (!this.functions.has(name)) {
 			this.addUnaryFunctionToSet(name);
+			let alreadyDefinedInFromDirection = functionIsAlreadyDefinedForGivenFunction(this.getNodeParameters(FROM),this.getFunctionValue(FROM),name+"/1",this.getReduxProps());
+			let alreadyDefinedInToDirection = functionIsAlreadyDefinedForGivenFunction(this.getNodeParameters(TO),this.getFunctionValue(TO),name+"/1",this.getReduxProps());
+
+			if(alreadyDefinedInFromDirection){
+				this.setLanguageElementDirection(name,TO,this.functions);
+			}
+			else if(alreadyDefinedInToDirection){
+				this.setLanguageElementDirection(name,FROM,this.functions);
+			}
 			// @ts-ignore
 			this.getReduxProps()["addUnaryFunction"](name,this.getParent().getSourcePort().getNode().getNodeName(),this.getParent().getTargetPort().getNode().getNodeName(),this.functions.get(name));
 		}
@@ -184,12 +194,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		}
 	}
 
-	//going from b -> f -> t
-	//b - both
-	//f - from => means it goes from this node to another (so this node is first parameter)
-	//t - to => means it goes to this node from another (so this node is second parameter)
-	changeDirectionOfBinaryRelation(name:string,currentDirection:string,type:string){
-		let givenSet = type === PREDICATE?this.getPredicates():this.getFunctions();
+	changeDirection(name:string,currentDirection:string,givenSet:Map<string,string>){
 		if(currentDirection === BOTH){
 			givenSet.set(name,FROM);
 		}
@@ -198,6 +203,73 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		}
 		else{
 			givenSet.set(name,BOTH);
+		}
+	}
+
+	setLanguageElementDirection(name:string,direction:string,givenSet:Map<string,string>){
+		givenSet.set(name,direction);
+	}
+
+	getNodeParameters(direction:string):[string]{
+		if(direction === FROM){
+			// @ts-ignore
+			return [this.getSourceDomainNode().getNodeName()];
+		}
+		else if(direction === TO){
+			// @ts-ignore
+			return [this.getTargetDomainNode().getNodeName()];
+		}
+		else{
+			return null;
+		}
+	}
+
+	getFunctionValue(direction:string):string{
+		if(direction === FROM){
+			// @ts-ignore
+			return this.getTargetDomainNode().getNodeName();
+
+		}
+		else if(direction === TO){
+			// @ts-ignore
+			return this.getSourceDomainNode().getNodeName();
+		}
+		else{
+			return null;
+		}
+	}
+
+	//going from b -> f -> t
+	//b - both
+	//f - from => means it goes from this node to another (so this node is first parameter)
+	//t - to => means it goes to this node from another (so this node is second parameter)
+	changeDirectionOfBinaryRelation(name:string,currentDirection:string,type:string){
+		let givenSet = type === PREDICATE?this.getPredicates():this.getFunctions();
+
+		if(type === PREDICATE){
+			this.changeDirection(name,currentDirection,givenSet);
+		}
+		else{
+			let currDirection:string = currentDirection;
+			while(true){
+				this.changeDirection(name,currDirection,givenSet);
+				currDirection = givenSet.get(name);
+				if(currDirection === currentDirection){
+					this.setLanguageElementDirection(name,currentDirection,givenSet);
+					//hint ze nejde zmenit direction
+					return;
+				}
+				let alreadyDefinedForDirection;
+				if(currDirection!==BOTH){
+					alreadyDefinedForDirection = functionIsAlreadyDefinedForGivenFunction(this.getNodeParameters(currDirection),this.getFunctionValue(currDirection),name+"/1",this.getReduxProps());
+				}
+				else{
+					alreadyDefinedForDirection = functionIsAlreadyDefinedForGivenFunction(this.getNodeParameters(FROM),this.getFunctionValue(FROM),name+"/1",this.getReduxProps()) || functionIsAlreadyDefinedForGivenFunction(this.getNodeParameters(TO),this.getFunctionValue(TO),name+"/1",this.getReduxProps());
+				}
+				if(!alreadyDefinedForDirection){
+					break;
+				}
+			}
 		}
 		this.increaseChangeCounter();
 		// @ts-ignore

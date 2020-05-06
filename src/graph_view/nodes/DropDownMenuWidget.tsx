@@ -3,7 +3,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import FontAwesome from "react-fontawesome";
 import { DiagramEngine } from "@projectstorm/react-diagrams";
-import {ADDFUNC, ADDPRED, FUNCTION, PREDICATE} from "./ConstantNames";
+import {ADDFUNC, ADDPRED, FROM, FUNCTION, PREDICATE, TO} from "./ConstantNames";
 import {
     canUseNameForGivenArityAndType, functionIsAlreadyDefinedForGivenFunction,
     getAvailableLanguageElementForGivenArity,
@@ -146,8 +146,13 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
 
     generateAvailableLanguageElement = (languageElement: string,type:string) => {
         let alreadyDefined:boolean;
-        if(type === FUNCTION && this.props.arity!=="1" && this.props.arity!=="2"){
-            alreadyDefined = functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(),this.props.model.getNodeValue(),languageElement+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps());
+        if(type === FUNCTION){
+            if(this.props.arity!=="2"){
+                alreadyDefined = functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(),this.props.model.getFunctionValue(),languageElement+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps());
+            }
+            else{
+                alreadyDefined = functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(FROM),this.props.model.getFunctionValue(FROM),languageElement+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps()) && functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(TO),this.props.model.getFunctionValue(TO),languageElement+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps());
+            }
         }
         return (
             <DropDownRowContainer key={languageElement} >
@@ -196,7 +201,12 @@ export class DropDownMenuWidget extends React.Component<DropDownMenuWidgetProps,
             else{
                 this.setState({canAddAsFunction:true,functionButtonTitle:"Pridaj novú funkciu"});
                 if(this.props.arity!=="2"){
-                    if(functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(),this.props.model.getNodeValue(),this.textInput.value+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps())){
+                    if(functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(),this.props.model.getFunctionValue(),this.textInput.value+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps())){
+                        this.setState({canAddAsFunction:false,functionButtonTitle:"Funkcia nemôže byť viackrát definovaná pre rovnaký(é) parameter(tre)"});
+                    }
+                }
+                else{
+                    if(functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(FROM),this.props.model.getFunctionValue(FROM),this.textInput.value+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps()) && functionIsAlreadyDefinedForGivenFunction(this.props.model.getNodeParameters(TO),this.props.model.getFunctionValue(TO),this.textInput.value+"/"+(parseInt(this.props.arity)-1).toString(),this.props.model.getReduxProps())){
                         this.setState({canAddAsFunction:false,functionButtonTitle:"Funkcia nemôže byť viackrát definovaná pre rovnaký(é) parameter(tre)"});
                     }
                 }

@@ -132,6 +132,11 @@ function diagramReducer(state, action) {
 function syncNodesCords(state){
   let nodeState = new Map([["domainNodes", state.domainNodes],["constantNodes", state.constantNodes],["ternaryNodes", state.ternaryNodes],["quaternaryNodes",state.quaternaryNodes]]);
   let diagramCordState = state.diagramCordState;
+
+  if(!diagramCordState){
+    return;
+  }
+
   let naryNodeMap = new Map();
 
   for (let nodeTypeMap of nodeState.values()) {

@@ -38,7 +38,7 @@ function root(state = defaultState, action:any) {
             checkImportedState(state);
             state.structureObject = new Structure(new Language());
             state.structure.variables.object = new Map();
-            state.diagramState = action.diagramState;
+            state.diagramState = action.diagramState?action.diagramState:diagramDefaultState();
         } catch (e) {
             console.error(e);
         }

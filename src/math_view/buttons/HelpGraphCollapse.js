@@ -22,7 +22,7 @@ const HelpGraphCollapse = ({collapsed}) => (
                     Medzi týmito režimami sa dá meniť stlačením príslušných tlačidiel alebo stlačením
                     kláves <code>P</code> a <code>E</code>. Okrem toho je možné využiť klávesu<code>;</code>,ktorou
                     je možné prepínať medzi jednotlivými režimami. Nadídením myšou nad prvky grafu sa vám zobrazí
-                    nápoveda k ním (resp. chybová hláška prečo nejde daná akcia vykonať).</p>
+                    nápoveda k ním (resp. hláška prečo nejde daná akcia vykonať).</p>
 
                 <p>
                     Dvojklikom na názov vrcholu sa prepne názov na input okno. Do tohto okna je možné zadať

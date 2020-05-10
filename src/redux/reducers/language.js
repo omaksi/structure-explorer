@@ -17,8 +17,8 @@ import {
   RULE_CONSTANTS,
   RULE_FUNCTIONS,
   RULE_PREDICATES
-} from "../../constants/parser_start_rules";
-import {defaultInputData} from "../../constants";
+} from "../../math_view/constants/parser_start_rules";
+import {defaultInputData} from "../../math_view/constants";
 import {PREDICATE as PRED,FUNCTION as FUNC} from "../../graph_view/nodes/ConstantNames";
 
 let functions = require('./functions/functions');

@@ -1,6 +1,6 @@
 import {Col, Form} from "react-bootstrap";
 import TextInput from "./TextInput";
-import {FUNCTION} from "../../constants";
+import {FUNCTION} from "../constants";
 import React from "react";
 import DatabaseFunction from "./DatabaseFunction";
 import {RelationalTable} from './index'

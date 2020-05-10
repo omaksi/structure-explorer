@@ -6,7 +6,7 @@ import {
     Row,
 } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
-import {EXPRESSION_LABEL, FORMULA, TERM} from "../../constants";
+import {EXPRESSION_LABEL, FORMULA, TERM} from "../constants";
 import FontAwesome from 'react-fontawesome';
 import LockButton from '../buttons/LockButton';
 import HelpButton from "../buttons/HelpButton";

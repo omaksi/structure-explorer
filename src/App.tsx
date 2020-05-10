@@ -4,7 +4,7 @@ import {Col, Row} from 'react-bootstrap';
 import {Provider} from 'react-redux';
 import ExpressionsContainer from './redux/containers/ExpressionsContainer';
 import {clearGraphSelection, importAppState} from "./redux/actions";
-import {DEFAULT_FILE_NAME} from "./constants";
+import {DEFAULT_FILE_NAME} from "./math_view/constants";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
 import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";

@@ -40,13 +40,13 @@ import {
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
   ITEM_NOT_IN_DOMAIN
-} from "../../constants/messages";
+} from "../../math_view/constants/messages";
 import {
   RULE_DOMAIN,
   RULE_PREDICATES_FUNCTIONS_VALUE,
   RULE_VARIABLE_VALUATION
-} from "../../constants/parser_start_rules";
-import {defaultInputData, PREDICATE} from "../../constants";
+} from "../../math_view/constants/parser_start_rules";
+import {defaultInputData, PREDICATE} from "../../math_view/constants";
 import {BOTH, FROM, PREDICATE as PRED,FUNCTION as FUNC, TO} from "../../graph_view/nodes/ConstantNames";
 
 let functions = require('./functions/functions');

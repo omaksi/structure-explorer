@@ -1,4 +1,4 @@
-import {defaultExpressionData, FORMULA, TERM} from "../../constants";
+import {defaultExpressionData, FORMULA, TERM} from "../../math_view/constants";
 import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
 import Disjunction from "../../model/formula/Formula.Disjunction";
 import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
@@ -52,7 +52,7 @@ import {
   REMOVE_TERNARY_NODE,
   IMPORT_DIAGRAM_STATE, CHANGE_DIRECTION_OF_BINARY_RELATION
 } from "../actions/action_types";
-import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
+import {RULE_FORMULA, RULE_TERM} from "../../math_view/constants/parser_start_rules";
 
 let functions = require('./functions/functions');
 

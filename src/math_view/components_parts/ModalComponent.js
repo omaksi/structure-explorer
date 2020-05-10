@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Modal} from "react-bootstrap";
 import DownloadButton from "../buttons/DownloadButton";
-import {DEFAULT_FILE_NAME} from "../../constants";
+import {DEFAULT_FILE_NAME} from "../constants";
 import FontAwesome from "react-fontawesome";
 
 const ModalComponent = ({modalShowState,setModalShowState,setExerciseNameState,exportState}) => (

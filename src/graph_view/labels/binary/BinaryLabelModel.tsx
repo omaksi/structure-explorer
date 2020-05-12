@@ -117,7 +117,6 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		name = name.replace(/\s/g, "");
 		if (!this.predicates.has(name)) {
 			this.addBinaryPredicateToSet(name);
-			console.log(this.predicates.get(name));
 			// @ts-ignore
 			this.getReduxProps()["addBinaryPredicate"](name, this.getParent().getSourcePort().getNode().getNodeName(), this.getParent().getTargetPort().getNode().getNodeName(), this.predicates.get(name));
 		}

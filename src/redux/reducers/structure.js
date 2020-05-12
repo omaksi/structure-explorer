@@ -108,7 +108,7 @@ function structureReducer(s, action, struct) {
       return state;
 
     case ADD_BINARY_PREDICATE:
-      addLanguageElement(action.predicateName, 2, [action.sourceNodeName, action.targetNodeName], PRED, BOTH);
+      addLanguageElement(action.predicateName, 2, [action.sourceNodeName, action.targetNodeName], PRED, action.direction);
       return state;
 
     case ADD_TERNARY_PREDICATE:

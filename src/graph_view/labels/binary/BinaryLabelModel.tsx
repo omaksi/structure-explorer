@@ -117,6 +117,7 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 		name = name.replace(/\s/g, "");
 		if (!this.predicates.has(name)) {
 			this.addBinaryPredicateToSet(name);
+			console.log(this.predicates.get(name));
 			// @ts-ignore
 			this.getReduxProps()["addBinaryPredicate"](name, this.getParent().getSourcePort().getNode().getNodeName(), this.getParent().getTargetPort().getNode().getNodeName(), this.predicates.get(name));
 		}
@@ -141,12 +142,12 @@ export class BinaryLabelModel extends LabelModel<BinaryLabelModelGenerics> {
 	}
 
 	addBinaryPredicateToSet(name: string){
-		this.predicates.set(name,BOTH);
+		this.predicates.set(name,FROM);
 		this.increaseChangeCounter();
 	}
 
 	addUnaryFunctionToSet(name: string){
-		this.functions.set(name,BOTH);
+		this.functions.set(name,FROM);
 		this.increaseChangeCounter();
 	}
 

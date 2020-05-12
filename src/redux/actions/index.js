@@ -102,11 +102,12 @@ export const removeUnaryPredicate = (predicateName,nodeName) => ({
   nodeName
 });
 
-export const addBinaryPredicate = (predicateName,sourceNodeName,targetNodeName) => ({
+export const addBinaryPredicate = (predicateName,sourceNodeName,targetNodeName,direction) => ({
   type: 'ADD_BINARY_PREDICATE',
   predicateName,
   sourceNodeName,
-  targetNodeName
+  targetNodeName,
+  direction
 });
 
 export const addTernaryPredicate = (predicateName,nodeName) => ({

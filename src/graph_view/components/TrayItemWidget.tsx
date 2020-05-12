@@ -13,11 +13,10 @@ export interface TrayItemWidgetProps {
 
 export const BasicTray = styled.div`
 		cursor: pointer;
-		min-width: 2em;
-		width:50%;
-		margin:auto;
-		margin-top:0.5em;
-		margin-bottom:0.5em;
+		width:65%;
+		margin: auto;
+		margin-top:0.8em;
+		margin-bottom:0.8em;
 	`;
 
 export class ItemWidgetIcon extends React.Component<TrayItemWidgetProps> {

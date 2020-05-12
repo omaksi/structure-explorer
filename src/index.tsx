@@ -10,7 +10,7 @@ import reducer from "./redux/reducers";
 const store = createStore(reducer);
 
 const Main = () => (
-    <main className="container">
+    <main className="container-fluid">
         <AppContainer store={store}/>
     </main>
 );

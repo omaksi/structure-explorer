@@ -65,6 +65,12 @@ export interface BodyWidgetProps {
 		flex-grow: 1;
 	`;
 
+	export const ModeElement = styled.div`
+	display:flex;
+	flex-direction:row;
+	
+	`;
+
 
 	function getAvailableCount(nodeType:string,diagramState:any):number {
 		let nodeCount:number = 0;
@@ -236,6 +242,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			>
 				<Content>
 					<TrayWidget>
+						<ModeElement>
 						<Button title={"Pohyb po grafe (P)"} variant={"outline-primary"}
 								className={editableNodes ? "" : "active"} onClick={() => {
 							editableNodesFunction(false)
@@ -244,6 +251,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 								className={editableNodes ? "active" : ""} onClick={() => {
 							editableNodesFunction(true)
 						}}><FontAwesome name={"fas fa-edit"}/></Button>
+						</ModeElement>
 
 						<ItemWidgetIcon model={{type: 'unbinary'}} clickFunction={createNode} element={this}
 										name="Pridaj unárny/binárny" color="rgb(125,192,125)"

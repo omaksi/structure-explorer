@@ -9,7 +9,6 @@ import diagramReducer,{ defaultState as diagramDefaultState } from "./diagram";
 import {defaultState as expressionsDefaultState} from "./expressions";
 import {defaultState as structureDefaultState} from "./structure";
 import {defaultState as languageDefaultState} from "./language";
-import { DiagramModel } from "@projectstorm/react-diagrams";
 
 const defaultState = {
     structureObject: new Structure(new Language()),

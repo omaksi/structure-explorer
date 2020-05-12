@@ -15,7 +15,6 @@ export interface MainCanvasWidgetProps {
 
 		> * {
 			height: 100%;
-			min-height: 100%;
 			width: 100%;
 		}
 		background-image: linear-gradient(

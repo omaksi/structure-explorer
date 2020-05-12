@@ -93,19 +93,7 @@ function diagramReducer(state, action) {
       deleteAllLabels(state);
       return state;
     case TOGGLE_EDITABLE_NODES:
-      let nodeArray = state.diagramModel.getNodes();
-      for (let a = 0; a < nodeArray.length; a++) {
-        nodeArray[a].changeEditableState(action.value);
-      }
-
-      let linkArray = state.diagramModel.getLinks();
-      for (let i = 0; i < linkArray.length; i++) {
-        let labelArray = linkArray[i].getLabels();
-        for (let y = 0; y < labelArray.length; y++) {
-          labelArray[y].changeEditableState(action.value);
-        }
-      }
-      state.diagramEngine.repaintCanvas();
+      changeEditableState(state,action.value);
       return {...state, editableNodes: action.value};
     case IMPORT_APP:
       let diagramModel = new DiagramModel();
@@ -120,6 +108,7 @@ function diagramReducer(state, action) {
       syncFunctions(values);
       syncConstants(values);
       syncNodesCords(values.diagramState);
+      changeEditableState(state,state.editableNodes);
       return {...state,imported:false};
     case CLEAR_GRAPH_SELECTION:
       state.diagramModel.clearSelection();
@@ -127,6 +116,22 @@ function diagramReducer(state, action) {
     default:
       return state;
   }
+}
+
+function changeEditableState(state,boolValue){
+  let nodeArray = state.diagramModel.getNodes();
+  for (let a = 0; a < nodeArray.length; a++) {
+    nodeArray[a].changeEditableState(boolValue);
+  }
+
+  let linkArray = state.diagramModel.getLinks();
+  for (let i = 0; i < linkArray.length; i++) {
+    let labelArray = linkArray[i].getLabels();
+    for (let y = 0; y < labelArray.length; y++) {
+      labelArray[y].changeEditableState(boolValue);
+    }
+  }
+  state.diagramEngine.repaintCanvas();
 }
 
 function syncNodesCords(state){

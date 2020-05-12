@@ -20,8 +20,7 @@ import {
   FUNCTION,
   PREDICATE, QUATERNARY,
   TERNARY,
-  TO,
-  UNBINARY
+  TO
 } from "../../graph_view/nodes/ConstantNames";
 import {ConstantNodeModel} from "../../graph_view/nodes/constant/ConstantNodeModel";
 import {DiagramModel} from "@projectstorm/react-diagrams";
@@ -109,6 +108,7 @@ function diagramReducer(state, action) {
       syncConstants(values);
       syncNodesCords(values.diagramState);
       changeEditableState(state,state.editableNodes);
+      setCallReduxFunc(state.diagramModel,true);
       return {...state,imported:false};
     case CLEAR_GRAPH_SELECTION:
       state.diagramModel.clearSelection();
@@ -256,6 +256,13 @@ function syncConstants(values){
       }
     }
   }
+}
+
+function setCallReduxFunc(diagramModel,bool){
+  for(let link of diagramModel.getLinks()){
+    link.setCallReduxFunc(bool);
+  }
+
 }
 
 function interruptCallingReduxFunc(port){

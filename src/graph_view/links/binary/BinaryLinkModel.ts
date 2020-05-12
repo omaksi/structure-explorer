@@ -18,7 +18,6 @@ import {TernaryNodeModel} from "../../nodes/ternary/TernaryNodeModel";
 import {QuaternaryNodeModel} from "../../nodes/quaternary/QuaternaryNodeModel";
 import {NaryRelationPortModel} from "../../nodes/NaryRelationPortModel";
 import { DiagramModel } from '@projectstorm/react-diagrams';
-import {selectOnlyCurrentGraphElement} from "../../nodes/functions";
 
 export interface BinaryLinkModelListener extends LinkModelListener {
 	// @ts-ignore

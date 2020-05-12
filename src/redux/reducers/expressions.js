@@ -76,7 +76,6 @@ function expressionsReducer(state = s, action, structure2, variables) {
     case SET_PREDICATES:
     case SET_FUNCTIONS:
     case IMPORT_APP:
-      console.log("PARSED sync");
       syncExpressionsValue(true);
       return state;
     case SET_CONSTANT_VALUE:
@@ -85,31 +84,24 @@ function expressionsReducer(state = s, action, structure2, variables) {
     case SET_FUNCTION_VALUE_TEXT:
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
-      console.log("SYNCED");
       syncExpressionsValue();
       return state;
     case ADD_EXPRESSION:
-      console.log("ADDED");
       addExpression(action.expressionType);
       return s;
     case REMOVE_EXPRESSION:
-      console.log("REMOVED");
       removeExpression(action.expressionType, action.index);
       return s;
     case SET_EXPRESSION_ANSWER:
-      console.log("ANSWERED");
       setExpressionAnswer(action.expressionType, action.index, action.answer);
       return s;
     case LOCK_EXPRESSION_VALUE:
-      console.log("LOCKED VALUE");
       lockExpressionValue(action.expressionType, action.expressionIndex);
       return s;
     case LOCK_EXPRESSION_ANSWER:
-      console.log("LOCKED ANSWER");
       lockExpressionAnswer(action.expressionType, action.expressionIndex);
       return s;
     case CHECK_SYNTAX:
-      console.log("CHECKED");
       checkExpressionSyntax(action);
       return s;
     case ADD_DOMAIN_NODE:
@@ -137,11 +129,9 @@ function expressionsReducer(state = s, action, structure2, variables) {
     case SET_CONSTANT_VALUE_FROM_LINK:
     case IMPORT_DIAGRAM_STATE:
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
-      console.log("SYNCING");
       syncExpressionsValue(true);
       return s;
     default:
-      console.log("DEFAULT");
       return s;
   }
 }

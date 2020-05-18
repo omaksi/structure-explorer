@@ -5,6 +5,7 @@ import {Node as ConstantNode, Title as ConstantTitle, TitleName as ConstantTitle
 import {Node as QuaternaryNode} from "../nodes/quaternary/QuaternaryNodeWidget";
 import {Node as TernaryNode} from "../nodes/ternary/TernaryNodeWidget";
 import {ADDPORT} from "../nodes/ConstantNames";
+import {NodeWidget as NodeWidgetForTernary} from "../nodes/ternary/TernaryNodeWidget";
 
 export const UnbinaryIcon = () =>{
     return(
@@ -40,33 +41,7 @@ export const TernaryIcon = () =>{
     let size = 50;
     return(
         <TernaryNode size={size}>
-            <svg
-                width={size}
-                height={27}
-                dangerouslySetInnerHTML={{
-                    __html:
-                        `
-          <g id="Layer_1">
-          </g>
-          <g id="Layer_2">
-            <polygon fill="rgb(255,255,0)" stroke="#000000" stroke-width="2.5" stroke-miterlimit="10" points="5,` +
-                        size / 2 +
-                        ` ` +
-                        size / 2 +
-                        `,0 ` +
-                        (size) +
-                        `,` +
-                        size / 2 +
-                        ` ` +
-                        size / 2 +
-                        `,` +
-                        (size/2) +
-                        `"/>
-          </g>
-        `
-                }}
-            />
-
+            <NodeWidgetForTernary size={size} color={"rgb(255,255,0)"} isSelected={false}/>
         </TernaryNode>
     )
 };

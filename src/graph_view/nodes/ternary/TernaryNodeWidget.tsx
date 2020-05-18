@@ -75,6 +75,28 @@ export const Node = styled.div<{ size: number, pointerEvents: string, cursor:str
 	height:35px;
 `;
 
+export class NodeWidget extends React.Component<{ size: number, color: string, isSelected: boolean }> {
+	render() {
+		let {size, color, isSelected} = this.props;
+		return (
+			<svg width={size} height={size}>
+				<g id="Layer_1">
+				</g>
+				<g id="Layer_2">
+					<polygon
+						points={"5," + size / 2 + " " + size / 2 + ",0" + " " + size + "," + size / 2 + " " + size / 2 + "," + size / 2}
+						style={{
+							fill: color,
+							strokeMiterlimit: 10,
+							strokeWidth: 2.5,
+							stroke: isSelected ? "rgb(0,192,255)" : "#000000"
+						}}/>
+				</g>
+			</svg>
+		);
+	}
+}
+
 export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,TernaryNodeWidgetState> {
 
 	constructor(props: TernaryNodeWidgetProps) {
@@ -148,21 +170,8 @@ export class TernaryNodeWidget extends React.Component<TernaryNodeWidgetProps,Te
 						  selectOnlyCurrentGraphElement(this.props.model,this.props.engine);
 					  }}>
 
+					<NodeWidget color={this.state.color} isSelected={this.props.model.isSelected()} size={this.props.size}/>
 
-					<svg width={this.props.size} height={this.props.size}>
-						<g id="Layer_1">
-						</g>
-						<g id="Layer_2">
-							<polygon
-									 points={"5," + this.props.size / 2 + " " + this.props.size / 2 + ",0" + " " + this.props.size + "," + this.props.size / 2 + " " + this.props.size / 2 + "," + this.props.size / 2}
-									 style={{
-										 fill: this.state.color,
-										 strokeMiterlimit: 10,
-										 strokeWidth: 2.5,
-										 stroke: this.props.model.isSelected() ? "rgb(0,192,255)" : "#000000"
-									 }}/>
-						</g>
-					</svg>
 					<PortWidget
 						style={{
 							top: this.props.size / 2 - 9,

@@ -103,6 +103,9 @@ const Expressions = (props) => (
                                          id={expression.expressionType.toLowerCase() + '-' + index}
                                          disabled={item.inputLocked}
                                          isInvalid={item.errorMessage.length >0}
+                                         onFocus={() => {
+                                             props.diagramModel.clearSelection();
+                                         }}
                            />
                            <InputGroup.Append>
                                <Button variant={"secondary"}

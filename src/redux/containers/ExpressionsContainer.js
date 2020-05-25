@@ -9,11 +9,12 @@ import {
   setExpressionAnswer
 } from "../actions";
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state,myprops) => ({
   formulas: state.expressions.formulas,
   terms: state.expressions.terms,
   domain: [...state.structureObject.domain],
-  teacherMode: state.common.teacherMode
+  teacherMode: state.common.teacherMode,
+  diagramModel:myprops.diagramModel
 });
 
 const mapDispatchToProps = {

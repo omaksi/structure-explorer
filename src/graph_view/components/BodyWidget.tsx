@@ -13,6 +13,8 @@ import {Button} from 'react-bootstrap';
 import {ConstantIcon, QuaternaryIcon, TernaryIcon, UnbinaryIcon} from "./TrayItemWidgetIcon";
 import {importDiagramState} from "../../redux/actions";
 import {CONSTANTNODE, QUATERNARYNODE, TERNARYNODE, UNBINARYNODE} from "../nodes/ConstantNames";
+import { NodeModel } from '@projectstorm/react-diagrams';
+import {BinaryLabelModel} from "../labels/binary/BinaryLabelModel";
 
 export interface BodyWidgetProps {
 	syncDiagram:any;
@@ -244,10 +246,6 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 					  if (e.key === "Escape") {
 						 this.clearGraphSelection();
 					  }
-				  }}
-
-				  onBlur={() =>{
-					  this.clearGraphSelection();
 				  }}
 			>
 				<Content>

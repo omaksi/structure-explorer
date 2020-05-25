@@ -135,7 +135,7 @@ class App extends React.Component<AppProps,AppState> {
               }
             <Row>
               <Col sm={12}>
-                <ExpressionsContainer/>
+                <ExpressionsContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
               </Col>
             </Row>
           </div>

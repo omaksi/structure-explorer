@@ -1,5 +1,5 @@
-import Structure from "../../model/Structure";
-import Language from "../../model/Language";
+import Structure from "../../math_view/model/Structure";
+import Language from "../../math_view/model/Language";
 import languageReducer from "./language";
 import structureReducer from "./structure";
 import expressionsReducer from "./expressions";

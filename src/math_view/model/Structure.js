@@ -1,4 +1,4 @@
-import {EMPTY_CONSTANT_VALUE} from "../math_view/constants/messages";
+import {EMPTY_CONSTANT_VALUE} from "../constants/messages";
 
 /**
  * Represent components_parts

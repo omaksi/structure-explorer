@@ -160,6 +160,7 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 	constructor(props: any) {
 		super(props);
 		this.focusOnBodyElement = this.focusOnBodyElement.bind(this);
+		this.clearGraphSelection = this.clearGraphSelection.bind(this);
 
 		this.reduxProps = {
 			"addDomainNode": this.props.addDomainNode,
@@ -217,6 +218,11 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 		}
 	}
 
+	clearGraphSelection(){
+		this.props.diagramState.diagramEngine.getModel().clearSelection();
+		this.props.diagramState.diagramEngine.repaintCanvas();
+	}
+
 	render() {
 		let editableNodes = this.props.diagramState.editableNodes;
 		let editableNodesFunction = this.props.toggleEditableNodes;
@@ -236,9 +242,12 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 			}}
 				  onKeyDown={(e:any) => {
 					  if (e.key === "Escape") {
-						  this.props.diagramState.diagramEngine.getModel().clearSelection();
-						  this.props.diagramState.diagramEngine.repaintCanvas();
+						 this.clearGraphSelection();
 					  }
+				  }}
+
+				  onBlur={() =>{
+					  this.clearGraphSelection();
 				  }}
 			>
 				<Content>

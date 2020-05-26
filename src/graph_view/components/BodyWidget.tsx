@@ -248,7 +248,10 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 					  }
 					  else if(e.key === "Backspace"){
 					  	if(this.props.diagramState.diagramEngine.getModel().getSelectedEntities().length>0){
-					  		e.preventDefault();
+							let exclude = ['input', 'textarea'];
+							if (!exclude.includes(e.target.tagName.toLowerCase())) {
+								e.preventDefault();
+							}
 						}
 					  }
 				  }}

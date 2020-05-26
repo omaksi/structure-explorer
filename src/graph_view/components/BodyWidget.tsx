@@ -246,6 +246,11 @@ export class BodyWidget extends React.Component<BodyWidgetProps,any> {
 					  if (e.key === "Escape") {
 						 this.clearGraphSelection();
 					  }
+					  else if(e.key === "Backspace"){
+					  	if(this.props.diagramState.diagramEngine.getModel().getSelectedEntities().length>0){
+					  		e.preventDefault();
+						}
+					  }
 				  }}
 			>
 				<Content>

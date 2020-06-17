@@ -127,7 +127,7 @@ export function getMaxLengthForGivenLanguageElementWithArity(arity:string,type:s
     let languageElement = type===PREDICATE?reduxProps["store"].getState().structureObject.language.predicates:reduxProps["store"].getState().structureObject.language.functions;
 
     for(let [elementValue,elementArity] of languageElement.entries()){
-        if(elementArity === arity && maxLength<elementValue.length){
+        if(elementArity.toString() === arity && maxLength<elementValue.length){
             maxLength = elementValue.length;
         }
     }

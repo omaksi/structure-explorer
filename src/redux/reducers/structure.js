@@ -48,6 +48,7 @@ import {
 } from "../../math_view/constants/parser_start_rules";
 import {defaultInputData, PREDICATE} from "../../math_view/constants";
 import {BOTH, FROM, PREDICATE as PRED,FUNCTION as FUNC, TO} from "../../graph_view/nodes/ConstantNames";
+import {getStructureObject} from "../selectors/structureObject";
 
 let functions = require('./functions/functions');
 
@@ -68,9 +69,9 @@ export function defaultState(){
   }
 }
 
-function structureReducer(s, action, struct) {
+function structureReducer(s, action) {
   state = copyState(s);
-  structure = struct;
+  structure = getStructureObject(s);
   let input = action.itemType === PREDICATE ? state.predicates[action.name] : state.functions[action.name];
   switch (action.type) {
     case SET_CONSTANTS:
@@ -99,7 +100,7 @@ function structureReducer(s, action, struct) {
       });
 
       state.constants = Object.assign({}, ...newStateConstantObject);
-      structure.iConstant.set(action.newName, state.constants[action.newName]);
+      //structure.iConstant.set(action.newName, state.constants[action.newName]);
       syncLanguageWithStructure();
       return state;
 
@@ -194,7 +195,7 @@ function structureReducer(s, action, struct) {
       let tuple = action.value;
       let params = tuple.slice(0, tuple.length - 1);
       let value = tuple[tuple.length - 1];
-      structure.changeFunctionValue(action.functionName, params, value);
+      //structure.changeFunctionValue(action.functionName, params, value);
       let fValue = structure.getFunctionValueArray(action.functionName);
       state.functions[action.functionName].parsed = fValue;
       state.functions[action.functionName].value = predicateValueToString(fValue);
@@ -588,7 +589,7 @@ function setDomain() {
     return;
   }
   state.domain.errorMessage = state.domain.parsed.length > 0 ? '' : EMPTY_DOMAIN;
-  structure.setDomain(state.domain.parsed);
+  //structure.setDomain(state.domain.parsed);
 }
 
 function setConstantsValues() {
@@ -679,7 +680,7 @@ function setVariables() {
 
 function setConstantValue(constantName, value) {
   try {
-    structure.setConstantValue(constantName, value);
+    //structure.setConstantValue(constantName, value);
     state.constants[constantName].value = value;
     state.constants[constantName].errorMessage = '';
   } catch (e) {
@@ -693,7 +694,7 @@ function setPredicateValue(predicateName) {
   if (!state.predicates[predicateName] || !state.predicates[predicateName].parsed) {
     return;
   }
-  structure.clearPredicateValue(predicateName);
+  //structure.clearPredicateValue(predicateName);
   state.predicates[predicateName].errorMessage = '';
   state.predicates[predicateName].parsed.forEach(tuple => {
     addPredicateValue(predicateName, tuple);
@@ -702,21 +703,21 @@ function setPredicateValue(predicateName) {
 
 function addPredicateValue(predicateName, tuple) {
   try {
-    structure.setPredicateValue(predicateName, tuple);
+    //structure.setPredicateValue(predicateName, tuple);
   } catch (e) {
     state.predicates[predicateName].errorMessage = e;
   }
 }
 
 function removePredicateValue(predicateName, tuple) {
-  structure.removePredicateValue(predicateName, tuple);
+  //structure.removePredicateValue(predicateName, tuple);
 }
 
 function setFunctionValue(functionName) {
   if (!state.functions[functionName] || !state.functions[functionName].parsed) {
     return;
   }
-  structure.clearFunctionValue(functionName);
+  //structure.clearFunctionValue(functionName);
   state.functions[functionName].errorMessage = '';
   let usedParams = [];
   state.functions[functionName].parsed.forEach(tuple => {
@@ -725,11 +726,11 @@ function setFunctionValue(functionName) {
       let stringifiedParams = JSON.stringify(params);
       let value = tuple[tuple.length - 1];
       if (usedParams.indexOf(stringifiedParams) > -1) {
-        structure.removeFunctionValue(functionName, params);
+        //structure.removeFunctionValue(functionName, params);
         throw FUNCTION_ALREADY_DEFINED(params);
       } else {
         usedParams.push(stringifiedParams);
-        structure.setFunctionValue(functionName, params, value);
+        //structure.setFunctionValue(functionName, params, value);
       }
     } catch (e) {
       console.error(e);

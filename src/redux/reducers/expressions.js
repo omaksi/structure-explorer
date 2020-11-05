@@ -53,6 +53,7 @@ import {
   IMPORT_DIAGRAM_STATE, CHANGE_DIRECTION_OF_BINARY_RELATION
 } from "../actions/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../../math_view/constants/parser_start_rules";
+import {getStructureObject} from "../selectors/structureObject";
 
 let functions = require('./functions/functions');
 
@@ -67,9 +68,9 @@ export function defaultState(){
   }
 }
 
-function expressionsReducer(state = s, action, structure2, variables) {
+function expressionsReducer(state = s, action, variables) {
   s = state;
-  structure = structure2;
+  structure = getStructureObject(s);
   e = variables;
   switch (action.type) {
     case SET_CONSTANTS:

@@ -207,21 +207,21 @@ function setConstants() {
   if (!state.constants.parsed) {
     return;
   }
-  state.constants.errorMessage = structure.setLanguageConstants(state.constants.parsed);
+  //state.constants.errorMessage = structure.setLanguageConstants(state.constants.parsed);
 }
 
 function setPredicates() {
   if (!state.predicates.parsed) {
     return;
   }
-  state.predicates.errorMessage = structure.setLanguagePredicates(state.predicates.parsed);
+ // state.predicates.errorMessage = structure.setLanguagePredicates(state.predicates.parsed);
 }
 
 function setFunctions() {
   if (!state.functions.parsed) {
     return;
   }
-  state.functions.errorMessage = structure.setLanguageFunctions(state.functions.parsed);
+  //state.functions.errorMessage = structure.setLanguageFunctions(state.functions.parsed);
 }
 
 const copyState = (state) => ({

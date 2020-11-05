@@ -11,13 +11,32 @@ class Structure {
    *
    * @param {Language} language
    */
-  constructor(language) {
+  constructor(language, parsedDomain = new Set(), constants = new Map(),
+              predicates = new Map(), functions = new Map()) {
     this.language = language;
     this.domain = new Set();
     this.iConstant = new Map();
     this.iPredicate = new Map();
     this.iFunction = new Map();
     this.domainCombinations = new Map();
+    parsedDomain.forEach(i => {
+      this.domain.add(i);
+    });
+    constants.forEach((constantValue, constantName) => {
+      this.setConstantValue(constantName, constantValue.value);
+    })
+    functions.forEach((functionValue, functionName) => {
+      functionValue.parsed.forEach(tuple => {
+        let params = tuple.slice(0, tuple.length - 1);
+        let value = tuple[tuple.length - 1];
+        this.setFunctionValue(functionName, params, value);
+      });
+    });
+    predicates.forEach((predicateValue, predicateName) => {
+      predicateValue.parsed.forEach(tuple => {
+        this.setPredicateValue(predicateName, tuple);
+      });
+    });
   }
 
   setLanguageConstants(constants) {

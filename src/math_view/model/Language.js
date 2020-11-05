@@ -1,4 +1,5 @@
 import {CONSTANT_IN_LANGUAGE, FUNCTION_IN_LANGUAGE, PREDICATE_IN_LANGUAGE} from "../constants/messages";
+import {defaultInputData} from "../constants";
 
 /**
  * Represent language of logic
@@ -7,10 +8,27 @@ import {CONSTANT_IN_LANGUAGE, FUNCTION_IN_LANGUAGE, PREDICATE_IN_LANGUAGE} from 
  */
 class Language {
 
-  constructor() {
+  constructor(parsedConstants = [],
+              parsedFunctions = [{}],
+              parsedPredicates = [{}]) {
     this.constants = new Set();
     this.functions = new Map();
     this.predicates = new Map();
+    parsedConstants.parsed.forEach(c => {
+      if (!this.functions.has(c) && !this.predicates.has(c)) {
+        this.addConstant(c);
+      }
+    });
+    parsedFunctions.parsed.forEach(f => {
+      if (!this.constants.has(f.name) && !this.predicates.has(f.name)) {
+        this.addFunction(f.name, parseInt(f.arity));
+      }
+    });
+    parsedPredicates.parsed.forEach(p => {
+      if (!this.functions.has(p.name) && !this.constants.has(p.name)) {
+        this.addPredicate(p.name, p.arity);
+      }
+    });
   }
 
   getConstants() {

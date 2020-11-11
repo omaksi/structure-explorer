@@ -48,7 +48,11 @@ import {
 } from "../../math_view/constants/parser_start_rules";
 import {defaultInputData, PREDICATE} from "../../math_view/constants";
 import {BOTH, FROM, PREDICATE as PRED,FUNCTION as FUNC, TO} from "../../graph_view/nodes/ConstantNames";
-import {getStructureObject} from "../selectors/structureObject";
+import {
+  validateStructureConstants,
+  validateLanguagePredicates as validatePredicates,
+  validateLanguageFunctions as validateFunctions
+} from "./functions/validation";
 
 let functions = require('./functions/functions');
 
@@ -57,7 +61,6 @@ const predicateDefaultInput = () => ({...defaultInputData(), tableEnabled: false
 const functionDefaultInput = () => predicateDefaultInput();
 
 let state = {};
-let structure = null;
 
 export function defaultState(){
   return{
@@ -71,7 +74,6 @@ export function defaultState(){
 
 function structureReducer(s, action) {
   state = copyState(s);
-  structure = getStructureObject(s);
   let input = action.itemType === PREDICATE ? state.predicates[action.name] : state.functions[action.name];
   switch (action.type) {
     case SET_CONSTANTS:
@@ -100,7 +102,6 @@ function structureReducer(s, action) {
       });
 
       state.constants = Object.assign({}, ...newStateConstantObject);
-      //structure.iConstant.set(action.newName, state.constants[action.newName]);
       syncLanguageWithStructure();
       return state;
 
@@ -180,12 +181,12 @@ function structureReducer(s, action) {
     case SET_PREDICATE_VALUE_TABLE:
       if (action.checked) {
         addPredicateValue(action.predicateName, action.value);
-      } else {
-        removePredicateValue(action.predicateName, action.value);
       }
-      let predicateValue = structure.getPredicateValue(action.predicateName);
-      state.predicates[action.predicateName].parsed = predicateValue;
-      state.predicates[action.predicateName].value = predicateValueToString(predicateValue);
+      let newValue = action.value.slice(0, action.value.length - 1);
+      let newValueString = newValue.length === 1 ? newValue.join(", ") : "(" + newValue.join(", ") + ")";
+      let predicateValue = state.predicates[action.predicateName].value + "; " + newValueString;
+      state.predicates[action.predicateName].value = predicateValue;
+      functions.parseText(predicateValue, state.predicates[action.predicateName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
       return state;
     case SET_FUNCTION_VALUE_TEXT:
       functions.parseText(action.value, state.functions[action.functionName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
@@ -233,7 +234,6 @@ function structureReducer(s, action) {
       setConstantsValues();
 
       changePredicatesValues(action.oldName, action.newName);
-      rebuildPredicatesValuesFromParsedInterpretation();
 
       /*setFunctionsValues();
       setVariables();*/
@@ -327,14 +327,13 @@ function structureReducer(s, action) {
   }
 }
 
+//Done
 function addUnaryPredicate(predicateName,nodeName){
   let predName = predicateName+"/1";
   let newPredValue = "";
 
-  if(structure.iPredicate.has(predName)){
-    for(let parsedArrayOfLanguageElements of structure.iPredicate.get(predName)){
-      newPredValue += parsedArrayOfLanguageElements[0]+", ";
-    }
+  if(state.predicates.includes(predName)){
+      newPredValue += state.predicates[predName].value + "; ";
   }
   newPredValue += nodeName;
   return newPredValue;
@@ -351,164 +350,156 @@ function removeLanguageElementInGivenDirection(elementName,direction,sourceNodeN
   removeLanguageElement(elementName, type===PRED?2:1, nodeNames, type);
 }
 
-function addTupleLanguageElement(elementName,newValue,nodeNames,type){
+//done
+function addTupleLanguageElement(elementName,newValue){
   let elemName = elementName+"/2";
   let newElemValue = "";
-  let structureInterpretationSet = type === PRED?structure.iPredicate:structure.iFunction;
 
-  if(structureInterpretationSet.has(elemName)){
-    for(let parsedArrayOfLanguageElements of structureInterpretationSet.get(elemName)){
-      let joinedNodeNames = nodeNames.join(",");
-      if(joinedNodeNames!==parsedArrayOfLanguageElements.join(",") && joinedNodeNames!==(parsedArrayOfLanguageElements[1]+","+parsedArrayOfLanguageElements[0])){
-        newElemValue += "("+parsedArrayOfLanguageElements[0]+", "+parsedArrayOfLanguageElements[1]+"), ";
+  if(state.predicates.includes(elemName)){
+    newElemValue += state.predicates[elemName].value;
+    let newValues = newValue.split("; ");
+    if(newValues.length === 2) {
+      if (!state.predicates[elemName].value.includes(newValue[0])) {
+        newElemValue += "; " + newValue[0];
+      }
+      if (!state.predicates[elemName].value.includes(newValue[1])) {
+        newElemValue += "; " + newValue[1];
+      }
+    } else if(newValues.length === 1){
+      if (!state.predicates[elemName].value.includes(newValue[0])) {
+        newElemValue += "; " + newValue[0];
       }
     }
+  } else {
+    newElemValue += newValue;
   }
-  newElemValue += newValue;
   return newElemValue;
 }
 
+//done
 function buildNaryLanguageElement(elementName,arity,nodeNames,type){
   let elemName = elementName+"/"+arity;
 
   if(type === PRED){
-    return buildNaryPredicateValue(structure.iPredicate,elemName,nodeNames);
+    return buildNaryPredicateValue(elemName,nodeNames);
   }
- return buildNaryFunctionValue(structure.iFunction,elemName,nodeNames);
+ return buildNaryFunctionValue(elemName,nodeNames);
 }
 
-function buildNaryPredicateValue(structureInterpretationSet,elemName,nodeNames){
+//DONE ? nechapem zmysel
+function buildNaryPredicateValue(elemName,nodeNames){
   let newElemValue = "";
-  if(structureInterpretationSet.has(elemName)){
-    for(let parsedArrayOfLanguageElement of structureInterpretationSet.get(elemName)){
-      let joinedParsedLanguageElement = parsedArrayOfLanguageElement.join(", ");
-      if(joinedParsedLanguageElement!==nodeNames.join(", ")){
-        newElemValue += "("+(joinedParsedLanguageElement)+"), ";
+  if(state.predicates.includes(elemName)){
+    let values = state.predicates[elemName].value.split("; ");
+    let newValue = "(" + nodeNames.join(", ") + ")";
+    for(let value of values){
+      if(value !== newValue){
+        newElemValue += value + "; ";
       }
     }
   }
   return newElemValue;
 }
 
-function buildNaryFunctionValue(structureInterpretationSet,elemName,nodeNames){
+//Done
+function buildNaryFunctionValue(elemName,nodeNames){
   let newElemValue = "";
-  if(structureInterpretationSet.has(elemName)) {
-    let structureInterpretationObject = structure.iFunction.get(elemName);
-    let joinedNodeNames = nodeNames.join(", ");
-
-    for (let key in structureInterpretationObject) {
-      if (structureInterpretationObject.hasOwnProperty(key)) {
-
-        let keyNodeNamesParsed = JSON.parse(key).join(", ") + (", " + structureInterpretationObject[key]);
-        if (keyNodeNamesParsed !== joinedNodeNames) {
-          newElemValue += "(" + (keyNodeNamesParsed) + "), ";
-        }
+  if(state.functions.includes(elemName)) {
+    let values = state.functions[elemName].value.split("; ");
+    let newValue = "(" + nodeNames.join(", ") + ")";
+    for(let value of values) {
+      if (value !== newValue) {
+        newElemValue += value + "; ";
       }
     }
   }
   return newElemValue;
 }
 
-function buildPreviousFunctionValuesWithoutCurrentValue(elementName,nodeNames,direction=BOTH){
+//Done
+function addUnaryFunction(elementName,newValue,nodeNames) {
   let elemName = elementName + "/1";
   let newElemValue = "";
 
-  if (structure.iFunction.has(elemName)) {
-    let structureInterpretationObject = structure.iFunction.get(elemName);
-    let joinedNodeNames = nodeNames.join(", ");
-
-    for (let key in structureInterpretationObject) {
-      if (structureInterpretationObject.hasOwnProperty(key)){
-        //attention - whitespace
-        let keyNodeNamesParsed = JSON.parse(key).join(", ")+(", "+structureInterpretationObject[key]);
-        if(keyNodeNamesParsed!== joinedNodeNames){
-          newElemValue+= addUnaryFuncValueBasedOnCondition(key,structureInterpretationObject,joinedNodeNames,direction);
-        }
+  if(state.functions.include(elemName)){
+    let values = state.functions[elemName].split("; ");
+    for(let value of values){
+      let arg = value.split(",");
+      //skips values with the same argument
+      if(arg[0].substr(1) !== nodeNames[0]){
+        newElemValue += value + "; ";
       }
     }
+
   }
-  return newElemValue;
-}
-
-function addUnaryFuncValueBasedOnCondition(key,structureInterpretationObject,joinedNodeNames,direction){
-  let parsedArray = JSON.parse(key);
-  let keyNodeNamesParsed = parsedArray[0]+", "+structureInterpretationObject[key];
-
-  if(keyNodeNamesParsed !== joinedNodeNames){
-    if(direction === BOTH && (structureInterpretationObject[key]+", "+parsedArray[0]) === joinedNodeNames){
-      return "";
-    }
-    else{
-      return "("+keyNodeNamesParsed+"), ";
-    }
-  }
-}
-
-function addUnaryFunction(elementName,newValue,nodeNames) {
-  return buildPreviousFunctionValuesWithoutCurrentValue(elementName,nodeNames)+newValue;
+  return newElemValue + newValue;
 }
 
 function removeUnaryFunction(elementName,nodeNames){
-  let newElemValue = buildPreviousFunctionValuesWithoutCurrentValue(elementName,nodeNames,FROM);
+  let elemName = elementName + "/1";
+  let newElemValue = "";
+
+  if(state.functions.include(elemName)){
+    let values = state.functions[elemName].split("; ");
+    for(let value of values){
+      let arg = value.split(",");
+      //skips values with the same argument
+      if(arg[0].substr(1) !== nodeNames[0]){
+        newElemValue += value + "; ";
+      }
+    }
+
+  }
   return newElemValue.substring(0,newElemValue.length-2);
 }
 
 function changePredicatesValues(oldNodeName,newNodeName) {
-  for (let predKey of structure.iPredicate.keys()) {
+  for (let predKey of state.predicates) {
+    let newValues = "";
     let predicateArity = parseInt(predKey.split("/")[1]);
-    for(let nodeValue of structure.iPredicate.get(predKey)){
-      for(let i = 0;i<predicateArity;i++){
-        if(nodeValue[i] === oldNodeName){
-          nodeValue[i] = newNodeName;
+    let values = state.predicates[predKey].value.split("; ");
+    for(let value of values) {
+      let nodeValues = value.split(", ");
+      for (let i = 0; i < predicateArity; i++) {
+        if (i === 0 && nodeValues[i].substring(1) === oldNodeName) {
+          nodeValues[i] = predicateArity === 1 ? newNodeName : "(" + newNodeName;
+        } else if (i === predicateArity - 1  && nodeValues[i].substring(0, nodeValues[i].length - 1) === oldNodeName) {
+          nodeValues[i] = newNodeName + ")";
+        } else if (nodeValues[i] === oldNodeName) {
+          nodeValues[i] = newNodeName;
         }
       }
+      newValues += nodeValues.join(", ") + "; ";
     }
-  }
-}
-
-function rebuildPredicatesValuesFromParsedInterpretation() {
-  for (let predKey of structure.iPredicate.keys()) {
-    let predicateArity = parseInt(predKey.split("/")[1]);
-    let newPredValue = "";
-    for (let nodeValue of structure.iPredicate.get(predKey)) {
-      if(predicateArity === 1){
-        newPredValue+=nodeValue[0]+", ";
-      }
-      else{
-        newPredValue+="(";
-        for(let i = 0;i<predicateArity;i++){
-          newPredValue+=nodeValue[i]+", ";
-        }
-        newPredValue = newPredValue.substring(0,newPredValue.length-2);
-        newPredValue+="), ";
-      }
-    }
-    newPredValue = newPredValue.substring(0,newPredValue.length-2);
-    functions.parseText(newPredValue, state.predicates[predKey], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
+    newValues = newValues.substr(0, newValues.length - 2);
+    state.predicates[predKey].value = newValues;
+    functions.parseText(newValues, state.predicates[predKey], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
     setPredicateValue(predKey);
   }
 }
 
+//done
 function buildTupleValue(nodeNames,direction){
   if(direction === BOTH){
     if(nodeNames[0] === nodeNames[1]){
-      return "("+nodeNames[0]+", "+nodeNames[1]+")";
+      return "(" + nodeNames[0] + ", " + nodeNames[1] + ")";
     }
     else{
-      return "("+nodeNames[0]+", "+nodeNames[1]+"),"+" ("+nodeNames[1]+", "+nodeNames[0]+")";
+      return "(" + nodeNames[0] + ", " +nodeNames[1] + ");" + " (" + nodeNames[1] + ", " + nodeNames[0] + ")";
     }
   }
   else if(direction === FROM){
-    return "("+nodeNames[0]+", "+nodeNames[1]+")";
+    return "(" + nodeNames[0] + ", " + nodeNames[1] + ")";
   }
   else{
-    return "("+nodeNames[1]+", "+nodeNames[0]+")";
+    return "(" + nodeNames[1] + ", " + nodeNames[0] + ")";
   }
 }
 
+//done + nechapem
 function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""){
   let languageElementNameWithArity = elementName+"/"+elementArity;
-  insertNewInputs();
+  //insertNewInputs(); NECHAPEM
   let elementValue;
 
   if(elementArity === 1){
@@ -520,7 +511,7 @@ function addLanguageElement(elementName,elementArity,nodeNames,type,direction=""
     }
   }
   else if(type === PRED && elementArity === 2){
-    elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction),nodeNames,PRED);
+    elementValue = addTupleLanguageElement(elementName,buildTupleValue(nodeNames,direction));
   }
   else{
     if(!nodeNames){
@@ -561,13 +552,12 @@ function removeLanguageElement(elementName,elementArity,nodeNames,type){
 function removeUnaryPredicate(predicateName,removeNodeName){
   let predName = predicateName+"/1";
   let newPredInterpretationValue = "";
+  let values = state.predicates[predName].value.split("; ");
 
-  for(let nodeNameArray of structure.iPredicate.get(predName)){
-    for(let currNodeName of nodeNameArray){
-      if(currNodeName!==removeNodeName){
-        newPredInterpretationValue+=currNodeName+", ";
+  for(let value of values){
+      if(value !== removeNodeName) {
+        newPredInterpretationValue += value + "; ";
       }
-    }
   }
   return newPredInterpretationValue.substring(0,newPredInterpretationValue.length-2);
 }
@@ -576,9 +566,10 @@ function removeBinaryPredicate(predicateName,sourceNode,targetNode){
   let predName = predicateName+"/2";
   let newPredInterpretationValue = "";
 
-  for(let currentNodeNameTuple of structure.iPredicate.get(predName)){
-    if(!(currentNodeNameTuple[0] === sourceNode && currentNodeNameTuple[1] === targetNode)){
-      newPredInterpretationValue+="("+currentNodeNameTuple[0]+", "+currentNodeNameTuple[1]+"), ";
+  let values = state.predicate[predName].split("; ");
+  for(let value of values){
+    if(!(value[0].substring(1) === sourceNode && value[1].substring(1, value[1].length - 1) === targetNode)){
+      newPredInterpretationValue += value.join(", ") + "; ";
     }
   }
   return newPredInterpretationValue.substring(0,newPredInterpretationValue.length-2);
@@ -589,7 +580,6 @@ function setDomain() {
     return;
   }
   state.domain.errorMessage = state.domain.parsed.length > 0 ? '' : EMPTY_DOMAIN;
-  //structure.setDomain(state.domain.parsed);
 }
 
 function setConstantsValues() {
@@ -610,11 +600,13 @@ function setFunctionsValues() {
   })
 }
 
+// ???
 function syncLanguageWithStructure() {
   deleteUnusedInputs();
   insertNewInputs();
 }
 
+// ???
 function deleteUnusedInputs() {
   Object.keys(state.constants).forEach(e => {
     if (!structure.language.hasConstant(e)) {
@@ -634,6 +626,7 @@ function deleteUnusedInputs() {
   });
 }
 
+// ???
 function insertNewInputs() {
   structure.language.getConstants().forEach(e => {
     if (!state.constants[e]) {
@@ -652,6 +645,7 @@ function insertNewInputs() {
   });
 }
 
+//done
 function setVariables() {
   if (!state.variables.parsed) {
     return;
@@ -665,10 +659,13 @@ function setVariables() {
   state.variables.parsed.forEach(tuple => {
     let variable = tuple[0];
     let value = tuple[1];
-    if (structure.language.hasItem(variable)) {
+    let domainArray = state.domain.value.split(",");
+    if (state.constants.includes(variable)
+          || state.functions.includes(variable)
+          || state.predicates.includes(variable)) {
       errorMessage = ITEM_IN_LANGUAGE(variable);
     }
-    else if (!structure.hasDomainItem(value)) {
+    else if (!domainArray.includes(value)) {
       errorMessage = ITEM_NOT_IN_DOMAIN(value);
     }
     else {
@@ -680,7 +677,7 @@ function setVariables() {
 
 function setConstantValue(constantName, value) {
   try {
-    //structure.setConstantValue(constantName, value);
+    validateStructureConstants(constantName, value, state.constants, state.domain.value.split(","));
     state.constants[constantName].value = value;
     state.constants[constantName].errorMessage = '';
   } catch (e) {
@@ -694,11 +691,7 @@ function setPredicateValue(predicateName) {
   if (!state.predicates[predicateName] || !state.predicates[predicateName].parsed) {
     return;
   }
-  //structure.clearPredicateValue(predicateName);
   state.predicates[predicateName].errorMessage = '';
-  state.predicates[predicateName].parsed.forEach(tuple => {
-    addPredicateValue(predicateName, tuple);
-  });
 }
 
 function addPredicateValue(predicateName, tuple) {
@@ -709,28 +702,21 @@ function addPredicateValue(predicateName, tuple) {
   }
 }
 
-function removePredicateValue(predicateName, tuple) {
-  //structure.removePredicateValue(predicateName, tuple);
-}
-
+//DONE ?
 function setFunctionValue(functionName) {
   if (!state.functions[functionName] || !state.functions[functionName].parsed) {
     return;
   }
-  //structure.clearFunctionValue(functionName);
   state.functions[functionName].errorMessage = '';
   let usedParams = [];
   state.functions[functionName].parsed.forEach(tuple => {
     try {
       let params = tuple.slice(0, tuple.length - 1);
       let stringifiedParams = JSON.stringify(params);
-      let value = tuple[tuple.length - 1];
       if (usedParams.indexOf(stringifiedParams) > -1) {
-        //structure.removeFunctionValue(functionName, params);
         throw FUNCTION_ALREADY_DEFINED(params);
       } else {
         usedParams.push(stringifiedParams);
-        //structure.setFunctionValue(functionName, params, value);
       }
     } catch (e) {
       console.error(e);
@@ -749,11 +735,13 @@ function setFunctionValue(functionName) {
   }
 }
 
+//should work ?
 function checkFunctionValue(functionName) {
   let arity = parseInt(functionName.split('/')[1]);
-  if (structure.domain.size > 0) {
-    if (!structure.iFunction.has(functionName) ||
-       Object.keys(structure.iFunction.get(functionName)).length != structure.domainCombinations.get(arity).length) {
+  let domainArray = state.domain.value.split(",");
+  if (domainArray.length > 0) {
+    if (!state.functions.includes(functionName) ||
+       state.functions[functionName].value.split("; ").length != Math.pow(arity, domainArray.length)) {
       return false;
     }
   }

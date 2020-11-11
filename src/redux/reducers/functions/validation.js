@@ -1,7 +1,12 @@
-import {CONSTANT_IN_LANGUAGE, FUNCTION_IN_LANGUAGE, PREDICATE_IN_LANGUAGE} from "../../../math_view/constants/messages";
+import {
+    CONSTANT_IN_LANGUAGE,
+    EMPTY_CONSTANT_VALUE,
+    FUNCTION_IN_LANGUAGE,
+    PREDICATE_IN_LANGUAGE
+} from "../../../math_view/constants/messages";
 
 
-export function validateConstants(constants, functions, predicates){
+export function validateLanguageConstants(constants, functions, predicates){
     let message = '';
     constants.forEach(c => {
         if (functions.has(c)) {
@@ -16,7 +21,7 @@ export function validateConstants(constants, functions, predicates){
     return message;
 }
 
-export function validatePredicates(constants, functions, predicates){
+export function validateLanguagePredicates(constants, functions, predicates){
     let message = '';
     predicates.forEach(p => {
         if (constants.has(p.name)) {
@@ -31,7 +36,7 @@ export function validatePredicates(constants, functions, predicates){
     return message;
 }
 
-export function validateFunctions(constants, functions, predicates){
+export function validateLanguageFunctions(constants, functions, predicates){
     let message = '';
     functions.forEach(f => {
         if (constants.has(f.name)) {
@@ -44,4 +49,13 @@ export function validateFunctions(constants, functions, predicates){
         }
     });
     return message;
+}
+
+export function validateStructureConstants(constantName, value, constants, domainValues){
+    if (!constants.includes(constantName)) {
+        throw `Jazyk neobsahuje konštantu ${constantName}`;
+    }
+    if (!domainValues.includes(value)) {
+        throw EMPTY_CONSTANT_VALUE;
+    }
 }

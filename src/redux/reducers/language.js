@@ -21,9 +21,9 @@ import {
 import {defaultInputData} from "../../math_view/constants";
 import {PREDICATE as PRED,FUNCTION as FUNC} from "../../graph_view/nodes/ConstantNames";
 import {
-  validateConstants,
-  validatePredicates,
-  validateFunctions
+  validateLanguageConstants as validateConstants,
+  validateLanguagePredicates as validatePredicates,
+  validateLanguageFunctions as validateFunctions
 } from "./functions/validation";
 
 let functions = require('./functions/functions');

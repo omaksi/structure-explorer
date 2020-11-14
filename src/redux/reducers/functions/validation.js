@@ -9,12 +9,16 @@ import {
 export function validateLanguageConstants(constants, functions, predicates){
     let message = '';
     constants.forEach(c => {
-        if (functions.has(c)) {
+        if (functions.some(value => value.name === c)) {
             message = `${FUNCTION_IN_LANGUAGE} ${c}`;
             return;
         }
-        if (predicates.has(c)) {
+        if (predicates.some(value => value.name === c)) {
             message = `${PREDICATE_IN_LANGUAGE} ${c}`;
+            return;
+        }
+        if (constants.filter(value => value === c).length > 1) {
+            message = `${CONSTANT_IN_LANGUAGE}  ${c}`;
             return;
         }
     });
@@ -24,12 +28,16 @@ export function validateLanguageConstants(constants, functions, predicates){
 export function validateLanguagePredicates(constants, functions, predicates){
     let message = '';
     predicates.forEach(p => {
-        if (constants.has(p.name)) {
+        if (constants.some(value => value === p.name)) {
             message = `${CONSTANT_IN_LANGUAGE}  ${p.name}`;
             return;
         }
-        if (functions.has(p.name)) {
+        if (functions.some(value => value.name === p.name)) {
             message = `${FUNCTION_IN_LANGUAGE} ${p.name}`;
+            return;
+        }
+        if(predicates.filter(value => value.name === p.name).length > 1){
+            message = `${PREDICATE_IN_LANGUAGE} ${p.name}`;
             return;
         }
     });
@@ -39,12 +47,16 @@ export function validateLanguagePredicates(constants, functions, predicates){
 export function validateLanguageFunctions(constants, functions, predicates){
     let message = '';
     functions.forEach(f => {
-        if (constants.has(f.name)) {
+        if (constants.some(value => value === f.name)) {
             message = `${CONSTANT_IN_LANGUAGE} ${f.name}`;
             return;
         }
-        if (predicates.has(f.name)) {
+        if (predicates.some(value => value.name === f.name)) {
             message = `${PREDICATE_IN_LANGUAGE} ${f.name}`;
+            return;
+        }
+        if(functions.filter(value => value.name === f.name).length > 1){
+            message = `${FUNCTION_IN_LANGUAGE} ${f.name}`;
             return;
         }
     });

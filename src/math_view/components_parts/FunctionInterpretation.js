@@ -26,17 +26,17 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
                             arity={parseInt(name.split('/')[1])}
                             domain={domain}
                             placeholder='(1,2), (2,2), (3,1), ...'/>
-                        {structure.functions[name].tableEnabled && domain.length > 0 ? (
+                        {structure.functions[name].tableEnabled && domain.size > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
-                                             arity={structureObject.language.getFunction(name.split('/')[0])}
+                                             arity={structureObject.language.functions.get(name.split('/')[0])}
                                              value={structureObject.iFunction.has(name) ? structureObject.iFunction.get(name) : {}}
                                              onInputChange={setFunctionValueTable}
                                              disabled={structure.functions[name].locked}
                                              type={FUNCTION}/>
                         ) : null}
-                        {structure.functions[name].databaseEnabled && domain.length > 0 ? (
+                        {structure.functions[name].databaseEnabled && domain.size > 0 ? (
                             <DatabaseFunction name={name} domain={structureObject.domain}
-                                              arity={structureObject.language.getFunction(name.split('/')[0])}
+                                              arity={structureObject.language.functions.get(name.split('/')[0])}
                                               symbol={name.split('/')[0]}
                                               value={structureObject.iFunction.has(name) ? structureObject.iFunction.get(name) : {}}
                                               onInputChange={setFunctionValueTable}

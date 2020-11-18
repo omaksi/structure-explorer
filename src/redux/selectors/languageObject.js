@@ -1,9 +1,9 @@
 import { createSelector } from 'reselect'
 import Language from "../../math_view/model/Language";
 
-const getConstants = state => state.language.constants
-const getFunctions = state => state.language.functions
-const getPredicates = state => state.language.predicates
+const getConstants = state => state.language.constants.parsed
+const getFunctions = state => state.language.functions.parsed
+const getPredicates = state => state.language.predicates.parsed
 
 export const getLanguageObject = createSelector(
     [getConstants, getFunctions, getPredicates],

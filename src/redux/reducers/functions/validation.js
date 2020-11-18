@@ -64,7 +64,7 @@ export function validateLanguageFunctions(constants, functions, predicates){
 }
 
 export function validateStructureConstants(constantName, value, constants, domainValues){
-    if (!constants.includes(constantName)) {
+    if (!constants[constantName]) {
         throw `Jazyk neobsahuje konštantu ${constantName}`;
     }
     if (!domainValues.includes(value)) {
@@ -75,11 +75,11 @@ export function validateStructureConstants(constantName, value, constants, domai
 export function validateStructurePredicates(predicateValues, domainValues, arity){
     let message = '';
     predicateValues.forEach(tuple => {
-        if(tuple.length !== arity){
+        if(tuple.length !== parseInt(arity)){
             message = `N-tica ${tuple} nemá povolený počet prvkov`;
             return;
         }
-        if (predicateValues.filter(t => t.equals(tuple)).length > 1) {
+        if (predicateValues.filter(t => JSON.stringify(t) === JSON.stringify(tuple)).length > 1) {
             message = `N-tica ${tuple} sa v predikáte už nachádza`;
             return;
         }
@@ -98,11 +98,11 @@ export function validateStructureFunctions(functionValues, domainValues, arity){
     functionValues.forEach(tuple => {
         let params = tuple.slice(0, tuple.length - 1); //takes just the arguments of the function
         let stringParams = params.join(",");
-        if(!usedParams.includes(stringParams)){
+        if(usedParams.includes(stringParams)){
             message = FUNCTION_ALREADY_DEFINED(params);
             return;
         }
-        if(params.length !== arity){
+        if(params.length !== parseInt(arity)){
             message = `Počet parametrov ${params} nezodpovedá arite funkcie`;
             return;
         }
@@ -114,8 +114,10 @@ export function validateStructureFunctions(functionValues, domainValues, arity){
         usedParams.push(stringParams);
     });
 
-    if(functionValues.length !== Math.pow(arity, domainValues.length)){
-        message = FUNCTION_NOT_FULL_DEFINED;
+    if(message === '') {
+        if (functionValues.length !== Math.pow(domainValues.length, parseInt(arity))) {
+            message = FUNCTION_NOT_FULL_DEFINED;
+        }
     }
     return message;
 }

@@ -8,11 +8,12 @@ import {
   removeExpression,
   setExpressionAnswer
 } from "../actions";
+import {getStructureObject} from "../selectors/structureObject";
 
 const mapStateToProps = (state,myprops) => ({
   formulas: state.expressions.formulas,
   terms: state.expressions.terms,
-  domain: [...state.structureObject.domain],
+  domain: getStructureObject(state).domain,
   teacherMode: state.common.teacherMode,
   diagramModel:myprops.diagramModel
 });

@@ -18,6 +18,6 @@ exports.parseText = function (text, textData, parserOptions) {
   } catch (e) {
     console.error(e);
     textData.errorMessage = e.message;
-    textData.parsed = null;
+    textData.parsed = [];
   }
 };

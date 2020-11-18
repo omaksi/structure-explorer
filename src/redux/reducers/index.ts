@@ -1,5 +1,3 @@
-import Structure from "../../math_view/model/Structure";
-import Language from "../../math_view/model/Language";
 import languageReducer from "./language";
 import structureReducer from "./structure";
 import expressionsReducer from "./expressions";
@@ -9,10 +7,8 @@ import diagramReducer,{ defaultState as diagramDefaultState } from "./diagram";
 import {defaultState as expressionsDefaultState} from "./expressions";
 import {defaultState as structureDefaultState} from "./structure";
 import {defaultState as languageDefaultState} from "./language";
-import {getStructureObject} from "../selectors/structureObject";
 
 const defaultState = {
-    //structureObject: new Structure(new Language()),
     common: {
         teacherMode: false
     },
@@ -36,7 +32,6 @@ function root(state = defaultState, action:any) {
         try {
             state = JSON.parse(action.content);
             checkImportedState(state);
-            //state.structureObject = new Structure(new Language());
             state.structure.variables.object = new Map();
             state.diagramState = action.diagramState?action.diagramState:diagramDefaultState();
         } catch (e) {
@@ -46,12 +41,11 @@ function root(state = defaultState, action:any) {
     }
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action);
-    let structure = structureReducer(state.structure, action);
-    let expressions = expressionsReducer(state.expressions, action, state.structure.variables.object);
+    let structure = structureReducer(state.structure, action, language);
+    let expressions = expressionsReducer(state.expressions, action, state.structure.variables.object, state);
     let diagramState = diagramReducer(state.diagramState, action);
 
     return {
-        //structureObject: state.structureObject,
         common: common,
         language: language,
         structure: structure,

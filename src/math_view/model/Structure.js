@@ -11,6 +11,7 @@ class Structure {
    *
    * @param {Language} language
    */
+
   constructor(language, parsedDomain = [], constants = [{}],
               predicates = [{}], functions = [{}]) {
     this.language = language;
@@ -18,7 +19,6 @@ class Structure {
     this.iConstant = new Map();
     this.iPredicate = new Map();
     this.iFunction = new Map();
-    this.domainCombinations = new Map();
     parsedDomain.forEach(i => {
       this.domain.add(i);
     });
@@ -29,26 +29,24 @@ class Structure {
     this.language.functions.forEach((arity, name) => {
       let functionName = name + "/" + arity;
       this.iFunction.set(functionName, {});
-      if(!functions[functionName].parsed){
+      if(functions[functionName] === undefined){
         return;
       }
       functions[functionName].parsed.forEach(tuple => {
         let params = tuple.slice(0, tuple.length - 1);
         let value = tuple[tuple.length - 1];
-        this.iFunction.get(functionName)[params] = value;
+        this.iFunction.get(functionName)[JSON.stringify(params)] = value;
       });
     });
 
     this.language.predicates.forEach((arity, name) => {
       let predicateName = name + "/" + arity;
-      this.iPredicate.set(predicateName, {});
-      if(!predicates[predicateName].parsed){
+      this.iPredicate.set(predicateName, []);
+      if(predicates[predicateName] === undefined){
         return;
       }
       predicates[predicateName].parsed.forEach(tuple => {
-        let params = tuple.slice(0, tuple.length - 1);
-        let value = tuple[tuple.length - 1];
-        this.iPredicate.get(predicateName)[params] = value;
+        this.iPredicate.get(predicateName).push(tuple);
       });
     });
   }

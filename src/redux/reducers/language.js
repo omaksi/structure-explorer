@@ -160,27 +160,27 @@ function addLanguageElement(state, elementName, elementArity, type){
 }
 
 function setConstants(state) {
-  if (!state.constants.parsed) {
+  if (state.constants.parsed.length === 0) {
     return;
   }
   state.constants.errorMessage =
-      validateConstants(state.constants.parsed, state.predicates.parsed, state.functions.parsed);
+      validateConstants(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
 
 function setPredicates(state) {
-  if (!state.predicates.parsed) {
+  if (state.predicates.parsed.length === 0) {
     return;
   }
   state.predicates.errorMessage =
-      validatePredicates(state.constants.parsed, state.predicates.parsed, state.functions.parsed);
+      validatePredicates(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
 
 function setFunctions(state) {
-  if (!state.functions.parsed) {
+  if (state.functions.parsed.length === 0) {
     return;
   }
   state.functions.errorMessage =
-      validateFunctions(state.constants.parsed, state.predicates.parsed, state.functions.parsed);
+      validateFunctions(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
 
 const copyState = (state) => ({

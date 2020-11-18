@@ -12,7 +12,7 @@ export const EXPRESSION_LABEL = {
   TERM: '𝝉'
 };
 
-export const defaultInputData = () => ({value: '', locked: false, errorMessage: ''});
+export const defaultInputData = () => ({value: '', locked: false, errorMessage: '', parsed: []});
 export const defaultExpressionData = () => ({
   value: '',
   expressionValue: null,

@@ -68,16 +68,15 @@ export function defaultState(){
   }
 }
 
-function expressionsReducer(state = s, action, variables) {
+function expressionsReducer(state = s, action, variables, wholeState) {
   s = state;
-  structure = getStructureObject(s);
   e = variables;
   switch (action.type) {
     case SET_CONSTANTS:
     case SET_PREDICATES:
     case SET_FUNCTIONS:
     case IMPORT_APP:
-      syncExpressionsValue(true);
+      syncExpressionsValue(wholeState, true);
       return state;
     case SET_CONSTANT_VALUE:
     case SET_PREDICATE_VALUE_TEXT:
@@ -85,7 +84,7 @@ function expressionsReducer(state = s, action, variables) {
     case SET_FUNCTION_VALUE_TEXT:
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
-      syncExpressionsValue();
+      syncExpressionsValue(wholeState);
       return state;
     case ADD_EXPRESSION:
       addExpression(action.expressionType);
@@ -103,7 +102,7 @@ function expressionsReducer(state = s, action, variables) {
       lockExpressionAnswer(action.expressionType, action.expressionIndex);
       return s;
     case CHECK_SYNTAX:
-      checkExpressionSyntax(action);
+      checkExpressionSyntax(wholeState, action);
       return s;
     case ADD_DOMAIN_NODE:
     case RENAME_DOMAIN_NODE:
@@ -130,7 +129,7 @@ function expressionsReducer(state = s, action, variables) {
     case SET_CONSTANT_VALUE_FROM_LINK:
     case IMPORT_DIAGRAM_STATE:
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
-      syncExpressionsValue(true);
+      syncExpressionsValue(wholeState, true);
       return s;
     default:
       return s;
@@ -153,38 +152,39 @@ function removeExpression(expressionType, expressionIndex) {
   }
 }
 
-function syncExpressionsValue(parse = false) {
+function syncExpressionsValue(state, parse = false) {
   s.formulas.forEach(formula => {
     if (parse) {
       let temp = formula.value;
-      functions.parseText(`(${temp})`, formula, setParserOptions(RULE_FORMULA));
+      functions.parseText(`(${temp})`, formula, setParserOptions(state, RULE_FORMULA));
       // noinspection JSUndefinedPropertyAssignment
       formula.value = temp;
     }
-    evalExpression(formula);
+    evalExpression(state, formula);
   });
   s.terms.forEach(term => {
     if (parse) {
-      functions.parseText(term.value, term, setParserOptions(RULE_TERM));
+      functions.parseText(term.value, term, setParserOptions(state, RULE_TERM));
     }
-    evalExpression(term);
+    evalExpression(state, term);
   });
 }
 
-function evalExpression(expression) {
+function evalExpression(state, expression) {
   if (!expression.parsed || expression.parsed.length === 0) {
     return;
   }
   expression.errorMessage = '';
   try {
-    expression.expressionValue = expression.parsed.eval(structure, e);
+    let structureObject = getStructureObject(state);
+    expression.expressionValue = expression.parsed.eval(structureObject, e);
   } catch (e) {
     expression.errorMessage = e;
     expression.expressionValue = null;
   }
 }
 
-function checkExpressionSyntax(action) {
+function checkExpressionSyntax(state, action) {
   let expressionText = action.value;
   let expression = s.terms[action.index];
   if (action.expressionType === FORMULA) {
@@ -193,11 +193,11 @@ function checkExpressionSyntax(action) {
     }
     expression = s.formulas[action.index];
   }
-  functions.parseText(expressionText, expression, setParserOptions(action.expressionType.toLowerCase()));
+  functions.parseText(expressionText, expression, setParserOptions(state, action.expressionType.toLowerCase()));
   expression.value = action.value; // aby tam neboli zatvorky
   if (expression.errorMessage.length === 0) {
     expression.validSyntax = true;
-    evalExpression(expression);
+    evalExpression(state, expression);
   } else {
     expression.validSyntax = false;
   }
@@ -230,9 +230,9 @@ function lockExpressionValue(expressionType, expressionIndex) {
   }
 }
 
-const setParserOptions = (startRule) => ({
+const setParserOptions = (state, startRule) => ({
   startRule: startRule,
-  structure: structure,
+  structure: getStructureObject(state),
   conjunction: Conjunction,
   disjunction: Disjunction,
   implication: Implication,

@@ -30,10 +30,10 @@ class FunctionTerm extends Term {
     this.terms.forEach(term => {
       interpretedParams.push(term.eval(structure, e));
     });
-    if (!structure.getFunctionValue(this.name + '/' + structure.language.getFunction(this.name), interpretedParams)) {
+    if (!structure.iFunction.get(this.name + '/' + structure.language.functions.get(this.name))[JSON.stringify(interpretedParams)]) {
       throw `Hodnota funkčného symbolu ${this.name}(${interpretedParams}) nie je definovaná`;
     }
-    return structure.getFunctionValue(this.name + '/' + structure.language.getFunction(this.name), interpretedParams);
+    return structure.iFunction.get(this.name + '/' + structure.language.functions.get(this.name))[JSON.stringify(interpretedParams)];
   }
 
   /**

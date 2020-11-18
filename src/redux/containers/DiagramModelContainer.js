@@ -41,10 +41,11 @@ import {
 } from "../actions";
 import {connect} from 'react-redux';
 import {BodyWidget} from "../../graph_view/components/BodyWidget";
+import {getStructureObject} from "../selectors/structureObject";
 
 const mapStateToProps = (state,ownProps) => ({
   structure: state.structure,
-  structureObject: state.structureObject,
+  structureObject: getStructureObject(state),
   diagramState: state.diagramState,
   store: ownProps.store
 });

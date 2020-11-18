@@ -180,28 +180,38 @@ function structureReducer(state, action, language) {
     case SET_PREDICATE_VALUE_TABLE:
       let newValue = "";
       if (action.checked) {
+        if(newState.predicates[action.predicateName].parsed.some(tuple => JSON.stringify(tuple) === JSON.stringify(action.value))){
+          return newState;
+        }
         newValue = parsedToValue(newState.predicates[action.predicateName].parsed);
         if(newValue.length !== 0){
           newValue += ", ";
         }
         newValue += tupleToString(action.value);
       } else {
-        newValue = parsedToValue(newState.predicates[action.predicateName].parsed.filter(tuple => !tuple.equals(action.value)));
+        newValue = parsedToValue(newState.predicates[action.predicateName].parsed.filter(tuple => JSON.stringify(tuple) !== JSON.stringify(action.value)));
       }
-      //newState.predicates[action.predicateName].value = newValue;
       functions.parseText(newValue, newState.predicates[action.predicateName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
       checkPredicateValue(newState, action.predicateName);
-      return newValue;
+      console.log(newState);
+      return newState;
     case SET_FUNCTION_VALUE_TEXT:
       functions.parseText(action.value, newState.functions[action.functionName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
       checkFunctionValue(newState, action.functionName);
       return newState;
-    case SET_FUNCTION_VALUE_TABLE:
+    case SET_FUNCTION_VALUE_TABLE:;
       let params = action.value.slice(0, action.value.length - 1);
       let newParsedValue = newState.functions[action.functionName].parsed
-          .map(tuple => tuple.slice(0, tuple.length - 1).equals(params) ? action.value : tuple);
+          .map(tuple => JSON.stringify(tuple.slice(0, tuple.length - 1)) === JSON.stringify(params) ? action.value : tuple);
       let value = parsedToValue(newParsedValue);
-      functions.parseText(value, newState.predicates[action.predicateName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
+      if(newParsedValue.length === 0
+          || newParsedValue.some(tuple => JSON.stringify(tuple) !== JSON.stringify(action.value))){
+        if(value.length !== 0){
+          value += ", ";
+        }
+        value += tupleToString(action.value);
+      }
+      functions.parseText(value, newState.functions[action.functionName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
       checkFunctionValue(newState, action.functionName);
       return newState;
     case SET_VARIABLES_VALUE:
@@ -401,7 +411,7 @@ function setPredicatesValues(state) {
 
 function setFunctionsValues(state) {
   Object.keys(state.functions).forEach(f => {
-    checkFunctionValue(f);
+    checkFunctionValue(state, f);
   })
 }
 
@@ -430,23 +440,23 @@ function deleteUnusedInputs(state, language) {
 }
 
 function insertNewInputs(state, language) {
-  language.constants.parsed.forEach(c => {
-    if (!state.constants[c]) {
-      state.constants[c] = constantDefaultInput();
-    }
-  });
-  language.predicates.parsed.forEach(p => {
-    let predicateName = p.name + "/" + p.arity;
-    if (!state.predicates[predicateName]) {
-      state.predicates[predicateName] = predicateDefaultInput()
-    }
-  });
-  language.functions.parsed.forEach(f => {
-    let functionName = f.name + "/" + f.arity;
-    if (!state.functions[functionName]) {
-      state.functions[functionName] = functionDefaultInput()
-    }
-  });
+    language.constants.parsed.forEach(c => {
+      if (!state.constants[c]) {
+        state.constants[c] = constantDefaultInput();
+      }
+    });
+    language.predicates.parsed.forEach(p => {
+      let predicateName = p.name + "/" + p.arity;
+      if (!state.predicates[predicateName]) {
+        state.predicates[predicateName] = predicateDefaultInput()
+      }
+    });
+    language.functions.parsed.forEach(f => {
+      let functionName = f.name + "/" + f.arity;
+      if (!state.functions[functionName]) {
+        state.functions[functionName] = functionDefaultInput()
+      }
+    });
 }
 
 function setVariables(state, language) {
@@ -490,7 +500,7 @@ function setConstantValue(state, constantName, value) {
 }
 
 function checkPredicateValue(state, predicateName) {
-  if (!state.predicates[predicateName] || !state.predicates[predicateName].parsed) {
+  if (state.predicates[predicateName].parsed.length === 0) {
     return;
   }
   let arity = predicateName.split("/")[1];
@@ -499,7 +509,7 @@ function checkPredicateValue(state, predicateName) {
 }
 
 function checkFunctionValue(state, functionName) {
-  if (!state.functions[functionName] || !state.functions[functionName].parsed) {
+  if (state.functions[functionName].parsed.length === 0) {
     return;
   }
   let arity = functionName.split("/")[1];
@@ -527,7 +537,7 @@ function tupleToString(tuple) {
   return "(" + tuple.join(", ") + ")"
 }
 
-function parsedToValue(parsedValues) {
+function  parsedToValue(parsedValues) {
   if (parsedValues === undefined || parsedValues.length === 0) {
     return '';
   }

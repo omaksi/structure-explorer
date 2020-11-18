@@ -23,6 +23,47 @@ class Language {
         this.predicates.set(p.name, p.arity);
     });
   }
+
+    /**
+     *
+     * These functions are temporarly here until the grammar changes
+     *
+     *
+     */
+
+
+  hasConstant(constantName) {
+      return this.constants.has(constantName);
+  }
+
+  hasPredicate(predicateName) {
+      return this.hasInSet(predicateName,this.predicates);
+  }
+
+  hasFunction(functionName) {
+      return this.hasInSet(functionName,this.functions);
+  }
+
+  hasInSet(elementName,givenSet){
+      let splited = elementName.split('/');
+      if (splited.length !== 2) {
+          return givenSet.has(splited[0]);
+      }
+      if (isNaN(parseInt(splited[1]))) {
+          return false;
+      }
+      return givenSet.has(splited[0]) && givenSet.get(splited[0]).toString() === splited[1].toString();
+  }
+
+  /**
+   * Return arity of the predicate
+   * @param {string} predicateName
+   * @return {int} arity of the predicate
+   */
+  getPredicate(predicateName) {
+      return parseInt(this.predicates.get(predicateName));
+  }
+
 }
 
 export default Language;

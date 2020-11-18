@@ -24,10 +24,10 @@ class Constant extends Term {
    * @return {string} domain item
    */
   eval(structure, e) {
-    if (!structure.getConstantValue(this.name)) {
+    if (!structure.iConstant.get(this.name)) {
       throw `Hodnota konštanty ${this.name} nie je definovaná`;
     }
-    return structure.getConstantValue(this.name);
+    return structure.iConstant.get(this.name);
   }
 
   /**

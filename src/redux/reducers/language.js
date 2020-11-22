@@ -58,35 +58,29 @@ function languageReducer(oldState, action) {
       setConstants(newState);
       return newState;
     case ADD_UNARY_PREDICATE:
-      addLanguageElement(newState, action.predicateName, 1, PRED);
+      addPredicateLanguageElement(newState, action.predicateName, 1);
       return newState;
     case ADD_BINARY_PREDICATE:
-      addLanguageElement(newState, action.predicateName, 2, PRED);
+      addPredicateLanguageElement(newState, action.predicateName, 2);
       return newState;
     case ADD_TERNARY_PREDICATE:
-      addLanguageElement(newState, action.predicateName, 3, PRED);
+      addPredicateLanguageElement(newState, action.predicateName, 3);
       return newState;
     case ADD_QUATERNARY_PREDICATE:
-      addLanguageElement(newState, action.predicateName, 4, PRED);
+      addPredicateLanguageElement(newState, action.predicateName, 4);
       return newState;
     case ADD_UNARY_FUNCTION:
-      addLanguageElement(newState, action.functionName, 1, FUNC);
+      addFunctionLanguageElement(newState, action.functionName, 1);
       return newState;
     case ADD_BINARY_FUNCTION:
-      addLanguageElement(newState, action.functionName, 2, FUNC);
+      addFunctionLanguageElement(newState, action.functionName, 2);
       return newState;
     case ADD_TERNARY_FUNCTION:
-      addLanguageElement(newState, action.functionName, 3, FUNC);
+      addFunctionLanguageElement(newState, action.functionName, 3);
       return newState;
     case ADD_CONSTANT_NODE:
-      let newConstantVal = newState.constants.parsed.join(", ");
-
-      if (newConstantVal.length !== 0) {
-        newConstantVal += ", ";
-      }
-      newConstantVal += action.nodeName;
-
-      functions.parseText(newConstantVal, newState.constants, {startRule: RULE_CONSTANTS});
+      newState.constants.parsed.push(action.nodeName);
+      newState.constants.value = newState.constants.parsed.join(", ");
       setConstants(newState);
       return newState;
 
@@ -104,14 +98,14 @@ function languageReducer(oldState, action) {
       return newState;
 
     case REMOVE_CONSTANT_NODE:
-      let newConstVal = newState.constants.parsed.filter(value => value != action.nodeName).join(", ");
-      functions.parseText(newConstVal, newState.constants, {startRule: RULE_CONSTANTS});
+      newState.constants.parsed = newState.constants.parsed.filter(value => value != action.nodeName);
+      newState.constants.value = newState.constants.parsed.join(", ");
       setConstants(newState);
       return newState;
 
     case RENAME_CONSTANT_NODE:
-      let newConsVal = newState.constants.parsed.map(value => value === action.oldName ? action.newName : value).join(", ");
-      functions.parseText(newConsVal, newState.constants, {startRule: RULE_CONSTANTS});
+      newState.constants.parsed = newState.constants.parsed.map(value => value === action.oldName ? action.newName : value);
+      newState.constants.value = newState.constants.parsed.join(", ");
       setConstants(newState);
       return newState;
 
@@ -146,17 +140,16 @@ function returnParsedFuncValues(state){
   return state.functions.parsed.map(value => value.name + "/" + value.arity).join(", ");
 }
 
-function addLanguageElement(state, elementName, elementArity, type){
-  let elementNameWithArity = elementName + "/" + elementArity;
-  let parsedElements = type === PRED ? state.predicates.parsed : state.functions.parsed;
-  let newValueElement = parsedElements.map(value => value.name + "/" + value.arity).join(",");
-  if(newValueElement.length !== 0){
-    newValueElement += ",";
-  }
-  newValueElement += elementNameWithArity;
-  let elemState = type === PRED ? state.predicates : state.functions;
-  functions.parseText(newValueElement, elemState, {startRule: type === PRED ? RULE_PREDICATES : RULE_FUNCTIONS});
-  type === PRED ? setPredicates(state) : setFunctions(state);
+function addPredicateLanguageElement(state, elementName, elementArity){
+  state.predicates.parsed.push({name: elementName, arity: elementArity});
+  state.predicates.value = state.predicates.parsed.map(value => value.name + "/" + value.arity).join(",");
+  setPredicates(state);
+}
+
+function addFunctionLanguageElement(state, elementName, elementArity){
+  state.functions.parsed.push({name: elementName, arity: elementArity});
+  state.functions.value = state.functions.parsed.map(value => value.name + "/" + value.arity).join(",");
+  setFunctions(state);
 }
 
 function setConstants(state) {

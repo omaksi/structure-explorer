@@ -13,7 +13,7 @@ import {getStructureObject} from "../selectors/structureObject";
 const mapStateToProps = (state,myprops) => ({
   formulas: state.expressions.formulas,
   terms: state.expressions.terms,
-  domain: getStructureObject(state).domain,
+  domain: [...getStructureObject(state).domain],
   teacherMode: state.common.teacherMode,
   diagramModel:myprops.diagramModel
 });

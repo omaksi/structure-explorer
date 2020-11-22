@@ -17,10 +17,10 @@ class Language {
         this.constants.add(c);
     });
     parsedFunctions.forEach(f => {
-        this.functions.set(f.name, f.arity);
+        this.functions.set(f.name, parseInt(f.arity));
     });
     parsedPredicates.forEach(p => {
-        this.predicates.set(p.name, p.arity);
+        this.predicates.set(p.name, parseInt(p.arity));
     });
   }
 

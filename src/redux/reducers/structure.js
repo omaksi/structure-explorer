@@ -257,7 +257,7 @@ function structureReducer(state, action, language) {
       setDomain(newState);
 
       //toto mozem pretoze tu nie je input okno takze toto sa "neda" pokazit takym sposobom
-      newState.domain.parsed.forEach(c => {
+      language.constants.parsed.forEach(c => {
         if (newState.constants[c].value === action.oldName) {
           newState.constants[c].value = "";
         }
@@ -369,7 +369,6 @@ function buildTupleArray(nodeNames,direction){
 
 function addPredicateLanguageElement(state, language, elementName, elementArity, nodeNames, direction=""){
   let predicateName = elementName + "/" + elementArity;
-  console.log(nodeNames);
   insertNewInputs(state, language);
   if(nodeNames !== null) {
     if (direction !== "") {
@@ -400,20 +399,28 @@ function addFunctionLanguageElement(state, language, elementName, elementArity, 
 
 function removePredicateLanguageElement(state, elementName,elementArity,nodeNames){
   let predicateName = elementName+"/"+elementArity;
-  let index = state.predicates[predicateName].parsed.indexOf(nodeNames);
-  if(index > -1) {
-    state.predicates[predicateName].parsed.splice(index, 1);
-  }
+  let index = 0;
+  state.predicates[predicateName].parsed.forEach(tuple => {
+    if(JSON.stringify(tuple) === JSON.stringify(nodeNames)){
+      state.predicates[predicateName].parsed.splice(index, 1);
+      return;
+    }
+    index++;
+  });
   state.predicates[predicateName].value = parsedToValue(state.predicates[predicateName].parsed);
   checkPredicateValue(state, predicateName)
 }
 
 function removeFunctionLanguageElement(state, elementName,elementArity,nodeNames){
   let functionName = elementName+"/"+elementArity;
-  let index = state.functions[functionName].parsed.indexOf(nodeNames);
-  if(index > -1) {
-    state.functions[functionName].parsed.splice(index, 1);
-  }
+  let index = 0;
+  state.functions[functionName].parsed.forEach(tuple => {
+    if(JSON.stringify(tuple) === JSON.stringify(nodeNames)){
+      state.functions[functionName].parsed.splice(index, 1);
+      return;
+    }
+    index++;
+  });
   state.functions[functionName].value = parsedToValue(state.functions[functionName].parsed);
   checkFunctionValue(state, functionName)
 }
@@ -556,7 +563,6 @@ const copyState = (state) => ({
 });
 
 function tupleToString(tuple) {
-  console.log(tuple);
   if (tuple.length === 0) {
     return '';
   }
@@ -570,7 +576,6 @@ function  parsedToValue(parsedValues) {
   if (parsedValues === undefined || parsedValues.length === 0) {
     return '';
   }
-  console.log(parsedValues);
   return parsedValues.map(value => tupleToString(value)).join(", ");
 }
 

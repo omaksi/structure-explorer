@@ -102,7 +102,6 @@ function diagramReducer(state, action, wholeState) {
       return {...state,diagramModel:diagramModel,diagramCordState:JSON.parse(action.content).diagramCordState,imported:true};
     case IMPORT_DIAGRAM_STATE:
       let values = {...action.state,focusOnBodyFunc:action.focusOnBodyFunc};
-      console.log(values);
       syncDomain(values);
       syncLabels(values.diagramState);
       syncPredicates(values, wholeState);
@@ -525,7 +524,6 @@ function removeLinksToRemove(linksToRemove){
 }
 
 function syncDomain(values) {
-  console.log(values);
   let domain = (values.structure.domain.parsed);
   let domainState = values.diagramState.domainNodes;
   let diagramModel = values.diagramState.diagramModel;

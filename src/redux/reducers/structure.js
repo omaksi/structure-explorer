@@ -242,7 +242,7 @@ function structureReducer(state, action, language) {
         }
       });
       setConstantsValues(newState);
-      changePredicatesValues(newState, action.oldName, action.newName);
+      changePredicatesValues(newState, language, action.oldName, action.newName);
       return newState;
 
     case ADD_DOMAIN_NODE:
@@ -341,12 +341,12 @@ function removeFunctionLanguageElementInGivenDirection(state, elementName, direc
   removeFunctionLanguageElement(state, elementName, 1, nodeNames);
 }
 
-function changePredicatesValues(state, oldNodeName, newNodeName) {
-  state.predicates.forEach(predicate => {
-      state.predicates[predicate].parsed = state.predicates[predicate].parsed
+function changePredicatesValues(state, language, oldNodeName, newNodeName) {
+  language.predicates.parsed.forEach(predicate => {
+      let predicateName = predicate.name + "/" + predicate.arity;
+      state.predicates[predicateName].parsed = state.predicates[predicateName].parsed
           .map(tuple => tuple.map(value => value === oldNodeName ? newNodeName : value));
-      state.predicates[predicate].value = parsedToValue(state.predicates[predicate].parsed);
-      checkPredicateValue(predicate);
+      state.predicates[predicateName].value = parsedToValue(state.predicates[predicateName].parsed);
   });
 }
 
@@ -369,12 +369,15 @@ function buildTupleArray(nodeNames,direction){
 
 function addPredicateLanguageElement(state, language, elementName, elementArity, nodeNames, direction=""){
   let predicateName = elementName + "/" + elementArity;
+  console.log(nodeNames);
   insertNewInputs(state, language);
-  if(direction !== ""){
-    let arrayNodeNames = buildTupleArray(nodeNames, direction)
-    arrayNodeNames.forEach(tuple => state.predicates[predicateName].parsed.push(tuple))
-  } else {
-    state.predicates[predicateName].parsed.push(nodeNames);
+  if(nodeNames !== null) {
+    if (direction !== "") {
+      let arrayNodeNames = buildTupleArray(nodeNames, direction)
+      arrayNodeNames.forEach(tuple => state.predicates[predicateName].parsed.push(tuple))
+    } else {
+      state.predicates[predicateName].parsed.push(nodeNames);
+    }
   }
   state.predicates[predicateName].value = parsedToValue(state.predicates[predicateName].parsed);
   checkPredicateValue(state, predicateName)
@@ -383,11 +386,13 @@ function addPredicateLanguageElement(state, language, elementName, elementArity,
 function addFunctionLanguageElement(state, language, elementName, elementArity, nodeNames, direction=""){
   let functionName = elementName + "/" + elementArity;
   insertNewInputs(state, language);
-  if(direction !== ""){
-    let arrayNodeNames = buildTupleArray(nodeNames, direction)
-    arrayNodeNames.forEach(tuple => state.functions[functionName].parsed.push(tuple))
-  } else {
-    state.functions[functionName].parsed.push(nodeNames);
+  if(nodeNames !== null) {
+    if (direction !== "") {
+      let arrayNodeNames = buildTupleArray(nodeNames, direction)
+      arrayNodeNames.forEach(tuple => state.functions[functionName].parsed.push(tuple))
+    } else {
+      state.functions[functionName].parsed.push(nodeNames);
+    }
   }
   state.functions[functionName].value = parsedToValue(state.functions[functionName].parsed);
   checkFunctionValue(state, functionName)
@@ -551,6 +556,7 @@ const copyState = (state) => ({
 });
 
 function tupleToString(tuple) {
+  console.log(tuple);
   if (tuple.length === 0) {
     return '';
   }
@@ -564,6 +570,7 @@ function  parsedToValue(parsedValues) {
   if (parsedValues === undefined || parsedValues.length === 0) {
     return '';
   }
+  console.log(parsedValues);
   return parsedValues.map(value => tupleToString(value)).join(", ");
 }
 

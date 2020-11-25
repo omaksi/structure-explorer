@@ -29,6 +29,7 @@ import {DiagramApplication} from "../../graph_view/DiagramAplication";
 import _ from "lodash";
 import {TernaryNodeModel} from "../../graph_view/nodes/ternary/TernaryNodeModel";
 import {QuaternaryNodeModel} from "../../graph_view/nodes/quaternary/QuaternaryNodeModel";
+import {getStructureObject} from "../selectors/structureObject";
 
 export function defaultState(){
   let diagramModel = new DiagramModel();
@@ -43,7 +44,7 @@ export function defaultState(){
   }
 }
 
-function diagramReducer(state, action) {
+function diagramReducer(state, action, wholeState) {
   switch (action.type) {
     case SET_DIAGRAM:
       state.diagramModel = action.diagramModel;
@@ -52,8 +53,8 @@ function diagramReducer(state, action) {
       let value = {...action.value,focusOnBodyFunc:action.focusOnBodyFunc};
       syncDomain(value);
       syncLabels(state);
-      syncPredicates(value);
-      syncFunctions(value);
+      syncPredicates(value, wholeState);
+      syncFunctions(value, wholeState);
       syncConstants(value);
       return state;
     case ADD_DOMAIN_NODE:
@@ -101,10 +102,11 @@ function diagramReducer(state, action) {
       return {...state,diagramModel:diagramModel,diagramCordState:JSON.parse(action.content).diagramCordState,imported:true};
     case IMPORT_DIAGRAM_STATE:
       let values = {...action.state,focusOnBodyFunc:action.focusOnBodyFunc};
+      console.log(values);
       syncDomain(values);
       syncLabels(values.diagramState);
-      syncPredicates(values);
-      syncFunctions(values);
+      syncPredicates(values, wholeState);
+      syncFunctions(values, wholeState);
       syncConstants(values);
       syncNodesCords(values.diagramState);
       changeEditableState(state,state.editableNodes);
@@ -292,10 +294,10 @@ function clearCertainNodeState(nodeState){
   nodeState.clear();
 }
 
-function syncLanguageElementType(values,type) {
-  let elementInterpretationMap = type === PREDICATE ? values.structureObject.iPredicate : values.structureObject.iFunction;
+function syncLanguageElementType(values,type,state) {
+  let structureObject = getStructureObject(state)
+  let elementInterpretationMap = type === PREDICATE ? structureObject.iPredicate : structureObject.iFunction;
   let portMap = new Map([["1", new Map()], ["2", new Map()], ["3", new Map()], ["4", new Map()]]);
-
   if (elementInterpretationMap && elementInterpretationMap.size > 0) {
     for (let [key, value] of elementInterpretationMap.entries()) {
       let keyWithoutArity = key.split('/')[0];
@@ -338,8 +340,8 @@ function addToFunctionPortMap(portMapArity,value,keyWithoutArity) {
   }
 }
 
-function syncPredicates(values) {
-  let portMap = syncLanguageElementType(values,PREDICATE);
+function syncPredicates(values, state) {
+  let portMap = syncLanguageElementType(values,PREDICATE, state);
   syncUnaryPredicates(portMap.get("1"),values.diagramState.domainNodes);
   syncBinaryLinkElement(portMap.get("2"),values.diagramState,PREDICATE);
   syncNaryLanguageElements(portMap.get("3"),values,TERNARY,PREDICATE);
@@ -409,8 +411,8 @@ function syncPredicates(values) {
   return name+index;
  }
 
-function syncFunctions(values) {
-  let portMap = syncLanguageElementType(values,FUNCTION);
+function syncFunctions(values, state) {
+  let portMap = syncLanguageElementType(values,FUNCTION, state);
   syncBinaryLinkElement(portMap.get("1"),values.diagramState,FUNCTION);
   syncNaryLanguageElements(portMap.get("2"),values,TERNARY,FUNCTION);
   syncNaryLanguageElements(portMap.get("3"),values,QUATERNARY,FUNCTION);
@@ -450,7 +452,7 @@ function createBinaryLinks(portMap,existingLinksCombination,diagramState){
     let reversedComb = combination.split(",")[1]+","+combination.split(",")[0];
     if(!existingLinksCombination.has(combination) && !existingLinksCombination.has(reversedComb)){
       if(!diagramState.domainNodes.has(firstComb) || !diagramState.domainNodes.has(secondComb)){
-        return;
+        break;
       }
       let sourcePort = diagramState.domainNodes.get(firstComb).getMainPort();
       let targetPort = diagramState.domainNodes.get(secondComb).getMainPort();
@@ -489,7 +491,6 @@ function addLanguageElementToBinaryLinks(portMap,nodeCombinationKey,reversedNode
 function syncBinaryLinkElement(portMap,diagramState,type) {
   let linksToRemove = new Set();
   let existingLinksCombination = new Set();
-
   for(let link of diagramState.diagramModel.getLinks()){
     let label = link.getLabel();
     if(label){
@@ -498,7 +499,6 @@ function syncBinaryLinkElement(portMap,diagramState,type) {
       type === PREDICATE?label.clearPredicates():label.clearFunctions();
       let nodeCombinationKey = label.getNodeCombinationKey();
       let reversedNodeCombinationKey = label.getReversedNodeCombinationKey();
-
       existingLinksCombination.add(nodeCombinationKey);
       existingLinksCombination.add(reversedNodeCombinationKey);
 
@@ -525,7 +525,8 @@ function removeLinksToRemove(linksToRemove){
 }
 
 function syncDomain(values) {
-  let domain = (values.structureObject.domain);
+  console.log(values);
+  let domain = (values.structure.domain.parsed);
   let domainState = values.diagramState.domainNodes;
   let diagramModel = values.diagramState.diagramModel;
   let diagramCanvas = values.diagramState.diagramEngine.getCanvas();
@@ -540,7 +541,7 @@ function syncDomain(values) {
 
   let existingDomainNodes = [];
   for (let [nodeName, nodeObject] of domainState.entries()) {
-    if (domain.has(nodeName)) {
+    if (domain.includes(nodeName)) {
       existingDomainNodes.push(nodeName);
     } else {
       removeNodeState(nodeName, domainState);

@@ -43,7 +43,7 @@ function root(state = defaultState, action:any) {
     let language = languageReducer(state.language, action);
     let structure = structureReducer(state.structure, action, language);
     let expressions = expressionsReducer(state.expressions, action, state.structure.variables.object, state);
-    let diagramState = diagramReducer(state.diagramState, action);
+    let diagramState = diagramReducer(state.diagramState, action, state);
 
     return {
         common: common,

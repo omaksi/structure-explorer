@@ -88,7 +88,6 @@ const Expressions = (props) => (
               <HelpButton dataTarget={"#help-" + expression.expressionType.toLowerCase()}/>
           </Card.Header>
           <Card.Body>
-              {console.log(props)}
             {expression.help}
             {expression.items.map((item, index) =>
                 <Form key={"expression-form-"+index}>

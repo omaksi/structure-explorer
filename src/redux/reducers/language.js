@@ -153,7 +153,7 @@ function addFunctionLanguageElement(state, elementName, elementArity){
 }
 
 function setConstants(state) {
-  if (state.constants.parsed.length === 0) {
+  if (state.constants.parsed.length === 0 || state.constants.errorMessage !== '') {
     return;
   }
   state.constants.errorMessage =
@@ -161,7 +161,7 @@ function setConstants(state) {
 }
 
 function setPredicates(state) {
-  if (state.predicates.parsed.length === 0) {
+  if (state.predicates.parsed.length === 0 || state.predicates.errorMessage !== '') {
     return;
   }
   state.predicates.errorMessage =
@@ -169,7 +169,7 @@ function setPredicates(state) {
 }
 
 function setFunctions(state) {
-  if (state.functions.parsed.length === 0) {
+  if (state.functions.parsed.length === 0 || state.predicates.errorMessage !== '') {
     return;
   }
   state.functions.errorMessage =

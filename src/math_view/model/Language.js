@@ -8,20 +8,11 @@ import {CONSTANT_IN_LANGUAGE, FUNCTION_IN_LANGUAGE, PREDICATE_IN_LANGUAGE} from 
 class Language {
 
   constructor(parsedConstants = [],
-              parsedFunctions = [{}],
-              parsedPredicates = [{}]) {
-    this.constants = new Set();
-    this.functions = new Map();
-    this.predicates = new Map();
-    parsedConstants.forEach(c => {
-        this.constants.add(c);
-    });
-    parsedFunctions.forEach(f => {
-        this.functions.set(f.name, parseInt(f.arity));
-    });
-    parsedPredicates.forEach(p => {
-        this.predicates.set(p.name, parseInt(p.arity));
-    });
+              parsedFunctions = [],
+              parsedPredicates = []) {
+    this.constants = new Set(parsedConstants);
+    this.functions = new Map(parsedFunctions.map(({name, arity}) => [name, parseInt(arity)]));
+    this.predicates = new Map(parsedPredicates.map(({name, arity}) => [name, parseInt(arity)]));
   }
 
     /**

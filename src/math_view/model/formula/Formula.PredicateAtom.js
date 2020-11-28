@@ -31,7 +31,7 @@ class PredicateAtom extends Formula {
       translatedTerms.push(term.eval(structure, e));
     });
     let arity = structure.language.predicates.get(this.name);
-    if (!structure.iPredicate.get(this.name + '/' + arity)) {
+    if (structure.iPredicate.get(this.name + '/' + arity) === undefined) {
       return false;
     }
     let value = structure.iPredicate.get(this.name + '/' + arity);

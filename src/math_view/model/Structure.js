@@ -12,8 +12,8 @@ class Structure {
    * @param {Language} language
    */
 
-  constructor(language, parsedDomain = [], constants = [{}],
-              predicates = [{}], functions = [{}]) {
+  constructor(language, parsedDomain, constants,
+              predicates, functions) {
     this.language = language;
     this.domain = new Set();
     this.iConstant = new Map();

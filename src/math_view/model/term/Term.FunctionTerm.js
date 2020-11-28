@@ -31,7 +31,7 @@ class FunctionTerm extends Term {
       interpretedParams.push(term.eval(structure, e));
     });
     if (!structure.iFunction.get(this.name + '/' + structure.language.functions.get(this.name))[JSON.stringify(interpretedParams)]) {
-      throw `Hodnota funkčného symbolu ${this.name}(${interpretedParams}) nie je definovaná`;
+      throw `Interpretacia funkčného symbolu ${this.name}(${interpretedParams}) nie je definovaná`;
     }
     return structure.iFunction.get(this.name + '/' + structure.language.functions.get(this.name))[JSON.stringify(interpretedParams)];
   }

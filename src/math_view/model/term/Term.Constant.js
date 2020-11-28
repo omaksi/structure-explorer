@@ -24,8 +24,8 @@ class Constant extends Term {
    * @return {string} domain item
    */
   eval(structure, e) {
-    if (!structure.iConstant.get(this.name)) {
-      throw `Hodnota konštanty ${this.name} nie je definovaná`;
+    if (structure.iConstant.get(this.name) === undefined) {
+      throw `Interpretacia konštanty ${this.name} nie je definovaná`;
     }
     return structure.iConstant.get(this.name);
   }

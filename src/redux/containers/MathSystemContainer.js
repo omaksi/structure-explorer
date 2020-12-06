@@ -2,7 +2,8 @@ import {connect} from "react-redux";
 import {MathSystem} from "../../math_view/MathSystem";
 import {syncMathState} from "../actions";
 
-const mapStateToProps = () => ({
+const mapStateToProps = (state,myprops) => ({
+    diagramModel:myprops.diagramModel
 });
 
 const mapDispatchOnProps = {

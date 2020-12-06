@@ -131,13 +131,16 @@ class App extends React.Component<AppProps,AppState> {
                       <DiagramModelContainer store={this.props.store}/>
                     </Col>
                   </Row>
-                  ):<MathSystemContainer/>
+                  ):<MathSystemContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
               }
-            <Row>
-              <Col sm={12}>
-                <ExpressionsContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
-              </Col>
-            </Row>
+              {this.state.diagramToggled? (
+                  <Row>
+                    <Col sm={12}>
+                      <ExpressionsContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
+                    </Col>
+                  </Row>
+                  ) : null
+              }
           </div>
         </Provider>
     );

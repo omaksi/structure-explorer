@@ -1,5 +1,5 @@
 import {Col, Form, InputGroup} from "react-bootstrap";
-import LockButton from "../buttons/LockButton";
+import LockButton from "../../buttons/LockButton";
 import React from "react";
 
 export function ConstantInterpretation({structure,setConstantValue,structureObject,teacherMode,lockConstantValue}){

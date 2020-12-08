@@ -1,6 +1,6 @@
 import React from 'react';
 import Card from "react-bootstrap/Card";
-import HelpButton from "../buttons/HelpButton";
+import HelpButton from "../../buttons/HelpButton";
 import TextComponent from "../components_parts/TextComponent";
 
 const help = (

@@ -8,7 +8,7 @@ import Domain from "../components_parts/Domain";
 import {ConstantInterpretation} from "../components_parts";
 import PredicateInterpretation from "../components_parts/PredicateInterpretation";
 import FunctionInterpretation from "../components_parts/FunctionInterpretation";
-import HelpButton from "../buttons/HelpButton";
+import HelpButton from "../../buttons/HelpButton";
 
 const help = (
    <div className="collapse" id="help-structure">

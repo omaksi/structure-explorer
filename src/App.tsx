@@ -4,11 +4,11 @@ import {Col, Row} from 'react-bootstrap';
 import {Provider} from 'react-redux';
 import ExpressionsContainer from './redux/containers/ExpressionsContainer';
 import {clearGraphSelection, importAppState} from "./redux/actions";
-import {DEFAULT_FILE_NAME} from "./math_view/constants";
+import {DEFAULT_FILE_NAME} from "./constants";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
-import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
-import HelpGraphCollapse from "./math_view/buttons/HelpGraphCollapse";
+import ButtonToolbarComponent from "./buttons/ButtonToolbarComponent";
+import HelpGraphCollapse from "./buttons/HelpGraphCollapse";
 import {DiagramSystem} from "./graph_view/DiagramSystem";
 
 interface AppProps{

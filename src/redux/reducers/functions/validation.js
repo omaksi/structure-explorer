@@ -3,7 +3,7 @@ import {
     EMPTY_CONSTANT_VALUE, FUNCTION_ALREADY_DEFINED,
     FUNCTION_IN_LANGUAGE, FUNCTION_NOT_FULL_DEFINED,
     PREDICATE_IN_LANGUAGE
-} from "../../../math_view/constants/messages";
+} from "../../../constants/messages";
 
 
 export function validateLanguageConstants(constants, functions, predicates){

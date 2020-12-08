@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import Expressions from "../../math_view/components/Expressions";
+import Expressions from "../../expressions_view/Expressions";
 import {
   addExpression,
   checkExpressionSyntax,

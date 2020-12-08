@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import Structure from "../../math_view/model/Structure";
+import Structure from "../../model/Structure";
 import {getLanguageObject} from "./languageObject";
 
 const getConstants = state => state.structure.constants

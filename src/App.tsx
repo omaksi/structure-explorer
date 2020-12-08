@@ -9,6 +9,7 @@ import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
 import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
 import HelpGraphCollapse from "./math_view/buttons/HelpGraphCollapse";
+import {DiagramSystem} from "./graph_view/DiagramSystem";
 
 interface AppProps{
   store:any;
@@ -125,21 +126,9 @@ class App extends React.Component<AppProps,AppState> {
                   <ButtonToolbarComponent setCollapseHelpGraphButton={this.setCollapseHelpGraphButton} collapseHelpGraphButton={this.state.collapseHelpGraphButton} clearGraphSelection={this.clearGraphSelection} exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
                   <HelpGraphCollapse collapsed={this.state.collapseHelpGraphButton}/>
             </Row>
-              {this.state.diagramToggled? (
-                  <Row className='reactDiagram'>
-                    <Col sm={12} >
-                      <DiagramModelContainer store={this.props.store}/>
-                    </Col>
-                  </Row>
-                  ):<MathSystemContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
-              }
-              {this.state.diagramToggled? (
-                  <Row>
-                    <Col sm={12}>
-                      <ExpressionsContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
-                    </Col>
-                  </Row>
-                  ) : null
+              {this.state.diagramToggled?
+                    <DiagramSystem diagramModel={this.props.store.getState().diagramState.diagramModel}/>
+                  : <MathSystemContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
               }
           </div>
         </Provider>

@@ -1,8 +1,8 @@
 import React from 'react';
 import {InputGroup, Form} from 'react-bootstrap';
-import LockButton from "../buttons/LockButton";
-import TableButton from "../buttons/TableButton";
-import DatabaseButton from "../buttons/DatabaseButton";
+import LockButton from "../../buttons/LockButton";
+import TableButton from "../../buttons/TableButton";
+import DatabaseButton from "../../buttons/DatabaseButton";
 
 const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTable, toggleDatabase, arity, domain, placeholder,databaseEnabled,tableEnabled,errorProperty}) => (
     <InputGroup>

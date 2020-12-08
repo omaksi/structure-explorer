@@ -2,7 +2,7 @@ import React from 'react';
 import {Col, Form, Row} from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import TextInput from "../components_parts/TextInput";
-import HelpButton from "../buttons/HelpButton";
+import HelpButton from "../../buttons/HelpButton";
 
 const help = (
    <div className="collapse" id="help-variables">

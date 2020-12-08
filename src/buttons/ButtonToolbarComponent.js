@@ -1,7 +1,7 @@
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {Button, ButtonGroup, ButtonToolbar} from 'react-bootstrap';
-import ModalComponent from '../components_parts/ModalComponent';
+import ModalComponent from '../math_view/components_parts/ModalComponent';
 import HelpGraphButton from "./HelpGraphButton";
 
 const ButtonToolbarComponent = ({setCollapseHelpGraphButton,collapseHelpGraphButton,clearGraphSelection,exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (

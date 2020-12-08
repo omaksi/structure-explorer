@@ -1,5 +1,5 @@
 import {FUNCTION, PREDICATE, UNBINARY} from "./ConstantNames";
-import {RULE_CONSTANTS, RULE_DOMAIN} from "../../math_view/constants/parser_start_rules";
+import {RULE_CONSTANTS, RULE_DOMAIN} from "../../constants/parser_start_rules";
 import {DiagramEngine } from "@projectstorm/react-diagrams";
 import {getLanguageObject} from "../../redux/selectors/languageObject";
 import {getStructureObject} from "../../redux/selectors/structureObject";

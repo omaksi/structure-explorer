@@ -1,5 +1,5 @@
 import {Col, Form} from "react-bootstrap";
-import {PREDICATE} from "../constants";
+import {PREDICATE} from "../../constants";
 import React from "react";
 import {RelationalTable,DatabasePredicate} from './index'
 import TextInput from "./TextInput";

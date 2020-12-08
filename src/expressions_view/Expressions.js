@@ -6,12 +6,12 @@ import {
     Row,
 } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
-import {EXPRESSION_LABEL, FORMULA, TERM} from "../math_view/constants";
+import {EXPRESSION_LABEL, FORMULA, TERM} from "../constants";
 import FontAwesome from 'react-fontawesome';
-import LockButton from '../math_view/buttons/LockButton';
-import HelpButton from "../math_view/buttons/HelpButton";
-import AddButton from "../math_view/buttons/AddButton";
-import HenkinHintikkaGameButton from "../math_view/buttons/HenkinHintikkaGameButton";
+import LockButton from '../buttons/LockButton';
+import HelpButton from "../buttons/HelpButton";
+import AddButton from "../buttons/AddButton";
+import HenkinHintikkaGameButton from "../buttons/HenkinHintikkaGameButton";
 
 const helpFormula = (
    <div className="collapse" id="help-formula">
@@ -154,12 +154,13 @@ const Expressions = (props) => (
                    </Col>
 
                    <Col xs={4} sm={4} md={2} className={"pt-2 no-padding-right"}>
-                     {item.answerValue !== '' && item.answerValue !== '-1' ? (item.answerValue === item.expressionValue ?
-                         <strong className="text-success"><FontAwesome
-                           name='check'/>&nbsp;Správne</strong> :
-                         <strong className="text-danger"><FontAwesome
-                           name='times'/>&nbsp;Nesprávne</strong>
-                        ) : null}
+                     {item.answerValue !== '' && item.answerValue !== '-1' ?
+                         (item.answerValue === item.expressionValue ?
+                             <strong className="text-success"><FontAwesome
+                               name='check'/>&nbsp;Správne</strong> :
+                             <strong className="text-danger"><FontAwesome
+                               name='times'/>&nbsp;Nesprávne</strong>
+                         ) : null}
                    </Col>
                </Row>
                 </Form>

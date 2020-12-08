@@ -1,15 +1,15 @@
 import {defaultExpressionData, FORMULA, TERM} from "../../math_view/constants";
-import EqualityAtom from "../../math_view/model/formula/Formula.EqualityAtom";
-import Disjunction from "../../math_view/model/formula/Formula.Disjunction";
-import PredicateAtom from "../../math_view/model/formula/Formula.PredicateAtom";
-import Negation from "../../math_view/model/formula/Formula.Negation";
-import Constant from "../../math_view/model/term/Term.Constant";
-import Implication from "../../math_view/model/formula/Formula.Implication";
-import Conjunction from "../../math_view/model/formula/Formula.Conjunction";
-import Variable from "../../math_view/model/term/Term.Variable";
-import FunctionTerm from "../../math_view/model/term/Term.FunctionTerm";
-import UniversalQuant from "../../math_view/model/formula/Formula.UniversalQuant";
-import ExistentialQuant from "../../math_view/model/formula/Formula.ExistentialQuant";
+import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
+import Disjunction from "../../model/formula/Formula.Disjunction";
+import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
+import Negation from "../../model/formula/Formula.Negation";
+import Constant from "../../model/term/Term.Constant";
+import Implication from "../../model/formula/Formula.Implication";
+import Conjunction from "../../model/formula/Formula.Conjunction";
+import Variable from "../../model/term/Term.Variable";
+import FunctionTerm from "../../model/term/Term.FunctionTerm";
+import UniversalQuant from "../../model/formula/Formula.UniversalQuant";
+import ExistentialQuant from "../../model/formula/Formula.ExistentialQuant";
 import {
   ADD_EXPRESSION,
   RENAME_DOMAIN_NODE,

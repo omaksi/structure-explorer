@@ -6,11 +6,12 @@ import {
     Row,
 } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
-import {EXPRESSION_LABEL, FORMULA, TERM} from "../constants";
+import {EXPRESSION_LABEL, FORMULA, TERM} from "../math_view/constants";
 import FontAwesome from 'react-fontawesome';
-import LockButton from '../buttons/LockButton';
-import HelpButton from "../buttons/HelpButton";
-import AddButton from "../buttons/AddButton";
+import LockButton from '../math_view/buttons/LockButton';
+import HelpButton from "../math_view/buttons/HelpButton";
+import AddButton from "../math_view/buttons/AddButton";
+import HenkinHintikkaGameButton from "../math_view/buttons/HenkinHintikkaGameButton";
 
 const helpFormula = (
    <div className="collapse" id="help-formula">

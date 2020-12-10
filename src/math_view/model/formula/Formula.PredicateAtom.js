@@ -30,11 +30,11 @@ class PredicateAtom extends Formula {
     this.terms.forEach(term => {
       translatedTerms.push(term.eval(structure, e));
     });
-    let arity = structure.language.getPredicate(this.name);
-    if (!structure.getPredicateValue(this.name + '/' + arity)) {
+    let arity = structure.language.predicates.get(this.name);
+    if (structure.iPredicate.get(this.name + '/' + arity) === undefined) {
       return false;
     }
-    let value = structure.getPredicateValue(this.name + '/' + arity);
+    let value = structure.iPredicate.get(this.name + '/' + arity);
     return value.findIndex(e => JSON.stringify(e) === JSON.stringify(translatedTerms)) > -1;
   }
 

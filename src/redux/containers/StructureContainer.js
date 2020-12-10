@@ -10,13 +10,14 @@ import {
 } from "../actions";
 import Structure from '../../math_view/components/Structure';
 import {lockConstantValue, lockDomain, lockFunctionValue, lockPredicateValue} from "../actions";
+import {getStructureObject} from "../selectors/structureObject";
 
 const mapStateToProps = (state) => ({
   language: state.language,
   structure: state.structure,
-  structureObject: state.structureObject,
+  structureObject: getStructureObject(state),
   teacherMode: state.common.teacherMode,
-  domain: [...state.structureObject.domain],
+  domain: getStructureObject(state).domain,
   diagramModel:state.diagramModel
 });
 

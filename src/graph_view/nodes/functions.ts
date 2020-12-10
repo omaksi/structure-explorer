@@ -1,21 +1,23 @@
 import {FUNCTION, PREDICATE, UNBINARY} from "./ConstantNames";
 import {RULE_CONSTANTS, RULE_DOMAIN} from "../../math_view/constants/parser_start_rules";
 import {DiagramEngine } from "@projectstorm/react-diagrams";
+import {getLanguageObject} from "../../redux/selectors/languageObject";
+import {getStructureObject} from "../../redux/selectors/structureObject";
 let parser = require('../../parser/grammar');
 
 export function canUseNameForGivenArityAndType(elementName:string,elementArity:string,reduxProps:any,type:string):boolean{
-    let structureObject = reduxProps["store"].getState().structureObject.language;
+    let languageObject = getLanguageObject(reduxProps["store"].getState());
 
-    if(structureObject.constants && structureObject.constants.has(elementName)){
+    if(languageObject.constants && languageObject.constants.has(elementName)){
         return false;
     }
 
-    let givenSet = type === PREDICATE?structureObject.functions:structureObject.predicates;
+    let givenSet = type === PREDICATE ? languageObject.functions : languageObject.predicates;
     if(givenSet && givenSet.has(elementName)){
         return false;
     }
 
-    let finalSet = type === PREDICATE?structureObject.predicates:structureObject.functions;
+    let finalSet = type === PREDICATE ? languageObject.predicates : languageObject.functions;
 
     if(finalSet){
         for(let [langaugeElementName,languageElementArity] of finalSet.entries()){
@@ -28,7 +30,7 @@ export function canUseNameForGivenArityAndType(elementName:string,elementArity:s
 }
 
 export function functionIsAlreadyDefinedForGivenFunction(functionParameters:[string],functionValue:string,functionName:string,reduxProps:any):boolean{
-    let functionInterpretation = reduxProps["store"].getState().structureObject.iFunction;
+    let functionInterpretation = getStructureObject(reduxProps["store"].getState()).iFunction;
 
     if(functionInterpretation.has(functionName)){
         for(let [funcParameters,funcValue] of Object.entries(functionInterpretation.get(functionName))){
@@ -111,7 +113,8 @@ export function canUseNameForNode(oldName:string,newName:string,setNodeBadName:a
 
 export function getAvailableLanguageElementForGivenArity(arity:string,reduxProps:any,modelSet:Set<string>,type:string):Set<string> {
     let languageElementSet: Set<string> = new Set();
-    let languageElement = type === PREDICATE?reduxProps["store"].getState().structureObject.language.predicates:reduxProps["store"].getState().structureObject.language.functions;
+    let languageObject = getLanguageObject(reduxProps["store"].getState());
+    let languageElement = type === PREDICATE ? languageObject.predicates : languageObject.functions;
 
     for(let [elementValue,elementArity] of languageElement.entries()){
         if(elementArity.toString() === arity && !modelSet.has(elementValue)){
@@ -124,7 +127,8 @@ export function getAvailableLanguageElementForGivenArity(arity:string,reduxProps
 
 export function getMaxLengthForGivenLanguageElementWithArity(arity:string,type:string,reduxProps:any):number{
     let maxLength = 0;
-    let languageElement = type===PREDICATE?reduxProps["store"].getState().structureObject.language.predicates:reduxProps["store"].getState().structureObject.language.functions;
+    let languageObject = getLanguageObject(reduxProps["store"].getState());
+    let languageElement = type === PREDICATE ? languageObject.predicates : languageObject.functions;
 
     for(let [elementValue,elementArity] of languageElement.entries()){
         if(elementArity.toString() === arity && maxLength<elementValue.length){

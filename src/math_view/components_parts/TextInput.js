@@ -22,13 +22,13 @@ const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTa
      <InputGroup.Append>
          <InputGroup.Text>&#125;</InputGroup.Text>
          {toggleTable ? (
-             (arity === 0 || arity > 2 || domain.length === 0) ? null : (
+             (arity === 0 || arity > 2 || domain.size === 0) ? null : (
                      <TableButton onClick={() => toggleTable()} enabled={tableEnabled}/>
              )
          ):null}
 
          {toggleDatabase?(
-             (arity < 1 || domain.length === 0)? null :(
+             (arity < 1 || domain.size === 0)? null :(
                      <DatabaseButton onClick={() => toggleDatabase()} enabled={databaseEnabled}/>
              )
          ) : null}

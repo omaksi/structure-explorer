@@ -25,17 +25,17 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
                                    arity={parseInt(name.split('/')[1])}
                                    domain={domain}
                                    placeholder='(1,2), (2,2), (3,1), ...'/>
-                        {structure.predicates[name].tableEnabled && domain.length > 0 ? (
+                        {structure.predicates[name].tableEnabled && domain.size > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
-                                             arity={structureObject.language.getPredicate(name.split('/')[0])}
+                                             arity={structureObject.language.predicates.get(name.split('/')[0])}
                                              value={structureObject.iPredicate.get(name) ? structureObject.iPredicate.get(name) : []}
                                              onInputChange={setPredicateValueTable}
                                              type={PREDICATE}
                                              disabled={structure.predicates[name].locked}/>
                         ) : null}
-                        {structure.predicates[name].databaseEnabled && domain.length > 0? (
+                        {structure.predicates[name].databaseEnabled && domain.size > 0? (
                             <DatabasePredicate name={name} domain={structureObject.domain}
-                                              arity={structureObject.language.getPredicate(name.split('/')[0])}
+                                              arity={structureObject.language.predicates.get(name.split('/')[0])}
                                               value={structureObject.iPredicate.has(name) ? structureObject.iPredicate.get(name) : {}}
                                               onInputChange={setPredicateValueTable}
                                               disabled={structure.predicates[name].locked}

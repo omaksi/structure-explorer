@@ -399,28 +399,16 @@ function addFunctionLanguageElement(state, language, elementName, elementArity, 
 
 function removePredicateLanguageElement(state, elementName,elementArity,nodeNames){
   let predicateName = elementName+"/"+elementArity;
-  let index = 0;
-  state.predicates[predicateName].parsed.forEach(tuple => {
-    if(JSON.stringify(tuple) === JSON.stringify(nodeNames)){
-      state.predicates[predicateName].parsed.splice(index, 1);
-      return;
-    }
-    index++;
-  });
+  const sNodeNames = JSON.stringify(nodeNames);
+  state.predicates[predicateName].parsed = state.predicates[predicateName].parsed.filter(tuple => JSON.stringify(tuple) !== sNodeNames)
   state.predicates[predicateName].value = parsedToValue(state.predicates[predicateName].parsed);
   checkPredicateValue(state, predicateName)
 }
 
 function removeFunctionLanguageElement(state, elementName,elementArity,nodeNames){
   let functionName = elementName+"/"+elementArity;
-  let index = 0;
-  state.functions[functionName].parsed.forEach(tuple => {
-    if(JSON.stringify(tuple) === JSON.stringify(nodeNames)){
-      state.functions[functionName].parsed.splice(index, 1);
-      return;
-    }
-    index++;
-  });
+  const sNodeNames = JSON.stringify(nodeNames);
+  state.functions[functionName].parsed = state.functions[functionName].parsed.filter(tuple => JSON.stringify(tuple) !== sNodeNames)
   state.functions[functionName].value = parsedToValue(state.functions[functionName].parsed);
   checkFunctionValue(state, functionName)
 }

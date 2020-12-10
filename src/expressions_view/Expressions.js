@@ -12,6 +12,8 @@ import LockButton from '../buttons/LockButton';
 import HelpButton from "../buttons/HelpButton";
 import AddButton from "../buttons/AddButton";
 import HenkinHintikkaGameButton from "../buttons/HenkinHintikkaGameButton";
+import HenkinHintikkaGame from "./HenkinHintikkaGame";
+import HenkinHintikkaGameContainer from "../redux/containers/HenkinHintikkaGameContainer";
 
 const helpFormula = (
    <div className="collapse" id="help-formula">
@@ -91,7 +93,7 @@ const Expressions = (props) => (
           <Card.Body>
             {expression.help}
             {expression.items.map((item, index) =>
-                <Form key={"expression-form-"+index}>
+             <Form key={"expression-form-"+index}>
                <Row key={"expression-row"+index}>
                    <Col sm={12} md={12} lg={7}>
                      <Form.Group>
@@ -162,8 +164,20 @@ const Expressions = (props) => (
                                name='times'/>&nbsp;Nesprávne</strong>
                          ) : null}
                    </Col>
+                   <Col xs={4} sm={4} md={2} className={"pt-2 no-padding-right"}>
+                       {item.answerValue !== '' && item.answerValue !== '-1' ?
+                           (expression.expressionType === FORMULA && item.answerValue !== item.expressionValue ?
+                               <HenkinHintikkaGameButton
+                                   onClick={() => props.initiateGame(item)}
+                                   enabled={item.answerLocked}/> :
+                               null
+                           ) : null}
+                   </Col>
                </Row>
-                </Form>
+               <Row>
+                   <HenkinHintikkaGameContainer/>
+               </Row>
+             </Form>
             )}
             <AddButton onClickAddFunction={props.addExpression} addType={expression.expressionType}/>
           </Card.Body>

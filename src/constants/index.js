@@ -19,7 +19,10 @@ export const defaultExpressionData = () => ({
   answerValue: '',
   errorMessage: '',
   inputLocked: false,
-  answerLocked: false
+  answerLocked: false,
+  gameEnabled: false,
+  gameHistory: [],
+  gameValue: []
 });
 
 export const DEFAULT_FILE_NAME = 'struktura';

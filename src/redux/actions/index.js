@@ -343,3 +343,7 @@ export const toggleEditableNodes = (value) => ({
   type: 'TOGGLE_EDITABLE_NODES',
   value
 });
+export const initiateGame = (formula) => ({
+  type: 'INITIATE_GAME',
+  formula
+});

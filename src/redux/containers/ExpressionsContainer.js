@@ -6,16 +6,17 @@ import {
   lockExpressionAnswer,
   lockExpressionValue,
   removeExpression,
-  setExpressionAnswer
+  setExpressionAnswer,
+  initiateGame
 } from "../actions";
 import {getStructureObject} from "../selectors/structureObject";
 
-const mapStateToProps = (state,myprops) => ({
+const mapStateToProps = (state,props) => ({
   formulas: state.expressions.formulas,
   terms: state.expressions.terms,
   domain: [...getStructureObject(state).domain],
   teacherMode: state.common.teacherMode,
-  diagramModel:myprops.diagramModel
+  diagramModel:props.diagramModel
 });
 
 const mapDispatchToProps = {
@@ -24,7 +25,8 @@ const mapDispatchToProps = {
   removeExpression: removeExpression,
   setExpressionAnswer: setExpressionAnswer,
   lockExpressionValue: lockExpressionValue,
-  lockExpressionAnswer: lockExpressionAnswer
+  lockExpressionAnswer: lockExpressionAnswer,
+  initiateGame: initiateGame
 };
 
 const ExpressionContainer = connect(

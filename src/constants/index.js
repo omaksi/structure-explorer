@@ -20,9 +20,13 @@ export const defaultExpressionData = () => ({
   errorMessage: '',
   inputLocked: false,
   answerLocked: false,
-  gameEnabled: false,
+  gameEnabled: false
+});
+
+export const defaultHintikkaGameData = () => ({
+  gameCommitment: null,
   gameHistory: [],
-  gameValue: []
+  gameValue: null
 });
 
 export const DEFAULT_FILE_NAME = 'struktura';

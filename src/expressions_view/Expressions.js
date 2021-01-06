@@ -165,17 +165,14 @@ const Expressions = (props) => (
                          ) : null}
                    </Col>
                    <Col xs={4} sm={4} md={2} className={"pt-2 no-padding-right"}>
-                       {item.answerValue !== '' && item.answerValue !== '-1' ?
-                           (expression.expressionType === FORMULA && item.answerValue !== item.expressionValue ?
-                               <HenkinHintikkaGameButton
-                                   onClick={() => props.initiateGame(item)}
-                                   enabled={item.answerLocked}/> :
-                               null
-                           ) : null}
+                       {expression.expressionType === FORMULA ?
+                           <HenkinHintikkaGameButton
+                               onClick={() => props.initiateGame(index)}
+                               enabled={item.answerLocked}/> : null }
                    </Col>
                </Row>
                <Row>
-                   <HenkinHintikkaGameContainer/>
+                   {item.gameEnabled ? <HenkinHintikkaGameContainer formula={item} domain={props.domain} index={index}/> : null }
                </Row>
              </Form>
             )}

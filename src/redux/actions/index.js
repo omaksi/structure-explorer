@@ -343,7 +343,21 @@ export const toggleEditableNodes = (value) => ({
   type: 'TOGGLE_EDITABLE_NODES',
   value
 });
-export const initiateGame = (formula) => ({
+export const initiateGame = (index) => ({
   type: 'INITIATE_GAME',
-  formula
+  index
+});
+export const setGameCommitment = (index, commitment) => ({
+  type: 'SET_GAME_COMMITMENT',
+  index,
+  commitment
+});
+export const continueGame = (index) => ({
+  type: 'CONTINUE_GAME',
+  index
+});
+export const setGameDomainChoice = (index, value) => ({
+  type: 'CONTINUE_GAME',
+  index,
+  value
 });

@@ -1,4 +1,4 @@
-import {defaultExpressionData, FORMULA, TERM} from "../../constants";
+import {defaultExpressionData, defaultHintikkaGameData, FORMULA, TERM} from "../../constants";
 import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
 import Disjunction from "../../model/formula/Formula.Disjunction";
 import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
@@ -50,7 +50,12 @@ import {
   REMOVE_UNARY_FUNCTION,
   REMOVE_QUATERNARY_NODE,
   REMOVE_TERNARY_NODE,
-  IMPORT_DIAGRAM_STATE, CHANGE_DIRECTION_OF_BINARY_RELATION
+  IMPORT_DIAGRAM_STATE,
+  CHANGE_DIRECTION_OF_BINARY_RELATION,
+  INITIATE_GAME,
+  SET_GAME_COMMITMENT,
+  CONTINUE_GAME,
+  SET_GAME_DOMAIN_CHOICE
 } from "../actions/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
 import {getStructureObject} from "../selectors/structureObject";
@@ -58,8 +63,6 @@ import {getStructureObject} from "../selectors/structureObject";
 let functions = require('./functions/functions');
 
 let s = {};
-let structure = null;
-let e = new Map();
 
 export function defaultState(){
   return {
@@ -68,9 +71,8 @@ export function defaultState(){
   }
 }
 
-function expressionsReducer(state = s, action, variables, wholeState) {
-  s = state;
-  e = variables;
+function expressionsReducer(state = {}, action, wholeState) {
+  s = copyState(state);
   switch (action.type) {
     case SET_CONSTANTS:
     case SET_PREDICATES:
@@ -131,6 +133,21 @@ function expressionsReducer(state = s, action, variables, wholeState) {
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
       syncExpressionsValue(wholeState, true);
       return s;
+    case INITIATE_GAME:
+      s.formulas[action.index].gameEnabled = true;
+      s.formulas[action.index].gameValue = s.formulas[action.index].parsed.createCopy();
+      return s;
+    case SET_GAME_COMMITMENT:
+      console.log(s);
+      let newEntry = addToHistory(s.formulas[action.index]);
+      console.log(newEntry);
+      s.formulas[action.index].gameHistory.push(newEntry);
+      s.formulas[action.index].gameCommitment = action.commitment;
+      return s;
+    case CONTINUE_GAME:
+      return s;
+    case SET_GAME_DOMAIN_CHOICE:
+      return s;
     default:
       return s;
   }
@@ -138,7 +155,7 @@ function expressionsReducer(state = s, action, variables, wholeState) {
 
 function addExpression(expressionType) {
   if (expressionType === FORMULA) {
-    s.formulas.push(defaultExpressionData());
+    s.formulas.push({...defaultExpressionData(), ...defaultHintikkaGameData()});
   } else if (expressionType === TERM) {
     s.terms.push(defaultExpressionData());
   }
@@ -177,7 +194,7 @@ function evalExpression(state, expression) {
   expression.errorMessage = '';
   try {
     let structureObject = getStructureObject(state);
-    expression.expressionValue = expression.parsed.eval(structureObject, e);
+    expression.expressionValue = expression.parsed.eval(structureObject);
   } catch (e) {
     expression.errorMessage = e;
     expression.expressionValue = null;
@@ -228,6 +245,57 @@ function lockExpressionValue(expressionType, expressionIndex) {
   } else if (expressionType === TERM && expressionIndex < s.terms.length) {
     s.terms[expressionIndex].inputLocked = !s.terms[expressionIndex].inputLocked;
   }
+}
+
+function addToHistory(formula){
+  console.log(formula);
+  let gameValueCopy = formula.gameValue != null ? formula.gameValue.createCopy() : null;
+  return {
+    gameCommitment: formula.gameCommitment,
+    gameValue: gameValueCopy
+  };
+}
+
+function copyState(state){
+  let newState = defaultState();
+  for(let formula of state.formulas){
+    let newFormula = {...defaultExpressionData(), ...defaultHintikkaGameData()}
+    newFormula.value = formula.value;
+    newFormula.expressionValue = formula.expressionValue;
+    newFormula.answerValue = formula.answerValue;
+    newFormula.errorMessage = formula.errorMessage;
+    newFormula.inputLocked = formula.inputLocked;
+    newFormula.answerLocked = formula.answerLocked;
+    newFormula.validSyntax = formula.validSyntax;
+    newFormula.gameCommitment = formula.gameCommitment;
+    newFormula.gameEnabled = formula.gameEnabled;
+    newFormula.gameHistory = [];
+    for(let entry of formula.gameHistory){
+      let newEntry = {
+        gameCommitment: entry.gameCommitment,
+        gameValue: entry.gameValue.createCopy()
+      };
+      newFormula.gameHistory.push(newEntry);
+    }
+    console.log(formula);
+    newFormula.gameValue = formula.gameValue != null ? formula.gameValue.createCopy() : null;
+    console.log(newFormula);
+    newFormula.parsed = formula.parsed != null? formula.parsed.createCopy() : null;
+    newState.formulas.push(newFormula);
+  }
+  for(let term of state.terms){
+    let newTerm = {...defaultExpressionData()}
+    newTerm.value = term.value;
+    newTerm.expressionValue = term.expressionValue;
+    newTerm.answerValue = term.answerValue;
+    newTerm.errorMessage = term.errorMessage;
+    newTerm.inputLocked = term.inputLocked;
+    newTerm.answerLocked = term.answerLocked;
+    newTerm.validSyntax = term.validSyntax;
+    newTerm.parsed = term.parsed ? term.parsed.createCopy() : null;
+    newState.terms.push(newTerm);
+  }
+  return newState;
 }
 
 const setParserOptions = (state, startRule) => ({

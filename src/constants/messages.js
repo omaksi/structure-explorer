@@ -11,3 +11,5 @@ export const ITEM_NOT_IN_DOMAIN = (item) => `Doména štruktúry neobsahuje prvo
 
 export const FUNCTION_NOT_FULL_DEFINED = 'Funkcia nie je definovaná pre všetky argumenty';
 export const FUNCTION_ALREADY_DEFINED = (params) => `Funkcia je viackrát definovaná pre argumenty ${params}`;
+
+export const FIRST_QUESTION = (params) => `Aký máš začiatočný predpoklad o tejto formule: ${params}`;

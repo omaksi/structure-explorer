@@ -13,12 +13,13 @@ class Structure {
    */
 
   constructor(language, parsedDomain, constants,
-              predicates, functions) {
+              predicates, functions, variables) {
     this.language = language;
     this.domain = new Set();
     this.iConstant = new Map();
     this.iPredicate = new Map();
     this.iFunction = new Map();
+    this.variables = new Map()
     parsedDomain.forEach(i => {
       this.domain.add(i);
     });
@@ -49,6 +50,7 @@ class Structure {
         this.iPredicate.get(predicateName).push(tuple);
       });
     });
+    this.variables = variables;
   }
 }
 

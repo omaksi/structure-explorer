@@ -17,6 +17,14 @@ class Formula extends Expression {
     return '';
   }
 
+  generateMessage(gameCommitment){
+    return '';
+  }
+
+  createCopy(){
+    return new Formula();
+  }
+
 }
 
 export default Formula;

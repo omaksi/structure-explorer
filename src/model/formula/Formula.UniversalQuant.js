@@ -1,4 +1,5 @@
 import Formula from "./Formula";
+import {FIRST_QUESTION} from "../../constants/messages";
 
 /**
  * Represent universal quantificator
@@ -25,8 +26,8 @@ class UniversalQuant extends Formula {
    * @param {Map} e
    * @return {boolean}
    */
-  eval(structure, e) {
-    let eCopy = new Map(e);
+  eval(structure, e = null) {
+    let eCopy = new Map(e !== null ? e : structure.variables);
     for (let item of structure.domain) {
       eCopy.set(this.variableName, item);
       if (!this.subFormula.eval(structure, eCopy)) {
@@ -42,6 +43,27 @@ class UniversalQuant extends Formula {
    */
   toString() {
     return `∀${this.variableName} (${this.subFormula.toString()})`;
+  }
+
+  generateMessage(gameCommitment, structure){
+    let truthValue = gameCommitment ? 'splnitelna' : 'nesplnitelna';
+    if(gameCommitment === null){
+      return FIRST_QUESTION(this.toString());
+    } else {
+      let eCopy = new Map(structure.variables);
+      for (let item of structure.domain) {
+        eCopy.set(this.variableName, item);
+        if (!this.subFormula.eval(structure, eCopy)) {
+          return 'Ak predpokladaš, že ' + this.toString() + ' je ' + truthValue + ', tak potom aj ';
+        }
+      }
+    }
+  }
+
+  createCopy(){
+    let subFormula = this.subFormula.createCopy();
+    let variableName = this.variableName;
+    return new UniversalQuant(variableName, subFormula);
   }
 
 }

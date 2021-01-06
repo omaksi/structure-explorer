@@ -17,6 +17,10 @@ class Term extends Expression {
     return '';
   }
 
+  createCopy(){
+    return new Term();
+  }
+
 }
 
 export default Term;

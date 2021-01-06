@@ -23,7 +23,7 @@ class Constant extends Term {
    * @param {Map} e variables valuation
    * @return {string} domain item
    */
-  eval(structure, e) {
+  eval(structure, e= null) {
     if (structure.iConstant.get(this.name) === undefined) {
       throw `Interpretacia konštanty ${this.name} nie je definovaná`;
     }
@@ -36,6 +36,11 @@ class Constant extends Term {
    */
   toString() {
     return this.name;
+  }
+
+  createCopy(){
+    let name = this.name;
+    return new Constant(name);
   }
 
 }

@@ -23,11 +23,12 @@ class Variable extends Term {
    * @param {Map} e variables valuation
    * @return {string} domain item
    */
-  eval(structure, e) {
-    if (!e.has(this.name)) {
+  eval(structure, e= null) {
+    let variables = e !== null ? e : structure.variables;
+    if (!variables.has(this.name)) {
       throw `Hodnota premennej ${this.name} nie je definovaná`;
     }
-    return e.get(this.name);
+    return variables.get(this.name);
   }
 
   /**
@@ -36,6 +37,11 @@ class Variable extends Term {
    */
   toString() {
     return this.name;
+  }
+
+  createCopy(){
+    let name = this.name;
+    return new Variable(name);
   }
 
 }

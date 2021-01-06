@@ -25,7 +25,7 @@ class FunctionTerm extends Term {
    * @param {Map} e variables valuation
    * @returns {string} domain item
    */
-  eval(structure, e) {
+  eval(structure, e= null) {
     let interpretedParams = [];
     this.terms.forEach(term => {
       interpretedParams.push(term.eval(structure, e));
@@ -52,6 +52,14 @@ class FunctionTerm extends Term {
     return res;
   }
 
+  createCopy(){
+    let terms = [];
+    for(let term of this.terms){
+      terms.push(term.createCopy());
+    }
+    let name = this.name;
+    return new FunctionTerm(name, terms);
+  }
 }
 
 export default FunctionTerm;

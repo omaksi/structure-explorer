@@ -1,4 +1,5 @@
 import Formula from "./Formula";
+import {FIRST_QUESTION} from "../../constants/messages";
 
 /**
  * Represent negation
@@ -23,7 +24,7 @@ class Negation extends Formula {
    * @param {Map} e
    * @return {boolean}
    */
-  eval(structure, e) {
+  eval(structure, e= null) {
     return !this.subFormula.eval(structure, e);
   }
 
@@ -33,6 +34,22 @@ class Negation extends Formula {
    */
   toString() {
     return `¬(${this.subFormula.toString()})`;
+  }
+
+  generateMessage(gameCommitment){
+    let truthValue = gameCommitment ? 'splnitelna' : 'nesplnitelna';
+    let oppositeTruthValue = gameCommitment ? 'nesplnitelna' : 'splnitelna';
+    if(gameCommitment === null){
+      return FIRST_QUESTION(this.toString());
+    } else {
+      return 'Ak predpokladaš, že ' + this.toString() + ' je ' + truthValue + ", tak potom "
+          + this.subFormula.toString() + ' je ' + oppositeTruthValue;
+    }
+  }
+
+  createCopy(){
+    let subFormula = this.subFormula.createCopy();
+    return new Negation(subFormula);
   }
 
 }

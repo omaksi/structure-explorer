@@ -1,4 +1,5 @@
-import {defaultExpressionData, defaultHintikkaGameData, FORMULA, TERM} from "../../constants";
+import {defaultExpressionData, FORMULA, TERM} from "../../constants";
+import {defaultHintikkaGameData, GAME_OPERATOR, GAME_QUANTIFIER, NEGATION} from "../../constants/gameConstants";
 import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
 import Disjunction from "../../model/formula/Formula.Disjunction";
 import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
@@ -55,7 +56,7 @@ import {
   INITIATE_GAME,
   SET_GAME_COMMITMENT,
   CONTINUE_GAME,
-  SET_GAME_DOMAIN_CHOICE
+  SET_GAME_DOMAIN_CHOICE, SET_GAME_NEXT_FORMULA, END_GAME
 } from "../actions/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
 import {getStructureObject} from "../selectors/structureObject";
@@ -71,7 +72,7 @@ export function defaultState(){
   }
 }
 
-function expressionsReducer(state = {}, action, wholeState) {
+function expressionsReducer(state = {}, action, variables, wholeState) {
   s = copyState(state);
   switch (action.type) {
     case SET_CONSTANTS:
@@ -104,7 +105,7 @@ function expressionsReducer(state = {}, action, wholeState) {
       lockExpressionAnswer(action.expressionType, action.expressionIndex);
       return s;
     case CHECK_SYNTAX:
-      checkExpressionSyntax(wholeState, action);
+      checkExpressionSyntax(wholeState, action, variables);
       return s;
     case ADD_DOMAIN_NODE:
     case RENAME_DOMAIN_NODE:
@@ -134,19 +135,67 @@ function expressionsReducer(state = {}, action, wholeState) {
       syncExpressionsValue(wholeState, true);
       return s;
     case INITIATE_GAME:
-      s.formulas[action.index].gameEnabled = true;
+      s.formulas[action.index].gameEnabled = !s.formulas[action.index].gameEnabled;
       s.formulas[action.index].gameValue = s.formulas[action.index].parsed.createCopy();
+      s.formulas[action.index].gameVariables = new Map(variables);
       return s;
     case SET_GAME_COMMITMENT:
-      console.log(s);
-      let newEntry = addToHistory(s.formulas[action.index]);
-      console.log(newEntry);
-      s.formulas[action.index].gameHistory.push(newEntry);
+      addToHistory(s, action.index);
       s.formulas[action.index].gameCommitment = action.commitment;
       return s;
     case CONTINUE_GAME:
+      addToHistory(s, action.index);
+      let formulas = s.formulas[action.index].gameValue.getSubFormulas();
+      switch(s.formulas[action.index].gameValue.getType(s.formulas[action.index].gameCommitment)){
+        case NEGATION:
+          s.formulas[action.index].gameCommitment = !s.formulas[action.index].gameCommitment;
+          s.formulas[action.index].gameValue = formulas[0].createCopy();
+          break;
+        case GAME_OPERATOR:
+            if(formulas[0].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+              s.formulas[action.index].gameValue = formulas[0].createCopy();
+            } else {
+              s.formulas[action.index].gameValue = formulas[1].createCopy();
+            }
+          break;
+        case GAME_QUANTIFIER:
+          let varName = 'n' + s.formulas[action.index].gameVariables.size;
+          s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.createCopy();
+          s.formulas[action.index].gameValue.setVariable(s.formulas[action.index].gameValue.variableName, varName);
+          let structureObject = getStructureObject(wholeState);
+          for (let item of structureObject.domain) {
+            s.formulas[action.index].gameVariables.set(varName, item);
+            console.log(s.formulas[action.index]);
+            console.log(s.formulas[action.index].gameValue.subFormula.eval(structureObject, s.formulas[action.index].gameVariables));
+            if (s.formulas[action.index].gameValue.subFormula.eval(structureObject, s.formulas[action.index].gameVariables)
+                !== s.formulas[action.index].gameCommitment) {
+              break;
+            }
+          }
+          s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.subFormula;
+          break;
+        default:
+          break;
+      }
+      console.log(s.formulas[action.index]);
       return s;
     case SET_GAME_DOMAIN_CHOICE:
+      addToHistory(s, action.index);
+      let varName = 'n' + s.formulas[action.index].gameVariables.size;
+      s.formulas[action.index].gameVariables.set(varName, action.value);
+      s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.createCopy();
+      s.formulas[action.index].gameValue.setVariable(s.formulas[action.index].gameValue.variableName, varName);
+      s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.subFormula;
+      return s;
+    case SET_GAME_NEXT_FORMULA:
+      addToHistory(s, action.index);
+      s.formulas[action.index].gameValue = action.formula.createCopy();
+      return s;
+    case END_GAME:
+      s.formulas[action.index].gameEnabled = false;
+      s.formulas[action.index].gameCommitment = null;
+      s.formulas[action.index].gameHistory = [];
+      s.formulas[action.index].gameValue = null;
       return s;
     default:
       return s;
@@ -169,7 +218,7 @@ function removeExpression(expressionType, expressionIndex) {
   }
 }
 
-function syncExpressionsValue(state, parse = false) {
+function syncExpressionsValue(state, variables, parse = false) {
   s.formulas.forEach(formula => {
     if (parse) {
       let temp = formula.value;
@@ -177,31 +226,31 @@ function syncExpressionsValue(state, parse = false) {
       // noinspection JSUndefinedPropertyAssignment
       formula.value = temp;
     }
-    evalExpression(state, formula);
+    evalExpression(state, formula, variables);
   });
   s.terms.forEach(term => {
     if (parse) {
       functions.parseText(term.value, term, setParserOptions(state, RULE_TERM));
     }
-    evalExpression(state, term);
+    evalExpression(state, term, variables);
   });
 }
 
-function evalExpression(state, expression) {
+function evalExpression(state, expression, variables) {
   if (!expression.parsed || expression.parsed.length === 0) {
     return;
   }
   expression.errorMessage = '';
   try {
     let structureObject = getStructureObject(state);
-    expression.expressionValue = expression.parsed.eval(structureObject);
+    expression.expressionValue = expression.parsed.eval(structureObject, variables);
   } catch (e) {
     expression.errorMessage = e;
     expression.expressionValue = null;
   }
 }
 
-function checkExpressionSyntax(state, action) {
+function checkExpressionSyntax(state, action, variables) {
   let expressionText = action.value;
   let expression = s.terms[action.index];
   if (action.expressionType === FORMULA) {
@@ -214,7 +263,7 @@ function checkExpressionSyntax(state, action) {
   expression.value = action.value; // aby tam neboli zatvorky
   if (expression.errorMessage.length === 0) {
     expression.validSyntax = true;
-    evalExpression(state, expression);
+    evalExpression(state, expression, variables);
   } else {
     expression.validSyntax = false;
   }
@@ -247,13 +296,14 @@ function lockExpressionValue(expressionType, expressionIndex) {
   }
 }
 
-function addToHistory(formula){
-  console.log(formula);
-  let gameValueCopy = formula.gameValue != null ? formula.gameValue.createCopy() : null;
-  return {
-    gameCommitment: formula.gameCommitment,
-    gameValue: gameValueCopy
+function addToHistory(state, index){
+  let gameValueCopy = state.formulas[index].gameValue != null ? state.formulas[index].gameValue.createCopy() : null;
+  let entry = {
+    gameCommitment: state.formulas[index].gameCommitment,
+    gameValue: gameValueCopy,
+    gameVariables: new Map(state.formulas[index].gameVariables)
   };
+  s.formulas[index].gameHistory.push(entry);
 }
 
 function copyState(state){
@@ -269,6 +319,7 @@ function copyState(state){
     newFormula.validSyntax = formula.validSyntax;
     newFormula.gameCommitment = formula.gameCommitment;
     newFormula.gameEnabled = formula.gameEnabled;
+    newFormula.gameVariables = new Map(formula.gameVariables);
     newFormula.gameHistory = [];
     for(let entry of formula.gameHistory){
       let newEntry = {
@@ -277,9 +328,7 @@ function copyState(state){
       };
       newFormula.gameHistory.push(newEntry);
     }
-    console.log(formula);
     newFormula.gameValue = formula.gameValue != null ? formula.gameValue.createCopy() : null;
-    console.log(newFormula);
     newFormula.parsed = formula.parsed != null? formula.parsed.createCopy() : null;
     newState.formulas.push(newFormula);
   }

@@ -17,14 +17,23 @@ class Formula extends Expression {
     return '';
   }
 
-  generateMessage(gameCommitment){
-    return '';
-  }
-
-  createCopy(){
+  createCopy() {
     return new Formula();
   }
 
+  getType(commitment) {
+    return '';
+  }
+
+  getSubFormulas() {
+    return [];
+  }
+
+  setVariable(from, to){
+    //nothing
+  }
 }
+
+
 
 export default Formula;

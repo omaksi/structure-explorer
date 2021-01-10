@@ -23,10 +23,4 @@ export const defaultExpressionData = () => ({
   gameEnabled: false
 });
 
-export const defaultHintikkaGameData = () => ({
-  gameCommitment: null,
-  gameHistory: [],
-  gameValue: null
-});
-
 export const DEFAULT_FILE_NAME = 'struktura';

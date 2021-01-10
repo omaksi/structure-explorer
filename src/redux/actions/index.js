@@ -357,7 +357,16 @@ export const continueGame = (index) => ({
   index
 });
 export const setGameDomainChoice = (index, value) => ({
-  type: 'CONTINUE_GAME',
+  type: 'SET_GAME_DOMAIN_CHOICE',
   index,
   value
+});
+export const endGame = (index) => ({
+  type: 'END_GAME',
+  index
+});
+export const setGameNextFormula = (index, formula) => ({
+  type: 'SET_GAME_NEXT_FORMULA',
+  index,
+  formula
 });

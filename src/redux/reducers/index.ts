@@ -42,7 +42,7 @@ function root(state = defaultState, action:any) {
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action);
     let structure = structureReducer(state.structure, action, language);
-    let expressions = expressionsReducer(state.expressions, action, state);
+    let expressions = expressionsReducer(state.expressions, action, state.structure.variables.object, state);
     let diagramState = diagramReducer(state.diagramState, action, state);
 
     return {

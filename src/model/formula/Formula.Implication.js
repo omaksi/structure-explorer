@@ -1,5 +1,6 @@
 import Formula from "./Formula";
 import {FIRST_QUESTION} from "../../constants/messages";
+import {GAME_OPERATOR, PLAYER_OPERATOR} from "../../constants/gameConstants";
 
 /**
  * Represent implication
@@ -26,7 +27,7 @@ class Implication extends Formula {
    * @param {Map} e
    * @return {boolean}
    */
-  eval(structure, e = null) {
+  eval(structure, e) {
     return (!this.subLeft.eval(structure)) || this.subRight.eval(structure);
   }
 
@@ -38,20 +39,24 @@ class Implication extends Formula {
     return `(${this.subLeft.toString()}) → (${this.subRight.toString()})`;
   }
 
-  generateMessage(gameCommitment){
-    if(gameCommitment === null){
-      return FIRST_QUESTION(this.toString());
-    } else {
-      return 'Veríš, že ' + this.toString() + " je " + gameCommitment;
-    }
-  }
-
   createCopy(){
     let subLeft = this.subLeft.createCopy();
     let subRight = this.subRight.createCopy();
     return new Implication(subLeft, subRight);
   }
 
+  getType(commitment){
+    return commitment ? PLAYER_OPERATOR : GAME_OPERATOR;
+  }
+
+  getSubFormulas(){
+    return [this.subLeft, this.subRight];
+  }
+
+  setVariable(from, to){
+    this.subLeft.setVariable(from, to);
+    this.subRight.setVariable(from, to);
+  }
 }
 
 export default Implication;

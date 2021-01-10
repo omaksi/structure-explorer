@@ -1,5 +1,6 @@
 import Formula from "./Formula";
 import {FIRST_QUESTION} from "../../constants/messages";
+import {GAME_QUANTIFIER, PLAYER_QUANTIFIER} from "../../constants/gameConstants";
 
 /**
  * Represent universal quantificator
@@ -26,8 +27,8 @@ class UniversalQuant extends Formula {
    * @param {Map} e
    * @return {boolean}
    */
-  eval(structure, e = null) {
-    let eCopy = new Map(e !== null ? e : structure.variables);
+  eval(structure, e) {
+    let eCopy = new Map(e);
     for (let item of structure.domain) {
       eCopy.set(this.variableName, item);
       if (!this.subFormula.eval(structure, eCopy)) {
@@ -45,27 +46,23 @@ class UniversalQuant extends Formula {
     return `∀${this.variableName} (${this.subFormula.toString()})`;
   }
 
-  generateMessage(gameCommitment, structure){
-    let truthValue = gameCommitment ? 'splnitelna' : 'nesplnitelna';
-    if(gameCommitment === null){
-      return FIRST_QUESTION(this.toString());
-    } else {
-      let eCopy = new Map(structure.variables);
-      for (let item of structure.domain) {
-        eCopy.set(this.variableName, item);
-        if (!this.subFormula.eval(structure, eCopy)) {
-          return 'Ak predpokladaš, že ' + this.toString() + ' je ' + truthValue + ', tak potom aj ';
-        }
-      }
-    }
-  }
-
   createCopy(){
     let subFormula = this.subFormula.createCopy();
     let variableName = this.variableName;
     return new UniversalQuant(variableName, subFormula);
   }
 
+  getType(commitment){
+    return commitment ? GAME_QUANTIFIER : PLAYER_QUANTIFIER;
+  }
+
+  getSubFormulas(){
+    return [this.subFormula];
+  }
+
+  setVariable(from, to){
+    this.subFormula.setVariable(from, to);
+  }
 }
 
 export default UniversalQuant;

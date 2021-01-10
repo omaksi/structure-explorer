@@ -1,5 +1,6 @@
 import Formula from "./Formula";
 import {FIRST_QUESTION} from "../../constants/messages";
+import {GAME_QUANTIFIER, PLAYER_QUANTIFIER} from "../../constants/gameConstants";
 
 /**
  * Represent existential quantificator
@@ -26,8 +27,8 @@ class ExistentialQuant extends Formula {
    * @param {Map} e
    * @return {boolean}
    */
-  eval(structure, e= null) {
-    let eCopy = new Map(e !== null ? e : structure.variables);
+  eval(structure, e) {
+    let eCopy = new Map(e);
     for (let item of structure.domain) {
       eCopy.set(this.variableName, item);
       if (this.subFormula.eval(structure, eCopy)) {
@@ -45,21 +46,23 @@ class ExistentialQuant extends Formula {
     return `∃${this.variableName} (${this.subFormula.toString()})`;
   }
 
-  generateMessage(gameCommitment, structure){
-    let truthValue = gameCommitment ? 'splnitelna' : 'nesplnitelna';
-    if(gameCommitment === null){
-      return FIRST_QUESTION(this.toString());
-    } else {
-      return 'Pre ktorý prvok z domény predpokladaš, že formula ' + this.toString() + " je " + truthValue;
-    }
-  }
-
   createCopy(){
     let subFormula = this.subFormula.createCopy();
     let variableName = this.variableName;
     return new ExistentialQuant(variableName, subFormula);
   }
 
+  getType(commitment){
+    return commitment ? PLAYER_QUANTIFIER : GAME_QUANTIFIER;
+  }
+
+  getSubFormulas(){
+    return [this.subFormula];
+  }
+
+  setVariable(from, to){
+    this.subFormula.setVariable(from, to);
+  }
 }
 
 export default ExistentialQuant;

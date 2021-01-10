@@ -21,6 +21,9 @@ class Term extends Expression {
     return new Term();
   }
 
+  setVariable(from, to){
+    //nothing
+  }
 }
 
 export default Term;

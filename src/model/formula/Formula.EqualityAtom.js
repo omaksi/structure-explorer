@@ -1,5 +1,5 @@
 import Formula from "./Formula";
-import {FIRST_QUESTION} from "../../constants/messages";
+import {ATOM} from "../../constants/gameConstants";
 
 /**
  * Represent equality symbol
@@ -26,7 +26,7 @@ class EqualityAtom extends Formula {
    * @param {Map} e
    * @return {boolean}
    */
-  eval(structure, e= null) {
+  eval(structure, e) {
     return this.subLeft.eval(structure, e) == this.subRight.eval(structure, e);
   }
 
@@ -38,25 +38,24 @@ class EqualityAtom extends Formula {
     return `(${this.subLeft.toString()}) = (${this.subRight.toString()})`;
   }
 
-  generateMessage(gameCommitment, structure){
-    let truthValue = gameCommitment ? 'splnitelna' : 'nesplnitelna';
-    let oppositeTruthValue = gameCommitment ? 'nesplnitelna' : 'splnitelna';
-    if(gameCommitment === null){
-      return FIRST_QUESTION(this.toString());
-    } else {
-      let resolution = gameCommitment && this.eval(structure)
-          ? 'Vyhral si, pretoze ' + this.toString() + ' je ' + truthValue
-          : 'Prehral si, pretoze ' + this.toString() + ' je ' + oppositeTruthValue;
-      return 'Ak predpokladaš, že ' + this.toString() + ' je ' + truthValue + '.\n' + resolution;
-    }
-  }
-
   createCopy(){
     let subLeft = this.subLeft.createCopy();
     let subRight = this.subRight.createCopy();
     return new EqualityAtom(subLeft, subRight);
   }
 
+  getType(commitment){
+    return ATOM;
+  }
+
+  getSubFormulas(){
+    return [];
+  }
+
+  setVariable(from, to){
+    this.subLeft.setVariable(from, to);
+    this.subRight.setVariable(from, to);
+  }
 }
 
 export default EqualityAtom;

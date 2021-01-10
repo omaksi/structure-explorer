@@ -23,12 +23,11 @@ class Variable extends Term {
    * @param {Map} e variables valuation
    * @return {string} domain item
    */
-  eval(structure, e= null) {
-    let variables = e !== null ? e : structure.variables;
-    if (!variables.has(this.name)) {
+  eval(structure, e) {
+    if (!e.has(this.name)) {
       throw `Hodnota premennej ${this.name} nie je definovaná`;
     }
-    return variables.get(this.name);
+    return e.get(this.name);
   }
 
   /**
@@ -44,6 +43,11 @@ class Variable extends Term {
     return new Variable(name);
   }
 
+  setVariable(from, to){
+    if(this.name === from){
+      this.name = to;
+    }
+  }
 }
 
 export default Variable;

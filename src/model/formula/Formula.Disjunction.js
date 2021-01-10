@@ -1,5 +1,6 @@
 import Formula from "./Formula";
 import {FIRST_QUESTION} from "../../constants/messages";
+import {GAME_OPERATOR, PLAYER_OPERATOR} from "../../constants/gameConstants";
 
 /**
  * Represent disjunction
@@ -26,7 +27,7 @@ class Disjunction extends Formula {
    * @param {Map} e
    * @return {boolean}
    */
-  eval(structure, e= null) {
+  eval(structure, e) {
     return this.subLeft.eval(structure, e) || this.subRight.eval(structure, e);
   }
 
@@ -38,22 +39,24 @@ class Disjunction extends Formula {
     return `(${this.subLeft.toString()}) ∨ (${this.subRight.toString()})`;
   }
 
-  generateMessage(gameCommitment, structure){
-    let truthValue = gameCommitment ? "splnitelna" : "nesplnitelna";
-    if(gameCommitment === null){
-      return FIRST_QUESTION(this.toString());
-    } else {
-      return "Ak predpokladaš že formula " + this.toString() + " je " + truthValue + ", tak potom: " + this.subLeft.toString()
-          + " alebo " + this.subRight.toString() + " je " + truthValue;
-    }
-  }
-
   createCopy(){
     let subLeft = this.subLeft.createCopy();
     let subRight = this.subRight.createCopy();
     return new Disjunction(subLeft, subRight);
   }
 
+  getType(commitment){
+    return commitment ? PLAYER_OPERATOR : GAME_OPERATOR;
+  }
+
+  getSubFormulas(){
+    return [this.subLeft, this.subRight];
+  }
+
+  setVariable(from, to){
+    this.subLeft.setVariable(from, to);
+    this.subRight.setVariable(from, to);
+  }
 }
 
 export default Disjunction;

@@ -74,3 +74,4 @@ export const CONTINUE_GAME = 'CONTINUE_GAME';
 export const SET_GAME_DOMAIN_CHOICE = 'SET_GAME_DOMAIN_CHOICE';
 export const END_GAME = 'END_GAME';
 export const SET_GAME_NEXT_FORMULA = 'SET_GAME_NEXT_FORMULA';
+export const GO_BACK = 'GO_BACK';

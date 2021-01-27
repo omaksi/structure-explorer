@@ -365,8 +365,14 @@ export const endGame = (index) => ({
   type: 'END_GAME',
   index
 });
-export const setGameNextFormula = (index, formula) => ({
+export const setGameNextFormula = (index, formula, commitment) => ({
   type: 'SET_GAME_NEXT_FORMULA',
   index,
-  formula
+  formula,
+  commitment
+});
+export const goBack = (index, historyIndex) => ({
+  type: 'GO_BACK',
+  index,
+  historyIndex
 });

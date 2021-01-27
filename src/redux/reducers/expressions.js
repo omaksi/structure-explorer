@@ -1,5 +1,11 @@
 import {defaultExpressionData, FORMULA, TERM} from "../../constants";
-import {defaultHintikkaGameData, GAME_OPERATOR, GAME_QUANTIFIER, NEGATION} from "../../constants/gameConstants";
+import {
+  defaultHintikkaGameData,
+  GAME_IMPLICATION,
+  GAME_OPERATOR,
+  GAME_QUANTIFIER,
+  NEGATION
+} from "../../constants/gameConstants";
 import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
 import Disjunction from "../../model/formula/Formula.Disjunction";
 import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
@@ -56,7 +62,7 @@ import {
   INITIATE_GAME,
   SET_GAME_COMMITMENT,
   CONTINUE_GAME,
-  SET_GAME_DOMAIN_CHOICE, SET_GAME_NEXT_FORMULA, END_GAME
+  SET_GAME_DOMAIN_CHOICE, SET_GAME_NEXT_FORMULA, END_GAME, GO_BACK
 } from "../actions/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
 import {getStructureObject} from "../selectors/structureObject";
@@ -152,7 +158,8 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
           s.formulas[action.index].gameValue = formulas[0].createCopy();
           break;
         case GAME_OPERATOR:
-            if(formulas[0].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+        case GAME_IMPLICATION:
+          if(formulas[0].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
               s.formulas[action.index].gameValue = formulas[0].createCopy();
             } else {
               s.formulas[action.index].gameValue = formulas[1].createCopy();
@@ -190,6 +197,7 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
     case SET_GAME_NEXT_FORMULA:
       addToHistory(s, action.index);
       s.formulas[action.index].gameValue = action.formula.createCopy();
+      s.formulas[action.index].gameCommitment = action.commitment;
       return s;
     case END_GAME:
       s.formulas[action.index].gameEnabled = false;
@@ -197,6 +205,22 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
       s.formulas[action.index].gameHistory = [];
       s.formulas[action.index].gameValue = null;
       return s;
+    case GO_BACK:
+      s.formulas[action.index].gameValue = s.formulas[action.index].gameHistory[action.historyIndex].gameValue.createCopy();
+      s.formulas[action.index].gameVariables = new Map(s.formulas[action.index].gameHistory[action.historyIndex].gameVariables);
+      s.formulas[action.index].gameCommitment = s.formulas[action.index].gameHistory[action.historyIndex].gameCommitment;
+      let newHistory = [];
+      for(let i = 0; i < s.formulas[action.index].gameHistory.length; i++){
+          if(i < action.historyIndex){
+            newHistory.push({
+              gameCommitment: s.formulas[action.index].gameHistory[i].gameCommitment,
+              gameValue: s.formulas[action.index].gameHistory[i].gameValue.createCopy(),
+              gameVariables: new Map(s.formulas[action.index].gameHistory[i].gameVariables)
+            })
+          }
+      }
+      s.formulas[action.index].gameHistory = newHistory;
+      return s
     default:
       return s;
   }
@@ -328,8 +352,8 @@ function copyState(state){
       };
       newFormula.gameHistory.push(newEntry);
     }
-    newFormula.gameValue = formula.gameValue != null ? formula.gameValue.createCopy() : null;
-    newFormula.parsed = formula.parsed != null? formula.parsed.createCopy() : null;
+    newFormula.gameValue = formula.gameValue ? formula.gameValue.createCopy() : null;
+    newFormula.parsed = formula.parsed ? formula.parsed.createCopy() : null;
     newState.formulas.push(newFormula);
   }
   for(let term of state.terms){

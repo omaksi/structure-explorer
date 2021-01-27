@@ -1,6 +1,5 @@
 import Formula from "./Formula";
-import {FIRST_QUESTION} from "../../constants/messages";
-import {GAME_OPERATOR, PLAYER_OPERATOR} from "../../constants/gameConstants";
+import {GAME_IMPLICATION, PLAYER_IMPLICATION} from "../../constants/gameConstants";
 
 /**
  * Represent implication
@@ -28,7 +27,7 @@ class Implication extends Formula {
    * @return {boolean}
    */
   eval(structure, e) {
-    return (!this.subLeft.eval(structure)) || this.subRight.eval(structure);
+    return (!this.subLeft.eval(structure, e)) || this.subRight.eval(structure, e);
   }
 
   /**
@@ -46,7 +45,7 @@ class Implication extends Formula {
   }
 
   getType(commitment){
-    return commitment ? PLAYER_OPERATOR : GAME_OPERATOR;
+    return commitment ? PLAYER_IMPLICATION : GAME_IMPLICATION;
   }
 
   getSubFormulas(){

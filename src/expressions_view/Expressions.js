@@ -12,7 +12,6 @@ import LockButton from '../buttons/LockButton';
 import HelpButton from "../buttons/HelpButton";
 import AddButton from "../buttons/AddButton";
 import HenkinHintikkaGameButton from "../buttons/HenkinHintikkaGameButton";
-import HenkinHintikkaGame from "./HenkinHintikkaGame";
 import HenkinHintikkaGameContainer from "../redux/containers/HenkinHintikkaGameContainer";
 
 const helpFormula = (

@@ -1,6 +1,6 @@
 import {HenkinHintikkaGame} from '../../expressions_view/HenkinHintikkaGame'
 import {connect} from "react-redux";
-import {continueGame, endGame, setGameCommitment, setGameDomainChoice, setGameNextFormula} from "../actions";
+import {continueGame, endGame, goBack, setGameCommitment, setGameDomainChoice, setGameNextFormula} from "../actions";
 import {getStructureObject} from "../selectors/structureObject";
 
 const mapStateToProps = (state,props) => ({
@@ -12,7 +12,8 @@ const mapDispatchToProps = {
     setGameDomainChoice: setGameDomainChoice,
     continueGame: continueGame,
     endGame: endGame,
-    setGameNextFormula: setGameNextFormula
+    setGameNextFormula: setGameNextFormula,
+    goBack: goBack
 };
 
 const HenkinHintikkaGameContainer = connect(

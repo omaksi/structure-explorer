@@ -1,5 +1,4 @@
 import Formula from "./Formula";
-import {FIRST_QUESTION} from "../../constants/messages";
 import {GAME_OPERATOR, PLAYER_OPERATOR} from "../../constants/gameConstants";
 
 /**

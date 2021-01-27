@@ -4,10 +4,10 @@ import Container from "./Container";
 import MessageAreaContainer from "./MessageAreaContainer";
 import {Form, Button, DropdownButton, ButtonGroup, Dropdown} from "react-bootstrap";
 import {
-    ATOM,
+    ATOM, GAME_IMPLICATION,
     GAME_OPERATOR,
     GAME_QUANTIFIER,
-    NEGATION,
+    NEGATION, PLAYER_IMPLICATION,
     PLAYER_OPERATOR,
     PLAYER_QUANTIFIER
 } from "../constants/gameConstants";
@@ -22,8 +22,8 @@ export class HenkinHintikkaGame extends React.Component {
         return(
             <Container>
                 <MessageAreaContainer>
-                        {this.props.formula.gameHistory.map(message =>
-                            <MessageBubble>
+                        {this.props.formula.gameHistory.map((message, index) =>
+                            <MessageBubble onClick={() => this.props.goBack(this.props.index, index)}>
                                 {this.generateMessage(message.gameValue, message.gameCommitment, this.props.structureObject, message.gameVariables)}
                             </MessageBubble>
                         )}
@@ -45,13 +45,13 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    chooseFormula() {
+    chooseFormula(leftCommitment, rightCommitment) {
         return (
             <Form.Group>
-                <Button variant="primary" onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subLeft)}>
+                <Button variant="primary" onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subLeft, leftCommitment)}>
                     {this.props.formula.gameValue.subLeft.toString()}
                 </Button>
-                <Button variant="primary" onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subRight)}>
+                <Button variant="primary" onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subRight, rightCommitment)}>
                     {this.props.formula.gameValue.subRight.toString()}
                 </Button>
             </Form.Group>
@@ -94,18 +94,23 @@ export class HenkinHintikkaGame extends React.Component {
                 case ATOM:
                     return this.chooseEndGame();
                 case PLAYER_OPERATOR:
-                    return this.chooseFormula();
+                    return this.chooseFormula(gameCommitment, gameCommitment);
+                case PLAYER_IMPLICATION:
+                    return this.chooseFormula(!gameCommitment, gameCommitment);
                 case PLAYER_QUANTIFIER:
                     return this.chooseDomainValue();
                 case NEGATION:
                 case GAME_OPERATOR:
                 case GAME_QUANTIFIER:
+                case GAME_IMPLICATION:
                     return this.chooseOk();
             }
         }
     }
 
     generateMessage(gameValue, gameCommitment, structure, variables){
+        let leftEval;
+        let form;
         if(gameCommitment === null){
             return FIRST_QUESTION(gameValue.toString());
         } else {
@@ -128,10 +133,10 @@ export class HenkinHintikkaGame extends React.Component {
                         + ' alebo ' + subFormulas[1] + ' je ' + truthValue;
 
                 case GAME_OPERATOR:
-                    let leftEval = subFormulas[0].eval(structure, variables);
-                    let form = leftEval !== gameCommitment ? subFormulas[0].toString() : subFormulas[1].toString();
-                    return "Ak predpokladaš že formula " + gameValue.toString() + " je " + truthValue + ", tak potom: "
-                        + form + " je " + oppositeTruthValue;
+                    leftEval = subFormulas[0].eval(structure, variables);
+                    form = leftEval !== gameCommitment ? subFormulas[0].toString() : subFormulas[1].toString();
+                    return 'Ak predpokladaš že formula ' + gameValue.toString() + ' je ' + truthValue + ', tak potom: '
+                        + form + ' je ' + oppositeTruthValue;
 
                 case PLAYER_QUANTIFIER:
                     return 'Pre ktorý prvok z domény predpokladaš, že formula ' + gameValue.toString() + " je " + truthValue;
@@ -145,8 +150,17 @@ export class HenkinHintikkaGame extends React.Component {
                         }
                     }
                     return 'Ak predpokladaš, že ' + gameValue.toString() + ' je ' + truthValue + ', tak potom aj ...';
+
+                case PLAYER_IMPLICATION:
+                    return 'Ak predpokladaš že formula ' + gameValue.toString() + ' je ' + truthValue + ', tak potom: ' + subFormulas[0].toString()
+                        + ' je ' + oppositeTruthValue + ' alebo ' + subFormulas[1] + ' je ' + truthValue;
+
+                case GAME_IMPLICATION:
+                    leftEval = subFormulas[0].eval(structure, variables);
+                    form = leftEval !== gameCommitment ? subFormulas[0].toString() + ' je ' + truthValue
+                                                        : subFormulas[1].toString() + ' je ' + oppositeTruthValue;
+                    return 'Ak predpokladaš že formula ' + gameValue.toString() + ' je ' + truthValue + ', tak potom: ' + form;
             }
         }
     }
-
 }

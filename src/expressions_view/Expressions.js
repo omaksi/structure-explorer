@@ -25,7 +25,7 @@ const helpFormula = (
        <ul>
          <li>Konjunkcia: \wedge, \land, &&, &, /\, ∧</li>
          <li>Disjunkcia: \vee, \lor, ||, |, \/, ∨</li>
-         <li>Implikácia: \to, →, -></li>
+         <li>Implikácia: \to, →, -{'>'}</li>
          <li>Existenčný kvantifikátor: \exists, \e, \E, ∃</li>
          <li>Všeobecný kvantifikátor: \forall, \a, \A, ∀</li>
          <li>Negácia: \neg, \lnot, -, !, ~, ¬</li>

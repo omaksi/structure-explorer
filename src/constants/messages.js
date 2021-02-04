@@ -13,3 +13,4 @@ export const FUNCTION_NOT_FULL_DEFINED = 'Funkcia nie je definovaná pre všetky
 export const FUNCTION_ALREADY_DEFINED = (params) => `Funkcia je viackrát definovaná pre argumenty ${params}`;
 
 export const FIRST_QUESTION = (params) => `Aký máš začiatočný predpoklad o tejto formule: ${params}`;
+export const ENTRY_SENTENCE = (formula, truth) => `Ak predpokladaš, že ${formula} je ${truth}.`;

@@ -347,29 +347,33 @@ export const initiateGame = (index) => ({
   type: 'INITIATE_GAME',
   index
 });
-export const setGameCommitment = (index, commitment) => ({
+export const setGameCommitment = (index, commitment, messages) => ({
   type: 'SET_GAME_COMMITMENT',
   index,
-  commitment
+  commitment,
+  messages
 });
-export const continueGame = (index) => ({
+export const continueGame = (index, messages) => ({
   type: 'CONTINUE_GAME',
-  index
+  index,
+  messages
 });
-export const setGameDomainChoice = (index, value) => ({
+export const setGameDomainChoice = (index, value, messages) => ({
   type: 'SET_GAME_DOMAIN_CHOICE',
   index,
-  value
+  value,
+  messages
 });
 export const endGame = (index) => ({
   type: 'END_GAME',
   index
 });
-export const setGameNextFormula = (index, formula, commitment) => ({
+export const setGameNextFormula = (index, formula, commitment, messages) => ({
   type: 'SET_GAME_NEXT_FORMULA',
   index,
   formula,
-  commitment
+  commitment,
+  messages
 });
 export const goBack = (index, historyIndex) => ({
   type: 'GO_BACK',

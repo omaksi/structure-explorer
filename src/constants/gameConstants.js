@@ -11,5 +11,6 @@ export const defaultHintikkaGameData = () => ({
     gameCommitment: null,
     gameHistory: [],
     gameVariables: new Map(),
-    gameValue: null
+    gameValue: null,
+    messages: []
 });

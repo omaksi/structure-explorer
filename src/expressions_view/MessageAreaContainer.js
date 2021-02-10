@@ -12,7 +12,7 @@ const MessageArea = styled.div`
 
 const MessageAreaContainer = props => (
     <MessageArea>
-        <div className={"d-inline-flex flex-column mr-auto"}>
+        <div className={"d-inline-flex flex-column"}>
             {props.children}
         </div>
     </MessageArea>)

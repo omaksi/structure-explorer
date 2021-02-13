@@ -6,7 +6,7 @@ exports.parseText = function (text, textData, parserOptions) {
   textData.value = text;
   textData.errorMessage = '';
   if (text.length === 0) {
-    textData.parsed = [];
+    textData.parsed = null;
     return;
   }
   try {

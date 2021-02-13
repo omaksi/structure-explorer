@@ -62,7 +62,7 @@ import {
   INITIATE_GAME,
   SET_GAME_COMMITMENT,
   CONTINUE_GAME,
-  SET_GAME_DOMAIN_CHOICE, SET_GAME_NEXT_FORMULA, END_GAME, GO_BACK
+  SET_GAME_DOMAIN_CHOICE, SET_GAME_NEXT_FORMULA, END_GAME, GO_BACK, GET_VARIABLES
 } from "../actions/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
 import {getStructureObject} from "../selectors/structureObject";
@@ -145,14 +145,17 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
       s.formulas[action.index].gameValue = s.formulas[action.index].parsed.createCopy();
       s.formulas[action.index].gameCommitment = null;
       s.formulas[action.index].gameHistory = [];
+      s.formulas[action.index].showVariables = false;
       s.formulas[action.index].gameVariables = new Map(variables);
       return s;
     case SET_GAME_COMMITMENT:
       addToHistory(s, action.index, action.gameMessages, action.userMessages);
+      s.formulas[action.index].showVariables = false;
       s.formulas[action.index].gameCommitment = action.commitment;
       return s;
     case CONTINUE_GAME:
       addToHistory(s, action.index, action.gameMessages, action.userMessages);
+      s.formulas[action.index].showVariables = false;
       let formulas = s.formulas[action.index].gameValue.getSubFormulas();
       switch(s.formulas[action.index].gameValue.getType(s.formulas[action.index].gameCommitment)){
         case NEGATION:
@@ -187,6 +190,7 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
       return s;
     case SET_GAME_DOMAIN_CHOICE:
       addToHistory(s, action.index, action.gameMessages, action.userMessages);
+      s.formulas[action.index].showVariables = false;
       let varName = 'n' + s.formulas[action.index].gameVariables.size;
       s.formulas[action.index].gameVariables.set(varName, action.value);
       s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.createCopy();
@@ -195,16 +199,22 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
       return s;
     case SET_GAME_NEXT_FORMULA:
       addToHistory(s, action.index, action.gameMessages, action.userMessages);
+      s.formulas[action.index].showVariables = false;
       s.formulas[action.index].gameValue = action.formula.createCopy();
       s.formulas[action.index].gameCommitment = action.commitment;
       return s;
     case END_GAME:
+      s.formulas[action.index].showVariables = false;
       s.formulas[action.index].gameEnabled = false;
       s.formulas[action.index].gameCommitment = null;
       s.formulas[action.index].gameHistory = [];
       s.formulas[action.index].gameValue = null;
       return s;
+    case GET_VARIABLES:
+      s.formulas[action.index].showVariables = true;
+      return s;
     case GO_BACK:
+      s.formulas[action.index].showVariables = false;
       s.formulas[action.index].gameValue = s.formulas[action.index].gameHistory[action.historyIndex].gameValue.createCopy();
       s.formulas[action.index].gameVariables = new Map(s.formulas[action.index].gameHistory[action.historyIndex].gameVariables);
       s.formulas[action.index].gameCommitment = s.formulas[action.index].gameHistory[action.historyIndex].gameCommitment;
@@ -347,6 +357,7 @@ function copyState(state){
     newFormula.validSyntax = formula.validSyntax;
     newFormula.gameCommitment = formula.gameCommitment;
     newFormula.gameEnabled = formula.gameEnabled;
+    newFormula.showVariables = formula.showVariables;
     newFormula.gameVariables = new Map(formula.gameVariables);
     newFormula.gameHistory = [];
     for(let entry of formula.gameHistory){

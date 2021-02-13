@@ -29,18 +29,44 @@ export class HenkinHintikkaGame extends React.Component {
                     )}
                     {this.generateMessage(this.props.formula.gameValue, this.props.formula.gameCommitment,
                                 this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessageBubble background={'#eee'} color={'black'}>{message}</GameMessageBubble>)}
+                    {this.toggleVariables()}
                 </MessageAreaContainer>
-                {this.getChoice(this.props.formula.gameValue, this.props.formula.gameCommitment)}
+                <Form.Group>
+                    {this.getChoice(this.props.formula.gameValue, this.props.formula.gameCommitment)}
+                </Form.Group>
             </Container>
         )
     }
 
+    toggleVariables(){
+        if(this.props.formula.showVariables) {
+            if(this.props.formula.gameVariables.size == 0){
+                return (
+                    <UserMessageBubble>Aktuálne žiadne pemenné sú definované</UserMessageBubble>
+                );
+            } else {
+                return (
+                    <UserMessageBubble> {Array.from(this.props.formula.gameVariables).map(([key, value]) =>
+                        <p>{key} = {value}</p>)} </UserMessageBubble>
+                );
+            }
+        } else {
+            return null;
+        }
+    }
+
+    writeVariables(){
+        return(
+            <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.getVariables(this.props.index)}>Vypíš premenné</Button>
+        );
+    }
+
     chooseCommitment(messages) {
         return (
-            <Form.Group>
-                <Button variant="primary" onClick={() => this.props.setGameCommitment(this.props.index, true, messages, ['Pravdivá'])}>Pravdiva</Button>
-                <Button variant="primary" onClick={() => this.props.setGameCommitment(this.props.index,false, messages, ['Nepravdivá'])}>Nepravdiva</Button>
-            </Form.Group>
+            <div className={"d-flex justify-content-center"}>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameCommitment(this.props.index, true, messages, ['Pravdivá'])}>Pravdivá</Button>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameCommitment(this.props.index,false, messages, ['Nepravdivá'])}>Nepravdivá</Button>
+            </div>
         );
     }
 
@@ -50,43 +76,46 @@ export class HenkinHintikkaGame extends React.Component {
         let leftUserMessage = [this.props.formula.gameValue.subLeft.toString() + ' je ' + leftStringCommitment];
         let rightUserMessage = [this.props.formula.gameValue.subRight.toString() + ' je ' + rightStringCommitment];
         return (
-            <Form.Group>
-                <Button variant="primary" onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subLeft, leftCommitment, messages, leftUserMessage)}>
+            <div className={"d-flex justify-content-center"}>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subLeft, leftCommitment, messages, leftUserMessage)}>
                     {leftUserMessage}
                 </Button>
-                <Button variant="primary" onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subRight, rightCommitment, messages, rightUserMessage)}>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subRight, rightCommitment, messages, rightUserMessage)}>
                     {rightUserMessage}
                 </Button>
-            </Form.Group>
+                {this.writeVariables()}
+            </div>
         );
     }
 
     chooseDomainValue(messages){
         let varName = 'n' + this.props.formula.gameVariables.size;
         return (
-            <Form.Group>
-                <DropdownButton alignRight as={ButtonGroup} title="Vyber prvok z domény">
+            <div className={"d-flex justify-content-center"}>
+                <DropdownButton variant="outline-primary" className={"rounded mr-3"} alignRight as={ButtonGroup} title="Vyber prvok z domény">
                     {this.props.domain.map((value, index) =>
                         <Dropdown.Item eventKey={index} onClick={() => this.props.setGameDomainChoice(this.props.index, value, messages, ['Pre ' + varName + ' = ' + value])}>{value}</Dropdown.Item>
                     )}
                 </DropdownButton>
-            </Form.Group>
+                {this.writeVariables()}
+            </div>
         );
     }
 
     chooseOk(messages){
         return (
-            <Form.Group>
-                <Button variant="primary" onClick={() => this.props.continueGame(this.props.index, messages, ['Pokračuj'])}>OK</Button>
-            </Form.Group>
+            <div className={"d-flex justify-content-center"}>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.continueGame(this.props.index, messages, ['Pokračuj'])}>OK</Button>
+                {this.writeVariables()}
+            </div>
         );
     }
 
     chooseEndGame(){
         return (
-            <Form.Group>
-                <Button variant="primary" onClick={() => this.props.endGame(this.props.index)}>Ukončiť hru</Button>
-            </Form.Group>
+            <div className={"d-flex justify-content-center"}>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.endGame(this.props.index)}>Ukončiť hru</Button>
+            </div>
         );
     }
 

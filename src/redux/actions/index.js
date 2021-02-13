@@ -384,3 +384,7 @@ export const goBack = (index, historyIndex) => ({
   index,
   historyIndex
 });
+export const getVariables = (index) => ({
+  type: 'GET_VARIABLES',
+  index
+});

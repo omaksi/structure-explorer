@@ -14,3 +14,7 @@ export const FUNCTION_ALREADY_DEFINED = (params) => `Funkcia je viackrát defino
 
 export const FIRST_QUESTION = (params) => `Aký máš začiatočný predpoklad o tejto formule: ${params}`;
 export const ENTRY_SENTENCE = (formula, truth) => `Ak predpokladáš, že ${formula} je ${truth}.`;
+export const EVALUATED_PREDICATE_IN = (formula, formulaName) => `${formula} ∈ i(${formulaName})`;
+export const EVALUATED_PREDICATE_NOT_IN = (formula, formulaName) => `${formula} ∉ i(${formulaName})`;
+export const EVALUATED_EQUALITY = (term1, term2) => `(${term1}) = (${term2})`;
+export const EVALUATED_INEQUALITY = (term1, term2) => `(${term1}) ≠ (${term2})`;

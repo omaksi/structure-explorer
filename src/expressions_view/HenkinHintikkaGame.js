@@ -11,8 +11,15 @@ import {
     PLAYER_OPERATOR,
     PLAYER_QUANTIFIER
 } from "../constants/gameConstants";
-import {ENTRY_SENTENCE, FIRST_QUESTION} from "../constants/messages";
+import {
+    ENTRY_SENTENCE,
+    EVALUATED_EQUALITY, EVALUATED_INEQUALITY,
+    EVALUATED_PREDICATE_IN,
+    EVALUATED_PREDICATE_NOT_IN,
+    FIRST_QUESTION
+} from "../constants/messages";
 import UserMessageBubble from "./UserMessageBubble";
+import PredicateAtom from "../model/formula/Formula.PredicateAtom";
 
 export class HenkinHintikkaGame extends React.Component {
     constructor(props) {
@@ -28,7 +35,7 @@ export class HenkinHintikkaGame extends React.Component {
                         history.userMessages.map(message => <UserMessageBubble >{message}</UserMessageBubble>))
                     )}
                     {this.generateMessage(this.props.formula.gameValue, this.props.formula.gameCommitment,
-                                this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessageBubble background={'#eee'} color={'black'}>{message}</GameMessageBubble>)}
+                                this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
                     {this.toggleVariables()}
                 </MessageAreaContainer>
                 <Form.Group>
@@ -157,9 +164,11 @@ export class HenkinHintikkaGame extends React.Component {
                 case ATOM:
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
                     if(gameCommitment === gameValue.eval(structure, variables)){
-                        messages.push('Vyhral si, pretože ' + gameValue.toString() + ' je ' + truthValue);
+                        messages.push('Vyhral si! ' + gameValue.toString() + ' je ' + truthValue
+                            + ', pretože ' + this.getWinningEvaluatedFormula(gameValue, structure, variables, gameCommitment));
                     } else {
-                        messages.push('Prehral si, pretože ' + gameValue.toString() + ' je ' + oppositeTruthValue);
+                        messages.push('Prehral si! ' + gameValue.toString() + ' je ' + oppositeTruthValue
+                            + ', pretože ' + this.getLoosingEvaluatedFormula(gameValue, structure, variables, gameCommitment));
                     }
                     return messages;
 
@@ -219,5 +228,49 @@ export class HenkinHintikkaGame extends React.Component {
                     return messages;
             }
         }
+    }
+
+    getWinningEvaluatedFormula(gameValue, structure, variables, gameCommitment){
+        if(gameValue instanceof PredicateAtom){
+            if(gameCommitment) {
+                return EVALUATED_PREDICATE_IN(this.getEvaluatedPredicateFormula(gameValue, structure, variables), gameValue.name);
+            } else {
+                return EVALUATED_PREDICATE_NOT_IN(this.getEvaluatedPredicateFormula(gameValue, structure, variables), gameValue.name);
+            }
+        } else {
+            if(gameCommitment) {
+                return EVALUATED_EQUALITY(gameValue.subLeft.eval(structure, variables), gameValue.subRight.eval(structure, variables));
+            } else {
+                return EVALUATED_INEQUALITY(gameValue.subLeft.eval(structure, variables), gameValue.subRight.eval(structure, variables));
+            }
+        }
+    }
+
+    getLoosingEvaluatedFormula(gameValue, structure, variables, gameCommitment){
+        if(gameValue instanceof PredicateAtom){
+            if(gameCommitment) {
+                return EVALUATED_PREDICATE_NOT_IN(this.getEvaluatedPredicateFormula(gameValue, structure, variables), gameValue.name);
+            } else {
+                return EVALUATED_PREDICATE_IN(this.getEvaluatedPredicateFormula(gameValue, structure, variables), gameValue.name);
+            }
+        } else {
+            if(gameCommitment) {
+                return EVALUATED_INEQUALITY(gameValue.subLeft.eval(structure, variables), gameValue.subRight.eval(structure, variables));
+            } else {
+                return EVALUATED_EQUALITY(gameValue.subLeft.eval(structure, variables), gameValue.subRight.eval(structure, variables));
+            }
+        }
+    }
+
+    getEvaluatedPredicateFormula(gameValue, structure, variables){
+        let res = gameValue.name + '(';
+        for (let i = 0; i < gameValue.terms.length; i++) {
+            if (i > 0) {
+                res += ', ';
+            }
+            res += gameValue.terms[i].eval(structure, variables);
+        }
+        res += ')';
+        return res;
     }
 }

@@ -1,8 +1,11 @@
 export const STUDENT_MODE = 'STUDENT';
 
-export const CONSTANT = 'CONSTANTS';
+export const CONSTANT = 'CONSTANT';
 export const FUNCTION = 'FUNCTION';
 export const PREDICATE = 'PREDICATE';
+export const DOMAIN = 'DOMAIN';
+export const VARIABLE = 'VARIABLE';
+
 
 
 export const FORMULA = 'FORMULA';

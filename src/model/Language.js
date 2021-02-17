@@ -6,14 +6,13 @@ import {CONSTANT_IN_LANGUAGE, FUNCTION_IN_LANGUAGE, PREDICATE_IN_LANGUAGE} from 
  * @class
  */
 class Language {
-
-  constructor(parsedConstants = [],
-              parsedFunctions = [],
-              parsedPredicates = []) {
-    this.constants = new Set(parsedConstants);
-    this.functions = new Map(parsedFunctions.map(({name, arity}) => [name, parseInt(arity)]));
-    this.predicates = new Map(parsedPredicates.map(({name, arity}) => [name, parseInt(arity)]));
-  }
+    constructor(parsedConstants = [],
+                parsedFunctions = [],
+                parsedPredicates = []) {
+        this.constants = new Set(parsedConstants);
+        this.functions = new Map(parsedFunctions.map(({name, arity}) => [name, parseInt(arity)]));
+        this.predicates = new Map(parsedPredicates.map(({name, arity}) => [name, parseInt(arity)]));
+    }
 
     /**
      *
@@ -21,39 +20,53 @@ class Language {
      *
      *
      */
+    isConstant(symbol){
+        return this.constants.has(symbol);
+    }
 
+    isPredicate(symbol){
+        return this.predicates.has(symbol);
+    }
 
-  hasConstant(constantName) {
-      return this.constants.has(constantName);
-  }
+    isFunction(symbol){
+        return this.functions.has(symbol);
+    }
 
-  hasPredicate(predicateName) {
-      return this.hasInSet(predicateName,this.predicates);
-  }
+    isVariable(symbol){
+        return !(this.functions.has(symbol) && this.predicates.has(symbol) && this.constants.has(symbol));
+    }
 
-  hasFunction(functionName) {
-      return this.hasInSet(functionName,this.functions);
-  }
+    hasConstant(constantName) {
+        return this.constants.has(constantName);
+    }
 
-  hasInSet(elementName,givenSet){
-      let splited = elementName.split('/');
-      if (splited.length !== 2) {
-          return givenSet.has(splited[0]);
-      }
-      if (isNaN(parseInt(splited[1]))) {
-          return false;
-      }
-      return givenSet.has(splited[0]) && givenSet.get(splited[0]).toString() === splited[1].toString();
-  }
+    hasPredicate(predicateName) {
+        return this.hasInSet(predicateName,this.predicates);
+    }
 
-  /**
-   * Return arity of the predicate
-   * @param {string} predicateName
-   * @return {int} arity of the predicate
-   */
-  getPredicate(predicateName) {
-      return parseInt(this.predicates.get(predicateName));
-  }
+    hasFunction(functionName) {
+        return this.hasInSet(functionName,this.functions);
+    }
+
+    hasInSet(elementName,givenSet){
+        let splited = elementName.split('/');
+        if (splited.length !== 2) {
+            return givenSet.has(splited[0]);
+        }
+        if (isNaN(parseInt(splited[1]))) {
+            return false;
+        }
+        return givenSet.has(splited[0]) && givenSet.get(splited[0]).toString() === splited[1].toString();
+    }
+
+    /**
+     * Return arity of the predicate
+     * @param {string} predicateName
+     * @return {int} arity of the predicate
+     */
+    getPredicate(predicateName) {
+        return parseInt(this.predicates.get(predicateName));
+    }
 
 }
 

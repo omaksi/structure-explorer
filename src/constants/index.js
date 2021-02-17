@@ -1,5 +1,6 @@
 export const STUDENT_MODE = 'STUDENT';
 
+export const CONSTANT = 'CONSTANTS';
 export const FUNCTION = 'FUNCTION';
 export const PREDICATE = 'PREDICATE';
 

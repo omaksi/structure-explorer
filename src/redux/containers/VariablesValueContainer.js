@@ -1,4 +1,4 @@
-import {setVariablesValue} from "../actions";
+import {lockVariablesComponent, setVariablesValue} from "../actions";
 import {connect} from 'react-redux';
 import VariablesValue from "../../math_view/components/VariablesValue";
 import {lockVariables} from "../actions";
@@ -10,7 +10,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchOnProps = {
   onInputChange: setVariablesValue,
-  lockInput: lockVariables
+  lockInput: lockVariables,
+  lockVariablesComponent: lockVariablesComponent
 };
 
 const VariablesValueContainer = connect(

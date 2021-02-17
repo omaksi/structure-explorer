@@ -1,5 +1,5 @@
 import React from "react";
-import GameMessageBubble from "./GameMessageBubble";
+import {GameMessageBubble, GameMessage} from "./GameMessageBubble";
 import Container from "./Container";
 import MessageAreaContainer from "./MessageAreaContainer";
 import {Form, Button, DropdownButton, ButtonGroup, Dropdown} from "react-bootstrap";
@@ -31,11 +31,14 @@ export class HenkinHintikkaGame extends React.Component {
             <Container>
                 <MessageAreaContainer>
                     {this.props.formula.gameHistory.map((history, index) =>
-                        history.gameMessages.map(message => <GameMessageBubble onClick={() => this.props.goBack(this.props.index, index)}>{message}</GameMessageBubble>).concat(
+                        history.gameMessages.map(message =>
+                            <GameMessageBubble onClick={() => this.props.goBack(this.props.index, index)}>
+                                {message}
+                            </GameMessageBubble>).concat(
                         history.userMessages.map(message => <UserMessageBubble >{message}</UserMessageBubble>))
                     )}
                     {this.generateMessage(this.props.formula.gameValue, this.props.formula.gameCommitment,
-                                this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
+                                this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessage>{message}</GameMessage>)}
                     {this.toggleVariables()}
                 </MessageAreaContainer>
                 <Form.Group>
@@ -122,6 +125,7 @@ export class HenkinHintikkaGame extends React.Component {
         return (
             <div className={"d-flex justify-content-center"}>
                 <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.endGame(this.props.index)}>Ukončiť hru</Button>
+                {this.writeVariables()}
             </div>
         );
     }

@@ -35,7 +35,11 @@ import {
   REMOVE_TERNARY_PREDICATE,
   REMOVE_BINARY_FUNCTION,
   ADD_QUATERNARY_PREDICATE,
-  REMOVE_QUATERNARY_PREDICATE, REMOVE_TERNARY_FUNCTION, ADD_TERNARY_FUNCTION, ADD_BINARY_FUNCTION
+  REMOVE_QUATERNARY_PREDICATE,
+  REMOVE_TERNARY_FUNCTION,
+  ADD_TERNARY_FUNCTION,
+  ADD_BINARY_FUNCTION,
+  LOCK_LANGUAGE_COMPONENT, LOCK_VARIABLES_COMPONENT
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
@@ -66,7 +70,7 @@ export function defaultState(){
     constants: {},
     predicates: {},
     functions: {},
-    variables: {...defaultInputData(), object: new Map()},
+    variables: {...defaultInputData(), lockedComponent: false, object: new Map()},
     domain: {...defaultInputData(), errorMessage: EMPTY_DOMAIN}
   }
 }
@@ -306,6 +310,9 @@ function structureReducer(state, action, language) {
       return newState;
     case LOCK_VARIABLES:
       newState.variables.locked = !newState.variables.locked;
+      return newState;
+    case LOCK_VARIABLES_COMPONENT:
+      newState.variables.lockedComponent = !newState.variables.lockedComponent;
       return newState;
     case IMPORT_APP:
       setDomain(newState);

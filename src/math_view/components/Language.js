@@ -2,6 +2,7 @@ import React from 'react';
 import Card from "react-bootstrap/Card";
 import HelpButton from "../../buttons/HelpButton";
 import TextComponent from "../components_parts/TextComponent";
+import ComponentLockButton from "../../buttons/ComponentLockButton";
 
 const help = (
     <div className="collapse" id="help-language">
@@ -14,47 +15,83 @@ const help = (
    </div>
 );
 
+function constantComponent(props) {
+    if(props.language.lockedComponent){
+        return (
+            <p><span>𝓒<sub>𝓛</sub> = &#123;</span> {props.language.constants.parsed.join(', ')} &#125;</p>
+        );
+    } else {
+        return(
+            <TextComponent labelText={"Symboly konštánt"}
+                           errorProperty={props.language.constants.errorMessage}
+                           onChangeSetFunction={props.setConstants}
+                           onLockFunction={props.lockConstants}
+                           textData={props.language.constants}
+                           textInputLabel={<span>𝓒<sub>𝓛</sub> = &#123;</span>}
+                           teacherMode={props.teacherMode}
+                           idName={'language-editor-constants'}
+                           placeholderText={'a, b, c, ...'}
+            />
+        );
+    }
+}
+
+function predicateComponent(props) {
+    if(props.language.lockedComponent){
+        return (
+            <p><span>𝓟<sub>𝓛</sub> = &#123;</span> {props.language.predicates.parsed.map(tuple => tuple.name + '/' + tuple.arity).join(', ')} &#125;</p>
+        );
+    } else {
+        return(
+            <TextComponent labelText={"Predikátové symboly"}
+                           errorProperty={props.language.predicates.errorMessage}
+                           onChangeSetFunction={props.setPredicates}
+                           onLockFunction={props.lockPredicates}
+                           textData={props.language.predicates}
+                           textInputLabel={<span>𝓟<sub>𝓛</sub> = &#123;</span>}
+                           teacherMode={props.teacherMode}
+                           idName={'language-editor-predicates'}
+                           placeholderText={"likes/2, hates/2, man/1, ..."}
+            />
+        );
+    }
+}
+
+function functionComponent(props) {
+    if(props.language.lockedComponent){
+        return (
+            <p><span>𝓕<sub>𝓛</sub> = &#123;</span> {props.language.functions.parsed.map(tuple => tuple.name + '/' + tuple.arity).join(', ')} &#125;</p>
+        );
+    } else {
+        return(
+            <TextComponent labelText={"Funkčné symboly"}
+                           errorProperty={props.language.functions.errorMessage}
+                           onChangeSetFunction={props.setFunctions}
+                           onLockFunction={props.lockFunctions}
+                           textData={props.language.functions}
+                           textInputLabel={<span>𝓕<sub>𝓛</sub> = &#123;</span>}
+                           teacherMode={props.teacherMode}
+                           idName={'language-editor-functions'}
+                           placeholderText={'mother/1, father/1, ...'}
+            />
+        );
+    }
+}
+
 const Language = (props) => (
    <Card className={"no-border-radius"}>
      <Card.Header as="h5" className={"d-flex justify-content-between"}>
          <span>Jazyk 𝓛</span>
-         <HelpButton dataTarget={"#help-language"}/>
+         <div className={"d-flex justify-content-left"}>
+            <ComponentLockButton lockFn={() => props.lockLanguageComponent()} locked={props.language.lockedComponent}/>
+            <HelpButton dataTarget={"#help-language"}/>
+         </div>
      </Card.Header>
      <Card.Body>
        {help}
-       <TextComponent labelText={"Symboly konštánt"}
-                      errorProperty={props.language.constants.errorMessage}
-                      onChangeSetFunction={props.setConstants}
-                      onLockFunction={props.lockConstants}
-                      textData={props.language.constants}
-                      textInputLabel={<span>𝓒<sub>𝓛</sub> = &#123;</span>}
-                      teacherMode={props.teacherMode}
-                      idName={'language-editor-constants'}
-                      placeholderText={'a, b, c, ...'}
-       />
-
-       <TextComponent labelText={"Predikátové symboly"}
-                      errorProperty={props.language.predicates.errorMessage}
-                      onChangeSetFunction={props.setPredicates}
-                      onLockFunction={props.lockPredicates}
-                      textData={props.language.predicates}
-                      textInputLabel={<span>𝓟<sub>𝓛</sub> = &#123;</span>}
-                      teacherMode={props.teacherMode}
-                      idName={'language-editor-predicates'}
-                      placeholderText={"likes/2, hates/2, man/1, ..."}
-       />
-
-       <TextComponent labelText={"Funkčné symboly"}
-                      errorProperty={props.language.functions.errorMessage}
-                      onChangeSetFunction={props.setFunctions}
-                      onLockFunction={props.lockFunctions}
-                      textData={props.language.functions}
-                      textInputLabel={<span>𝓕<sub>𝓛</sub> = &#123;</span>}
-                      teacherMode={props.teacherMode}
-                      idName={'language-editor-functions'}
-                      placeholderText={'mother/1, father/1, ...'}
-       />
-
+       {constantComponent(props)}
+       {predicateComponent(props)}
+       {functionComponent(props)}
      </Card.Body>
    </Card>
 );

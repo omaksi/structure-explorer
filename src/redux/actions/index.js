@@ -284,6 +284,10 @@ export const lockFunctions = () => ({
   type: 'LOCK_FUNCTIONS'
 });
 
+export const lockLanguageComponent = () => ({
+  type: 'LOCK_LANGUAGE_COMPONENT'
+});
+
 export const lockDomain = () => ({
   type: 'LOCK_DOMAIN'
 });
@@ -305,6 +309,10 @@ export const lockFunctionValue = (functionName) => ({
 
 export const lockVariables = () => ({
   type: 'LOCK_VARIABLES'
+});
+
+export const lockVariablesComponent = () => ({
+  type: 'LOCK_VARIABLES_COMPONENT'
 });
 
 export const toggleTable = (itemType, name) => ({

@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {setConstants, setFunctions, setPredicates} from "../actions";
+import {lockLanguageComponent, setConstants, setFunctions, setPredicates} from "../actions";
 import Language from '../../math_view/components/Language';
 import {lockConstants, lockFunctions, lockPredicates} from "../actions";
 
@@ -14,7 +14,8 @@ const mapDispatchToProps = {
   setFunctions: setFunctions,
   lockConstants: lockConstants,
   lockPredicates: lockPredicates,
-  lockFunctions: lockFunctions
+  lockFunctions: lockFunctions,
+  lockLanguageComponent: lockLanguageComponent
 };
 
 const LanguageContainer = connect(

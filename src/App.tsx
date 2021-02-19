@@ -30,7 +30,7 @@ class App extends React.Component<AppProps,AppState> {
 
     this.state = {
       modalShow: false,
-      diagramToggled:true,
+      diagramToggled:false,
       collapseHelpGraphButton:false,
       exerciseName:''
     };

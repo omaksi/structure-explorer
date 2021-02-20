@@ -71,7 +71,7 @@ export function defaultState(){
     constants: {},
     predicates: {},
     functions: {},
-    variables: {...defaultInputData(), lockedComponent: false, object: new Map()},
+    variables: {...defaultInputData(), object: new Map()},
     domain: {...defaultInputData(), errorMessage: EMPTY_DOMAIN}
   }
 }
@@ -312,9 +312,6 @@ function structureReducer(state, action, language, wholeState) {
       return newState;
     case LOCK_VARIABLES:
       newState.variables.locked = !newState.variables.locked;
-      return newState;
-    case LOCK_VARIABLES_COMPONENT:
-      newState.variables.lockedComponent = !newState.variables.lockedComponent;
       return newState;
     case IMPORT_APP:
       setDomain(newState);
@@ -558,8 +555,7 @@ const copyState = (state) => ({
   predicates: {...state.predicates},
   functions: {...state.functions},
   variables: {...state.variables},
-  domain: {...state.domain},
-
+  domain: {...state.domain}
 });
 
 function tupleToString(tuple) {

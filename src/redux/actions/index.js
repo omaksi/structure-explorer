@@ -311,10 +311,6 @@ export const lockVariables = () => ({
   type: 'LOCK_VARIABLES'
 });
 
-export const lockVariablesComponent = () => ({
-  type: 'LOCK_VARIABLES_COMPONENT'
-});
-
 export const toggleTable = (itemType, name) => ({
   type: 'TOGGLE_EDIT_TABLE',
   itemType,

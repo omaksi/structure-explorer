@@ -10,8 +10,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchOnProps = {
   onInputChange: setVariablesValue,
-  lockInput: lockVariables,
-  lockVariablesComponent: lockVariablesComponent
+  lockInput: lockVariables
 };
 
 const VariablesValueContainer = connect(

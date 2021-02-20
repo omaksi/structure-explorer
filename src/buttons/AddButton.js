@@ -5,7 +5,7 @@ import FontAwesome from "react-fontawesome";
 const AddButton = ({onClickAddFunction,addType}) => (
     <Button variant={"success"} title={"Pridaj"} onClick={() => onClickAddFunction(addType)}><FontAwesome
         name='plus'/>
-        &nbsp;Pridaj
+        &nbsp;Pridať
     </Button>
 );
 

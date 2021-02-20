@@ -67,7 +67,7 @@ export class HenkinHintikkaGame extends React.Component {
 
     writeVariables(){
         return(
-            <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.getVariables(this.props.index)}>Vypíš premenné</Button>
+            <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.getVariables(this.props.index)}>Vypísať premenné</Button>
         );
     }
 

@@ -84,7 +84,7 @@ function prepareExpressions(formulas, terms) {
 const Expressions = (props) => (
    <React.Fragment>
      {prepareExpressions(props.formulas, props.terms).map(expression =>
-        <Card className={"mt-3"} key={expression.expressionType}>
+        <Card className={expression.expressionType == TERM ? "mt-3" : ""} key={expression.expressionType}>
           <Card.Header as={"h5"} className={"d-flex justify-content-between"}>
             <span>{expression.panelTitle}</span>
               <HelpButton dataTarget={"#help-" + expression.expressionType.toLowerCase()}/>
@@ -94,7 +94,7 @@ const Expressions = (props) => (
             {expression.items.map((item, index) =>
              <Form key={"expression-form-"+index}>
                <Row key={"expression-row"+index}>
-                   <Col sm={12} md={12} lg={7}>
+                   <Col sm={12} md={12} lg={12}>
                      <Form.Group>
                        <InputGroup>
                            <InputGroup.Prepend>
@@ -124,8 +124,16 @@ const Expressions = (props) => (
                        </InputGroup>
                      </Form.Group>
                    </Col>
+               </Row>
+               <Row key={"expression-row-2"+index}>
+                   <Col xs={2} sm={2} md={2} lg={1} className={"no-padding-right mr-1"}>
+                       {expression.expressionType === FORMULA ?
+                           <HenkinHintikkaGameButton
+                               onClick={() => props.initiateGame(index)}
+                               enabled={item.answerLocked}/> : null }
+                   </Col>
 
-                   <Col xs={8} sm={6} md={5} lg={3}>
+                   <Col xs={8} sm={8} md={8} lg={7}>
                      <Form.Group>
                        <InputGroup>
                            <InputGroup.Prepend>
@@ -154,20 +162,14 @@ const Expressions = (props) => (
                      </Form.Group>
                    </Col>
 
-                   <Col xs={4} sm={4} md={2} className={"pt-2 no-padding-right"}>
+                   <Col xs={0} sm={0} md={0} lg={0} className={"pt-2 no-padding-right"}>
                      {item.answerValue !== '' && item.answerValue !== '-1' ?
                          (item.answerValue === item.expressionValue ?
-                             <strong className="text-success"><FontAwesome
-                               name='check'/>&nbsp;Správne</strong> :
+                             <strong className="text-success no-padding-right"><FontAwesome
+                                 name='check'/><span className={'hidden-on-medium-and-lower'}>&nbsp;Správne</span></strong> :
                              <strong className="text-danger"><FontAwesome
-                               name='times'/>&nbsp;Nesprávne</strong>
+                                 name='times'/><span className={'hidden-on-medium-and-lower'}>&nbsp;Nesprávne</span></strong>
                          ) : null}
-                   </Col>
-                   <Col xs={4} sm={4} md={2} className={"pt-2 no-padding-right"}>
-                       {expression.expressionType === FORMULA ?
-                           <HenkinHintikkaGameButton
-                               onClick={() => props.initiateGame(index)}
-                               enabled={item.answerLocked}/> : null }
                    </Col>
                </Row>
                <Row>

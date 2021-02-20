@@ -36,8 +36,9 @@ body{
     display: inline;
 }
 
-@media all and (max-width: 990px) {
+@media all and (max-width: 991px) {
     .hidden-on-medium-and-lower{
         display: none;
+        width: max-content;
     }
 }

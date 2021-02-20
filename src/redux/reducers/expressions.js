@@ -141,6 +141,9 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
       syncExpressionsValue(wholeState, true);
       return s;
     case INITIATE_GAME:
+      if(!s.formulas[action.index].parsed){
+        return s;
+      }
       s.formulas[action.index].gameEnabled = !s.formulas[action.index].gameEnabled;
       s.formulas[action.index].gameValue = s.formulas[action.index].parsed.createCopy();
       s.formulas[action.index].gameCommitment = null;

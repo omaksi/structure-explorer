@@ -215,7 +215,11 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
     case GO_BACK:
       s.formulas[action.index].gameValue = s.formulas[action.index].gameHistory[action.historyIndex].gameValue.createCopy();
       s.formulas[action.index].gameVariables = new Map(s.formulas[action.index].gameHistory[action.historyIndex].gameVariables);
-      s.formulas[action.index].gameCommitment = s.formulas[action.index].gameHistory[action.historyIndex].gameCommitment;
+      if(action.historyIndex === 0){
+        s.formulas[action.index].gameCommitment = null;
+      } else {
+        s.formulas[action.index].gameCommitment = s.formulas[action.index].gameHistory[action.historyIndex].gameCommitment;
+      }
       let newHistory = [];
       for(let i = 0; i < s.formulas[action.index].gameHistory.length; i++){
           if(i < action.historyIndex){

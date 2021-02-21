@@ -1,5 +1,5 @@
 import React from "react";
-import {GameMessageBubble, GameMessage} from "./GameMessageBubble";
+import GameMessageBubble from "./GameMessageBubble";
 import Container from "./Container";
 import MessageAreaContainer from "./MessageAreaContainer";
 import {Form, Button, DropdownButton, ButtonGroup, Dropdown} from "react-bootstrap";
@@ -18,7 +18,7 @@ import {
     EVALUATED_PREDICATE_NOT_IN,
     FIRST_QUESTION
 } from "../constants/messages";
-import UserMessageBubble from "./UserMessageBubble";
+import {UserMessageBubble} from "./UserMessageBubble";
 import PredicateAtom from "../model/formula/Formula.PredicateAtom";
 
 export class HenkinHintikkaGame extends React.Component {
@@ -32,13 +32,13 @@ export class HenkinHintikkaGame extends React.Component {
                 <MessageAreaContainer>
                     {this.props.formula.gameHistory.map((history, index) =>
                         history.gameMessages.map(message =>
-                            <GameMessageBubble onClick={() => this.props.goBack(this.props.index, index)}>
+                            <GameMessageBubble>
                                 {message}
                             </GameMessageBubble>).concat(
-                        history.userMessages.map(message => <UserMessageBubble >{message}</UserMessageBubble>))
+                        history.userMessages.map(message => <UserMessageBubble onClick={() => this.props.goBack(this.props.index, index)}>{message}</UserMessageBubble>))
                     )}
                     {this.generateMessage(this.props.formula.gameValue, this.props.formula.gameCommitment,
-                                this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessage>{message}</GameMessage>)}
+                                this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
                 </MessageAreaContainer>
                 <Form.Group>
                     {this.getChoice(this.props.formula.gameValue, this.props.formula.gameCommitment)}
@@ -171,39 +171,35 @@ export class HenkinHintikkaGame extends React.Component {
                 case ATOM:
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
                     if(gameCommitment === gameValue.eval(structure, variables)){
-                        messages.push('Vyhral si! ' + gameValue.toString() + ' je ' + truthValue
+                        messages.push('Vyhral/a si! ' + gameValue.toString() + ' je ' + truthValue
                             + ', pretože ' + this.getWinningEvaluatedFormula(gameValue, structure, variables, gameCommitment));
                     } else {
-                        messages.push('Prehral si! ' + gameValue.toString() + ' je ' + oppositeTruthValue
+                        messages.push('Prehral/a si! ' + gameValue.toString() + ' je ' + oppositeTruthValue
                             + ', pretože ' + this.getLoosingEvaluatedFormula(gameValue, structure, variables, gameCommitment));
                         if(this.props.formula.gameHistory[0].gameValue.eval(structure, this.props.formula.gameHistory[0].gameVariables) === this.props.formula.gameHistory[0].gameCommitment){
-                            messages.push('Avšak pôvodná formula sa zhoduje s tvojím pôvodným predpokladom a teda môžnosť výhry!');
+                            messages.push('Mohol/mohla si však vyhrať. Pravdivosť pôvodnej formuly sa zhoduje s tvojím predpokladom. Nájdi nesprávnu odpoveď a zmeň ju.');
                         }
                     }
                     return messages;
 
                 case NEGATION:
-                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
-                    messages.push('Potom ' + subFormulas[0].toString() + ' je ' + oppositeTruthValue);
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + subFormulas[0].toString() + ' je ' + oppositeTruthValue);
                     return messages;
 
                 case PLAYER_OPERATOR:
-                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
-                    messages.push('Potom je ' + truthValue + ' jedna z týchto formúl');
-                    messages.push(subFormulas[0].toString());
-                    messages.push(subFormulas[1].toString());
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ktorá z nasledujúcich podformúl je ' + truthValue + ' ?');
+                    messages.push('1. ' + subFormulas[0].toString());
+                    messages.push('2. ' + subFormulas[1].toString());
                     return messages;
 
                 case GAME_OPERATOR:
-                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
                     leftEval = subFormulas[0].eval(structure, variables);
                     form = leftEval !== gameCommitment ? subFormulas[0].toString() : subFormulas[1].toString();
-                    messages.push('Potom ' + form + ' je ' + oppositeTruthValue);
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form + ' je ' + oppositeTruthValue);
                     return messages;
 
                 case PLAYER_QUANTIFIER:
-                    messages.push('Pre ktorý prvok z domény predpokladáš, že táto formula ');
-                    messages.push(gameValue.toString() + ' je ' + truthValue);
+                    messages.push('Pre ktorý prvok z domény predpokladáš, že formula ' + gameValue.toString() +  ' je ' + truthValue + ' ?');
                     return messages;
 
                 case GAME_QUANTIFIER:
@@ -214,27 +210,26 @@ export class HenkinHintikkaGame extends React.Component {
                     for (let item of structure.domain) {
                         eCopy.set(gameValue.variableName, item);
                         if (subFormulas[0].eval(structure, eCopy) !== gameCommitment) {
-                            messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + '. Potom je ' + truthValue + ' aj formula');
+                            messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom je ' + truthValue + ' aj formula');
                             messages.push(gameValueWithVariable.toString() + ', kde ' + varName + ' = ' + item);
                             return messages;
                         }
                     }
-                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + '. Potom je ' + truthValue + ' aj formula');
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom je ' + truthValue + ' aj formula');
                     messages.push(gameValueWithVariable.toString() + ', kde ' + varName + ' = ' + eCopy.get(gameValue.variableName));
                     return messages;
 
                 case PLAYER_IMPLICATION:
-                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ' Potom pre jednu z týchto formúl platí');
-                    messages.push(subFormulas[0].toString() + ' je ' + oppositeTruthValue);
-                    messages.push(subFormulas[1].toString() + ' je ' + truthValue);
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ktoré z nasledujúcich tvrdení platí ?');
+                    messages.push('1. Podformula ' + subFormulas[0].toString() + ' je ' + oppositeTruthValue);
+                    messages.push('2. Podformula ' + subFormulas[1].toString() + ' je ' + truthValue);
                     return messages;
 
                 case GAME_IMPLICATION:
                     leftEval = subFormulas[0].eval(structure, variables);
                     form = leftEval === gameCommitment ? subFormulas[0].toString() + ' je ' + oppositeTruthValue
                                                         : subFormulas[1].toString() + ' je ' + truthValue;
-                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
-                    messages.push('Potom ' + form);
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form);
                     return messages;
             }
         }

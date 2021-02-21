@@ -5,13 +5,14 @@ const Container = styled.div`
   display: flex;
   position: relative;
   flex-direction: column;
-  width: 90%;
-  height: 300px;
-  margin: 2rem;
+  width: 100%;
+  max-height: 100vh;
+  height: 500px;
   padding: 1rem;
+  margin-bottom: 1.5rem;
   margin-top: 1em;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 0;
+  margin-right: 0;
   border: 1px solid;
 `;
 

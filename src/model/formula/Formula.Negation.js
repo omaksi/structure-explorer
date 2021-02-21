@@ -33,7 +33,7 @@ class Negation extends Formula {
    * @returns {string}
    */
   toString() {
-    return `¬(${this.subFormula.toString()})`;
+    return `¬${this.subFormula.toString()}`;
   }
 
   createCopy(){

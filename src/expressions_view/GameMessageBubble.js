@@ -25,7 +25,7 @@ export class GameMessageBubble extends React.Component {
         if(this.state.entered){
             return (
                 <Button onClick={() => this.props.onClick()} size={"sm"} className={'text-secondary bg-transparent border-0 mb-auto'}>
-                    <FontAwesome name={'fas fa-undo'}/>
+                    <strong>Späť</strong>
                 </Button>
             );
         }

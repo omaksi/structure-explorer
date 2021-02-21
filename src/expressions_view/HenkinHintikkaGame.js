@@ -39,11 +39,11 @@ export class HenkinHintikkaGame extends React.Component {
                     )}
                     {this.generateMessage(this.props.formula.gameValue, this.props.formula.gameCommitment,
                                 this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessage>{message}</GameMessage>)}
-                    {this.toggleVariables()}
                 </MessageAreaContainer>
                 <Form.Group>
                     {this.getChoice(this.props.formula.gameValue, this.props.formula.gameCommitment)}
                 </Form.Group>
+                {this.toggleVariables()}
             </Container>
         )
     }
@@ -52,12 +52,11 @@ export class HenkinHintikkaGame extends React.Component {
         if(this.props.formula.showVariables) {
             if(this.props.formula.gameVariables.size == 0){
                 return (
-                    <UserMessageBubble>Aktuálne žiadne pemenné sú definované</UserMessageBubble>
+                    <p>Aktuálne žiadne pemenné sú definované</p>
                 );
             } else {
                 return (
-                    <UserMessageBubble> {Array.from(this.props.formula.gameVariables).map(([key, value]) =>
-                        <p>{key} = {value}</p>)} </UserMessageBubble>
+                    <p><span><var>e</var> = &#123; </span>{Array.from(this.props.formula.gameVariables).map(([key, value]) => '(' + key + ',' + value + ')').join(', ')} &#125;</p>
                 );
             }
         } else {
@@ -66,8 +65,12 @@ export class HenkinHintikkaGame extends React.Component {
     }
 
     writeVariables(){
+        let writeOrHide = 'Vypisať'
+        if(this.props.formula.showVariables){
+            writeOrHide = 'Skryť';
+        }
         return(
-            <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.getVariables(this.props.index)}>Vypísať premenné</Button>
+            <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.getVariables(this.props.index)}>{writeOrHide} premenné</Button>
         );
     }
 
@@ -173,6 +176,9 @@ export class HenkinHintikkaGame extends React.Component {
                     } else {
                         messages.push('Prehral si! ' + gameValue.toString() + ' je ' + oppositeTruthValue
                             + ', pretože ' + this.getLoosingEvaluatedFormula(gameValue, structure, variables, gameCommitment));
+                        if(this.props.formula.gameHistory[0].gameValue.eval(structure, this.props.formula.gameHistory[0].gameVariables) === this.props.formula.gameHistory[0].gameCommitment){
+                            messages.push('Avšak pôvodná formula sa zhoduje s tvojím pôvodným predpokladom a teda môžnosť výhry!');
+                        }
                     }
                     return messages;
 
@@ -225,8 +231,8 @@ export class HenkinHintikkaGame extends React.Component {
 
                 case GAME_IMPLICATION:
                     leftEval = subFormulas[0].eval(structure, variables);
-                    form = leftEval !== gameCommitment ? subFormulas[0].toString() + ' je ' + truthValue
-                                                        : subFormulas[1].toString() + ' je ' + oppositeTruthValue;
+                    form = leftEval === gameCommitment ? subFormulas[0].toString() + ' je ' + oppositeTruthValue
+                                                        : subFormulas[1].toString() + ' je ' + truthValue;
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
                     messages.push('Potom ' + form);
                     return messages;
@@ -267,7 +273,7 @@ export class HenkinHintikkaGame extends React.Component {
     }
 
     getEvaluatedPredicateFormula(gameValue, structure, variables){
-        let res = gameValue.name + '(';
+        let res = '(';
         for (let i = 0; i < gameValue.terms.length; i++) {
             if (i > 0) {
                 res += ', ';

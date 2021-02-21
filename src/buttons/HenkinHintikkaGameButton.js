@@ -4,7 +4,7 @@ import {Button} from "react-bootstrap";
 
 const HenkinHintikkaGameButton = ({onClick,enabled}) => (
     <Button onClick={() => onClick()} variant={"outline-secondary"} className={"btn-with-border "+(enabled?"active":"")}>
-        <FontAwesome name='fas fa-calculator'/>
+        <FontAwesome name='fas fa-gamepad'/>
     </Button>
 );
 export default HenkinHintikkaGameButton;

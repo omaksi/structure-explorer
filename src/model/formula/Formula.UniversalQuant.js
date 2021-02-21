@@ -42,7 +42,7 @@ class UniversalQuant extends Formula {
    * @returns {string}
    */
   toString() {
-    return `∀${this.variableName} (${this.subFormula.toString()})`;
+    return `∀${this.variableName} ${this.subFormula.toString()}`;
   }
 
   createCopy(){

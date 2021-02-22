@@ -20,20 +20,33 @@ class Language {
      *
      *
      */
-    isConstant(symbol){
-        return this.constants.has(symbol);
+
+    getLanguage(){
+        let nonLogicalSymbols = new Set([...this.constants, ...this.functions.keys(), ...this.predicates.keys()]);
+        return({
+            isConstant: (symbol) =>
+                this.constants.has(symbol),
+            isFunction: (symbol) =>
+                this.functions.has(symbol),
+            isPredicate: (symbol) =>
+                this.predicates.has(symbol),
+            isVariable: (symbol) =>
+                !nonLogicalSymbols.has(symbol),
+        })
     }
 
-    isPredicate(symbol){
-        return this.predicates.has(symbol);
+    checkFunctionArity(symbol, args, ee){
+        const a = this.functions.get(symbol);
+        if (args.length !== a) {
+            ee.expected(`${a} argument${(a == 1 ? '' : 's')} to ${symbol}`);
+        }
     }
 
-    isFunction(symbol){
-        return this.functions.has(symbol);
-    }
-
-    isVariable(symbol){
-        return !(this.functions.has(symbol) && this.predicates.has(symbol) && this.constants.has(symbol));
+    checkPredicateArity(symbol, args, ee){
+        const a = this.predicates.get(symbol);
+        if (args.length !== a) {
+            ee.expected(`${a} argument${(a == 1 ? '' : 's')} to ${symbol}`);
+        }
     }
 
     hasConstant(constantName) {

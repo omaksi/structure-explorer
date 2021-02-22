@@ -66,6 +66,7 @@ import {
 } from "../actions/action_types";
 import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
 import {getStructureObject} from "../selectors/structureObject";
+import {parseExpression} from "./functions/parsers";
 
 let functions = require('./functions/functions');
 
@@ -296,7 +297,7 @@ function checkExpressionSyntax(state, action, variables) {
     }
     expression = s.formulas[action.index];
   }
-  functions.parseText(expressionText, expression, setParserOptions(state, action.expressionType.toLowerCase()));
+  parseExpression(expression, expressionText, state, action.expressionType);
   expression.value = action.value; // aby tam neboli zatvorky
   if (expression.errorMessage.length === 0) {
     expression.validSyntax = true;
@@ -343,7 +344,6 @@ function addToHistory(state, index, gameMessages, userMessages){
     userMessages: userMessages
   };
   s.formulas[index].gameHistory.push(entry);
-  console.log(s.formulas[index].gameHistory);
 }
 
 function copyState(state){

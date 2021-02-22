@@ -491,7 +491,7 @@ function insertNewInputs(state, language) {
 }
 
 function setVariables(state, language) {
-  if (!state.variables.parsed) {
+  if (!state.variables.parsed || state.variables.errorMessage !== '') {
     return;
   }
   if (!state.variables.object || !state.variables.object instanceof Map) {

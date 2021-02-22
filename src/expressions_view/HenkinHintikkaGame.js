@@ -4,10 +4,10 @@ import Container from "./Container";
 import MessageAreaContainer from "./MessageAreaContainer";
 import {Form, Button, DropdownButton, ButtonGroup, Dropdown} from "react-bootstrap";
 import {
-    ATOM, GAME_IMPLICATION,
+    ATOM, GAME_EQUIVALENCE, GAME_IMPLICATION,
     GAME_OPERATOR,
     GAME_QUANTIFIER,
-    NEGATION, PLAYER_IMPLICATION,
+    NEGATION, PLAYER_EQUIVALENCE, PLAYER_IMPLICATION,
     PLAYER_OPERATOR,
     PLAYER_QUANTIFIER
 } from "../constants/gameConstants";
@@ -20,6 +20,7 @@ import {
 } from "../constants/messages";
 import {UserMessageBubble} from "./UserMessageBubble";
 import PredicateAtom from "../model/formula/Formula.PredicateAtom";
+import Implication from "../model/formula/Formula.Implication";
 
 export class HenkinHintikkaGame extends React.Component {
     constructor(props) {
@@ -84,8 +85,8 @@ export class HenkinHintikkaGame extends React.Component {
     }
 
     chooseFormula(leftCommitment, rightCommitment, messages) {
-        let leftStringCommitment = leftCommitment ? 'pravdivá' : 'nepravdivá';
-        let rightStringCommitment = rightCommitment ? 'pravdivá' : 'nepravdivá';
+        let leftStringCommitment = this.getCommitmentText(leftCommitment);
+        let rightStringCommitment = this.getCommitmentText(rightCommitment);
         let leftUserMessage = [this.props.formula.gameValue.subLeft.toString() + ' je ' + leftStringCommitment];
         let rightUserMessage = [this.props.formula.gameValue.subRight.toString() + ' je ' + rightStringCommitment];
         return (
@@ -110,6 +111,24 @@ export class HenkinHintikkaGame extends React.Component {
                         <Dropdown.Item eventKey={index} onClick={() => this.props.setGameDomainChoice(this.props.index, value, messages, ['Pre ' + varName + ' = ' + value])}>{value}</Dropdown.Item>
                     )}
                 </DropdownButton>
+                {this.writeVariables()}
+            </div>
+        );
+    }
+
+    chooseImplication(messages, gameValue, commitment){
+        let leftImplication = new Implication(gameValue.subLeft, gameValue.subRight);
+        let rightImplication = new Implication(gameValue.subRight, gameValue.subLeft);
+        let leftUserMessage = [leftImplication.toString() + ' je ' + this.getCommitmentText(commitment)];
+        let rightUserMessage = [rightImplication.toString() + ' je ' + this.getCommitmentText(commitment)];
+        return (
+            <div className={"d-flex justify-content-center"}>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, leftImplication, commitment, messages, leftUserMessage)}>
+                    {leftUserMessage}
+                </Button>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, rightImplication, commitment, messages, rightUserMessage)}>
+                    {rightUserMessage}
+                </Button>
                 {this.writeVariables()}
             </div>
         );
@@ -147,10 +166,13 @@ export class HenkinHintikkaGame extends React.Component {
                     return this.chooseFormula(!gameCommitment, gameCommitment, messages);
                 case PLAYER_QUANTIFIER:
                     return this.chooseDomainValue(messages);
+                case PLAYER_EQUIVALENCE:
+                    return this.chooseImplication(messages, gameValue, gameCommitment);
                 case NEGATION:
                 case GAME_OPERATOR:
                 case GAME_QUANTIFIER:
                 case GAME_IMPLICATION:
+                case GAME_EQUIVALENCE:
                     return this.chooseOk(messages);
             }
         }
@@ -164,8 +186,8 @@ export class HenkinHintikkaGame extends React.Component {
             messages.push(FIRST_QUESTION(gameValue.toString()))
             return messages;
         } else {
-            let truthValue = gameCommitment ? 'pravdivá' : 'nepravdivá';
-            let oppositeTruthValue = gameCommitment ? 'nepravdivá' : 'pravdivá';
+            let truthValue = this.getCommitmentText(gameCommitment);
+            let oppositeTruthValue = this.getCommitmentText(!gameCommitment);
             let subFormulas = gameValue.getSubFormulas();
             switch(gameValue.getType(gameCommitment)){
                 case ATOM:
@@ -231,6 +253,19 @@ export class HenkinHintikkaGame extends React.Component {
                                                         : subFormulas[1].toString() + ' je ' + truthValue;
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form);
                     return messages;
+                case PLAYER_EQUIVALENCE:
+                    let leftImplication = new Implication(subFormulas[0], subFormulas[1]);
+                    let rightImplication = new Implication(subFormulas[1], subFormulas[0]);
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ktorá z nasledujúcich formúl je ' + truthValue + ' ?');
+                    messages.push('1. Formula ' + leftImplication.toString());
+                    messages.push('2. Formula ' + rightImplication.toString());
+                    return messages;
+                case GAME_EQUIVALENCE:
+                    leftEval = new Implication(subFormulas[0], subFormulas[1]).eval(structure, variables);
+                    form = leftEval !== gameCommitment ? new Implication(subFormulas[0], subFormulas[1]).toString() + ' je ' + truthValue
+                                                        : new Implication(subFormulas[1], subFormulas[0]).toString() + ' je ' + truthValue;
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form);
+                    return messages;
             }
         }
     }
@@ -277,5 +312,9 @@ export class HenkinHintikkaGame extends React.Component {
         }
         res += ')';
         return res;
+    }
+
+    getCommitmentText(commitment){
+        return commitment ? 'pravdivá' : 'nepravdivá';
     }
 }

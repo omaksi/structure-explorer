@@ -6,6 +6,8 @@ export const GAME_IMPLICATION = 'GAME_IMPLICATION';
 export const PLAYER_IMPLICATION = 'PLAYER_IMPLICATION';
 export const NEGATION = 'NEGATION';
 export const ATOM = 'ATOM';
+export const GAME_EQUIVALENCE = 'GAME_EQUIVALENCE';
+export const PLAYER_EQUIVALENCE = 'PLAYER_EQUIVALENCE';
 
 export const defaultHintikkaGameData = () => ({
     gameCommitment: null,

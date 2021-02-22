@@ -1,6 +1,6 @@
 import {defaultExpressionData, FORMULA, TERM} from "../../constants";
 import {
-  defaultHintikkaGameData,
+  defaultHintikkaGameData, GAME_EQUIVALENCE,
   GAME_IMPLICATION,
   GAME_OPERATOR,
   GAME_QUANTIFIER,
@@ -187,6 +187,14 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
           }
           s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.subFormula;
           break;
+        case GAME_EQUIVALENCE:
+          let leftImplication = new Implication(s.formulas[action.index].gameValue.subLeft, s.formulas[action.index].gameValue.subRight);
+          let rightImplication = new Implication(s.formulas[action.index].gameValue.subRight, s.formulas[action.index].gameValue.subLeft);
+          if(leftImplication.eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = leftImplication;
+          } else {
+            s.formulas[action.index].gameValue = rightImplication;
+          }
         default:
           break;
       }

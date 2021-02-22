@@ -1,5 +1,5 @@
 import Formula from "./Formula";
-import {ATOM} from "../../constants/gameConstants";
+import {ATOM, GAME_EQUIVALENCE, PLAYER_EQUIVALENCE} from "../../constants/gameConstants";
 
 /**
  * Represent equality symbol
@@ -45,7 +45,7 @@ class Equivalence extends Formula {
     }
 
     getType(commitment){
-        return ATOM;
+        return commitment ? GAME_EQUIVALENCE : PLAYER_EQUIVALENCE;
     }
 
     getSubFormulas(){

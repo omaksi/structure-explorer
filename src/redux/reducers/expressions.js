@@ -6,17 +6,7 @@ import {
   GAME_QUANTIFIER,
   NEGATION
 } from "../../constants/gameConstants";
-import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
-import Disjunction from "../../model/formula/Formula.Disjunction";
-import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
-import Negation from "../../model/formula/Formula.Negation";
-import Constant from "../../model/term/Term.Constant";
 import Implication from "../../model/formula/Formula.Implication";
-import Conjunction from "../../model/formula/Formula.Conjunction";
-import Variable from "../../model/term/Term.Variable";
-import FunctionTerm from "../../model/term/Term.FunctionTerm";
-import UniversalQuant from "../../model/formula/Formula.UniversalQuant";
-import ExistentialQuant from "../../model/formula/Formula.ExistentialQuant";
 import {
   ADD_EXPRESSION,
   RENAME_DOMAIN_NODE,
@@ -64,11 +54,8 @@ import {
   CONTINUE_GAME,
   SET_GAME_DOMAIN_CHOICE, SET_GAME_NEXT_FORMULA, END_GAME, GO_BACK, GET_VARIABLES
 } from "../actions/action_types";
-import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
 import {getStructureObject} from "../selectors/structureObject";
 import {parseExpression} from "./functions/parsers";
-
-let functions = require('./functions/functions');
 
 let s = {};
 
@@ -80,7 +67,7 @@ export function defaultState(){
 }
 
 function expressionsReducer(state = {}, action, variables, wholeState) {
-  s = copyState(state);
+  s = state;   //copyState(state);
   switch (action.type) {
     case SET_CONSTANTS:
     case SET_PREDICATES:
@@ -268,7 +255,7 @@ function syncExpressionsValue(state, variables, parse = false) {
   s.formulas.forEach(formula => {
     if (parse) {
       let temp = formula.value;
-      functions.parseText(`(${temp})`, formula, setParserOptions(state, RULE_FORMULA));
+      parseExpression(formula, `(${temp})`, state, FORMULA);
       // noinspection JSUndefinedPropertyAssignment
       formula.value = temp;
     }
@@ -276,7 +263,7 @@ function syncExpressionsValue(state, variables, parse = false) {
   });
   s.terms.forEach(term => {
     if (parse) {
-      functions.parseText(term.value, term, setParserOptions(state, RULE_TERM));
+      parseExpression(term, term.value, state, TERM);
     }
     evalExpression(state, term, variables);
   });
@@ -368,7 +355,7 @@ function copyState(state){
     newFormula.gameCommitment = formula.gameCommitment;
     newFormula.gameEnabled = formula.gameEnabled;
     newFormula.showVariables = formula.showVariables;
-    newFormula.gameVariables = new Map(formula.gameVariables);
+    newFormula.gameVariables = formula.gameVariables;
     newFormula.gameHistory = [];
     for(let entry of formula.gameHistory){
       let newEntry = {
@@ -398,21 +385,5 @@ function copyState(state){
   }
   return newState;
 }
-
-const setParserOptions = (state, startRule) => ({
-  startRule: startRule,
-  structure: getStructureObject(state),
-  conjunction: Conjunction,
-  disjunction: Disjunction,
-  implication: Implication,
-  variable: Variable,
-  constant: Constant,
-  existentialQuant: ExistentialQuant,
-  universalQuant: UniversalQuant,
-  functionTerm: FunctionTerm,
-  predicate: PredicateAtom,
-  negation: Negation,
-  equalityAtom: EqualityAtom
-});
 
 export default expressionsReducer;

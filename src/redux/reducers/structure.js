@@ -59,8 +59,6 @@ import {
 } from "./functions/validation";
 import {parseStructure} from "./functions/parsers";
 
-let functions = require('./functions/functions');
-
 const constantDefaultInput = () => ({...defaultInputData(), errorMessage: EMPTY_CONSTANT_VALUE});
 const predicateDefaultInput = () => ({...defaultInputData(), tableEnabled: false});
 const functionDefaultInput = () => predicateDefaultInput();

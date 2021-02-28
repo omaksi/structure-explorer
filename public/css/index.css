@@ -36,40 +36,36 @@ body{
     display: inline;
 }
 
-@media all and (max-width: 991px) {
-    .hidden-on-medium-and-lower{
-        display: none;
-        width: max-content;
-    }
-}
-
-@media all and (max-width: 991px) {
-    .hidden-on-medium-and-lower{
-        display: none;
-        width: max-content;
-    }
-}
-
 .vh-pane-left{
-    height: 90vh;
+    height: calc(100vh - 64px);
     padding-right: 15px;
-}
-@media all and (max-width: 991px) {
-    .vh-pane-left{
-        height: 45vh;
-        margin-bottom: 15px;
-        padding-right: 0;
-    }
 }
 
 .vh-pane-right{
-    height: 90vh;
+    height: calc(100vh - 64px);
+    padding-right: 15px;
     padding-left: 15px;
 }
+
 @media all and (max-width: 991px) {
+    .vh-pane-left{
+        height: calc((100vh - 75px)/2);
+        margin-bottom: 5px;
+    }
+
     .vh-pane-right{
-        height: 45vh;
-        margin-top: 15px;
+        height: calc((100vh - 75px)/2);
+        margin-top: 5px;
         padding-left: 0;
+    }
+
+    .hidden-on-medium-and-lower{
+        display: none;
+        width: max-content;
+    }
+
+    .container-fluid{
+        padding-right: 0;
+        overflow: hidden;
     }
 }

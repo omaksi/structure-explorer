@@ -73,7 +73,7 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
     case SET_PREDICATES:
     case SET_FUNCTIONS:
     case IMPORT_APP:
-      syncExpressionsValue(wholeState, true);
+      syncExpressionsValue(wholeState, variables,true);
       return state;
     case SET_CONSTANT_VALUE:
     case SET_PREDICATE_VALUE_TEXT:
@@ -81,7 +81,7 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
     case SET_FUNCTION_VALUE_TEXT:
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
-      syncExpressionsValue(wholeState);
+      syncExpressionsValue(wholeState, variables);
       return state;
     case ADD_EXPRESSION:
       addExpression(action.expressionType);
@@ -126,7 +126,7 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
     case SET_CONSTANT_VALUE_FROM_LINK:
     case IMPORT_DIAGRAM_STATE:
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
-      syncExpressionsValue(wholeState, true);
+      syncExpressionsValue(wholeState, variables,true);
       return s;
     case INITIATE_GAME:
       if(!s.formulas[action.index].parsed){

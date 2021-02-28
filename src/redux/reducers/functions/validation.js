@@ -9,15 +9,15 @@ import {
 export function validateLanguageConstants(constants, functions, predicates){
     let message = '';
     constants.forEach(c => {
-        if (functions.some(value => value.name === c)) {
+        if (functions && functions.some(value => value.name === c)) {
             message = `${FUNCTION_IN_LANGUAGE} ${c}`;
             return;
         }
-        if (predicates.some(value => value.name === c)) {
+        if (predicates && predicates.some(value => value.name === c)) {
             message = `${PREDICATE_IN_LANGUAGE} ${c}`;
             return;
         }
-        if (constants.filter(value => value === c).length > 1) {
+        if (constants && constants.filter(value => value === c).length > 1) {
             message = `${CONSTANT_IN_LANGUAGE}  ${c}`;
             return;
         }
@@ -28,15 +28,15 @@ export function validateLanguageConstants(constants, functions, predicates){
 export function validateLanguagePredicates(constants, functions, predicates){
     let message = '';
     predicates.forEach(p => {
-        if (constants.some(value => value === p.name)) {
+        if (constants && constants.some(value => value === p.name)) {
             message = `${CONSTANT_IN_LANGUAGE}  ${p.name}`;
             return;
         }
-        if (functions.some(value => value.name === p.name)) {
+        if (functions && functions.some(value => value.name === p.name)) {
             message = `${FUNCTION_IN_LANGUAGE} ${p.name}`;
             return;
         }
-        if(predicates.filter(value => value.name === p.name).length > 1){
+        if(predicates && predicates.filter(value => value.name === p.name).length > 1){
             message = `${PREDICATE_IN_LANGUAGE} ${p.name}`;
             return;
         }
@@ -47,15 +47,15 @@ export function validateLanguagePredicates(constants, functions, predicates){
 export function validateLanguageFunctions(constants, functions, predicates){
     let message = '';
     functions.forEach(f => {
-        if (constants.some(value => value === f.name)) {
+        if (constants && constants.some(value => value === f.name)) {
             message = `${CONSTANT_IN_LANGUAGE} ${f.name}`;
             return;
         }
-        if (predicates.some(value => value.name === f.name)) {
+        if (predicates && predicates.some(value => value.name === f.name)) {
             message = `${PREDICATE_IN_LANGUAGE} ${f.name}`;
             return;
         }
-        if(functions.filter(value => value.name === f.name).length > 1){
+        if(functions && functions.filter(value => value.name === f.name).length > 1){
             message = `${FUNCTION_IN_LANGUAGE} ${f.name}`;
             return;
         }

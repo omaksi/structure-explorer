@@ -230,7 +230,6 @@ function structureReducer(state, action, language, wholeState) {
       checkFunctionValue(newState, action.functionName);
       return newState;
     case SET_VARIABLES_VALUE:
-      console.log(newState.variables);
       parseStructure(newState.variables, action.value, wholeState, VARIABLE);
       setVariables(newState, language);
       return newState;

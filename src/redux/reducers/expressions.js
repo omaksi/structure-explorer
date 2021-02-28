@@ -56,6 +56,17 @@ import {
 } from "../actions/action_types";
 import {getStructureObject} from "../selectors/structureObject";
 import {parseExpression} from "./functions/parsers";
+import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
+import Conjunction from "../../model/formula/Formula.Conjunction";
+import Disjunction from "../../model/formula/Formula.Disjunction";
+import Variable from "../../model/term/Term.Variable";
+import Constant from "../../model/term/Term.Constant";
+import ExistentialQuant from "../../model/formula/Formula.ExistentialQuant";
+import UniversalQuant from "../../model/formula/Formula.UniversalQuant";
+import FunctionTerm from "../../model/term/Term.FunctionTerm";
+import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
+import Negation from "../../model/formula/Formula.Negation";
+import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
 
 let s = {};
 
@@ -255,7 +266,8 @@ function syncExpressionsValue(state, variables, parse = false) {
   s.formulas.forEach(formula => {
     if (parse) {
       let temp = formula.value;
-      parseExpression(formula, `(${temp})`, state, FORMULA);
+      parseExpression(formula, `(${temp})`, state, FORMULA, setParserOptions(state, RULE_FORMULA));
+      //parseExpression(formula, `(${temp})`, state, FORMULA);
       // noinspection JSUndefinedPropertyAssignment
       formula.value = temp;
     }
@@ -263,7 +275,7 @@ function syncExpressionsValue(state, variables, parse = false) {
   });
   s.terms.forEach(term => {
     if (parse) {
-      parseExpression(term, term.value, state, TERM);
+      parseExpression(term, term.value, state, TERM, setParserOptions(state, RULE_TERM));
     }
     evalExpression(state, term, variables);
   });
@@ -292,7 +304,7 @@ function checkExpressionSyntax(state, action, variables) {
     }
     expression = s.formulas[action.index];
   }
-  parseExpression(expression, expressionText, state, action.expressionType);
+  parseExpression(expression, expressionText, state, action.expressionType, setParserOptions(state, action.expressionType.toLowerCase()));
   expression.value = action.value; // aby tam neboli zatvorky
   if (expression.errorMessage.length === 0) {
     expression.validSyntax = true;
@@ -385,5 +397,23 @@ function copyState(state){
   }
   return newState;
 }
+
+const setParserOptions = (state, startRule) => ({
+  startRule: startRule,
+  structure: getStructureObject(state),
+  conjunction: Conjunction,
+  disjunction: Disjunction,
+  implication: Implication,
+  variable: Variable,
+  constant: Constant,
+  existentialQuant: ExistentialQuant,
+  universalQuant: UniversalQuant,
+  functionTerm: FunctionTerm,
+  predicate: PredicateAtom,
+  negation: Negation,
+  equalityAtom: EqualityAtom
+});
+
+
 
 export default expressionsReducer;

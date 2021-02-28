@@ -1,4 +1,4 @@
-import {parseConstants, parsePredicates, parseFunctions, parseDomain, parseTuples, parseValuation, parseTerm, parseFormulaWithPrecedence} from '@fmfi-uk-1-ain-412/js-fol-parser';
+import {parseConstants, parsePredicates, parseFunctions, parseDomain, parseTuples, parseValuation, parseTerm, parseFormula} from '@fmfi-uk-1-ain-412/js-fol-parser';
 import {CONSTANT, PREDICATE, FUNCTION, DOMAIN, VARIABLE, TERM} from "../../../constants";
 import {getLanguageObject} from "../../selectors/languageObject";
 import Variable from "../../../model/term/Term.Variable";
@@ -13,6 +13,7 @@ import Implication from "../../../model/formula/Formula.Implication";
 import ExistentialQuant from "../../../model/formula/Formula.ExistentialQuant";
 import UniversalQuant from "../../../model/formula/Formula.UniversalQuant";
 import Equivalence from "../../../model/formula/Formula.Equivalence";
+let parser = require('../../../parser/grammar');
 
 export function parseLanguage(state, value, type){
     let previousParsed = state.parsed;
@@ -82,8 +83,8 @@ export function parseStructure(state, value, wholeState, type){
     }
 }
 
-export function parseExpression(state, value, wholeState, type){
-    let language = getLanguageObject(wholeState);
+export function parseExpression(state, value, wholeState, type, parserOptions){
+    //let language = getLanguageObject(wholeState);
     state.value = value;
     state.errorMessage = '';
     if (value.length === 0) {
@@ -91,14 +92,14 @@ export function parseExpression(state, value, wholeState, type){
         return;
     }
     try {
-        let parsedValue;
-        if(type === TERM){
+        let parsedValue = parser.parse(value, parserOptions);
+        /*if(type === TERM){
             const termFactories = getTermFactories(language);
             parsedValue = parseTerm(value, language.getLanguage(), termFactories);
         } else {
             const formulaFactories = getFormulaFactories(language);
-            parsedValue = parseFormulaWithPrecedence(value, language.getLanguage(), formulaFactories);
-        }
+            parsedValue = parseFormula(value, language.getLanguage(), formulaFactories);
+        }*/
         if (parsedValue.items) {
             state.parsed = parsedValue.items;
         } else {

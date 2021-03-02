@@ -127,7 +127,7 @@ class App extends React.Component<AppProps,AppState> {
                   <HelpGraphCollapse collapsed={this.state.collapseHelpGraphButton}/>
             </Row>
               {this.state.diagramToggled?
-                    <DiagramSystem diagramModel={this.props.store.getState().diagramState.diagramModel}/>
+                    <DiagramSystem store={this.props.store} diagramModel={this.props.store.getState().diagramState.diagramModel}/>
                   : <MathSystemContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
               }
           </div>

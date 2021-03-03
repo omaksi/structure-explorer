@@ -163,25 +163,45 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
           s.formulas[action.index].gameValue = formulas[0].createCopy();
           break;
         case GAME_OPERATOR:
+          if(formulas[0].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = formulas[0].createCopy();
+          } else if(formulas[1].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = formulas[1].createCopy();
+          } else {
+            s.formulas[action.index].gameValue = formulas[action.randomNumbers[0]].createCopy();
+          }
+          break;
         case GAME_IMPLICATION:
           if(formulas[0].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) === s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = formulas[0].createCopy();
+            s.formulas[action.index].gameCommitment = !s.formulas[action.index].gameCommitment;
+          } else if(formulas[1].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = formulas[1].createCopy();
+          } else {
+            if(action.randomNumbers[0] === 0){
               s.formulas[action.index].gameValue = formulas[0].createCopy();
               s.formulas[action.index].gameCommitment = !s.formulas[action.index].gameCommitment;
             } else {
               s.formulas[action.index].gameValue = formulas[1].createCopy();
             }
+          }
           break;
         case GAME_QUANTIFIER:
           let varName = 'n' + s.formulas[action.index].gameVariables.size;
           s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.createCopy();
           s.formulas[action.index].gameValue.setVariable(s.formulas[action.index].gameValue.variableName, varName);
           let structureObject = getStructureObject(wholeState);
+          let noCounterExample = true;
           for (let item of structureObject.domain) {
             s.formulas[action.index].gameVariables.set(varName, item);
             if (s.formulas[action.index].gameValue.subFormula.eval(structureObject, s.formulas[action.index].gameVariables)
                 !== s.formulas[action.index].gameCommitment) {
+              noCounterExample = false;
               break;
             }
+          }
+          if(noCounterExample){
+            s.formulas[action.index].gameVariables.set(varName, Array.from(structureObject.domain)[action.randomNumbers[1]]);
           }
           s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.subFormula;
           break;
@@ -190,9 +210,16 @@ function expressionsReducer(state = {}, action, variables, wholeState) {
           let rightImplication = new Implication(s.formulas[action.index].gameValue.subRight, s.formulas[action.index].gameValue.subLeft);
           if(leftImplication.eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
             s.formulas[action.index].gameValue = leftImplication;
-          } else {
+          } if(rightImplication.eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
             s.formulas[action.index].gameValue = rightImplication;
+          } else {
+            if(action.randomNumbers[0] === 0){
+              s.formulas[action.index].gameValue = leftImplication;
+            } else {
+              s.formulas[action.index].gameValue = rightImplication;
+            }
           }
+          break;
         default:
           break;
       }

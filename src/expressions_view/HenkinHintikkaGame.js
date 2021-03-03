@@ -28,6 +28,8 @@ export class HenkinHintikkaGame extends React.Component {
     }
 
     render(){
+        let randomNumbers = [this.getRandom(2), this.getRandom(this.props.structureObject.domain.size)]
+        console.log(randomNumbers);
         return(
             <Container>
                 <MessageAreaContainer>
@@ -39,14 +41,14 @@ export class HenkinHintikkaGame extends React.Component {
                         history.userMessages.map(message => <UserMessageBubble onClick={() => this.props.goBack(this.props.index, index)}>{message}</UserMessageBubble>))
                     )}
                     {this.generateMessage(this.props.formula.gameValue, this.props.formula.gameCommitment,
-                                this.props.structureObject, this.props.formula.gameVariables).map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
+                                this.props.structureObject, this.props.formula.gameVariables, randomNumbers).map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
                 </MessageAreaContainer>
                 <Form.Group>
-                    {this.getChoice(this.props.formula.gameValue, this.props.formula.gameCommitment)}
+                    {this.getChoice(this.props.formula.gameValue, this.props.formula.gameCommitment, randomNumbers)}
                 </Form.Group>
                 {this.toggleVariables()}
             </Container>
-        )
+        );
     }
 
     toggleVariables(){
@@ -134,10 +136,10 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    chooseOk(messages){
+    chooseOk(messages, randomNumbers){
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.continueGame(this.props.index, messages, ['Pokračuj'])}>OK</Button>
+                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.continueGame(this.props.index, messages, ['Pokračuj'], randomNumbers)}>Pokračuj</Button>
                 {this.writeVariables()}
             </div>
         );
@@ -152,8 +154,8 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    getChoice(gameValue, gameCommitment){
-        let messages = this.generateMessage(gameValue, gameCommitment, this.props.structureObject, this.props.formula.gameVariables);
+    getChoice(gameValue, gameCommitment, randomNumbers){
+        let messages = this.generateMessage(gameValue, gameCommitment, this.props.structureObject, this.props.formula.gameVariables, randomNumbers);
         if(gameCommitment === null){
             return this.chooseCommitment(messages);
         } else {
@@ -173,13 +175,12 @@ export class HenkinHintikkaGame extends React.Component {
                 case GAME_QUANTIFIER:
                 case GAME_IMPLICATION:
                 case GAME_EQUIVALENCE:
-                    return this.chooseOk(messages);
+                    return this.chooseOk(messages, randomNumbers);
             }
         }
     }
 
-    generateMessage(gameValue, gameCommitment, structure, variables){
-        let leftEval;
+    generateMessage(gameValue, gameCommitment, structure, variables, randomNumbers){
         let form;
         let messages = [];
         if(gameCommitment === null){
@@ -215,8 +216,12 @@ export class HenkinHintikkaGame extends React.Component {
                     return messages;
 
                 case GAME_OPERATOR:
-                    leftEval = subFormulas[0].eval(structure, variables);
-                    form = leftEval !== gameCommitment ? subFormulas[0].toString() : subFormulas[1].toString();
+                    form = subFormulas[randomNumbers[0]].toString();
+                    if(subFormulas[0].eval(structure, variables) !== gameCommitment){
+                        form = subFormulas[0].toString();
+                    } else if(subFormulas[1].eval(structure, variables) !== gameCommitment){
+                        form = subFormulas[1].toString();
+                    }
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form + ' je ' + oppositeTruthValue);
                     return messages;
 
@@ -238,7 +243,7 @@ export class HenkinHintikkaGame extends React.Component {
                         }
                     }
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom je ' + truthValue + ' aj formula');
-                    messages.push(gameValueWithVariable.toString() + ', kde ' + varName + ' = ' + eCopy.get(gameValue.variableName));
+                    messages.push(gameValueWithVariable.toString() + ', kde ' + varName + ' = ' + Array.from(structure.domain)[randomNumbers[1]]);
                     return messages;
 
                 case PLAYER_IMPLICATION:
@@ -248,22 +253,28 @@ export class HenkinHintikkaGame extends React.Component {
                     return messages;
 
                 case GAME_IMPLICATION:
-                    leftEval = subFormulas[0].eval(structure, variables);
-                    form = leftEval === gameCommitment ? subFormulas[0].toString() + ' je ' + oppositeTruthValue
-                                                        : subFormulas[1].toString() + ' je ' + truthValue;
+                    form = !randomNumbers[0] ? subFormulas[0].toString() + ' je ' + oppositeTruthValue
+                                                    : subFormulas[1].toString() + ' je ' + truthValue;
+                    if(subFormulas[0].eval(structure, variables) === gameCommitment){
+                        form = subFormulas[0].toString() + ' je ' + oppositeTruthValue;
+                    } else if(subFormulas[1].eval(structure, variables) !== gameCommitment){
+                        form = subFormulas[1].toString() + ' je ' + truthValue;
+                    }
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form);
                     return messages;
                 case PLAYER_EQUIVALENCE:
-                    let leftImplication = new Implication(subFormulas[0], subFormulas[1]);
-                    let rightImplication = new Implication(subFormulas[1], subFormulas[0]);
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ktorá z nasledujúcich formúl je ' + truthValue + ' ?');
-                    messages.push('1. Formula ' + leftImplication.toString());
-                    messages.push('2. Formula ' + rightImplication.toString());
+                    messages.push('1. Formula ' + new Implication(subFormulas[0], subFormulas[1]).toString());
+                    messages.push('2. Formula ' + new Implication(subFormulas[1], subFormulas[0]).toString());
                     return messages;
                 case GAME_EQUIVALENCE:
-                    leftEval = new Implication(subFormulas[0], subFormulas[1]).eval(structure, variables);
-                    form = leftEval !== gameCommitment ? new Implication(subFormulas[0], subFormulas[1]).toString() + ' je ' + truthValue
-                                                        : new Implication(subFormulas[1], subFormulas[0]).toString() + ' je ' + truthValue;
+                    form = !randomNumbers[0] ? new Implication(subFormulas[0], subFormulas[1]).toString() + ' je ' + truthValue
+                                                    : new Implication(subFormulas[1], subFormulas[0]).toString() + ' je ' + truthValue;
+                    if(new Implication(subFormulas[0], subFormulas[1]).eval(structure, variables) !== gameCommitment){
+                        form = new Implication(subFormulas[0], subFormulas[1]).toString() + ' je ' + truthValue;
+                    } else if(new Implication(subFormulas[1], subFormulas[0]).eval(structure, variables) !== gameCommitment){
+                        form = new Implication(subFormulas[1], subFormulas[0]).toString() + ' je ' + truthValue;
+                    }
                     messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form);
                     return messages;
             }
@@ -316,5 +327,9 @@ export class HenkinHintikkaGame extends React.Component {
 
     getCommitmentText(commitment){
         return commitment ? 'pravdivá' : 'nepravdivá';
+    }
+
+    getRandom(size){
+        return Math.floor(Math.random() * size);
     }
 }

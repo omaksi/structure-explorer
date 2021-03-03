@@ -358,11 +358,12 @@ export const setGameCommitment = (index, commitment, gameMessages, userMessages)
   gameMessages,
   userMessages
 });
-export const continueGame = (index, gameMessages, userMessages) => ({
+export const continueGame = (index, gameMessages, userMessages, randomNumbers) => ({
   type: 'CONTINUE_GAME',
   index,
   gameMessages,
-  userMessages
+  userMessages,
+  randomNumbers
 });
 export const setGameDomainChoice = (index, value, gameMessages, userMessages) => ({
   type: 'SET_GAME_DOMAIN_CHOICE',

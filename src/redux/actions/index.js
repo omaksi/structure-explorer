@@ -284,6 +284,10 @@ export const lockFunctions = () => ({
   type: 'LOCK_FUNCTIONS'
 });
 
+export const lockLanguageComponent = () => ({
+  type: 'LOCK_LANGUAGE_COMPONENT'
+});
+
 export const lockDomain = () => ({
   type: 'LOCK_DOMAIN'
 });
@@ -342,4 +346,50 @@ export const importDiagramState = (state,focusOnBodyFunc) => ({
 export const toggleEditableNodes = (value) => ({
   type: 'TOGGLE_EDITABLE_NODES',
   value
+});
+export const initiateGame = (index) => ({
+  type: 'INITIATE_GAME',
+  index
+});
+export const setGameCommitment = (index, commitment, gameMessages, userMessages) => ({
+  type: 'SET_GAME_COMMITMENT',
+  index,
+  commitment,
+  gameMessages,
+  userMessages
+});
+export const continueGame = (index, gameMessages, userMessages, randomNumbers) => ({
+  type: 'CONTINUE_GAME',
+  index,
+  gameMessages,
+  userMessages,
+  randomNumbers
+});
+export const setGameDomainChoice = (index, value, gameMessages, userMessages) => ({
+  type: 'SET_GAME_DOMAIN_CHOICE',
+  index,
+  value,
+  gameMessages,
+  userMessages
+});
+export const endGame = (index) => ({
+  type: 'END_GAME',
+  index
+});
+export const setGameNextFormula = (index, formula, commitment, gameMessages, userMessages) => ({
+  type: 'SET_GAME_NEXT_FORMULA',
+  index,
+  formula,
+  commitment,
+  gameMessages,
+  userMessages
+});
+export const goBack = (index, historyIndex) => ({
+  type: 'GO_BACK',
+  index,
+  historyIndex
+});
+export const getVariables = (index) => ({
+  type: 'GET_VARIABLES',
+  index
 });

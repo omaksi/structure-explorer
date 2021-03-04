@@ -8,7 +8,7 @@ import Domain from "../components_parts/Domain";
 import {ConstantInterpretation} from "../components_parts";
 import PredicateInterpretation from "../components_parts/PredicateInterpretation";
 import FunctionInterpretation from "../components_parts/FunctionInterpretation";
-import HelpButton from "../buttons/HelpButton";
+import HelpButton from "../../buttons/HelpButton";
 
 const help = (
    <div className="collapse" id="help-structure">
@@ -30,7 +30,7 @@ function Structure({structure,setDomain,lockDomain,teacherMode,setConstantValue,
     let functions = Object.keys(structure.functions);
 
   return (
-     <Card>
+     <Card className={"mt-3"}>
        <Card.Header as={"h5"} className={"d-flex justify-content-between"}>
            <span>Štruktúra 𝓜 = (<var>M</var>, <var>i</var>)</span>
            <HelpButton dataTarget={"#help-structure"}/>

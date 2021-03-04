@@ -35,26 +35,29 @@ import {
   REMOVE_TERNARY_PREDICATE,
   REMOVE_BINARY_FUNCTION,
   ADD_QUATERNARY_PREDICATE,
-  REMOVE_QUATERNARY_PREDICATE, REMOVE_TERNARY_FUNCTION, ADD_TERNARY_FUNCTION, ADD_BINARY_FUNCTION
+  REMOVE_QUATERNARY_PREDICATE,
+  REMOVE_TERNARY_FUNCTION,
+  ADD_TERNARY_FUNCTION,
+  ADD_BINARY_FUNCTION,
+  LOCK_LANGUAGE_COMPONENT, LOCK_VARIABLES_COMPONENT
 } from "../actions/action_types";
 import {
   EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
   ITEM_NOT_IN_DOMAIN
-} from "../../math_view/constants/messages";
+} from "../../constants/messages";
 import {
   RULE_DOMAIN,
   RULE_PREDICATES_FUNCTIONS_VALUE,
   RULE_VARIABLE_VALUATION
-} from "../../math_view/constants/parser_start_rules";
-import {defaultInputData, PREDICATE} from "../../math_view/constants";
+} from "../../constants/parser_start_rules";
+import {defaultInputData, DOMAIN, FUNCTION, PREDICATE, VARIABLE} from "../../constants";
 import {BOTH, FROM, PREDICATE as PRED,FUNCTION as FUNC, TO} from "../../graph_view/nodes/ConstantNames";
 import {
   validateStructureConstants,
   validateStructurePredicates,
   validateStructureFunctions
 } from "./functions/validation";
-
-let functions = require('./functions/functions');
+import {parseStructure} from "./functions/parsers";
 
 const constantDefaultInput = () => ({...defaultInputData(), errorMessage: EMPTY_CONSTANT_VALUE});
 const predicateDefaultInput = () => ({...defaultInputData(), tableEnabled: false});
@@ -71,7 +74,7 @@ export function defaultState(){
   }
 }
 
-function structureReducer(state, action, language) {
+function structureReducer(state, action, language, wholeState) {
   let newState = copyState(state);
   let input = action.itemType === PREDICATE ? newState.predicates[action.name] : newState.functions[action.name];
   switch (action.type) {
@@ -183,7 +186,7 @@ function structureReducer(state, action, language) {
       setConstantValue(newState, action.constantName, action.value);
       return newState;
     case SET_PREDICATE_VALUE_TEXT:
-      functions.parseText(action.value, newState.predicates[action.predicateName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
+      parseStructure(newState.predicates[action.predicateName], action.value, wholeState, PREDICATE);
       checkPredicateValue(newState, action.predicateName);
       return newState;
     case SET_PREDICATE_VALUE_TABLE:
@@ -206,7 +209,7 @@ function structureReducer(state, action, language) {
       checkPredicateValue(newState, action.predicateName);
       return newState;
     case SET_FUNCTION_VALUE_TEXT:
-      functions.parseText(action.value, newState.functions[action.functionName], {startRule: RULE_PREDICATES_FUNCTIONS_VALUE});
+      parseStructure(newState.functions[action.functionName], action.value, wholeState, FUNCTION);
       checkFunctionValue(newState, action.functionName);
       return newState;
     case SET_FUNCTION_VALUE_TABLE:;
@@ -227,7 +230,7 @@ function structureReducer(state, action, language) {
       checkFunctionValue(newState, action.functionName);
       return newState;
     case SET_VARIABLES_VALUE:
-      functions.parseText(action.value, newState.variables, {startRule: RULE_VARIABLE_VALUATION});
+      parseStructure(newState.variables, action.value, wholeState, VARIABLE);
       setVariables(newState, language);
       return newState;
     case RENAME_DOMAIN_NODE:
@@ -266,7 +269,7 @@ function structureReducer(state, action, language) {
       return newState;
 
     case SET_DOMAIN:
-      functions.parseText(action.value, newState.domain, {startRule: RULE_DOMAIN});
+      parseStructure(newState.domain, action.value, wholeState, DOMAIN);
       setDomain(newState);
       setConstantsValues(newState);
       setPredicatesValues(newState);
@@ -417,7 +420,9 @@ function setDomain(state) {
   if (!state.domain.parsed) {
     return;
   }
-  state.domain.errorMessage = state.domain.parsed.length > 0 ? '' : EMPTY_DOMAIN;
+  if(state.domain.parsed.length === 0 && state.domain.errorMessage === ''){
+    state.domain.errorMessage = EMPTY_DOMAIN;
+  }
 }
 
 function setConstantsValues(state) {
@@ -483,7 +488,7 @@ function insertNewInputs(state, language) {
 }
 
 function setVariables(state, language) {
-  if (!state.variables.parsed) {
+  if (!state.variables.parsed || state.variables.errorMessage !== '') {
     return;
   }
   if (!state.variables.object || !state.variables.object instanceof Map) {
@@ -533,6 +538,7 @@ function checkPredicateValue(state, predicateName) {
 
 function checkFunctionValue(state, functionName) {
   if (state.functions[functionName].parsed.length === 0) {
+    state.functions[functionName].errorMessage = FUNCTION_NOT_FULL_DEFINED;
     return;
   }
   let arity = functionName.split("/")[1];
@@ -546,8 +552,7 @@ const copyState = (state) => ({
   predicates: {...state.predicates},
   functions: {...state.functions},
   variables: {...state.variables},
-  domain: {...state.domain},
-
+  domain: {...state.domain}
 });
 
 function tupleToString(tuple) {

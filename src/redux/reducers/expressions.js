@@ -1,15 +1,12 @@
-import {defaultExpressionData, FORMULA, TERM} from "../../math_view/constants";
-import EqualityAtom from "../../math_view/model/formula/Formula.EqualityAtom";
-import Disjunction from "../../math_view/model/formula/Formula.Disjunction";
-import PredicateAtom from "../../math_view/model/formula/Formula.PredicateAtom";
-import Negation from "../../math_view/model/formula/Formula.Negation";
-import Constant from "../../math_view/model/term/Term.Constant";
-import Implication from "../../math_view/model/formula/Formula.Implication";
-import Conjunction from "../../math_view/model/formula/Formula.Conjunction";
-import Variable from "../../math_view/model/term/Term.Variable";
-import FunctionTerm from "../../math_view/model/term/Term.FunctionTerm";
-import UniversalQuant from "../../math_view/model/formula/Formula.UniversalQuant";
-import ExistentialQuant from "../../math_view/model/formula/Formula.ExistentialQuant";
+import {defaultExpressionData, FORMULA, TERM} from "../../constants";
+import {
+  defaultHintikkaGameData, GAME_EQUIVALENCE,
+  GAME_IMPLICATION,
+  GAME_OPERATOR,
+  GAME_QUANTIFIER,
+  NEGATION
+} from "../../constants/gameConstants";
+import Implication from "../../model/formula/Formula.Implication";
 import {
   ADD_EXPRESSION,
   RENAME_DOMAIN_NODE,
@@ -50,16 +47,28 @@ import {
   REMOVE_UNARY_FUNCTION,
   REMOVE_QUATERNARY_NODE,
   REMOVE_TERNARY_NODE,
-  IMPORT_DIAGRAM_STATE, CHANGE_DIRECTION_OF_BINARY_RELATION
+  IMPORT_DIAGRAM_STATE,
+  CHANGE_DIRECTION_OF_BINARY_RELATION,
+  INITIATE_GAME,
+  SET_GAME_COMMITMENT,
+  CONTINUE_GAME,
+  SET_GAME_DOMAIN_CHOICE, SET_GAME_NEXT_FORMULA, END_GAME, GO_BACK, GET_VARIABLES
 } from "../actions/action_types";
-import {RULE_FORMULA, RULE_TERM} from "../../math_view/constants/parser_start_rules";
 import {getStructureObject} from "../selectors/structureObject";
-
-let functions = require('./functions/functions');
+import {parseExpression} from "./functions/parsers";
+import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
+import Conjunction from "../../model/formula/Formula.Conjunction";
+import Disjunction from "../../model/formula/Formula.Disjunction";
+import Variable from "../../model/term/Term.Variable";
+import Constant from "../../model/term/Term.Constant";
+import ExistentialQuant from "../../model/formula/Formula.ExistentialQuant";
+import UniversalQuant from "../../model/formula/Formula.UniversalQuant";
+import FunctionTerm from "../../model/term/Term.FunctionTerm";
+import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
+import Negation from "../../model/formula/Formula.Negation";
+import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
 
 let s = {};
-let structure = null;
-let e = new Map();
 
 export function defaultState(){
   return {
@@ -68,15 +77,14 @@ export function defaultState(){
   }
 }
 
-function expressionsReducer(state = s, action, variables, wholeState) {
-  s = state;
-  e = variables;
+function expressionsReducer(state = {}, action, variables, wholeState) {
+  s = state;   //copyState(state);
   switch (action.type) {
     case SET_CONSTANTS:
     case SET_PREDICATES:
     case SET_FUNCTIONS:
     case IMPORT_APP:
-      syncExpressionsValue(wholeState, true);
+      syncExpressionsValue(wholeState, variables,true);
       return state;
     case SET_CONSTANT_VALUE:
     case SET_PREDICATE_VALUE_TEXT:
@@ -84,7 +92,7 @@ function expressionsReducer(state = s, action, variables, wholeState) {
     case SET_FUNCTION_VALUE_TEXT:
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
-      syncExpressionsValue(wholeState);
+      syncExpressionsValue(wholeState, variables);
       return state;
     case ADD_EXPRESSION:
       addExpression(action.expressionType);
@@ -102,7 +110,7 @@ function expressionsReducer(state = s, action, variables, wholeState) {
       lockExpressionAnswer(action.expressionType, action.expressionIndex);
       return s;
     case CHECK_SYNTAX:
-      checkExpressionSyntax(wholeState, action);
+      checkExpressionSyntax(wholeState, action, variables);
       return s;
     case ADD_DOMAIN_NODE:
     case RENAME_DOMAIN_NODE:
@@ -129,8 +137,137 @@ function expressionsReducer(state = s, action, variables, wholeState) {
     case SET_CONSTANT_VALUE_FROM_LINK:
     case IMPORT_DIAGRAM_STATE:
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
-      syncExpressionsValue(wholeState, true);
+      syncExpressionsValue(wholeState, variables,true);
       return s;
+    case INITIATE_GAME:
+      if(!s.formulas[action.index].parsed){
+        return s;
+      }
+      s.formulas[action.index].gameEnabled = !s.formulas[action.index].gameEnabled;
+      s.formulas[action.index].gameValue = s.formulas[action.index].parsed.createCopy();
+      s.formulas[action.index].gameCommitment = null;
+      s.formulas[action.index].gameHistory = [];
+      s.formulas[action.index].showVariables = false;
+      s.formulas[action.index].gameVariables = new Map(variables);
+      return s;
+    case SET_GAME_COMMITMENT:
+      s.formulas[action.index].gameCommitment = action.commitment;
+      addToHistory(s, action.index, action.gameMessages, action.userMessages);
+      return s;
+    case CONTINUE_GAME:
+      addToHistory(s, action.index, action.gameMessages, action.userMessages);
+      let formulas = s.formulas[action.index].gameValue.getSubFormulas();
+      switch(s.formulas[action.index].gameValue.getType(s.formulas[action.index].gameCommitment)){
+        case NEGATION:
+          s.formulas[action.index].gameCommitment = !s.formulas[action.index].gameCommitment;
+          s.formulas[action.index].gameValue = formulas[0].createCopy();
+          break;
+        case GAME_OPERATOR:
+          if(formulas[0].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = formulas[0].createCopy();
+          } else if(formulas[1].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = formulas[1].createCopy();
+          } else {
+            s.formulas[action.index].gameValue = formulas[action.randomNumbers[0]].createCopy();
+          }
+          break;
+        case GAME_IMPLICATION:
+          if(formulas[0].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) === s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = formulas[0].createCopy();
+            s.formulas[action.index].gameCommitment = !s.formulas[action.index].gameCommitment;
+          } else if(formulas[1].eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = formulas[1].createCopy();
+          } else {
+            if(action.randomNumbers[0] === 0){
+              s.formulas[action.index].gameValue = formulas[0].createCopy();
+              s.formulas[action.index].gameCommitment = !s.formulas[action.index].gameCommitment;
+            } else {
+              s.formulas[action.index].gameValue = formulas[1].createCopy();
+            }
+          }
+          break;
+        case GAME_QUANTIFIER:
+          let varName = 'n' + s.formulas[action.index].gameVariables.size;
+          s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.createCopy();
+          s.formulas[action.index].gameValue.setVariable(s.formulas[action.index].gameValue.variableName, varName);
+          let structureObject = getStructureObject(wholeState);
+          let noCounterExample = true;
+          for (let item of structureObject.domain) {
+            s.formulas[action.index].gameVariables.set(varName, item);
+            if (s.formulas[action.index].gameValue.subFormula.eval(structureObject, s.formulas[action.index].gameVariables)
+                !== s.formulas[action.index].gameCommitment) {
+              noCounterExample = false;
+              break;
+            }
+          }
+          if(noCounterExample){
+            s.formulas[action.index].gameVariables.set(varName, Array.from(structureObject.domain)[action.randomNumbers[1]]);
+          }
+          s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.subFormula;
+          break;
+        case GAME_EQUIVALENCE:
+          let leftImplication = new Implication(s.formulas[action.index].gameValue.subLeft, s.formulas[action.index].gameValue.subRight);
+          let rightImplication = new Implication(s.formulas[action.index].gameValue.subRight, s.formulas[action.index].gameValue.subLeft);
+          if(leftImplication.eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = leftImplication;
+          } if(rightImplication.eval(getStructureObject(wholeState), s.formulas[action.index].gameVariables) !== s.formulas[action.index].gameCommitment){
+            s.formulas[action.index].gameValue = rightImplication;
+          } else {
+            if(action.randomNumbers[0] === 0){
+              s.formulas[action.index].gameValue = leftImplication;
+            } else {
+              s.formulas[action.index].gameValue = rightImplication;
+            }
+          }
+          break;
+        default:
+          break;
+      }
+      return s;
+    case SET_GAME_DOMAIN_CHOICE:
+      addToHistory(s, action.index, action.gameMessages, action.userMessages);
+      let varName = 'n' + s.formulas[action.index].gameVariables.size;
+      s.formulas[action.index].gameVariables.set(varName, action.value);
+      s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.createCopy();
+      s.formulas[action.index].gameValue.setVariable(s.formulas[action.index].gameValue.variableName, varName);
+      s.formulas[action.index].gameValue = s.formulas[action.index].gameValue.subFormula;
+      return s;
+    case SET_GAME_NEXT_FORMULA:
+      addToHistory(s, action.index, action.gameMessages, action.userMessages);
+      s.formulas[action.index].gameValue = action.formula.createCopy();
+      s.formulas[action.index].gameCommitment = action.commitment;
+      return s;
+    case END_GAME:
+      s.formulas[action.index].gameEnabled = false;
+      s.formulas[action.index].gameCommitment = null;
+      s.formulas[action.index].gameHistory = [];
+      s.formulas[action.index].gameValue = null;
+      return s;
+    case GET_VARIABLES:
+      s.formulas[action.index].showVariables = !s.formulas[action.index].showVariables;
+      return s;
+    case GO_BACK:
+      s.formulas[action.index].gameValue = s.formulas[action.index].gameHistory[action.historyIndex].gameValue.createCopy();
+      s.formulas[action.index].gameVariables = new Map(s.formulas[action.index].gameHistory[action.historyIndex].gameVariables);
+      if(action.historyIndex === 0){
+        s.formulas[action.index].gameCommitment = null;
+      } else {
+        s.formulas[action.index].gameCommitment = s.formulas[action.index].gameHistory[action.historyIndex].gameCommitment;
+      }
+      let newHistory = [];
+      for(let i = 0; i < s.formulas[action.index].gameHistory.length; i++){
+          if(i < action.historyIndex){
+            newHistory.push({
+              gameCommitment: s.formulas[action.index].gameHistory[i].gameCommitment,
+              gameValue: s.formulas[action.index].gameHistory[i].gameValue.createCopy(),
+              gameVariables: new Map(s.formulas[action.index].gameHistory[i].gameVariables),
+              gameMessages: s.formulas[action.index].gameHistory[i].gameMessages,
+              userMessages: s.formulas[action.index].gameHistory[i].userMessages
+            })
+          }
+      }
+      s.formulas[action.index].gameHistory = newHistory;
+      return s
     default:
       return s;
   }
@@ -138,7 +275,7 @@ function expressionsReducer(state = s, action, variables, wholeState) {
 
 function addExpression(expressionType) {
   if (expressionType === FORMULA) {
-    s.formulas.push(defaultExpressionData());
+    s.formulas.push({...defaultExpressionData(), ...defaultHintikkaGameData()});
   } else if (expressionType === TERM) {
     s.terms.push(defaultExpressionData());
   }
@@ -152,39 +289,40 @@ function removeExpression(expressionType, expressionIndex) {
   }
 }
 
-function syncExpressionsValue(state, parse = false) {
+function syncExpressionsValue(state, variables, parse = false) {
   s.formulas.forEach(formula => {
     if (parse) {
       let temp = formula.value;
-      functions.parseText(`(${temp})`, formula, setParserOptions(state, RULE_FORMULA));
+      parseExpression(formula, `(${temp})`, state, FORMULA, setParserOptions(state, RULE_FORMULA));
+      //parseExpression(formula, `(${temp})`, state, FORMULA);
       // noinspection JSUndefinedPropertyAssignment
       formula.value = temp;
     }
-    evalExpression(state, formula);
+    evalExpression(state, formula, variables);
   });
   s.terms.forEach(term => {
     if (parse) {
-      functions.parseText(term.value, term, setParserOptions(state, RULE_TERM));
+      parseExpression(term, term.value, state, TERM, setParserOptions(state, RULE_TERM));
     }
-    evalExpression(state, term);
+    evalExpression(state, term, variables);
   });
 }
 
-function evalExpression(state, expression) {
+function evalExpression(state, expression, variables) {
   if (!expression.parsed || expression.parsed.length === 0) {
     return;
   }
   expression.errorMessage = '';
   try {
     let structureObject = getStructureObject(state);
-    expression.expressionValue = expression.parsed.eval(structureObject, e);
+    expression.expressionValue = expression.parsed.eval(structureObject, variables);
   } catch (e) {
     expression.errorMessage = e;
     expression.expressionValue = null;
   }
 }
 
-function checkExpressionSyntax(state, action) {
+function checkExpressionSyntax(state, action, variables) {
   let expressionText = action.value;
   let expression = s.terms[action.index];
   if (action.expressionType === FORMULA) {
@@ -193,11 +331,11 @@ function checkExpressionSyntax(state, action) {
     }
     expression = s.formulas[action.index];
   }
-  functions.parseText(expressionText, expression, setParserOptions(state, action.expressionType.toLowerCase()));
+  parseExpression(expression, expressionText, state, action.expressionType, setParserOptions(state, action.expressionType.toLowerCase()));
   expression.value = action.value; // aby tam neboli zatvorky
   if (expression.errorMessage.length === 0) {
     expression.validSyntax = true;
-    evalExpression(state, expression);
+    evalExpression(state, expression, variables);
   } else {
     expression.validSyntax = false;
   }
@@ -230,6 +368,63 @@ function lockExpressionValue(expressionType, expressionIndex) {
   }
 }
 
+function addToHistory(state, index, gameMessages, userMessages){
+  let gameValueCopy = state.formulas[index].gameValue != null ? state.formulas[index].gameValue.createCopy() : null;
+  let entry = {
+    gameCommitment: state.formulas[index].gameCommitment,
+    gameValue: gameValueCopy,
+    gameVariables: new Map(state.formulas[index].gameVariables),
+    gameMessages: gameMessages,
+    userMessages: userMessages
+  };
+  s.formulas[index].gameHistory.push(entry);
+}
+
+function copyState(state){
+  let newState = defaultState();
+  for(let formula of state.formulas){
+    let newFormula = {...defaultExpressionData(), ...defaultHintikkaGameData()}
+    newFormula.value = formula.value;
+    newFormula.expressionValue = formula.expressionValue;
+    newFormula.answerValue = formula.answerValue;
+    newFormula.errorMessage = formula.errorMessage;
+    newFormula.inputLocked = formula.inputLocked;
+    newFormula.answerLocked = formula.answerLocked;
+    newFormula.validSyntax = formula.validSyntax;
+    newFormula.gameCommitment = formula.gameCommitment;
+    newFormula.gameEnabled = formula.gameEnabled;
+    newFormula.showVariables = formula.showVariables;
+    newFormula.gameVariables = formula.gameVariables;
+    newFormula.gameHistory = [];
+    for(let entry of formula.gameHistory){
+      let newEntry = {
+        gameCommitment: entry.gameCommitment,
+        gameValue: entry.gameValue.createCopy(),
+        gameVariables: new Map(entry.gameVariables),
+        gameMessages: entry.gameMessages,
+        userMessages: entry.userMessages
+      };
+      newFormula.gameHistory.push(newEntry);
+    }
+    newFormula.gameValue = formula.gameValue ? formula.gameValue.createCopy() : null;
+    newFormula.parsed = formula.parsed ? formula.parsed.createCopy() : null;
+    newState.formulas.push(newFormula);
+  }
+  for(let term of state.terms){
+    let newTerm = {...defaultExpressionData()}
+    newTerm.value = term.value;
+    newTerm.expressionValue = term.expressionValue;
+    newTerm.answerValue = term.answerValue;
+    newTerm.errorMessage = term.errorMessage;
+    newTerm.inputLocked = term.inputLocked;
+    newTerm.answerLocked = term.answerLocked;
+    newTerm.validSyntax = term.validSyntax;
+    newTerm.parsed = term.parsed ? term.parsed.createCopy() : null;
+    newState.terms.push(newTerm);
+  }
+  return newState;
+}
+
 const setParserOptions = (state, startRule) => ({
   startRule: startRule,
   structure: getStructureObject(state),
@@ -245,5 +440,7 @@ const setParserOptions = (state, startRule) => ({
   negation: Negation,
   equalityAtom: EqualityAtom
 });
+
+
 
 export default expressionsReducer;

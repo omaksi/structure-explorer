@@ -4,11 +4,12 @@ import {Col, Row} from 'react-bootstrap';
 import {Provider} from 'react-redux';
 import ExpressionsContainer from './redux/containers/ExpressionsContainer';
 import {clearGraphSelection, importAppState} from "./redux/actions";
-import {DEFAULT_FILE_NAME} from "./math_view/constants";
+import {DEFAULT_FILE_NAME} from "./constants";
 import DiagramModelContainer from "./redux/containers/DiagramModelContainer";
 import MathSystemContainer from './redux/containers/MathSystemContainer';
-import ButtonToolbarComponent from "./math_view/buttons/ButtonToolbarComponent";
-import HelpGraphCollapse from "./math_view/buttons/HelpGraphCollapse";
+import ButtonToolbarComponent from "./buttons/ButtonToolbarComponent";
+import HelpGraphCollapse from "./buttons/HelpGraphCollapse";
+import {DiagramSystem} from "./graph_view/DiagramSystem";
 
 interface AppProps{
   store:any;
@@ -29,7 +30,7 @@ class App extends React.Component<AppProps,AppState> {
 
     this.state = {
       modalShow: false,
-      diagramToggled:true,
+      diagramToggled:false,
       collapseHelpGraphButton:false,
       exerciseName:''
     };
@@ -125,19 +126,10 @@ class App extends React.Component<AppProps,AppState> {
                   <ButtonToolbarComponent setCollapseHelpGraphButton={this.setCollapseHelpGraphButton} collapseHelpGraphButton={this.state.collapseHelpGraphButton} clearGraphSelection={this.clearGraphSelection} exportState={this.exportState} setExerciseNameState={this.setExerciseNameState} modalShowState={this.state.modalShow} diagramToggledState={this.state.diagramToggled} teacherModeState={this.props.teacherMode} setTeacherModeState={this.setTeacherModeState} setDiagramToggledState={this.setDiagramToggledState} setModelShowState={this.setModelShowState} importState={this.importState}/>
                   <HelpGraphCollapse collapsed={this.state.collapseHelpGraphButton}/>
             </Row>
-              {this.state.diagramToggled? (
-                  <Row className='reactDiagram'>
-                    <Col sm={12} >
-                      <DiagramModelContainer store={this.props.store}/>
-                    </Col>
-                  </Row>
-                  ):<MathSystemContainer/>
+              {this.state.diagramToggled?
+                    <DiagramSystem store={this.props.store} diagramModel={this.props.store.getState().diagramState.diagramModel}/>
+                  : <MathSystemContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
               }
-            <Row>
-              <Col sm={12}>
-                <ExpressionsContainer diagramModel={this.props.store.getState().diagramState.diagramModel}/>
-              </Col>
-            </Row>
           </div>
         </Provider>
     );

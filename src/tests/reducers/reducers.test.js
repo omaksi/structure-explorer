@@ -1,12 +1,12 @@
 import reducer from '../../redux/reducers/root';
-import Structure from "../../math_view/model/Structure";
-import Language from "../../math_view/model/Language";
-import {STUDENT_MODE} from "../../math_view/constants/index";
+import Structure from "../../model/Structure";
+import Language from "../../model/Language";
+import {STUDENT_MODE} from "../../constants/index";
 import {
   setConstants, setConstantValue, setDomain, setFunctions, setFunctionValueText, setPredicates, setPredicateValueText,
   toggleTeacherMode
 } from "../../redux/actions/index";
-import {EMPTY_CONSTANT_VALUE} from "../../math_view/constants/messages";
+import {EMPTY_CONSTANT_VALUE} from "../../constants/messages";
 
 describe('reducer', () => {
   it('vratenie init stavu', () => {

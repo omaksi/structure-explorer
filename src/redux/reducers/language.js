@@ -5,7 +5,7 @@ import {
   ADD_UNARY_PREDICATE,
   IMPORT_APP,
   LOCK_CONSTANTS,
-  LOCK_FUNCTIONS,
+  LOCK_FUNCTIONS, LOCK_LANGUAGE_COMPONENT,
   LOCK_PREDICATES,
   REMOVE_CONSTANT_NODE, REMOVE_DOMAIN_NODE,
   RENAME_CONSTANT_NODE, RENAME_DOMAIN_NODE,
@@ -13,26 +13,20 @@ import {
   SET_FUNCTIONS,
   SET_PREDICATES
 } from "../actions/action_types";
-import {
-  RULE_CONSTANTS,
-  RULE_FUNCTIONS,
-  RULE_PREDICATES
-} from "../../math_view/constants/parser_start_rules";
-import {defaultInputData} from "../../math_view/constants";
-import {PREDICATE as PRED,FUNCTION as FUNC} from "../../graph_view/nodes/ConstantNames";
+import {CONSTANT, defaultInputData, FUNCTION, PREDICATE} from "../../constants";
 import {
   validateLanguageConstants as validateConstants,
   validateLanguagePredicates as validatePredicates,
   validateLanguageFunctions as validateFunctions
 } from "./functions/validation";
-
-let functions = require('./functions/functions');
+import {parseLanguage} from "./functions/parsers";
 
 export function defaultState(){
   return{
     constants: defaultInputData(),
     predicates: defaultInputData(),
-    functions: defaultInputData()
+    functions: defaultInputData(),
+    lockedComponent: false
   }
 }
 
@@ -40,19 +34,19 @@ function languageReducer(oldState, action) {
   let newState = copyState(oldState);
   switch (action.type) {
     case SET_CONSTANTS:
-      functions.parseText(action.value, newState.constants, {startRule: RULE_CONSTANTS});
+      parseLanguage(newState.constants, action.value, CONSTANT);
       setConstants(newState);
       setPredicates(newState);
       setFunctions(newState);
       return newState;
     case SET_PREDICATES:
-      functions.parseText(action.value, newState.predicates, {startRule: RULE_PREDICATES});
+      parseLanguage(newState.predicates, action.value, PREDICATE);
       setPredicates(newState);
       setConstants(newState);
       setFunctions(newState);
       return newState;
     case SET_FUNCTIONS:
-      functions.parseText(action.value, newState.functions, {startRule: RULE_FUNCTIONS});
+      parseLanguage(newState.functions, action.value, FUNCTION);
       setFunctions(newState);
       setPredicates(newState);
       setConstants(newState);
@@ -86,13 +80,13 @@ function languageReducer(oldState, action) {
 
     case RENAME_DOMAIN_NODE:
     case REMOVE_DOMAIN_NODE:
-      functions.parseText(returnParsedConstValues(newState), newState.constants, {startRule: RULE_CONSTANTS});
+      parseLanguage(newState.constants, returnParsedConstValues(newState), CONSTANT);
       setConstants(newState);
 
-      functions.parseText(returnParsedPredValues(newState), newState.predicates, {startRule: RULE_PREDICATES});
+      parseLanguage(newState.predicates, returnParsedPredValues(newState), PREDICATE);
       setPredicates(newState);
 
-      functions.parseText(returnParsedFuncValues(newState), newState.functions, {startRule: RULE_FUNCTIONS});
+      parseLanguage(newState.functions, returnParsedFuncValues(newState), FUNCTION);
       setFunctions(newState);
 
       return newState;
@@ -117,6 +111,9 @@ function languageReducer(oldState, action) {
       return newState;
     case LOCK_FUNCTIONS:
       newState.functions.locked = !newState.functions.locked;
+      return newState;
+    case LOCK_LANGUAGE_COMPONENT:
+      newState.lockedComponent = !newState.lockedComponent;
       return newState;
     case IMPORT_APP:
       setConstants(newState);
@@ -153,7 +150,7 @@ function addFunctionLanguageElement(state, elementName, elementArity){
 }
 
 function setConstants(state) {
-  if (state.constants.parsed.length === 0 || state.constants.errorMessage !== '') {
+  if (!state.constants.parsed || state.constants.parsed.length === 0 || state.constants.errorMessage !== '') {
     return;
   }
   state.constants.errorMessage =
@@ -161,7 +158,7 @@ function setConstants(state) {
 }
 
 function setPredicates(state) {
-  if (state.predicates.parsed.length === 0 || state.predicates.errorMessage !== '') {
+  if (!state.predicates.parsed || state.predicates.parsed.length === 0 || state.predicates.errorMessage !== '') {
     return;
   }
   state.predicates.errorMessage =
@@ -169,7 +166,7 @@ function setPredicates(state) {
 }
 
 function setFunctions(state) {
-  if (state.functions.parsed.length === 0 || state.predicates.errorMessage !== '') {
+  if (!state.functions.parsed || state.functions.parsed.length === 0 || state.predicates.errorMessage !== '') {
     return;
   }
   state.functions.errorMessage =
@@ -180,7 +177,8 @@ const copyState = (state) => ({
   ...state,
   constants: {...state.constants},
   predicates: {...state.predicates},
-  functions: {...state.functions}
+  functions: {...state.functions},
+  locked: state.locked
 });
 
 export default languageReducer;

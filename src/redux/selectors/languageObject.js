@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import Language from "../../math_view/model/Language";
+import Language from "../../model/Language";
 
 const getConstants = state => state.language.constants.parsed
 const getFunctions = state => state.language.functions.parsed

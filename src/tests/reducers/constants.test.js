@@ -1,8 +1,8 @@
 import reducer from '../../redux/reducers/root';
-import Language from "../../math_view/model/Language";
-import Structure from "../../math_view/model/Structure";
+import Language from "../../model/Language";
+import Structure from "../../model/Structure";
 import {setConstants, setConstantValue, setDomain} from "../../redux/actions/index";
-import {EMPTY_CONSTANT_VALUE} from "../../math_view/constants/messages";
+import {EMPTY_CONSTANT_VALUE} from "../../constants/messages";
 
 describe('constants', () => {
   let defaultState = () => ({

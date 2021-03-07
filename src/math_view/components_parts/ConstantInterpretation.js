@@ -6,7 +6,7 @@ export function ConstantInterpretation({structure,setConstantValue,structureObje
     return(
     <Col lg={12}>
         <Form>
-            <Form.Label>Interpretácia symbolov konštánt</Form.Label>
+            <Form.Label>Interpretácia indivíduových konštánt</Form.Label>
             {Object.keys(structure.constants).map((constant) =>
                 <Form.Group key={constant}>
                     <InputGroup>
@@ -18,7 +18,8 @@ export function ConstantInterpretation({structure,setConstantValue,structureObje
                                       id={'constant-' + constant}
                                       onChange={(e) => setConstantValue(e.target.value, constant)}
                                       disabled={structure.constants[constant].locked}
-                                      isInvalid={structure.constants[constant].errorMessage.length > 0}>
+                                      isInvalid={structure.constants[constant].errorMessage.length > 0}
+                                      className="custom-select">
                             <option key={''} value={''}>Vyber hodnotu ...</option>
                             {[...structureObject.domain].map((item) =>
                                 <option key={item} value={item}>{item}</option>

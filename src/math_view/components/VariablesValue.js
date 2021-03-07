@@ -3,7 +3,6 @@ import {Col, Form, Row} from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import TextInput from "../components_parts/TextInput";
 import HelpButton from "../../buttons/HelpButton";
-import ComponentLockButton from "../../buttons/ComponentLockButton";
 
 const help = (
    <div className="collapse" id="help-variables">
@@ -33,8 +32,7 @@ const VariablesValue = (props) => (
                          textData={props.variables}
                          label={<span><var>e</var> = &#123;</span>}
                          teacherMode={props.teacherMode}
-                         id='editor-variables'
-                         placeholder='(x,1), (y,2), (z,3), ...'/>
+                         id='editor-variables'/>
                  </Form.Group>
              </Col>
          </Row>

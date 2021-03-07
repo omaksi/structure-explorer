@@ -23,8 +23,7 @@ function PredicateInterpretation({structure,predicates,setPredicateValueText,loc
                                    databaseEnabled={structure.predicates[name].databaseEnabled}
                                    tableEnabled={structure.predicates[name].tableEnabled}
                                    arity={parseInt(name.split('/')[1])}
-                                   domain={domain}
-                                   placeholder='(1,2), (2,2), (3,1), ...'/>
+                                   domain={domain}/>
                         {structure.predicates[name].tableEnabled && domain.size > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
                                              arity={structureObject.language.predicates.get(name.split('/')[0])}

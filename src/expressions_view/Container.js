@@ -10,7 +10,7 @@ const Container = styled.div`
   height: 500px;
   padding: 1rem;
   margin-bottom: 1.5rem;
-  margin-top: 1em;
+  margin-top: 0;
   margin-left: 0;
   margin-right: 0;
   border: 1px solid;

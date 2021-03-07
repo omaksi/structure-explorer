@@ -4,8 +4,8 @@ import LockButton from "../../buttons/LockButton";
 import TableButton from "../../buttons/TableButton";
 import DatabaseButton from "../../buttons/DatabaseButton";
 
-const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTable, toggleDatabase, arity, domain, placeholder,databaseEnabled,tableEnabled,errorProperty}) => (
-    <InputGroup>
+const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTable, toggleDatabase, arity, domain,databaseEnabled,tableEnabled,errorProperty}) => (
+    <InputGroup size='sm' >
         <InputGroup.Prepend>
             <InputGroup.Text>{label}</InputGroup.Text>
         </InputGroup.Prepend>
@@ -17,7 +17,6 @@ const TextInput = ({onChange, onLock, textData, label, teacherMode, id, toggleTa
                 onChange={(e) => onChange(e)}
                 value={textData.value}
                 disabled={textData.locked}
-                placeholder={placeholder}
             />
      <InputGroup.Append>
          <InputGroup.Text>&#125;</InputGroup.Text>

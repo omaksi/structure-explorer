@@ -8,8 +8,8 @@ export function ConstantInterpretation({structure,setConstantValue,structureObje
         <Form>
             <Form.Label>Interpretácia indivíduových konštánt</Form.Label>
             {Object.keys(structure.constants).map((constant) =>
-                <Form.Group key={constant}>
-                    <InputGroup>
+                <Form.Group key={constant} >
+                    <InputGroup size='sm'>
                         <InputGroup.Prepend>
                             <InputGroup.Text id={'constant-' + constant}><var>i</var>({constant}) = </InputGroup.Text>
                         </InputGroup.Prepend>

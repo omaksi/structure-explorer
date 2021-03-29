@@ -20,6 +20,7 @@ import {
   validateLanguageFunctions as validateFunctions
 } from "./functions/validation";
 import {parseLanguage} from "./functions/parsers";
+import produce from "immer";
 
 export function defaultState(){
   return{
@@ -30,100 +31,99 @@ export function defaultState(){
   }
 }
 
-function languageReducer(oldState, action) {
-  let newState = copyState(oldState);
+const languageReducer = produce((state, action) => {
   switch (action.type) {
     case SET_CONSTANTS:
-      parseLanguage(newState.constants, action.value, CONSTANT);
-      setConstants(newState);
-      setPredicates(newState);
-      setFunctions(newState);
-      return newState;
+      parseLanguage(state.constants, action.value, CONSTANT);
+      setConstants(state);
+      setPredicates(state);
+      setFunctions(state);
+      return state;
     case SET_PREDICATES:
-      parseLanguage(newState.predicates, action.value, PREDICATE);
-      setPredicates(newState);
-      setConstants(newState);
-      setFunctions(newState);
-      return newState;
+      parseLanguage(state.predicates, action.value, PREDICATE);
+      setPredicates(state);
+      setConstants(state);
+      setFunctions(state);
+      return state;
     case SET_FUNCTIONS:
-      parseLanguage(newState.functions, action.value, FUNCTION);
-      setFunctions(newState);
-      setPredicates(newState);
-      setConstants(newState);
-      return newState;
+      parseLanguage(state.functions, action.value, FUNCTION);
+      setFunctions(state);
+      setPredicates(state);
+      setConstants(state);
+      return state;
     case ADD_UNARY_PREDICATE:
-      addPredicateLanguageElement(newState, action.predicateName, 1);
-      return newState;
+      addPredicateLanguageElement(state, action.predicateName, 1);
+      return state;
     case ADD_BINARY_PREDICATE:
-      addPredicateLanguageElement(newState, action.predicateName, 2);
-      return newState;
+      addPredicateLanguageElement(state, action.predicateName, 2);
+      return state;
     case ADD_TERNARY_PREDICATE:
-      addPredicateLanguageElement(newState, action.predicateName, 3);
-      return newState;
+      addPredicateLanguageElement(state, action.predicateName, 3);
+      return state;
     case ADD_QUATERNARY_PREDICATE:
-      addPredicateLanguageElement(newState, action.predicateName, 4);
-      return newState;
+      addPredicateLanguageElement(state, action.predicateName, 4);
+      return state;
     case ADD_UNARY_FUNCTION:
-      addFunctionLanguageElement(newState, action.functionName, 1);
-      return newState;
+      addFunctionLanguageElement(state, action.functionName, 1);
+      return state;
     case ADD_BINARY_FUNCTION:
-      addFunctionLanguageElement(newState, action.functionName, 2);
-      return newState;
+      addFunctionLanguageElement(state, action.functionName, 2);
+      return state;
     case ADD_TERNARY_FUNCTION:
-      addFunctionLanguageElement(newState, action.functionName, 3);
-      return newState;
+      addFunctionLanguageElement(state, action.functionName, 3);
+      return state;
     case ADD_CONSTANT_NODE:
-      newState.constants.parsed.push(action.nodeName);
-      newState.constants.value = newState.constants.parsed.join(", ");
-      setConstants(newState);
-      return newState;
+      state.constants.parsed.push(action.nodeName);
+      state.constants.value = state.constants.parsed.join(", ");
+      setConstants(state);
+      return state;
 
     case RENAME_DOMAIN_NODE:
     case REMOVE_DOMAIN_NODE:
-      parseLanguage(newState.constants, returnParsedConstValues(newState), CONSTANT);
-      setConstants(newState);
+      parseLanguage(state.constants, returnParsedConstValues(state), CONSTANT);
+      setConstants(state);
 
-      parseLanguage(newState.predicates, returnParsedPredValues(newState), PREDICATE);
-      setPredicates(newState);
+      parseLanguage(state.predicates, returnParsedPredValues(state), PREDICATE);
+      setPredicates(state);
 
-      parseLanguage(newState.functions, returnParsedFuncValues(newState), FUNCTION);
-      setFunctions(newState);
+      parseLanguage(state.functions, returnParsedFuncValues(state), FUNCTION);
+      setFunctions(state);
 
-      return newState;
+      return state;
 
     case REMOVE_CONSTANT_NODE:
-      newState.constants.parsed = newState.constants.parsed.filter(value => value != action.nodeName);
-      newState.constants.value = newState.constants.parsed.join(", ");
-      setConstants(newState);
-      return newState;
+      state.constants.parsed = state.constants.parsed.filter(value => value != action.nodeName);
+      state.constants.value = state.constants.parsed.join(", ");
+      setConstants(state);
+      return state;
 
     case RENAME_CONSTANT_NODE:
-      newState.constants.parsed = newState.constants.parsed.map(value => value === action.oldName ? action.newName : value);
-      newState.constants.value = newState.constants.parsed.join(", ");
-      setConstants(newState);
-      return newState;
+      state.constants.parsed = state.constants.parsed.map(value => value === action.oldName ? action.newName : value);
+      state.constants.value = state.constants.parsed.join(", ");
+      setConstants(state);
+      return state;
 
     case LOCK_CONSTANTS:
-      newState.constants.locked = !newState.constants.locked;
-      return newState;
+      state.constants.locked = !state.constants.locked;
+      return state;
     case LOCK_PREDICATES:
-      newState.predicates.locked = !newState.predicates.locked;
-      return newState;
+      state.predicates.locked = !state.predicates.locked;
+      return state;
     case LOCK_FUNCTIONS:
-      newState.functions.locked = !newState.functions.locked;
-      return newState;
+      state.functions.locked = !state.functions.locked;
+      return state;
     case LOCK_LANGUAGE_COMPONENT:
-      newState.lockedComponent = !newState.lockedComponent;
-      return newState;
+      state.lockedComponent = !state.lockedComponent;
+      return state;
     case IMPORT_APP:
-      setConstants(newState);
-      setPredicates(newState);
-      setFunctions(newState);
-      return newState;
+      setConstants(state);
+      setPredicates(state);
+      setFunctions(state);
+      return state;
     default:
-      return newState;
+      return state;
   }
-}
+})
 
 function returnParsedConstValues(state){
   return state.constants.parsed.join(", ");
@@ -172,13 +172,5 @@ function setFunctions(state) {
   state.functions.errorMessage =
       validateFunctions(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
-
-const copyState = (state) => ({
-  ...state,
-  constants: {...state.constants},
-  predicates: {...state.predicates},
-  functions: {...state.functions},
-  locked: state.locked
-});
 
 export default languageReducer;

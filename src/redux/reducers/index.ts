@@ -7,6 +7,8 @@ import diagramReducer,{ defaultState as diagramDefaultState } from "./diagram";
 import {defaultState as expressionsDefaultState} from "./expressions";
 import {defaultState as structureDefaultState} from "./structure";
 import {defaultState as languageDefaultState} from "./language";
+import {getVariableObject} from "../selectors/variableObject";
+import produce from "immer";
 
 const defaultState = {
     common: {
@@ -32,17 +34,17 @@ function root(state = defaultState, action:any) {
         try {
             state = JSON.parse(action.content);
             checkImportedState(state);
-            state.structure.variables.object = new Map();
             state.diagramState = action.diagramState?action.diagramState:diagramDefaultState();
         } catch (e) {
             console.error(e);
         }
 
     }
+
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action);
-    let structure = structureReducer(state.structure, action, language, state);
-    let expressions = expressionsReducer(state.expressions, action, state.structure.variables.object, state);
+    let structure = structureReducer(state.structure, action, {language: language});
+    let expressions = expressionsReducer(state.expressions, action, {language: language, structure: structure})
     let diagramState = diagramReducer(state.diagramState, action, state);
 
     return {

@@ -211,7 +211,7 @@ const structureReducer = produce((structure, action, state) => {
       parseStructure(structure.functions[action.functionName], action.value, state, FUNCTION);
       checkFunctionValue(structure, action.functionName);
       return structure;
-    case SET_FUNCTION_VALUE_TABLE:;
+    case SET_FUNCTION_VALUE_TABLE:
       let params = action.value.slice(0, action.value.length - 1);
       let value = action.value[action.value.length - 1];
       let index = 0;

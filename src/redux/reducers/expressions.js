@@ -292,17 +292,14 @@ function removeExpression(expressions, expressionType, expressionIndex) {
 function syncExpressionsValue(expressions, state, variables, parse = false) {
   expressions.formulas.forEach(formula => {
     if (parse) {
-      let temp = formula.value;
-      parseExpression(formula, `(${temp})`, state, FORMULA, setParserOptions(state, RULE_FORMULA));
-      //parseExpression(formula, `(${temp})`, state, FORMULA);
+      parseExpression(formula, formula.value, state, FORMULA);
       // noinspection JSUndefinedPropertyAssignment
-      formula.value = temp;
     }
     evalExpression(state, formula, variables);
   });
   expressions.terms.forEach(term => {
     if (parse) {
-      parseExpression(term, term.value, state, TERM, setParserOptions(state, RULE_TERM));
+      parseExpression(term, term.value, state, TERM);
     }
     evalExpression(state, term, variables);
   });
@@ -314,8 +311,7 @@ function evalExpression(state, expression, variables) {
   }
   expression.errorMessage = '';
   try {
-    let structureObject = getStructureObject(state);
-    expression.expressionValue = expression.parsed.eval(structureObject, variables);
+    expression.expressionValue = expression.parsed.eval(getStructureObject(state), variables);
   } catch (e) {
     expression.errorMessage = e;
     expression.expressionValue = null;
@@ -326,12 +322,9 @@ function checkExpressionSyntax(expressions, state, action, variables) {
   let expressionText = action.value;
   let expression = expressions.terms[action.index];
   if (action.expressionType === FORMULA) {
-    if (expressionText.length > 0) {
-      expressionText = '(' + expressionText + ')';
-    }
     expression = expressions.formulas[action.index];
   }
-  parseExpression(expression, expressionText, state, action.expressionType, setParserOptions(state, action.expressionType.toLowerCase()));
+  parseExpression(expression, expressionText, state, action.expressionType);
   expression.value = action.value; // aby tam neboli zatvorky
   if (expression.errorMessage.length === 0) {
     expression.validSyntax = true;
@@ -379,23 +372,5 @@ function addToHistory(expressions, index, gameMessages, userMessages){
   };
   expressions.formulas[index].gameHistory.push(entry);
 }
-
-const setParserOptions = (state, startRule) => ({
-  startRule: startRule,
-  structure: getStructureObject(state),
-  conjunction: Conjunction,
-  disjunction: Disjunction,
-  implication: Implication,
-  variable: Variable,
-  constant: Constant,
-  existentialQuant: ExistentialQuant,
-  universalQuant: UniversalQuant,
-  functionTerm: FunctionTerm,
-  predicate: PredicateAtom,
-  negation: Negation,
-  equalityAtom: EqualityAtom
-});
-
-
 
 export default expressionsReducer;

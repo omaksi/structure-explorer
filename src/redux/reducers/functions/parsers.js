@@ -15,7 +15,6 @@ import UniversalQuant from "../../../model/formula/Formula.UniversalQuant";
 import Equivalence from "../../../model/formula/Formula.Equivalence";
 
 export function parseLanguage(state, value, type){
-    let previousParsed = state.parsed;
     state.value = value;
     state.errorMessage = '';
     if (value.length === 0) {
@@ -35,21 +34,13 @@ export function parseLanguage(state, value, type){
                 parsedValue = parseFunctions(value);
                 break;
         }
-
-        if (parsedValue.items) {
-            state.parsed = parsedValue.items;
-        } else {
-            state.parsed = parsedValue;
-        }
+        state.parsed = parsedValue.items;
     } catch (e) {
-        console.error(e);
         state.errorMessage = e.message;
-        state.parsed = previousParsed;
     }
 }
 
 export function parseStructure(state, value, wholeState, type){
-    let previousParsed = state.parsed;
     state.value = value;
     state.errorMessage = '';
     if (value.length === 0) {
@@ -71,15 +62,9 @@ export function parseStructure(state, value, wholeState, type){
                 break;
         }
 
-        if (parsedValue.items) {
-            state.parsed = parsedValue.items;
-        } else {
-            state.parsed = parsedValue;
-        }
+        state.parsed = parsedValue.items;
     } catch (e) {
-        console.error(e);
         state.errorMessage = e.message;
-        state.parsed = [];
     }
 }
 
@@ -100,13 +85,8 @@ export function parseExpression(state, value, wholeState, type){
             const formulaFactories = getFormulaFactories(language);
             parsedValue = parseFormulaStrict(value, language.getLanguage(), formulaFactories);
         }
-        if (parsedValue.items) {
-            state.parsed = parsedValue.items;
-        } else {
-            state.parsed = parsedValue;
-        }
+        state.parsed = parsedValue.items;
     } catch (e) {
-        console.error(e);
         state.errorMessage = e.message;
         state.parsed = null;
     }

@@ -69,7 +69,7 @@ function prepareExpressions(formulas, terms) {
     expressionType: FORMULA,
     answers: () => getFormulaAnswers(),
     help: helpFormula,
-    panelTitle: 'Splnenie formúl v štruktúre 𝓜'
+    panelTitle: 'Pravdivosť formúl v štruktúre 𝓜'
   };
   let t = {
     items: terms,
@@ -93,56 +93,45 @@ const Expressions = (props) => (
             {expression.help}
             {expression.items.map((item, index) =>
              <Form key={"expression-form-"+index}>
-               <Row key={"expression-row"+index}>
-                   <Col sm={12} md={12} lg={12}>
-                     <Form.Group>
-                       <InputGroup>
-                           <InputGroup.Prepend>
-                               <InputGroup.Text id={expression.expressionType.toLowerCase() + '-' + index}>{EXPRESSION_LABEL[expression.expressionType]}<sub>{index + 1}</sub></InputGroup.Text>
-                           </InputGroup.Prepend>
-                           <Form.Control type='text' value={item.value}
-                                         onChange={(e) => props.onInputChange(e.target.value, index, expression.expressionType)}
-                                         id={expression.expressionType.toLowerCase() + '-' + index}
-                                         disabled={item.inputLocked}
-                                         isInvalid={item.errorMessage.length >0}
-                                         onFocus={() => {
-                                             props.diagramModel.clearSelection();
-                                         }}
-                           />
-                           <InputGroup.Append>
-                               <Button variant={"secondary"}
-                              onClick={() => props.removeExpression(expression.expressionType, index)}><FontAwesome
-                              name='fas fa-trash'/>
-                               </Button>
+                 <Form.Group className="mb-1">
+                     <InputGroup size='sm'>
+                         <InputGroup.Prepend>
+                             <InputGroup.Text id={expression.expressionType.toLowerCase() + '-' + index}>{EXPRESSION_LABEL[expression.expressionType]}<sub>{index + 1}</sub></InputGroup.Text>
+                         </InputGroup.Prepend>
+                         <Form.Control type='text' value={item.value}
+                                       onChange={(e) => props.onInputChange(e.target.value, index, expression.expressionType)}
+                                       id={expression.expressionType.toLowerCase() + '-' + index}
+                                       disabled={item.inputLocked}
+                                       isInvalid={item.errorMessage.length >0}
+                                       onFocus={() => {
+                                           props.diagramModel.clearSelection();
+                                       }}
+                         />
+                         <InputGroup.Append>
+                             <Button variant={"outline-danger"} onClick={() => props.removeExpression(expression.expressionType, index)}>
+                                 <FontAwesome name='fas fa-trash'/>
+                             </Button>
                            {props.teacherMode ? (
                               <LockButton
                                  lockFn={() => props.lockExpressionValue(expression.expressionType, index)}
                                  locked={item.inputLocked}/>
                            ) : null}
-                           </InputGroup.Append>
-                           <Form.Control.Feedback type={"invalid"}>{item.errorMessage}</Form.Control.Feedback>
-                       </InputGroup>
-                     </Form.Group>
-                   </Col>
-               </Row>
-               <Row key={"expression-row-2"+index}>
-                   <Col xs={2} sm={2} md={2} lg={1} className={"no-padding-right mr-1"}>
-                       {expression.expressionType === FORMULA ?
-                           <HenkinHintikkaGameButton
-                               onClick={() => props.initiateGame(index)}
-                               enabled={item.answerLocked}/> : null }
-                   </Col>
-
-                   <Col xs={8} sm={8} md={8} lg={7}>
+                         </InputGroup.Append>
+                         <Form.Control.Feedback type={"invalid"}>{item.errorMessage}</Form.Control.Feedback>
+                     </InputGroup>
+                 </Form.Group>
+               <Form.Row>
+                   <Col xs={true} sm={true} md={true} lg={true}>
                      <Form.Group>
-                       <InputGroup>
+                       <InputGroup size='sm'>
                            <InputGroup.Prepend>
                                <InputGroup.Text id={expression.expressionType.toLowerCase() + '-answer-' + index}>𝓜</InputGroup.Text>
                            </InputGroup.Prepend>
                            <Form.Control as="select" value={item.answerValue}
                                          onChange={(e) => props.setExpressionAnswer(expression.expressionType, e.target.value, index)}
                                          id={expression.expressionType.toLowerCase() + '-answer-' + index}
-                                         disabled={item.answerLocked}>
+                                         disabled={item.answerLocked}
+                                         className="custom-select">
                                {expression.answers(props.domain)}
                             </Form.Control>
 
@@ -162,7 +151,7 @@ const Expressions = (props) => (
                      </Form.Group>
                    </Col>
 
-                   <Col xs={0} sm={0} md={0} lg={0} className={"pt-2 no-padding-right"}>
+                   <Col className={"pt-1 no-padding-right"}>
                      {item.answerValue !== '' && item.answerValue !== '-1' ?
                          (item.answerValue === item.expressionValue ?
                              <strong className="text-success no-padding-right"><FontAwesome
@@ -171,10 +160,17 @@ const Expressions = (props) => (
                                  name='times'/><span className={'hidden-on-medium-and-lower'}>&nbsp;Nesprávne</span></strong>
                          ) : null}
                    </Col>
-               </Row>
-               <Row>
+
+                   <Col xs={true} sm={true} md={true} lg={true} className={"no-padding-right"}>
+                       {expression.expressionType === FORMULA ?
+                           <HenkinHintikkaGameButton
+                               onClick={() => props.initiateGame(index)}
+                               enabled={item.gameEnabled}/> : null }
+                   </Col>
+               </Form.Row>
+               <Form.Row>
                    {item.gameEnabled ? <HenkinHintikkaGameContainer formula={item} domain={props.domain} index={index}/> : null }
-               </Row>
+               </Form.Row>
              </Form>
             )}
             <AddButton onClickAddFunction={props.addExpression} addType={expression.expressionType}/>

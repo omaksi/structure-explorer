@@ -2,11 +2,11 @@ import {Col, Form, Row} from "react-bootstrap";
 import TextInput from "./TextInput";
 import React from "react";
 
-function TextComponent({labelText,onChangeSetFunction,onLockFunction,textData,textInputLabel,idName,placeholderText,errorProperty,teacherMode}){
+function TextComponent({labelText,onChangeSetFunction,onLockFunction,textData,textInputLabel,idName,errorProperty,teacherMode}){
     return(
         <Row>
             <Col lg={12}>
-                    <Form.Group>
+                    <Form.Group controlId={idName}>
                         <Form.Label>{labelText}</Form.Label>
                         <TextInput
                             errorProperty={errorProperty}
@@ -15,8 +15,7 @@ function TextComponent({labelText,onChangeSetFunction,onLockFunction,textData,te
                                    textData={textData}
                                    label={textInputLabel}
                                    teacherMode={teacherMode}
-                                   id={idName}
-                                   placeholder={placeholderText}/>
+                                   id={idName}/>
                     </Form.Group>
             </Col>
         </Row>

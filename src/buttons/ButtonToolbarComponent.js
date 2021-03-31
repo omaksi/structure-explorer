@@ -7,27 +7,27 @@ import HelpGraphButton from "./HelpGraphButton";
 const ButtonToolbarComponent = ({setCollapseHelpGraphButton,collapseHelpGraphButton,clearGraphSelection,exportState,setExerciseNameState,modalShowState,diagramToggledState,teacherModeState,setDiagramToggledState, setModelShowState, importState, setTeacherModeState}) => (
     <ButtonToolbar>
         <ButtonGroup className='mr-lg-2'>
-        <Button variant='outline-primary' size='lg' title='Prepnúť na matematický pohľad' className={diagramToggledState?'':' active'} onClick={() => {
+        <Button variant='outline-primary' title='Prepnúť na matematický pohľad' className={diagramToggledState?'':' active'} onClick={() => {
             setDiagramToggledState(false);
             setCollapseHelpGraphButton(false);
         }}>
-            <FontAwesome name='fas fa-list'/>
-            <span className={'hidden-on-medium-and-lower'}>&nbsp;Matematika</span>
+            <strong>&#123;&nbsp;&#125;</strong>
+            <span className={'hidden-on-medium-and-lower'}>&nbsp;Množiny</span>
         </Button>
 
-        <Button variant='outline-primary' size='lg' title='Prepnúť na grafový pohľad' className={diagramToggledState?' active':''} onClick={() => setDiagramToggledState(true)}>
+        <Button variant='outline-primary' title='Prepnúť na grafový pohľad' className={diagramToggledState?' active':''} onClick={() => setDiagramToggledState(true)}>
             <FontAwesome name='fas fa-project-diagram'/>
             <span className={'hidden-on-medium-and-lower'}>&nbsp;Graf</span>
         </Button>
         </ButtonGroup>
 
         <ButtonGroup className='mr-lg-2'>
-        <Button variant='secondary' size='lg' title='Exportovať cvičenie' onClick={() => {setModelShowState(true);clearGraphSelection();}}>
+        <Button size="md" variant='secondary' title='Exportovať cvičenie' onClick={() => {setModelShowState(true);clearGraphSelection();}}>
             <FontAwesome name='fas fa-file-export'/>
             <span className={'hidden-on-medium-and-lower'}>&nbsp;Exportovať</span>
         </Button>
 
-        <Button variant='secondary' size='lg' title='Importovať cvičenie'
+        <Button variant='secondary' title='Importovať cvičenie'
                 onClick={() => document.getElementById('uploadInput').click()}>
             <FontAwesome name='fas fa-file-import'/>
             <input id='uploadInput' type='file' name='jsonFile'

@@ -4,7 +4,7 @@ import FontAwesome from "react-fontawesome";
 
 const HelpGraphButton = ({setCollapseHelpGraphButton,collapseHelpGraphButton}) => (
             <div>
-                <Button variant={'secondary'} title='Pomoc s grafom' size='lg'
+                <Button variant={'secondary'} title='Pomoc s grafom' size='md'
                         onClick={() => setCollapseHelpGraphButton(!collapseHelpGraphButton)}
                         aria-controls="help-graph"
                         aria-expanded={collapseHelpGraphButton}>

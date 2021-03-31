@@ -22,7 +22,7 @@ function constantComponent(props) {
         );
     } else {
         return(
-            <TextComponent labelText={"Symboly konštánt"}
+            <TextComponent labelText={"Indivíduové konštanty"}
                            errorProperty={props.language.constants.errorMessage}
                            onChangeSetFunction={props.setConstants}
                            onLockFunction={props.lockConstants}
@@ -30,7 +30,6 @@ function constantComponent(props) {
                            textInputLabel={<span>𝓒<sub>𝓛</sub> = &#123;</span>}
                            teacherMode={props.teacherMode}
                            idName={'language-editor-constants'}
-                           placeholderText={'a, b, c, ...'}
             />
         );
     }
@@ -51,7 +50,6 @@ function predicateComponent(props) {
                            textInputLabel={<span>𝓟<sub>𝓛</sub> = &#123;</span>}
                            teacherMode={props.teacherMode}
                            idName={'language-editor-predicates'}
-                           placeholderText={"likes/2, hates/2, man/1, ..."}
             />
         );
     }
@@ -72,7 +70,6 @@ function functionComponent(props) {
                            textInputLabel={<span>𝓕<sub>𝓛</sub> = &#123;</span>}
                            teacherMode={props.teacherMode}
                            idName={'language-editor-functions'}
-                           placeholderText={'mother/1, father/1, ...'}
             />
         );
     }

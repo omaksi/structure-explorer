@@ -24,8 +24,7 @@ function FunctionInterpretation({functions,structure,setFunctionValueText,lockFu
                             databaseEnabled={structure.functions[name].databaseEnabled}
                             tableEnabled={structure.functions[name].tableEnabled}
                             arity={parseInt(name.split('/')[1])}
-                            domain={domain}
-                            placeholder='(1,2), (2,2), (3,1), ...'/>
+                            domain={domain}/>
                         {structure.functions[name].tableEnabled && domain.size > 0 ? (
                             <RelationalTable name={name} domain={structureObject.domain}
                                              arity={structureObject.language.functions.get(name.split('/')[0])}

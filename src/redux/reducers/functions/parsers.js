@@ -73,7 +73,6 @@ export function parseStructure(state, value, wholeState, type){
             state.parsed = parsedValue;
         }
     } catch (e) {
-        console.error(e);
         state.errorMessage = e.message;
     }
 }

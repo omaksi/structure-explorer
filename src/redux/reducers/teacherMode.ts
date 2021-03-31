@@ -4,9 +4,9 @@ import produce from "immer";
 const teacherModeReducer = produce((state:any, action:any) => {
     if (action.type === TOGGLE_TEACHER_MODE) {
         state.teacherMode = !state.teacherMode;
-        return state;
+        return;
     } else {
-        return state;
+        return;
     }
 })
 

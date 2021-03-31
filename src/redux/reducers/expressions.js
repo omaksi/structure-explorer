@@ -56,19 +56,8 @@ import {
 } from "../actions/action_types";
 import {getStructureObject} from "../selectors/structureObject";
 import {parseExpression} from "./functions/parsers";
-import {RULE_FORMULA, RULE_TERM} from "../../constants/parser_start_rules";
-import Conjunction from "../../model/formula/Formula.Conjunction";
-import Disjunction from "../../model/formula/Formula.Disjunction";
-import Variable from "../../model/term/Term.Variable";
-import Constant from "../../model/term/Term.Constant";
-import ExistentialQuant from "../../model/formula/Formula.ExistentialQuant";
-import UniversalQuant from "../../model/formula/Formula.UniversalQuant";
-import FunctionTerm from "../../model/term/Term.FunctionTerm";
-import PredicateAtom from "../../model/formula/Formula.PredicateAtom";
-import Negation from "../../model/formula/Formula.Negation";
-import EqualityAtom from "../../model/formula/Formula.EqualityAtom";
 import produce from "immer";
-import {getVariableObject} from "../selectors/variableObject";
+import {getValuationObject} from "../selectors/valuationObject";
 
 export function defaultState(){
   return {
@@ -78,14 +67,14 @@ export function defaultState(){
 }
 
 const expressionsReducer = produce((expressions, action, state) => {
-  let variablesObject = getVariableObject(state);
+  const variablesObject = getValuationObject(state);
   switch (action.type) {
     case SET_CONSTANTS:
     case SET_PREDICATES:
     case SET_FUNCTIONS:
     case IMPORT_APP:
       syncExpressionsValue(expressions, state, variablesObject,true);
-      return expressions;
+      return;
     case SET_CONSTANT_VALUE:
     case SET_PREDICATE_VALUE_TEXT:
     case SET_PREDICATE_VALUE_TABLE:
@@ -93,25 +82,32 @@ const expressionsReducer = produce((expressions, action, state) => {
     case SET_FUNCTION_VALUE_TABLE:
     case SET_VARIABLES_VALUE:
       syncExpressionsValue(expressions, state, variablesObject);
-      return expressions;
+      return;
+
     case ADD_EXPRESSION:
       addExpression(expressions, action.expressionType);
-      return expressions;
+      return;
+
     case REMOVE_EXPRESSION:
       removeExpression(expressions, action.expressionType, action.index);
-      return expressions;
+      return;
+
     case SET_EXPRESSION_ANSWER:
       setExpressionAnswer(expressions, action.expressionType, action.index, action.answer);
-      return expressions;
+      return;
+
     case LOCK_EXPRESSION_VALUE:
       lockExpressionValue(expressions, action.expressionType, action.expressionIndex);
-      return expressions;
+      return;
+
     case LOCK_EXPRESSION_ANSWER:
       lockExpressionAnswer(expressions, action.expressionType, action.expressionIndex);
-      return expressions;
+      return;
+
     case CHECK_SYNTAX:
       checkExpressionSyntax(expressions, state, action, variablesObject);
-      return expressions;
+      return;
+
     case ADD_DOMAIN_NODE:
     case RENAME_DOMAIN_NODE:
     case REMOVE_DOMAIN_NODE:
@@ -138,10 +134,11 @@ const expressionsReducer = produce((expressions, action, state) => {
     case IMPORT_DIAGRAM_STATE:
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
       syncExpressionsValue(expressions, state, variablesObject,true);
-      return expressions;
+      return;
+
     case INITIATE_GAME:
       if(!expressions.formulas[action.index].parsed){
-        return expressions;
+        return;
       }
       expressions.formulas[action.index].gameEnabled = !expressions.formulas[action.index].gameEnabled;
       expressions.formulas[action.index].gameValue = expressions.formulas[action.index].parsed.createCopy();
@@ -149,11 +146,13 @@ const expressionsReducer = produce((expressions, action, state) => {
       expressions.formulas[action.index].gameHistory = [];
       expressions.formulas[action.index].showVariables = false;
       expressions.formulas[action.index].gameVariables = new Map(variablesObject);
-      return expressions;
+      return;
+
     case SET_GAME_COMMITMENT:
       expressions.formulas[action.index].gameCommitment = action.commitment;
       addToHistory(expressions, action.index, action.gameMessages, action.userMessages);
-      return expressions;
+      return;
+
     case CONTINUE_GAME:
       addToHistory(expressions, action.index, action.gameMessages, action.userMessages);
       let formulas = expressions.formulas[action.index].gameValue.getSubFormulas();
@@ -223,7 +222,8 @@ const expressionsReducer = produce((expressions, action, state) => {
         default:
           break;
       }
-      return expressions;
+      return;
+
     case SET_GAME_DOMAIN_CHOICE:
       addToHistory(expressions, action.index, action.gameMessages, action.userMessages);
       let varName = 'n' + expressions.formulas[action.index].gameVariables.size;
@@ -231,21 +231,25 @@ const expressionsReducer = produce((expressions, action, state) => {
       expressions.formulas[action.index].gameValue = expressions.formulas[action.index].gameValue.createCopy();
       expressions.formulas[action.index].gameValue.setVariable(expressions.formulas[action.index].gameValue.variableName, varName);
       expressions.formulas[action.index].gameValue = expressions.formulas[action.index].gameValue.subFormula;
-      return expressions;
+      return;
+
     case SET_GAME_NEXT_FORMULA:
       addToHistory(expressions, action.index, action.gameMessages, action.userMessages);
       expressions.formulas[action.index].gameValue = action.formula.createCopy();
       expressions.formulas[action.index].gameCommitment = action.commitment;
-      return expressions;
+      return;
+
     case END_GAME:
       expressions.formulas[action.index].gameEnabled = false;
       expressions.formulas[action.index].gameCommitment = null;
       expressions.formulas[action.index].gameHistory = [];
       expressions.formulas[action.index].gameValue = null;
-      return expressions;
+      return;
+
     case GET_VARIABLES:
       expressions.formulas[action.index].showVariables = !state.expressions.formulas[action.index].showVariables;
-      return expressions;
+      return;
+
     case GO_BACK:
       expressions.formulas[action.index].gameValue = expressions.formulas[action.index].gameHistory[action.historyIndex].gameValue.createCopy();
       expressions.formulas[action.index].gameVariables = new Map(expressions.formulas[action.index].gameHistory[action.historyIndex].gameVariables);
@@ -267,9 +271,10 @@ const expressionsReducer = produce((expressions, action, state) => {
           }
       }
       expressions.formulas[action.index].gameHistory = newHistory;
-      return expressions
+      return;
+
     default:
-      return expressions;
+      return;
   }
 })
 

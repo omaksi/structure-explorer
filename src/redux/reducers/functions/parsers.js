@@ -49,6 +49,7 @@ export function parseLanguage(state, value, type){
 }
 
 export function parseStructure(state, value, wholeState, type){
+    let previousParsed = state.parsed;
     state.value = value;
     state.errorMessage = '';
     if (value.length === 0) {

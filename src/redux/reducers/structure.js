@@ -38,20 +38,14 @@ import {
   REMOVE_QUATERNARY_PREDICATE,
   REMOVE_TERNARY_FUNCTION,
   ADD_TERNARY_FUNCTION,
-  ADD_BINARY_FUNCTION,
-  LOCK_LANGUAGE_COMPONENT, LOCK_VARIABLES_COMPONENT
+  ADD_BINARY_FUNCTION
 } from "../actions/action_types";
 import {
-  EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
+  EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
   ITEM_NOT_IN_DOMAIN
 } from "../../constants/messages";
-import {
-  RULE_DOMAIN,
-  RULE_PREDICATES_FUNCTIONS_VALUE,
-  RULE_VARIABLE_VALUATION
-} from "../../constants/parser_start_rules";
 import {defaultInputData, DOMAIN, FUNCTION, PREDICATE, VARIABLE} from "../../constants";
-import {BOTH, FROM, PREDICATE as PRED,FUNCTION as FUNC, TO} from "../../graph_view/nodes/ConstantNames";
+import {BOTH, FROM, PREDICATE as PRED, TO} from "../../graph_view/nodes/ConstantNames";
 import {
   validateStructureConstants,
   validateStructurePredicates,
@@ -82,19 +76,19 @@ const structureReducer = produce((structure, action, state) => {
     case SET_FUNCTIONS:
       syncLanguageWithStructure(structure, state.language);
       setVariables(structure, state.language);
-      return structure;
+      return;
 
     case ADD_CONSTANT_NODE:
       insertNewInputs(structure, state.language);
-      return structure;
+      return;
 
     case REMOVE_CONSTANT_NODE:
       deleteUnusedInputs(structure, state.language);
-      return structure;
+      return;
 
     case SET_CONSTANT_VALUE_FROM_LINK:
       setConstantValue(structure, action.constantNodeName, action.domainNodeName);
-      return structure;
+      return;
 
     case RENAME_CONSTANT_NODE:
       let newStateConstantObject = Object.keys(structure.constants).map(key => {
@@ -104,55 +98,55 @@ const structureReducer = produce((structure, action, state) => {
 
       structure.constants = Object.assign({}, ...newStateConstantObject);
       syncLanguageWithStructure(structure, state.language);
-      return structure;
+      return;
 
     case ADD_UNARY_PREDICATE:
       addPredicateLanguageElement(structure, state.language, action.predicateName, 1, [action.nodeName]);
-      return structure;
+      return;
 
     case ADD_BINARY_PREDICATE:
       addPredicateLanguageElement(structure, state.language, action.predicateName, 2, [action.sourceNodeName, action.targetNodeName], action.direction);
-      return structure;
+      return;
 
     case ADD_TERNARY_PREDICATE:
       addPredicateLanguageElement(structure, state.language, action.predicateName,3,action.nodeName);
-      return structure;
+      return;
 
     case ADD_QUATERNARY_PREDICATE:
       addPredicateLanguageElement(structure, state.language, action.predicateName, 4,action.nodeName);
-      return structure;
+      return;
 
     case ADD_BINARY_FUNCTION:
       addFunctionLanguageElement(structure, state.language, action.functionName,2,action.nodeName);
-      return structure;
+      return;
 
     case ADD_TERNARY_FUNCTION:
       addFunctionLanguageElement(structure, state.language, action.functionName,3,action.nodeName);
-      return structure;
+      return;
 
     case REMOVE_UNARY_PREDICATE:
       removePredicateLanguageElement(structure, action.predicateName, 1, [action.nodeName]);
-      return structure;
+      return;
 
     case REMOVE_BINARY_PREDICATE:
       removePredicateLanguageElementInGivenDirection(structure, action.predicateName, action.direction, action.sourceNodeName, action.targetNodeName);
-      return structure;
+      return;
 
     case REMOVE_TERNARY_PREDICATE:
       removePredicateLanguageElement(structure, action.predicateName,3,action.nodeName);
-      return structure;
+      return;
 
     case REMOVE_QUATERNARY_PREDICATE:
       removePredicateLanguageElement(structure, action.predicateName,4,action.nodeName);
-      return structure;
+      return;
 
     case REMOVE_BINARY_FUNCTION:
       removeFunctionLanguageElement(structure, action.functionName,2,action.nodeName);
-      return structure;
+      return;
 
     case REMOVE_TERNARY_FUNCTION:
       removeFunctionLanguageElement(structure, action.functionName,3,action.nodeName);
-      return structure;
+      return;
 
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
       let arity = action.langType === PRED ? 2 : 1;
@@ -171,27 +165,29 @@ const structureReducer = produce((structure, action, state) => {
         addFunctionLanguageElement(structure, state.language, action.languageElementName, arity,
             [action.sourceNodeName, action.targetNodeName], action.direction);
       }
-      return structure;
+      return;
 
     case ADD_UNARY_FUNCTION:
       addFunctionLanguageElement(structure, state.language, action.functionName, 1, [action.sourceNodeName, action.targetNodeName], action.direction);
-      return structure;
+      return;
 
     case REMOVE_UNARY_FUNCTION:
       removeFunctionLanguageElementInGivenDirection(structure, action.functionName, action.direction, action.sourceNodeName, action.targetNodeName);
-      return structure;
+      return;
 
     case SET_CONSTANT_VALUE:
       setConstantValue(structure, action.constantName, action.value);
-      return structure;
+      return;
+
     case SET_PREDICATE_VALUE_TEXT:
       parseStructure(structure.predicates[action.predicateName], action.value, state, PREDICATE);
       checkPredicateValue(structure, action.predicateName);
-      return structure;
+      return;
+
     case SET_PREDICATE_VALUE_TABLE:
       if (action.checked) {
         if(structure.predicates[action.predicateName].parsed.some(tuple => JSON.stringify(tuple) === JSON.stringify(action.value))){
-          return structure;
+          return;
         }
         structure.predicates[action.predicateName].parsed.push(action.value);
       } else {
@@ -206,11 +202,13 @@ const structureReducer = produce((structure, action, state) => {
       }
       structure.predicates[action.predicateName].value = parsedToValue(structure.predicates[action.predicateName].parsed);
       checkPredicateValue(structure, action.predicateName);
-      return structure;
+      return;
+
     case SET_FUNCTION_VALUE_TEXT:
       parseStructure(structure.functions[action.functionName], action.value, state, FUNCTION);
       checkFunctionValue(structure, action.functionName);
-      return structure;
+      return;
+
     case SET_FUNCTION_VALUE_TABLE:
       let params = action.value.slice(0, action.value.length - 1);
       let value = action.value[action.value.length - 1];
@@ -227,11 +225,13 @@ const structureReducer = produce((structure, action, state) => {
       }
       structure.functions[action.functionName].value = parsedToValue(structure.functions[action.functionName].parsed);
       checkFunctionValue(structure, action.functionName);
-      return structure;
+      return;
+
     case SET_VARIABLES_VALUE:
       parseStructure(structure.variables, action.value, state, VARIABLE);
       setVariables(structure, state.language);
-      return structure;
+      return;
+
     case RENAME_DOMAIN_NODE:
       syncLanguageWithStructure(structure, state.language);
       structure.domain.parsed = structure.domain.parsed.map(value => value === action.oldName ? action.newName : value);
@@ -245,13 +245,13 @@ const structureReducer = produce((structure, action, state) => {
       });
       setConstantsValues(structure);
       changePredicatesValues(structure, state.language, action.oldName, action.newName);
-      return structure;
+      return;
 
     case ADD_DOMAIN_NODE:
       structure.domain.parsed.push(action.nodeName);
       structure.domain.value = structure.domain.parsed.join(", ");
       setDomain(structure);
-      return structure;
+      return;
 
     case REMOVE_DOMAIN_NODE:
       structure.domain.parsed = structure.domain.parsed.filter(value => value !== action.nodeName);
@@ -265,7 +265,7 @@ const structureReducer = produce((structure, action, state) => {
         }
       });
       setConstantsValues(structure);
-      return structure;
+      return;
 
     case SET_DOMAIN:
       parseStructure(structure.domain, action.value, state, DOMAIN);
@@ -274,7 +274,7 @@ const structureReducer = produce((structure, action, state) => {
       setPredicatesValues(structure);
       setFunctionsValues(structure);
       setVariables(structure, state.language);
-      return structure;
+      return;
 
     case TOGGLE_EDIT_TABLE:
       if(action.itemType === PREDICATE){
@@ -288,7 +288,7 @@ const structureReducer = produce((structure, action, state) => {
           structure.functions[action.name].databaseEnabled = false;
         }
       }
-      return structure;
+      return;
 
     case TOGGLE_EDIT_DATABASE:
       if(action.itemType === PREDICATE){
@@ -302,32 +302,37 @@ const structureReducer = produce((structure, action, state) => {
           structure.functions[action.name].tableEnabled = false;
         }
       }
-      return structure;
+      return;
 
     case LOCK_DOMAIN:
       structure.domain.locked = !structure.domain.locked;
-      return structure;
+      return;
+
     case LOCK_CONSTANT_VALUE:
       structure.constants[action.constantName].locked = !structure.constants[action.constantName].locked;
-      return structure;
+      return;
+
     case LOCK_PREDICATE_VALUE:
       structure.predicates[action.predicateName].locked = !structure.predicates[action.predicateName].locked;
-      return structure;
+      return;
+
     case LOCK_FUNCTION_VALUE:
       structure.functions[action.functionName].locked = !structure.functions[action.functionName].locked;
-      return structure;
+      return;
     case LOCK_VARIABLES:
       structure.variables.locked = !structure.variables.locked;
-      return structure;
+      return;
+
     case IMPORT_APP:
       setDomain(structure);
       setConstantsValues(structure);
       setPredicatesValues(structure);
       setFunctionsValues(structure);
       setVariables(structure, state.language);
-      return structure;
+      return;
+
     default:
-      return structure;
+      return;
   }
 })
 
@@ -529,7 +534,7 @@ function setConstantValue(state, constantName, value) {
 }
 
 function checkPredicateValue(state, predicateName) {
-  if (state.predicates[predicateName].parsed.length === 0) {
+  if (state.predicates[predicateName].errorMessage !== '') {
     return;
   }
   let arity = predicateName.split("/")[1];
@@ -546,15 +551,6 @@ function checkFunctionValue(state, functionName) {
   state.functions[functionName].errorMessage =
       validateStructureFunctions(state.functions[functionName].parsed, state.domain.parsed, arity);
 }
-
-const copyState = (state) => ({
-  ...state,
-  constants: {...state.constants},
-  predicates: {...state.predicates},
-  functions: {...state.functions},
-  variables: {...state.variables},
-  domain: {...state.domain}
-});
 
 function tupleToString(tuple) {
   if (tuple.length === 0) {

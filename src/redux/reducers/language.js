@@ -38,45 +38,55 @@ const languageReducer = produce((state, action) => {
       setConstants(state);
       setPredicates(state);
       setFunctions(state);
-      return state;
+      return;
+
     case SET_PREDICATES:
       parseLanguage(state.predicates, action.value, PREDICATE);
       setPredicates(state);
       setConstants(state);
       setFunctions(state);
-      return state;
+      return;
+
     case SET_FUNCTIONS:
       parseLanguage(state.functions, action.value, FUNCTION);
       setFunctions(state);
       setPredicates(state);
       setConstants(state);
-      return state;
+      return;
+
     case ADD_UNARY_PREDICATE:
       addPredicateLanguageElement(state, action.predicateName, 1);
-      return state;
+      return;
+
     case ADD_BINARY_PREDICATE:
       addPredicateLanguageElement(state, action.predicateName, 2);
-      return state;
+      return;
+
     case ADD_TERNARY_PREDICATE:
       addPredicateLanguageElement(state, action.predicateName, 3);
-      return state;
+      return;
+
     case ADD_QUATERNARY_PREDICATE:
       addPredicateLanguageElement(state, action.predicateName, 4);
-      return state;
+      return;
+
     case ADD_UNARY_FUNCTION:
       addFunctionLanguageElement(state, action.functionName, 1);
-      return state;
+      return;
+
     case ADD_BINARY_FUNCTION:
       addFunctionLanguageElement(state, action.functionName, 2);
-      return state;
+      return;
+
     case ADD_TERNARY_FUNCTION:
       addFunctionLanguageElement(state, action.functionName, 3);
-      return state;
+      return;
+
     case ADD_CONSTANT_NODE:
       state.constants.parsed.push(action.nodeName);
       state.constants.value = state.constants.parsed.join(", ");
       setConstants(state);
-      return state;
+      return;
 
     case RENAME_DOMAIN_NODE:
     case REMOVE_DOMAIN_NODE:
@@ -89,39 +99,44 @@ const languageReducer = produce((state, action) => {
       parseLanguage(state.functions, returnParsedFuncValues(state), FUNCTION);
       setFunctions(state);
 
-      return state;
+      return;
 
     case REMOVE_CONSTANT_NODE:
       state.constants.parsed = state.constants.parsed.filter(value => value != action.nodeName);
       state.constants.value = state.constants.parsed.join(", ");
       setConstants(state);
-      return state;
+      return;
 
     case RENAME_CONSTANT_NODE:
       state.constants.parsed = state.constants.parsed.map(value => value === action.oldName ? action.newName : value);
       state.constants.value = state.constants.parsed.join(", ");
       setConstants(state);
-      return state;
+      return;
 
     case LOCK_CONSTANTS:
       state.constants.locked = !state.constants.locked;
-      return state;
+      return;
+
     case LOCK_PREDICATES:
       state.predicates.locked = !state.predicates.locked;
-      return state;
+      return;
+
     case LOCK_FUNCTIONS:
       state.functions.locked = !state.functions.locked;
-      return state;
+      return;
+
     case LOCK_LANGUAGE_COMPONENT:
       state.lockedComponent = !state.lockedComponent;
-      return state;
+      return;
+
     case IMPORT_APP:
       setConstants(state);
       setPredicates(state);
       setFunctions(state);
-      return state;
+      return;
+
     default:
-      return state;
+      return;
   }
 })
 

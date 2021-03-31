@@ -34,7 +34,12 @@ export function parseLanguage(state, value, type){
                 parsedValue = parseFunctions(value);
                 break;
         }
-        state.parsed = parsedValue.items;
+
+        if (parsedValue.items) {
+            state.parsed = parsedValue.items;
+        } else {
+            state.parsed = parsedValue;
+        }
     } catch (e) {
         state.errorMessage = e.message;
     }
@@ -62,8 +67,13 @@ export function parseStructure(state, value, wholeState, type){
                 break;
         }
 
-        state.parsed = parsedValue.items;
+        if (parsedValue.items) {
+            state.parsed = parsedValue.items;
+        } else {
+            state.parsed = parsedValue;
+        }
     } catch (e) {
+        console.error(e);
         state.errorMessage = e.message;
     }
 }
@@ -85,7 +95,11 @@ export function parseExpression(state, value, wholeState, type){
             const formulaFactories = getFormulaFactories(language);
             parsedValue = parseFormulaStrict(value, language.getLanguage(), formulaFactories);
         }
-        state.parsed = parsedValue.items;
+        if (parsedValue.items) {
+            state.parsed = parsedValue.items;
+        } else {
+            state.parsed = parsedValue;
+        }
     } catch (e) {
         state.errorMessage = e.message;
         state.parsed = null;

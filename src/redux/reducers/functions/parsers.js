@@ -37,7 +37,9 @@ export function parseLanguage(state, value, type){
         state.parsed = parsedValue;
     } catch (e) {
         state.errorMessage = e.message;
+        return false;
     }
+    return true;
 }
 
 export function parseStructure(state, value, wholeState, type){

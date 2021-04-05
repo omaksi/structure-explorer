@@ -36,22 +36,22 @@ const languageReducer = produce((state, action) => {
     case SET_CONSTANTS:
       parseLanguage(state.constants, action.value, CONSTANT);
       setConstants(state);
-      setPredicates(state);
-      setFunctions(state);
+      setPredicates(state, true);
+      setFunctions(state, true);
       return;
 
     case SET_PREDICATES:
       parseLanguage(state.predicates, action.value, PREDICATE);
       setPredicates(state);
-      setConstants(state);
-      setFunctions(state);
+      setConstants(state, true);
+      setFunctions(state, true);
       return;
 
     case SET_FUNCTIONS:
       parseLanguage(state.functions, action.value, FUNCTION);
       setFunctions(state);
-      setPredicates(state);
-      setConstants(state);
+      setPredicates(state, true);
+      setConstants(state, true);
       return;
 
     case ADD_UNARY_PREDICATE:
@@ -164,24 +164,30 @@ function addFunctionLanguageElement(state, elementName, elementArity){
   setFunctions(state);
 }
 
-function setConstants(state) {
-  if (!state.constants.parsed || state.constants.parsed.length === 0 || state.constants.errorMessage !== '') {
+function setConstants(state, reParseValue = false) {
+  if(reParseValue && !parseLanguage(state.constants, state.constants.value, CONSTANT)){
+    return
+  } else if (!reParseValue && state.constants.errorMessage !== '') {
     return;
   }
   state.constants.errorMessage =
       validateConstants(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
 
-function setPredicates(state) {
-  if (!state.predicates.parsed || state.predicates.parsed.length === 0 || state.predicates.errorMessage !== '') {
+function setPredicates(state, reParseValue = false) {
+  if(reParseValue && !parseLanguage(state.predicates, state.predicates.value, PREDICATE)){
+    return;
+  } else if (!reParseValue && state.predicates.errorMessage !== '') {
     return;
   }
   state.predicates.errorMessage =
       validatePredicates(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
 
-function setFunctions(state) {
-  if (!state.functions.parsed || state.functions.parsed.length === 0 || state.predicates.errorMessage !== '') {
+function setFunctions(state, reParseValue = false) {
+  if(reParseValue && !parseLanguage(state.functions, state.functions.value, FUNCTION)){
+    return;
+  } else if (!reParseValue && state.functions.errorMessage !== '') {
     return;
   }
   state.functions.errorMessage =

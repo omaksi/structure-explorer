@@ -35,23 +35,23 @@ const languageReducer = produce((state, action) => {
   switch (action.type) {
     case SET_CONSTANTS:
       parseLanguage(state.constants, action.value, CONSTANT);
-      setConstants(state);
-      setPredicates(state, true);
-      setFunctions(state, true);
+      validateConstants(state);
+      validateAndParsePredicates(state);
+      validateAndParseFunctions(state);
       return;
 
     case SET_PREDICATES:
       parseLanguage(state.predicates, action.value, PREDICATE);
-      setPredicates(state);
-      setConstants(state, true);
-      setFunctions(state, true);
+      validatePredicates(state);
+      validateAndParseConstants(state);
+      validateAndParseFunctions(state);
       return;
 
     case SET_FUNCTIONS:
       parseLanguage(state.functions, action.value, FUNCTION);
-      setFunctions(state);
-      setPredicates(state, true);
-      setConstants(state, true);
+      validateFunctions(state);
+      validateAndParsePredicates(state);
+      validateAndParseConstants(state);
       return;
 
     case ADD_UNARY_PREDICATE:
@@ -85,32 +85,32 @@ const languageReducer = produce((state, action) => {
     case ADD_CONSTANT_NODE:
       state.constants.parsed.push(action.nodeName);
       state.constants.value = state.constants.parsed.join(", ");
-      setConstants(state);
+      validateConstants(state);
       return;
 
     case RENAME_DOMAIN_NODE:
     case REMOVE_DOMAIN_NODE:
       parseLanguage(state.constants, returnParsedConstValues(state), CONSTANT);
-      setConstants(state);
+      validateConstants(state);
 
       parseLanguage(state.predicates, returnParsedPredValues(state), PREDICATE);
-      setPredicates(state);
+      validatePredicates(state);
 
       parseLanguage(state.functions, returnParsedFuncValues(state), FUNCTION);
-      setFunctions(state);
+      validateFunctions(state);
 
       return;
 
     case REMOVE_CONSTANT_NODE:
       state.constants.parsed = state.constants.parsed.filter(value => value != action.nodeName);
       state.constants.value = state.constants.parsed.join(", ");
-      setConstants(state);
+      validateConstants(state);
       return;
 
     case RENAME_CONSTANT_NODE:
       state.constants.parsed = state.constants.parsed.map(value => value === action.oldName ? action.newName : value);
       state.constants.value = state.constants.parsed.join(", ");
-      setConstants(state);
+      validateConstants(state);
       return;
 
     case LOCK_CONSTANTS:
@@ -130,9 +130,9 @@ const languageReducer = produce((state, action) => {
       return;
 
     case IMPORT_APP:
-      setConstants(state);
-      setPredicates(state);
-      setFunctions(state);
+      validateConstants(state);
+      validatePredicates(state);
+      validateFunctions(state);
       return;
 
     default:
@@ -155,43 +155,31 @@ function returnParsedFuncValues(state){
 function addPredicateLanguageElement(state, elementName, elementArity){
   state.predicates.parsed.push({name: elementName, arity: elementArity});
   state.predicates.value = state.predicates.parsed.map(value => value.name + "/" + value.arity).join(",");
-  setPredicates(state);
+  validatePredicates(state);
 }
 
 function addFunctionLanguageElement(state, elementName, elementArity){
   state.functions.parsed.push({name: elementName, arity: elementArity});
   state.functions.value = state.functions.parsed.map(value => value.name + "/" + value.arity).join(",");
-  setFunctions(state);
+  validateFunctions(state);
 }
 
-function setConstants(state, reParseValue = false) {
-  if(reParseValue && !parseLanguage(state.constants, state.constants.value, CONSTANT)){
-    return
-  } else if (!reParseValue && state.constants.errorMessage !== '') {
-    return;
+function validateAndParseConstants(state) {
+  if(parseLanguage(state.constants, state.constants.value, CONSTANT)){
+    validateConstants(state);
   }
-  state.constants.errorMessage =
-      validateConstants(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
 
-function setPredicates(state, reParseValue = false) {
-  if(reParseValue && !parseLanguage(state.predicates, state.predicates.value, PREDICATE)){
-    return;
-  } else if (!reParseValue && state.predicates.errorMessage !== '') {
-    return;
+function validateAndParsePredicates(state) {
+  if(parseLanguage(state.predicates, state.predicates.value, PREDICATE)){
+    validatePredicates(state);
   }
-  state.predicates.errorMessage =
-      validatePredicates(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
 
-function setFunctions(state, reParseValue = false) {
-  if(reParseValue && !parseLanguage(state.functions, state.functions.value, FUNCTION)){
-    return;
-  } else if (!reParseValue && state.functions.errorMessage !== '') {
-    return;
+function validateAndParseFunctions(state) {
+  if(parseLanguage(state.functions, state.functions.value, FUNCTION)){
+    validateFunctions(state);
   }
-  state.functions.errorMessage =
-      validateFunctions(state.constants.parsed, state.functions.parsed, state.predicates.parsed);
 }
 
 export default languageReducer;

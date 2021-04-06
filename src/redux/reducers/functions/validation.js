@@ -6,61 +6,64 @@ import {
 } from "../../../constants/messages";
 
 
-export function validateLanguageConstants(constants, functions, predicates){
-    let message = '';
-    constants.forEach(c => {
-        if (functions && functions.some(value => value.name === c)) {
-            message = `${FUNCTION_IN_LANGUAGE} ${c}`;
+export function validateLanguageConstants(state){
+    if(state.constants.errorMessage){
+        return;
+    }
+    state.constants.parsed.forEach(c => {
+        if (state.functions.parsed.some(value => value.name === c)) {
+            state.constants.errorMessage = `${FUNCTION_IN_LANGUAGE} ${c}`;
             return;
         }
-        if (predicates && predicates.some(value => value.name === c)) {
-            message = `${PREDICATE_IN_LANGUAGE} ${c}`;
+        if (state.predicates.parsed.some(value => value.name === c)) {
+            state.constants.errorMessage = `${PREDICATE_IN_LANGUAGE} ${c}`;
             return;
         }
-        if (constants && constants.filter(value => value === c).length > 1) {
-            message = `${CONSTANT_IN_LANGUAGE}  ${c}`;
+        if (state.constants.parsed.filter(value => value === c).length > 1) {
+            state.constants.errorMessage = `${CONSTANT_IN_LANGUAGE}  ${c}`;
             return;
         }
     });
-    return message;
 }
 
-export function validateLanguagePredicates(constants, functions, predicates){
-    let message = '';
-    predicates.forEach(p => {
-        if (constants && constants.some(value => value === p.name)) {
-            message = `${CONSTANT_IN_LANGUAGE}  ${p.name}`;
+export function validateLanguagePredicates(state){
+    if(state.predicates.errorMessage){
+        return;
+    }
+    state.predicates.parsed.forEach(p => {
+        if (state.constants.parsed.some(value => value === p.name)) {
+            state.predicates.errorMessage = `${CONSTANT_IN_LANGUAGE}  ${p.name}`;
             return;
         }
-        if (functions && functions.some(value => value.name === p.name)) {
-            message = `${FUNCTION_IN_LANGUAGE} ${p.name}`;
+        if (state.functions.parsed.some(value => value.name === p.name)) {
+            state.predicates.errorMessage = `${FUNCTION_IN_LANGUAGE} ${p.name}`;
             return;
         }
-        if(predicates && predicates.filter(value => value.name === p.name).length > 1){
-            message = `${PREDICATE_IN_LANGUAGE} ${p.name}`;
+        if(state.predicates.parsed.filter(value => value.name === p.name).length > 1){
+            state.predicates.errorMessage = `${PREDICATE_IN_LANGUAGE} ${p.name}`;
             return;
         }
     });
-    return message;
 }
 
-export function validateLanguageFunctions(constants, functions, predicates){
-    let message = '';
-    functions.forEach(f => {
-        if (constants && constants.some(value => value === f.name)) {
-            message = `${CONSTANT_IN_LANGUAGE} ${f.name}`;
+export function validateLanguageFunctions(state){
+    if(state.functions.errorMessage){
+        return;
+    }
+    state.functions.parsed.forEach(f => {
+        if (state.constants.parsed.some(value => value === f.name)) {
+            state.functions.errorMessage = `${CONSTANT_IN_LANGUAGE} ${f.name}`;
             return;
         }
-        if (predicates && predicates.some(value => value.name === f.name)) {
-            message = `${PREDICATE_IN_LANGUAGE} ${f.name}`;
+        if (state.predicates.parsed.some(value => value.name === f.name)) {
+            state.functions.errorMessage = `${PREDICATE_IN_LANGUAGE} ${f.name}`;
             return;
         }
-        if(functions && functions.filter(value => value.name === f.name).length > 1){
-            message = `${FUNCTION_IN_LANGUAGE} ${f.name}`;
+        if(state.functions.parsed.filter(value => value.name === f.name).length > 1){
+            state.functions.errorMessage = `${FUNCTION_IN_LANGUAGE} ${f.name}`;
             return;
         }
     });
-    return message;
 }
 
 export function validateStructureConstants(constantName, value, constants, domainValues){

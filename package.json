@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
-    "@fmfi-uk-1-ain-412/js-fol-parser": "^0.4.3",
+    "@fmfi-uk-1-ain-412/js-fol-parser": "^0.5.1",
     "@projectstorm/react-diagrams": "^6.1.1",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^10.0.4",

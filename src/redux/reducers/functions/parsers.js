@@ -1,4 +1,4 @@
-import {parseConstants, parsePredicates, parseFunctions, parseDomain, parseTuples, parseValuation, parseTerm, parseFormulaStrict} from '@fmfi-uk-1-ain-412/js-fol-parser';
+import {parseConstants, parsePredicates, parseFunctions, parseDomain, parseTuples, parseValuation, parseTerm, parseFormulaWithPrecedence} from '@fmfi-uk-1-ain-412/js-fol-parser';
 import {CONSTANT, PREDICATE, FUNCTION, DOMAIN, VARIABLE, TERM} from "../../../constants";
 import {getLanguageObject} from "../../selectors/languageObject";
 import Variable from "../../../model/term/Term.Variable";
@@ -67,7 +67,7 @@ export function parseExpression(state, value, wholeState, type){
             state.parsed = parseTerm(value, language.getLanguage(), termFactories);
         } else {
             const formulaFactories = getFormulaFactories(language);
-            state.parsed = parseFormulaStrict(value, language.getLanguage(), formulaFactories);
+            state.parsed = parseFormulaWithPrecedence(value, language.getLanguage(), formulaFactories);
         }
     } catch (e) {
         state.errorMessage = e.message;

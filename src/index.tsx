@@ -4,7 +4,9 @@ import * as serviceWorker from './serviceWorker';
 import AppContainer from "./redux/containers/AppContainer";
 import {createStore} from "redux";
 import reducer from "./redux/reducers";
+import {enableMapSet} from "immer";
 
+enableMapSet();
 
 // @ts-ignore
 const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());

@@ -1,4 +1,4 @@
-import {parseConstants, parsePredicates, parseFunctions, parseDomain, parseTuples, parseValuation, parseTerm, parseFormula} from '@fmfi-uk-1-ain-412/js-fol-parser';
+import {parseConstants, parsePredicates, parseFunctions, parseDomain, parseTuples, parseValuation, parseTerm, parseFormulaWithPrecedence} from '@fmfi-uk-1-ain-412/js-fol-parser';
 import {CONSTANT, PREDICATE, FUNCTION, DOMAIN, VARIABLE, TERM} from "../../../constants";
 import {getLanguageObject} from "../../selectors/languageObject";
 import Variable from "../../../model/term/Term.Variable";
@@ -13,100 +13,63 @@ import Implication from "../../../model/formula/Formula.Implication";
 import ExistentialQuant from "../../../model/formula/Formula.ExistentialQuant";
 import UniversalQuant from "../../../model/formula/Formula.UniversalQuant";
 import Equivalence from "../../../model/formula/Formula.Equivalence";
-let parser = require('../../../parser/grammar');
 
 export function parseLanguage(state, value, type){
-    let previousParsed = state.parsed;
     state.value = value;
     state.errorMessage = '';
-    if (value.length === 0) {
-        state.parsed = [];
-        return;
-    }
     try {
-        let parsedValue;
         switch(type){
             case CONSTANT:
-                parsedValue = parseConstants(value);
+                state.parsed = parseConstants(value);
                 break;
             case PREDICATE:
-                parsedValue = parsePredicates(value);
+                state.parsed = parsePredicates(value);
                 break;
             case FUNCTION:
-                parsedValue = parseFunctions(value);
+                state.parsed = parseFunctions(value);
                 break;
         }
-
-        if (parsedValue.items) {
-            state.parsed = parsedValue.items;
-        } else {
-            state.parsed = parsedValue;
-        }
     } catch (e) {
-        console.error(e);
         state.errorMessage = e.message;
-        state.parsed = previousParsed;
+        return false;
     }
+    return true;
 }
 
 export function parseStructure(state, value, wholeState, type){
     state.value = value;
     state.errorMessage = '';
-    if (value.length === 0) {
-        state.parsed = [];
-        return;
-    }
     try {
-        let parsedValue;
         switch(type){
             case DOMAIN:
-                parsedValue = parseDomain(value);
+                state.parsed = parseDomain(value);
                 break;
             case PREDICATE:
             case FUNCTION:
-                parsedValue = parseTuples(value);
+                state.parsed = parseTuples(value);
                 break;
             case VARIABLE:
-                parsedValue = parseValuation(value, getLanguageObject(wholeState).getLanguage());
+                state.parsed = parseValuation(value, getLanguageObject(wholeState).getLanguage());
                 break;
         }
-
-        if (parsedValue.items) {
-            state.parsed = parsedValue.items;
-        } else {
-            state.parsed = parsedValue;
-        }
     } catch (e) {
-        console.error(e);
         state.errorMessage = e.message;
-        state.parsed = [];
     }
 }
 
-export function parseExpression(state, value, wholeState, type, parserOptions){
-    //let language = getLanguageObject(wholeState);
+export function parseExpression(state, value, wholeState, type){
+    let language = getLanguageObject(wholeState);
     state.value = value;
     state.errorMessage = '';
-    if (value.length === 0) {
-        state.parsed = null;
-        return;
-    }
     try {
-        let parsedValue = parser.parse(value, parserOptions);
-        /*if(type === TERM){
+        if(type === TERM){
             const termFactories = getTermFactories(language);
-            parsedValue = parseTerm(value, language.getLanguage(), termFactories);
+            state.parsed = parseTerm(value, language.getLanguage(), termFactories);
         } else {
             const formulaFactories = getFormulaFactories(language);
-            parsedValue = parseFormula(value, language.getLanguage(), formulaFactories);
-        }*/
-        if (parsedValue.items) {
-            state.parsed = parsedValue.items;
-        } else {
-            state.parsed = parsedValue;
+            state.parsed = parseFormulaWithPrecedence(value, language.getLanguage(), formulaFactories);
         }
     } catch (e) {
-        console.error(e);
         state.errorMessage = e.message;
         state.parsed = null;
     }

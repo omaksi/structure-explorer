@@ -32,17 +32,17 @@ function root(state = defaultState, action:any) {
         try {
             state = JSON.parse(action.content);
             checkImportedState(state);
-            state.structure.variables.object = new Map();
             state.diagramState = action.diagramState?action.diagramState:diagramDefaultState();
         } catch (e) {
             console.error(e);
         }
 
     }
+
     let common = teacherModeReducer(state.common, action);
     let language = languageReducer(state.language, action);
-    let structure = structureReducer(state.structure, action, language, state);
-    let expressions = expressionsReducer(state.expressions, action, state.structure.variables.object, state);
+    let structure = structureReducer(state.structure, action, {language});
+    let expressions = expressionsReducer(state.expressions, action, {language, structure})
     let diagramState = diagramReducer(state.diagramState, action, state);
 
     return {

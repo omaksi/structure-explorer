@@ -38,26 +38,21 @@ import {
   REMOVE_QUATERNARY_PREDICATE,
   REMOVE_TERNARY_FUNCTION,
   ADD_TERNARY_FUNCTION,
-  ADD_BINARY_FUNCTION,
-  LOCK_LANGUAGE_COMPONENT, LOCK_VARIABLES_COMPONENT
+  ADD_BINARY_FUNCTION
 } from "../actions/action_types";
 import {
-  EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_ALREADY_DEFINED, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
+  EMPTY_CONSTANT_VALUE, EMPTY_DOMAIN, FUNCTION_NOT_FULL_DEFINED, ITEM_IN_LANGUAGE,
   ITEM_NOT_IN_DOMAIN
 } from "../../constants/messages";
-import {
-  RULE_DOMAIN,
-  RULE_PREDICATES_FUNCTIONS_VALUE,
-  RULE_VARIABLE_VALUATION
-} from "../../constants/parser_start_rules";
 import {defaultInputData, DOMAIN, FUNCTION, PREDICATE, VARIABLE} from "../../constants";
-import {BOTH, FROM, PREDICATE as PRED,FUNCTION as FUNC, TO} from "../../graph_view/nodes/ConstantNames";
+import {BOTH, FROM, PREDICATE as PRED, TO} from "../../graph_view/nodes/ConstantNames";
 import {
   validateStructureConstants,
   validateStructurePredicates,
   validateStructureFunctions
 } from "./functions/validation";
 import {parseStructure} from "./functions/parsers";
+import produce from "immer";
 
 const constantDefaultInput = () => ({...defaultInputData(), errorMessage: EMPTY_CONSTANT_VALUE});
 const predicateDefaultInput = () => ({...defaultInputData(), tableEnabled: false});
@@ -69,91 +64,89 @@ export function defaultState(){
     constants: {},
     predicates: {},
     functions: {},
-    variables: {...defaultInputData(), object: new Map()},
+    variables: {...defaultInputData()},
     domain: {...defaultInputData(), errorMessage: EMPTY_DOMAIN}
   }
 }
 
-function structureReducer(state, action, language, wholeState) {
-  let newState = copyState(state);
-  let input = action.itemType === PREDICATE ? newState.predicates[action.name] : newState.functions[action.name];
+const structureReducer = produce((structure, action, state) => {
   switch (action.type) {
     case SET_CONSTANTS:
     case SET_PREDICATES:
     case SET_FUNCTIONS:
-      syncLanguageWithStructure(newState, language);
-      setVariables(newState, language);
-      return newState;
+      syncLanguageWithStructure(structure, state.language);
+      setVariables(structure, state.language);
+      return;
 
     case ADD_CONSTANT_NODE:
-      insertNewInputs(newState, language);
-      return newState;
+      insertNewInputs(structure, state.language);
+      return;
 
     case REMOVE_CONSTANT_NODE:
-      deleteUnusedInputs(newState, language);
-      return newState;
+      deleteUnusedInputs(structure, state.language);
+      return;
 
     case SET_CONSTANT_VALUE_FROM_LINK:
-      setConstantValue(newState, action.constantNodeName, action.domainNodeName);
-      return newState;
+      setConstantValue(structure, action.constantNodeName, action.domainNodeName);
+      return;
 
     case RENAME_CONSTANT_NODE:
-      let newStateConstantObject = Object.keys(newState.constants).map(key => {
+      let newStateConstantObject = Object.keys(structure.constants).map(key => {
         let newKey = key === action.oldName ? action.newName : key;
-        return {[newKey]: newState.constants[key]}
+        return {[newKey]: structure.constants[key]}
       });
 
-      newState.constants = Object.assign({}, ...newStateConstantObject);
-      syncLanguageWithStructure(newState, language);
-      return newState;
+      structure.constants = Object.assign({}, ...newStateConstantObject);
+      syncLanguageWithStructure(structure, state.language);
+      return;
 
     case ADD_UNARY_PREDICATE:
-      addPredicateLanguageElement(newState, language, action.predicateName, 1, [action.nodeName]);
-      return newState;
+      addPredicateLanguageElement(structure, state.language, action.predicateName, 1, [action.nodeName]);
+      return;
 
     case ADD_BINARY_PREDICATE:
-      addPredicateLanguageElement(newState, language, action.predicateName, 2, [action.sourceNodeName, action.targetNodeName], action.direction);
-      return newState;
+      addPredicateLanguageElement(structure, state.language, action.predicateName, 2, [action.sourceNodeName, action.targetNodeName], action.direction);
+      return;
 
     case ADD_TERNARY_PREDICATE:
-      addPredicateLanguageElement(newState, language, action.predicateName,3,action.nodeName);
-      return newState;
+      addPredicateLanguageElement(structure, state.language, action.predicateName,3,action.nodeName);
+      return;
 
     case ADD_QUATERNARY_PREDICATE:
-      addPredicateLanguageElement(newState, language, action.predicateName, 4,action.nodeName);
-      return newState;
+      addPredicateLanguageElement(structure, state.language, action.predicateName, 4,action.nodeName);
+      return;
 
     case ADD_BINARY_FUNCTION:
-      addFunctionLanguageElement(newState, language, action.functionName,2,action.nodeName);
-      return newState;
+      addFunctionLanguageElement(structure, state.language, action.functionName,2,action.nodeName);
+      return;
 
     case ADD_TERNARY_FUNCTION:
-      addFunctionLanguageElement(newState, language, action.functionName,3,action.nodeName);
-      return newState;
+      addFunctionLanguageElement(structure, state.language, action.functionName,3,action.nodeName);
+      return;
 
     case REMOVE_UNARY_PREDICATE:
-      removePredicateLanguageElement(newState, action.predicateName, 1, [action.nodeName]);
-      return newState;
+      removePredicateLanguageElement(structure, action.predicateName, 1, [action.nodeName]);
+      return;
 
     case REMOVE_BINARY_PREDICATE:
-      removePredicateLanguageElementInGivenDirection(newState, action.predicateName, action.direction, action.sourceNodeName, action.targetNodeName);
-      return newState;
+      removePredicateLanguageElementInGivenDirection(structure, action.predicateName, action.direction, action.sourceNodeName, action.targetNodeName);
+      return;
 
     case REMOVE_TERNARY_PREDICATE:
-      removePredicateLanguageElement(newState, action.predicateName,3,action.nodeName);
-      return newState;
+      removePredicateLanguageElement(structure, action.predicateName,3,action.nodeName);
+      return;
 
     case REMOVE_QUATERNARY_PREDICATE:
-      removePredicateLanguageElement(newState, action.predicateName,4,action.nodeName);
-      return newState;
+      removePredicateLanguageElement(structure, action.predicateName,4,action.nodeName);
+      return;
 
     case REMOVE_BINARY_FUNCTION:
-      removeFunctionLanguageElement(newState, action.functionName,2,action.nodeName);
-      return newState;
+      removeFunctionLanguageElement(structure, action.functionName,2,action.nodeName);
+      return;
 
     case REMOVE_TERNARY_FUNCTION:
-      removeFunctionLanguageElement(newState, action.functionName,3,action.nodeName);
-      return newState;
+      removeFunctionLanguageElement(structure, action.functionName,3,action.nodeName);
+      return;
 
     case CHANGE_DIRECTION_OF_BINARY_RELATION:
       let arity = action.langType === PRED ? 2 : 1;
@@ -164,163 +157,184 @@ function structureReducer(state, action, language, wholeState) {
         nodeNames = [action.sourceNodeName, action.targetNodeName];
       }
       if(action.langType === PRED) {
-        removePredicateLanguageElement(newState, action.languageElementName, arity, nodeNames);
-        addPredicateLanguageElement(newState, language, action.languageElementName, arity,
+        removePredicateLanguageElement(structure, action.languageElementName, arity, nodeNames);
+        addPredicateLanguageElement(structure, state.language, action.languageElementName, arity,
             [action.sourceNodeName, action.targetNodeName], action.direction);
       } else {
-        removeFunctionLanguageElement(newState, action.languageElementName, arity, nodeNames);
-        addFunctionLanguageElement(newState, language, action.languageElementName, arity,
+        removeFunctionLanguageElement(structure, action.languageElementName, arity, nodeNames);
+        addFunctionLanguageElement(structure, state.language, action.languageElementName, arity,
             [action.sourceNodeName, action.targetNodeName], action.direction);
       }
-      return newState;
+      return;
 
     case ADD_UNARY_FUNCTION:
-      addFunctionLanguageElement(newState, language, action.functionName, 1, [action.sourceNodeName, action.targetNodeName], action.direction);
-      return newState;
+      addFunctionLanguageElement(structure, state.language, action.functionName, 1, [action.sourceNodeName, action.targetNodeName], action.direction);
+      return;
 
     case REMOVE_UNARY_FUNCTION:
-      removeFunctionLanguageElementInGivenDirection(newState, action.functionName, action.direction, action.sourceNodeName, action.targetNodeName);
-      return newState;
+      removeFunctionLanguageElementInGivenDirection(structure, action.functionName, action.direction, action.sourceNodeName, action.targetNodeName);
+      return;
 
     case SET_CONSTANT_VALUE:
-      setConstantValue(newState, action.constantName, action.value);
-      return newState;
+      setConstantValue(structure, action.constantName, action.value);
+      return;
+
     case SET_PREDICATE_VALUE_TEXT:
-      parseStructure(newState.predicates[action.predicateName], action.value, wholeState, PREDICATE);
-      checkPredicateValue(newState, action.predicateName);
-      return newState;
+      parseStructure(structure.predicates[action.predicateName], action.value, state, PREDICATE);
+      checkPredicateValue(structure, action.predicateName);
+      return;
+
     case SET_PREDICATE_VALUE_TABLE:
       if (action.checked) {
-        if(newState.predicates[action.predicateName].parsed.some(tuple => JSON.stringify(tuple) === JSON.stringify(action.value))){
-          return newState;
+        if(structure.predicates[action.predicateName].parsed.some(tuple => JSON.stringify(tuple) === JSON.stringify(action.value))){
+          return;
         }
-        newState.predicates[action.predicateName].parsed.push(action.value);
+        structure.predicates[action.predicateName].parsed.push(action.value);
       } else {
         let index = 0;
-        newState.predicates[action.predicateName].parsed.forEach(tuple =>{
+        structure.predicates[action.predicateName].parsed.forEach(tuple =>{
           if(JSON.stringify(tuple) === JSON.stringify(action.value)){
-            newState.predicates[action.predicateName].parsed.splice(index, 1);
+            structure.predicates[action.predicateName].parsed.splice(index, 1);
             return;
           }
           index++;
         })
       }
-      newState.predicates[action.predicateName].value = parsedToValue(newState.predicates[action.predicateName].parsed);
-      checkPredicateValue(newState, action.predicateName);
-      return newState;
+      structure.predicates[action.predicateName].value = parsedToValue(structure.predicates[action.predicateName].parsed);
+      checkPredicateValue(structure, action.predicateName);
+      return;
+
     case SET_FUNCTION_VALUE_TEXT:
-      parseStructure(newState.functions[action.functionName], action.value, wholeState, FUNCTION);
-      checkFunctionValue(newState, action.functionName);
-      return newState;
-    case SET_FUNCTION_VALUE_TABLE:;
+      parseStructure(structure.functions[action.functionName], action.value, state, FUNCTION);
+      checkFunctionValue(structure, action.functionName);
+      return;
+
+    case SET_FUNCTION_VALUE_TABLE:
       let params = action.value.slice(0, action.value.length - 1);
       let value = action.value[action.value.length - 1];
       let index = 0;
-      newState.functions[action.functionName].parsed.forEach(tuple => {
+      structure.functions[action.functionName].parsed.forEach(tuple => {
         if(JSON.stringify(tuple.slice(0, tuple.length - 1)) === JSON.stringify(params)){
-          newState.functions[action.functionName].parsed.splice(index, 1);
+          structure.functions[action.functionName].parsed.splice(index, 1);
           return;
         }
         index++;
       });
       if(value !== "") {
-        newState.functions[action.functionName].parsed.push(action.value);
+        structure.functions[action.functionName].parsed.push(action.value);
       }
-      newState.functions[action.functionName].value = parsedToValue(newState.functions[action.functionName].parsed);
-      checkFunctionValue(newState, action.functionName);
-      return newState;
-    case SET_VARIABLES_VALUE:
-      parseStructure(newState.variables, action.value, wholeState, VARIABLE);
-      setVariables(newState, language);
-      return newState;
-    case RENAME_DOMAIN_NODE:
-      syncLanguageWithStructure(newState, language);
-      newState.domain.parsed = newState.domain.parsed.map(value => value === action.oldName ? action.newName : value);
-      newState.domain.value = newState.domain.parsed.join(", ");
-      setDomain(newState);
+      structure.functions[action.functionName].value = parsedToValue(structure.functions[action.functionName].parsed);
+      checkFunctionValue(structure, action.functionName);
+      return;
 
-      Object.keys(newState.constants).forEach(c => {
-        if (newState.constants[c].value === action.oldName) {
-          newState.constants[c].value = action.newName;
+    case SET_VARIABLES_VALUE:
+      parseStructure(structure.variables, action.value, state, VARIABLE);
+      setVariables(structure, state.language);
+      return;
+
+    case RENAME_DOMAIN_NODE:
+      syncLanguageWithStructure(structure, state.language);
+      structure.domain.parsed = structure.domain.parsed.map(value => value === action.oldName ? action.newName : value);
+      structure.domain.value = structure.domain.parsed.join(", ");
+      setDomain(structure);
+
+      Object.keys(structure.constants).forEach(c => {
+        if (structure.constants[c].value === action.oldName) {
+          structure.constants[c].value = action.newName;
         }
       });
-      setConstantsValues(newState);
-      changePredicatesValues(newState, language, action.oldName, action.newName);
-      return newState;
+      setConstantsValues(structure);
+      changePredicatesValues(structure, state.language, action.oldName, action.newName);
+      return;
 
     case ADD_DOMAIN_NODE:
-      newState.domain.parsed.push(action.nodeName);
-      newState.domain.value = newState.domain.parsed.join(", ");
-      setDomain(newState);
-      return newState;
+      structure.domain.parsed.push(action.nodeName);
+      structure.domain.value = structure.domain.parsed.join(", ");
+      setDomain(structure);
+      return;
 
     case REMOVE_DOMAIN_NODE:
-      newState.domain.parsed = newState.domain.parsed.filter(value => value !== action.nodeName);
-      newState.domain.value = newState.domain.parsed.join(", ");
-      setDomain(newState);
+      structure.domain.parsed = structure.domain.parsed.filter(value => value !== action.nodeName);
+      structure.domain.value = structure.domain.parsed.join(", ");
+      setDomain(structure);
 
       //toto mozem pretoze tu nie je input okno takze toto sa "neda" pokazit takym sposobom
-      language.constants.parsed.forEach(c => {
-        if (newState.constants[c].value === action.oldName) {
-          newState.constants[c].value = "";
+      state.language.constants.parsed.forEach(c => {
+        if (structure.constants[c].value === action.oldName) {
+          structure.constants[c].value = "";
         }
       });
-      setConstantsValues(newState);
-      return newState;
+      setConstantsValues(structure);
+      return;
 
     case SET_DOMAIN:
-      parseStructure(newState.domain, action.value, wholeState, DOMAIN);
-      setDomain(newState);
-      setConstantsValues(newState);
-      setPredicatesValues(newState);
-      setFunctionsValues(newState);
-      setVariables(newState, language);
-      return newState;
+      parseStructure(structure.domain, action.value, state, DOMAIN);
+      setDomain(structure);
+      setConstantsValues(structure);
+      setPredicatesValues(structure);
+      setFunctionsValues(structure);
+      setVariables(structure, state.language);
+      return;
 
     case TOGGLE_EDIT_TABLE:
-      if (input) {
-        input.tableEnabled = !input.tableEnabled;
-        if (input.tableEnabled) {
-          input.databaseEnabled = false;
+      if(action.itemType === PREDICATE){
+        structure.predicates[action.name].tableEnabled = !structure.predicates[action.name].tableEnabled;
+        if(structure.predicates[action.name].tableEnabled){
+          structure.predicates[action.name].databaseEnabled = false;
+        }
+      } else if(action.itemType === FUNCTION){
+        structure.functions[action.name].tableEnabled = !structure.functions[action.name].tableEnabled;
+        if(structure.functions[action.name].tableEnabled){
+          structure.functions[action.name].databaseEnabled = false;
         }
       }
-      return newState;
+      return;
 
     case TOGGLE_EDIT_DATABASE:
-      if (input) {
-        input.databaseEnabled = !input.databaseEnabled;
-        if (input.databaseEnabled) {
-          input.tableEnabled = false;
+      if(action.itemType === PREDICATE){
+        structure.predicates[action.name].databaseEnabled = !structure.predicates[action.name].databaseEnabled;
+        if(structure.predicates[action.name].databaseEnabled){
+          structure.predicates[action.name].tableEnabled = false;
+        }
+      } else if(action.itemType === FUNCTION){
+        structure.functions[action.name].databaseEnabled = !structure.functions[action.name].databaseEnabled;
+        if(structure.functions[action.name].databaseEnabled){
+          structure.functions[action.name].tableEnabled = false;
         }
       }
-      return newState;
+      return;
 
     case LOCK_DOMAIN:
-      newState.domain.locked = !newState.domain.locked;
-      return newState;
+      structure.domain.locked = !structure.domain.locked;
+      return;
+
     case LOCK_CONSTANT_VALUE:
-      newState.constants[action.constantName].locked = !newState.constants[action.constantName].locked;
-      return newState;
+      structure.constants[action.constantName].locked = !structure.constants[action.constantName].locked;
+      return;
+
     case LOCK_PREDICATE_VALUE:
-      newState.predicates[action.predicateName].locked = !newState.predicates[action.predicateName].locked;
-      return newState;
+      structure.predicates[action.predicateName].locked = !structure.predicates[action.predicateName].locked;
+      return;
+
     case LOCK_FUNCTION_VALUE:
-      newState.functions[action.functionName].locked = !newState.functions[action.functionName].locked;
-      return newState;
+      structure.functions[action.functionName].locked = !structure.functions[action.functionName].locked;
+      return;
     case LOCK_VARIABLES:
-      newState.variables.locked = !newState.variables.locked;
-      return newState;
+      structure.variables.locked = !structure.variables.locked;
+      return;
+
     case IMPORT_APP:
-      setDomain(newState);
-      setConstantsValues(newState);
-      setPredicatesValues(newState);
-      setFunctionsValues(newState);
-      setVariables(newState, language);
-      return newState;
+      setDomain(structure);
+      setConstantsValues(structure);
+      setPredicatesValues(structure);
+      setFunctionsValues(structure);
+      setVariables(structure, state.language);
+      return;
+
     default:
-      return newState;
+      return;
   }
-}
+})
 
 function removePredicateLanguageElementInGivenDirection(state, elementName, direction, sourceNodeName, targetNodeName) {
   let nodeNames = [sourceNodeName, targetNodeName]; //FROM direction
@@ -491,11 +505,6 @@ function setVariables(state, language) {
   if (!state.variables.parsed || state.variables.errorMessage !== '') {
     return;
   }
-  if (!state.variables.object || !state.variables.object instanceof Map) {
-    state.variables.object = new Map();
-  } else {
-    state.variables.object.clear();
-  }
   let errorMessage = '';
   state.variables.parsed.forEach(tuple => {
     let variable = tuple[0];
@@ -507,9 +516,6 @@ function setVariables(state, language) {
     }
     else if (!state.domain.parsed.some(d => d === value)) {
       errorMessage = ITEM_NOT_IN_DOMAIN(value);
-    }
-    else {
-      state.variables.object.set(variable, value);
     }
   });
   state.variables.errorMessage = errorMessage;
@@ -528,7 +534,7 @@ function setConstantValue(state, constantName, value) {
 }
 
 function checkPredicateValue(state, predicateName) {
-  if (state.predicates[predicateName].parsed.length === 0) {
+  if (state.predicates[predicateName].errorMessage !== '') {
     return;
   }
   let arity = predicateName.split("/")[1];
@@ -545,15 +551,6 @@ function checkFunctionValue(state, functionName) {
   state.functions[functionName].errorMessage =
       validateStructureFunctions(state.functions[functionName].parsed, state.domain.parsed, arity);
 }
-
-const copyState = (state) => ({
-  ...state,
-  constants: {...state.constants},
-  predicates: {...state.predicates},
-  functions: {...state.functions},
-  variables: {...state.variables},
-  domain: {...state.domain}
-});
 
 function tupleToString(tuple) {
   if (tuple.length === 0) {

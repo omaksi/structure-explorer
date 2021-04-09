@@ -1,12 +1,13 @@
 import {TOGGLE_TEACHER_MODE} from "../actions/action_types";
+import produce from "immer";
 
-function teacherModeReducer(state:any, action:any) {
+const teacherModeReducer = produce((state:any, action:any) => {
     if (action.type === TOGGLE_TEACHER_MODE) {
         state.teacherMode = !state.teacherMode;
-        return state;
+        return;
     } else {
-        return state;
+        return;
     }
-}
+})
 
 export default teacherModeReducer;

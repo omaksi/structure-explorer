@@ -1,0 +1,63 @@
+body{
+    user-select:none; /*fix the bug, when text is dragged over canvas and cause loading of different element (text - element)*/
+}
+
+.btn-graph {
+    outline: none;
+    color: black;
+    text-align:center;
+    font-size:13px;
+    padding:0 0.3em;
+    font-weight: bold;
+    border:0;
+}
+
+.no-padding-right {
+    padding-right: 0 !important;
+}
+
+.teacher-mode:hover{
+    background-color: #28a745;
+}
+
+.form-control.is-invalid{
+    background-image: none;
+}
+
+.hidden-on-medium-and-lower{
+    display: inline;
+}
+
+.vh-pane-left{
+    height: calc(100vh - 64px);
+    padding-right: 15px;
+}
+
+.vh-pane-right{
+    height: calc(100vh - 64px);
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+@media all and (max-width: 991px) {
+    .vh-pane-left{
+        height: calc((100vh - 75px)/2);
+        margin-bottom: 5px;
+    }
+
+    .vh-pane-right{
+        height: calc((100vh - 75px)/2);
+        margin-top: 5px;
+        padding-left: 0;
+    }
+
+    .hidden-on-medium-and-lower{
+        display: none;
+        width: max-content;
+    }
+
+    .container-fluid{
+        padding-right: 0;
+        overflow: hidden;
+    }
+}

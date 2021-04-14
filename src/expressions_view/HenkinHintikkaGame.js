@@ -222,7 +222,7 @@ export class HenkinHintikkaGame extends React.Component {
                     } else if(subFormulas[1].eval(structure, variables) !== gameCommitment){
                         form = subFormulas[1].toString();
                     }
-                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form + ' je ' + oppositeTruthValue);
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form + ' je ' + truthValue);
                     return messages;
 
                 case PLAYER_QUANTIFIER:

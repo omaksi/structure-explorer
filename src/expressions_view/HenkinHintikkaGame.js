@@ -29,7 +29,6 @@ export class HenkinHintikkaGame extends React.Component {
 
     render(){
         let randomNumbers = [this.getRandom(2), this.getRandom(this.props.structureObject.domain.size)]
-        console.log(randomNumbers);
         return(
             <Container>
                 <MessageAreaContainer>
@@ -68,20 +67,20 @@ export class HenkinHintikkaGame extends React.Component {
     }
 
     writeVariables(){
-        let writeOrHide = 'Vypisať'
+        let writeOrHide = 'Zobraziť'
         if(this.props.formula.showVariables){
             writeOrHide = 'Skryť';
         }
         return(
-            <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.getVariables(this.props.index)}>{writeOrHide} premenné</Button>
+            <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.getVariables(this.props.index)}>{writeOrHide} ohodnotenie premenných</Button>
         );
     }
 
     chooseCommitment(messages) {
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameCommitment(this.props.index, true, messages, ['Pravdivá'])}>Pravdivá</Button>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameCommitment(this.props.index,false, messages, ['Nepravdivá'])}>Nepravdivá</Button>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameCommitment(this.props.index, true, messages, ['Pravdivá'])}>Pravdivá</Button>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameCommitment(this.props.index,false, messages, ['Nepravdivá'])}>Nepravdivá</Button>
             </div>
         );
     }
@@ -93,10 +92,10 @@ export class HenkinHintikkaGame extends React.Component {
         let rightUserMessage = [this.props.formula.gameValue.subRight.toString() + ' je ' + rightStringCommitment];
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subLeft, leftCommitment, messages, leftUserMessage)}>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subLeft, leftCommitment, messages, leftUserMessage)}>
                     {leftUserMessage}
                 </Button>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subRight, rightCommitment, messages, rightUserMessage)}>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subRight, rightCommitment, messages, rightUserMessage)}>
                     {rightUserMessage}
                 </Button>
                 {this.writeVariables()}
@@ -108,9 +107,9 @@ export class HenkinHintikkaGame extends React.Component {
         let varName = 'n' + this.props.formula.gameVariables.size;
         return (
             <div className={"d-flex justify-content-center"}>
-                <DropdownButton variant="outline-primary" className={"rounded mr-3"} alignRight as={ButtonGroup} title="Vyber prvok z domény">
+                <DropdownButton size='sm' variant="outline-primary" className={"rounded mr-3"} alignRight as={ButtonGroup} title="Vyber prvok z domény">
                     {this.props.domain.map((value, index) =>
-                        <Dropdown.Item eventKey={index} onClick={() => this.props.setGameDomainChoice(this.props.index, value, messages, ['Pre ' + varName + ' = ' + value])}>{value}</Dropdown.Item>
+                        <Dropdown.Item size='sm' eventKey={index} onClick={() => this.props.setGameDomainChoice(this.props.index, value, messages, ['Pre ' + varName + ' = ' + value])}>{value}</Dropdown.Item>
                     )}
                 </DropdownButton>
                 {this.writeVariables()}
@@ -125,10 +124,10 @@ export class HenkinHintikkaGame extends React.Component {
         let rightUserMessage = [rightImplication.toString() + ' je ' + this.getCommitmentText(commitment)];
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, leftImplication, commitment, messages, leftUserMessage)}>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, leftImplication, commitment, messages, leftUserMessage)}>
                     {leftUserMessage}
                 </Button>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, rightImplication, commitment, messages, rightUserMessage)}>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, rightImplication, commitment, messages, rightUserMessage)}>
                     {rightUserMessage}
                 </Button>
                 {this.writeVariables()}
@@ -139,7 +138,7 @@ export class HenkinHintikkaGame extends React.Component {
     chooseOk(messages, randomNumbers){
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.continueGame(this.props.index, messages, ['Pokračuj'], randomNumbers)}>Pokračuj</Button>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.continueGame(this.props.index, messages, ['Pokračuj'], randomNumbers)}>Pokračuj</Button>
                 {this.writeVariables()}
             </div>
         );
@@ -148,7 +147,7 @@ export class HenkinHintikkaGame extends React.Component {
     chooseEndGame(){
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.endGame(this.props.index)}>Ukončiť hru</Button>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.endGame(this.props.index)}>Ukončiť hru</Button>
                 {this.writeVariables()}
             </div>
         );
@@ -182,6 +181,7 @@ export class HenkinHintikkaGame extends React.Component {
 
     generateMessage(gameValue, gameCommitment, structure, variables, randomNumbers){
         let form;
+        let varName = 'n' + variables.size;
         let messages = [];
         if(gameCommitment === null){
             messages.push(FIRST_QUESTION(gameValue.toString()))
@@ -222,15 +222,15 @@ export class HenkinHintikkaGame extends React.Component {
                     } else if(subFormulas[1].eval(structure, variables) !== gameCommitment){
                         form = subFormulas[1].toString();
                     }
-                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue) + ', potom ' + form + ' je ' + truthValue);
+                    messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
+                    messages.push('Potom ' + form + ' je ' + truthValue);
                     return messages;
 
                 case PLAYER_QUANTIFIER:
-                    messages.push('Pre ktorý prvok z domény predpokladáš, že formula ' + gameValue.toString() +  ' je ' + truthValue + ' ?');
+                    messages.push('Pre ktorý prvok ' + varName + ' z domény predpokladáš, že formula ' + gameValue.toString() +  ' je ' + truthValue + ' ?');
                     return messages;
 
                 case GAME_QUANTIFIER:
-                    let varName = 'n' + variables.size;
                     let gameValueWithVariable = subFormulas[0].createCopy();
                     gameValueWithVariable.setVariable(gameValue.variableName, varName);
                     let eCopy = new Map(variables);

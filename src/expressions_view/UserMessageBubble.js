@@ -8,6 +8,7 @@ const UserMessage = styled.div`
   width: max-content;
   display: inline-block;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.875rem;
   margin-bottom: 0.5rem;
   right: 0px;
   background: #0066ff;

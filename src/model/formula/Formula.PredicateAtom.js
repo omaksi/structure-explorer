@@ -33,7 +33,7 @@ class PredicateAtom extends Formula {
     });
     let arity = structure.language.predicates.get(this.name);
     if (structure.iPredicate.get(this.name + '/' + arity) === undefined) {
-      return false;
+      throw `Interpretácia predikátového symbolu ${this.name} nie je definovaná`;
     }
     let value = structure.iPredicate.get(this.name + '/' + arity);
     return value.findIndex(e => JSON.stringify(e) === JSON.stringify(translatedTerms)) > -1;

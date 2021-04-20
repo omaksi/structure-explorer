@@ -25,7 +25,7 @@ class Variable extends Term {
    */
   eval(structure, e) {
     if (!e.has(this.name)) {
-      throw `Hodnota premennej ${this.name} nie je definovaná`;
+      throw `Hodnota premennej ${this.name} nie je definovaná. Je voľná, ale nie je v definičnom obore ohodnotenia e.`;
     }
     return e.get(this.name);
   }

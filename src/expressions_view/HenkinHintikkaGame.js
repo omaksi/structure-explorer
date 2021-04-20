@@ -88,8 +88,8 @@ export class HenkinHintikkaGame extends React.Component {
     chooseFormula(leftCommitment, rightCommitment, messages) {
         let leftStringCommitment = this.getCommitmentText(leftCommitment);
         let rightStringCommitment = this.getCommitmentText(rightCommitment);
-        let leftUserMessage = [this.props.formula.gameValue.subLeft.toString() + ' je ' + leftStringCommitment];
-        let rightUserMessage = [this.props.formula.gameValue.subRight.toString() + ' je ' + rightStringCommitment];
+        let leftUserMessage = [<><b>{this.props.formula.gameValue.subLeft.toString()}</b> je <b>{leftStringCommitment}</b></>];
+        let rightUserMessage = [<><b>{this.props.formula.gameValue.subRight.toString()}</b> je <b>{rightStringCommitment}</b></>];
         return (
             <div className={"d-flex justify-content-center"}>
                 <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subLeft, leftCommitment, messages, leftUserMessage)}>
@@ -107,9 +107,9 @@ export class HenkinHintikkaGame extends React.Component {
         let varName = 'n' + this.props.formula.gameVariables.size;
         return (
             <div className={"d-flex justify-content-center"}>
-                <DropdownButton size='sm' variant="outline-primary" className={"rounded mr-3"} alignRight as={ButtonGroup} title="Vyber prvok z domény">
+                <DropdownButton size='sm' variant="outline-primary" className={"rounded mr-3"} alignRight as={ButtonGroup} title={<>Vyber prvok z domény pre premennú <var>{varName}</var></>}>
                     {this.props.domain.map((value, index) =>
-                        <Dropdown.Item size='sm' eventKey={index} onClick={() => this.props.setGameDomainChoice(this.props.index, value, messages, [`Premenná ${varName} označuje prvok ${value}`])}>{value}</Dropdown.Item>
+                        <Dropdown.Item size='sm' eventKey={index} onClick={() => this.props.setGameDomainChoice(this.props.index, value, messages, [<>Premenná <var>{varName}</var> označuje prvok <b>{value}</b></>])}>{value}</Dropdown.Item>
                     )}
                 </DropdownButton>
                 {this.writeVariables()}
@@ -120,8 +120,8 @@ export class HenkinHintikkaGame extends React.Component {
     chooseImplication(messages, gameValue, commitment){
         let leftImplication = new Implication(gameValue.subLeft, gameValue.subRight);
         let rightImplication = new Implication(gameValue.subRight, gameValue.subLeft);
-        let leftUserMessage = [leftImplication.toString() + ' je ' + this.getCommitmentText(commitment)];
-        let rightUserMessage = [rightImplication.toString() + ' je ' + this.getCommitmentText(commitment)];
+        let leftUserMessage = [<><b>{leftImplication.toString()}</b> je <b>{this.getCommitmentText(commitment)}</b></>];
+        let rightUserMessage = [<><b>{rightImplication.toString()}</b> je <b>{this.getCommitmentText(commitment)}</b></>];
         return (
             <div className={"d-flex justify-content-center"}>
                 <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, leftImplication, commitment, messages, leftUserMessage)}>

@@ -9,6 +9,7 @@ export const GameMessageBubble = styled.div`
   display: inline-block;
   border-radius: 0 15px 15px 15px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.875rem;
   margin-bottom: 0.5rem;
 `;
 

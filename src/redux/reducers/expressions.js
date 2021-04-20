@@ -247,7 +247,7 @@ const expressionsReducer = produce((expressions, action, state) => {
       return;
 
     case GET_VARIABLES:
-      expressions.formulas[action.index].showVariables = !state.expressions.formulas[action.index].showVariables;
+      expressions.formulas[action.index].showVariables = !expressions.formulas[action.index].showVariables;
       return;
 
     case GO_BACK:

@@ -27,7 +27,9 @@ class Implication extends Formula {
    * @return {boolean}
    */
   eval(structure, e) {
-    return (!this.subLeft.eval(structure, e)) || this.subRight.eval(structure, e);
+    const left = this.subLeft.eval(structure, e);
+    const right = this.subRight.eval(structure, e);
+    return !left || right ;
   }
 
   /**

@@ -45,8 +45,8 @@ class Negation extends Formula {
     return NEGATION;
   }
 
-  getSubFormulas(){
-    return [this.subFormula];
+  getSubFormulas(structureObject, variableObject){
+    return [{formula: this.subFormula, eval: this.subFormula.eval(structureObject, variableObject)}];
   }
 
   setVariable(from, to){

@@ -25,7 +25,7 @@ class Formula extends Expression {
     return '';
   }
 
-  getSubFormulas() {
+  getSubFormulas(structureObject, variableObject) {
     return [];
   }
 

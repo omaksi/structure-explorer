@@ -1,5 +1,6 @@
 import Formula from "./Formula";
 import {ATOM, GAME_EQUIVALENCE, PLAYER_EQUIVALENCE} from "../../constants/gameConstants";
+import Implication from "./Formula.Implication";
 
 /**
  * Represent equality symbol
@@ -50,8 +51,11 @@ class Equivalence extends Formula {
         return commitment ? GAME_EQUIVALENCE : PLAYER_EQUIVALENCE;
     }
 
-    getSubFormulas(){
-        return [this.subLeft, this.subRight];
+    getSubFormulas(structureObject, variableObject){
+        let rightImpl = new Implication(this.subLeft, this.subRight);
+        let leftImpl = new Implication(this.subRight, this.subLeft);
+        return [{formula: leftImpl, eval: leftImpl.eval(structureObject, variableObject)},
+                {formula: rightImpl, eval: rightImpl.eval(structureObject, variableObject)}];
     }
 
     setVariable(from, to){

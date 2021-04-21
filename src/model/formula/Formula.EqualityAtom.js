@@ -48,7 +48,7 @@ class EqualityAtom extends Formula {
     return ATOM;
   }
 
-  getSubFormulas(){
+  getSubFormulas(structureObject, variableObject){
     return [];
   }
 

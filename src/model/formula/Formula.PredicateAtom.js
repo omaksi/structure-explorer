@@ -68,7 +68,7 @@ class PredicateAtom extends Formula {
     return ATOM;
   }
 
-  getSubFormulas(){
+  getSubFormulas(structureObject, variableObject){
     return [];
   }
 

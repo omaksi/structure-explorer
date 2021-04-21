@@ -50,8 +50,9 @@ class Implication extends Formula {
     return commitment ? PLAYER_IMPLICATION : GAME_IMPLICATION;
   }
 
-  getSubFormulas(){
-    return [this.subLeft, this.subRight];
+  getSubFormulas(structureObject, variableObject){
+    return [{formula: this.subLeft, eval: this.subLeft.eval(structureObject, variableObject)},
+            {formula: this.subRight, eval: this.subRight.eval(structureObject, variableObject)}];
   }
 
   setVariable(from, to){

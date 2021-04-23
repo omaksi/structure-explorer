@@ -10,9 +10,16 @@ export const GAME_EQUIVALENCE = 'GAME_EQUIVALENCE';
 export const PLAYER_EQUIVALENCE = 'PLAYER_EQUIVALENCE';
 
 export const defaultHintikkaGameData = () => ({
-    gameCommitment: null,
-    gameHistory: [],
-    gameVariables: new Map(),
-    gameValue: null,
-    showVariables: false
+    gameHistory: new Array(),
+    showVariables: false,
+    gameEnabled: false
 });
+
+export const gameEntry = (gameCommitment, gameVariables, gameValue, nextValue, gameMessages, userMessages) => ({
+    gameCommitment: gameCommitment,
+    gameValue: gameValue,
+    nextValue: nextValue,
+    gameVariables: gameVariables,
+    gameMessages: gameMessages,
+    userMessages: userMessages
+})

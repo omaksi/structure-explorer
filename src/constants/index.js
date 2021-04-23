@@ -24,7 +24,6 @@ export const defaultExpressionData = () => ({
   errorMessage: '',
   inputLocked: false,
   answerLocked: false,
-  gameEnabled: false,
   parsed: null
 });
 

@@ -28,7 +28,6 @@ export class HenkinHintikkaGame extends React.Component {
     }
 
     render(){
-        let randomNumbers = [this.getRandom(2), this.getRandom(this.props.structureObject.domain.size)]
         return(
             <Container>
                 <MessageAreaContainer>
@@ -39,26 +38,26 @@ export class HenkinHintikkaGame extends React.Component {
                             </GameMessageBubble>).concat(
                         history.userMessages.map(message => <UserMessageBubble onClick={() => this.props.goBack(this.props.index, index)}>{message}</UserMessageBubble>))
                     )}
-                    {this.generateMessage(this.props.formula.gameValue, this.props.formula.gameCommitment,
-                                this.props.structureObject, this.props.formula.gameVariables, randomNumbers).map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
+                    {this.generateMessage(this.props.formula.gameHistory[this.props.formula.gameHistory.length - 1])
+                                        .map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
                 </MessageAreaContainer>
                 <Form.Group>
-                    {this.getChoice(this.props.formula.gameValue, this.props.formula.gameCommitment, randomNumbers)}
+                    {this.getChoice(this.props.formula.gameHistory[this.props.formula.gameHistory.length - 1])}
                 </Form.Group>
-                {this.toggleVariables()}
+                {this.toggleVariables(this.props.formula.gameHistory[this.props.formula.gameHistory.length - 1])}
             </Container>
         );
     }
 
-    toggleVariables(){
+    toggleVariables(entry){
         if(this.props.formula.showVariables) {
-            if(this.props.formula.gameVariables.size == 0){
+            if(entry.gameVariables.size == 0){
                 return (
                     <p><var>e</var> = &#123;&#160;&#125;</p>
                 );
             } else {
                 return (
-                    <p><var>e</var> = &#123; {Array.from(this.props.formula.gameVariables).map(([key, value]) => key + ' ↦ ' + value).join(', ')} &#125;</p>
+                    <p><var>e</var> = &#123; {Array.from(entry.gameVariables).map(([key, value]) => key + ' ↦ ' + value).join(', ')} &#125;</p>
                 );
             }
         } else {
@@ -85,17 +84,17 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    chooseFormula(leftCommitment, rightCommitment, messages) {
+    chooseFormula(entry, leftCommitment, rightCommitment, messages) {
         let leftStringCommitment = this.getCommitmentText(leftCommitment);
         let rightStringCommitment = this.getCommitmentText(rightCommitment);
-        let leftUserMessage = [this.props.formula.gameValue.subLeft.toString() + ' je ' + leftStringCommitment];
-        let rightUserMessage = [this.props.formula.gameValue.subRight.toString() + ' je ' + rightStringCommitment];
+        let leftUserMessage = [entry.gameValue.subLeft.toString() + ' je ' + leftStringCommitment];
+        let rightUserMessage = [entry.gameValue.subRight.toString() + ' je ' + rightStringCommitment];
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subLeft, leftCommitment, messages, leftUserMessage)}>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, entry.gameValue.subLeft, leftCommitment, messages, leftUserMessage)}>
                     {leftUserMessage}
                 </Button>
-                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, this.props.formula.gameValue.subRight, rightCommitment, messages, rightUserMessage)}>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, entry.gameValue.subRight, rightCommitment, messages, rightUserMessage)}>
                     {rightUserMessage}
                 </Button>
                 {this.writeVariables()}
@@ -103,8 +102,8 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    chooseDomainValue(messages){
-        let varName = 'n' + this.props.formula.gameVariables.size;
+    chooseDomainValue(entry, messages){
+        let varName = 'n' + entry.gameVariables.size;
         return (
             <div className={"d-flex justify-content-center"}>
                 <DropdownButton size='sm' variant="outline-primary" className={"rounded mr-3"} alignRight as={ButtonGroup} title="Vyber prvok z domény">
@@ -135,10 +134,10 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    chooseOk(messages, randomNumbers){
+    chooseOk(messages){
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.continueGame(this.props.index, messages, ['Pokračuj'], randomNumbers)}>Pokračuj</Button>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.continueGame(this.props.index, messages, ['Pokračuj'])}>Pokračuj</Button>
                 {this.writeVariables()}
             </div>
         );
@@ -153,64 +152,62 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    getChoice(gameValue, gameCommitment, randomNumbers){
-        let messages = this.generateMessage(gameValue, gameCommitment, this.props.structureObject, this.props.formula.gameVariables, randomNumbers);
-        if(gameCommitment === null){
+    getChoice(entry){
+        let messages = this.generateMessage(entry);
+        if(entry.gameCommitment === null){
             return this.chooseCommitment(messages);
         } else {
-            switch(gameValue.getType(gameCommitment)){
+            switch(entry.gameValue.getType(entry.gameCommitment)){
                 case ATOM:
                     return this.chooseEndGame();
                 case PLAYER_OPERATOR:
-                    return this.chooseFormula(gameCommitment, gameCommitment, messages);
+                    return this.chooseFormula(entry, entry.gameCommitment, entry.gameCommitment, messages);
                 case PLAYER_IMPLICATION:
-                    return this.chooseFormula(!gameCommitment, gameCommitment, messages);
+                    return this.chooseFormula(entry, !entry.gameCommitment, entry.gameCommitment, messages);
                 case PLAYER_QUANTIFIER:
-                    return this.chooseDomainValue(messages);
+                    return this.chooseDomainValue(entry, messages);
                 case PLAYER_EQUIVALENCE:
-                    return this.chooseImplication(messages, gameValue, gameCommitment);
+                    return this.chooseImplication(messages, entry.gameValue, entry.gameCommitment);
                 case NEGATION:
                 case GAME_OPERATOR:
                 case GAME_QUANTIFIER:
                 case GAME_IMPLICATION:
                 case GAME_EQUIVALENCE:
-                    return this.chooseOk(messages, randomNumbers);
+                    return this.chooseOk(messages);
             }
         }
     }
 
-    generateMessage(gameValue, gameCommitment, structure, variables, randomNumbers){
-        let form;
-        let varName = 'n' + variables.size;
+    generateMessage(entry){
+        let varName = 'n' + entry.gameVariables.size;
         let messages = [];
-        if(gameCommitment === null){
-            messages.push(FIRST_QUESTION(gameValue.toString()))
+        if(entry.gameCommitment === null){
+            messages.push(FIRST_QUESTION(entry.gameValue))
             return messages;
         } else {
-            let truthValue = this.getCommitmentText(gameCommitment);
-            let oppositeTruthValue = this.getCommitmentText(!gameCommitment);
-            let subFormulas = gameValue.getSubFormulas();
-            messages.push(ENTRY_SENTENCE(gameValue.toString(), truthValue));
-            switch(gameValue.getType(gameCommitment)){
+            const structure = this.props.structureObject;
+            let subFormulas = entry.gameValue.getSubFormulas(structure, entry.gameVariables);
+            messages.push(ENTRY_SENTENCE(entry.gameValue.toString(), this.getCommitmentText(entry.gameCommitment)));
+            switch(entry.gameValue.getType(entry.gameCommitment)){
                 case ATOM:
-                    const initial = this.props.formula.gameHistory[0];
-                    if(gameCommitment === gameValue.eval(structure, variables)){
-                        messages.push('Vyhral/a si! ' + gameValue.toString() + ' je naozaj ' + truthValue
-                            + ', pretože ' + this.getWinningEvaluatedFormula(gameValue, structure, variables, gameCommitment));
+                    const initial = this.props.formula.gameHistory[1];
+                    if(entry.gameCommitment === entry.gameValue.eval(structure, entry.gameVariables)){
+                        messages.push('Vyhral/a si! ' + entry.gameValue + ' je naozaj ' + this.getCommitmentText(entry.gameCommitment)
+                            + ', pretože ' + this.getWinningEvaluatedFormula(entry.gameValue, structure, entry.gameVariables, entry.gameCommitment));
                         messages.push(`Tvoj úvodný predpoklad,
                             že formula ${initial.gameValue}
                             je ${this.getCommitmentText(initial.gameCommitment)},
-                            je správny.`)
+                            bol správny.`)
                     } else {
-                        messages.push('Prehral/a si! ' + gameValue.toString() + ' je ' + oppositeTruthValue
-                            + ', pretože ' + this.getLoosingEvaluatedFormula(gameValue, structure, variables, gameCommitment));
+                        messages.push('Prehral/a si! ' + entry.gameValue + ' je ' + this.getCommitmentText(!entry.gameCommitment)
+                            + ', pretože ' + this.getLoosingEvaluatedFormula(entry.gameValue, structure, entry.gameVariables, entry.gameCommitment));
                         if(initial.gameValue.eval(structure, initial.gameVariables) === initial.gameCommitment){
                             messages.push(`Mohol/mohla si však vyhrať.
                                 Tvoj úvodný predpoklad,
                                 že formula ${initial.gameValue}
                                 je ${this.getCommitmentText(initial.gameCommitment)},
                                 je správny.
-                                Nájdi chybnú odpoveď a zmeň ju!`);
+                                Nájdi chybnú odpoveď a zmeň ju!`);
                         } else {
                             messages.push(`Tvoj úvodný predpoklad,
                                 že formula ${initial.gameValue}
@@ -221,97 +218,50 @@ export class HenkinHintikkaGame extends React.Component {
                     return messages;
 
                 case NEGATION:
-                    messages.push('Potom ' + subFormulas[0].toString() + ' je ' + oppositeTruthValue);
+                    messages.push('Potom ' + entry.nextValue.formula + ' je ' + this.getCommitmentText(entry.nextValue.commitment));
                     return messages;
 
                 case PLAYER_OPERATOR:
-                    messages.push(`Ktorá z jej priamych podformúl je ${truthValue}?`);
-                    messages.push('1. ' + subFormulas[0].toString());
-                    messages.push('2. ' + subFormulas[1].toString());
+                    messages.push(`Ktorá z jej priamych podformúl je ${this.getCommitmentText(entry.gameCommitment)}?`);
+                    messages.push('1. ' + subFormulas[0].formula);
+                    messages.push('2. ' + subFormulas[1].formula);
                     return messages;
 
                 case GAME_OPERATOR:
-                    form = subFormulas[randomNumbers[0]].toString();
-                    if(subFormulas[0].eval(structure, variables) !== gameCommitment){
-                        form = subFormulas[0].toString();
-                    } else if(subFormulas[1].eval(structure, variables) !== gameCommitment){
-                        form = subFormulas[1].toString();
-                    }
-                    messages.push(`Potom ${form} je ${truthValue}.`);
+                    messages.push(`Potom ${entry.nextValue.formula} je ${this.getCommitmentText(entry.nextValue.commitment)}.`);
                     return messages;
 
                 case PLAYER_QUANTIFIER:
-                    form = subFormulas[0].createCopy();
-                    form.setVariable(gameValue.variableName, varName);
-                    messages.push(`Ktorý prvok z domény má premenná ${varName} označovať, aby bola formula ${form} ${truthValue}?`);
+                    let form = entry.gameValue.subFormula.createCopy();
+                    form.setVariable(entry.gameValue.variableName, varName);
+                    messages.push(`Ktorý prvok z domény má premenná ${varName} označovať, 
+                                    aby bola formula ${form} ${this.getCommitmentText(entry.gameCommitment)}?`);
                     return messages;
 
                 case GAME_QUANTIFIER:
-                    let gameValueWithVariable = subFormulas[0].createCopy();
-                    gameValueWithVariable.setVariable(gameValue.variableName, varName);
-                    messages.push(`Potom je ${truthValue} aj formula ${gameValueWithVariable.toString()},`);
-                    let eCopy = new Map(variables);
-                    for (let item of structure.domain) {
-                        eCopy.set(gameValue.variableName, item);
-                        if (subFormulas[0].eval(structure, eCopy) !== gameCommitment) {
-                            messages.push(`keď premennou ${varName} označíme prvok ${item}.`);
-                            return messages;
-                        }
-                    }
-                    messages.push(`keď premennou ${varName} označíme prvok ${Array.from(structure.domain)[randomNumbers[1]]}.`);
+                    messages.push(`Potom je ${this.getCommitmentText(entry.nextValue.commitment)} aj formula ${entry.nextValue.formula},`);
+                    messages.push(`keď premennou ${entry.nextValue.variables[0]} označíme prvok ${entry.nextValue.variables[1]}.`);
                     return messages;
 
                 case PLAYER_IMPLICATION:
-                    messages.push('Ktorý z nasledujúcich prípadov nastáva?');
-                    messages.push(`1. Podformula ${subFormulas[0].toString()} je ${oppositeTruthValue}.`);
-                    messages.push(`2. Podformula ${subFormulas[1].toString()} je ${truthValue}.`);
+                    messages.push('Ktorý z nasledujúcich prípadov nastáva?');
+                    messages.push(`1. Podformula ${subFormulas[0].formula} je ${this.getCommitmentText(!entry.gameCommitment)}.`);
+                    messages.push(`2. Podformula ${subFormulas[1].formula} je ${this.getCommitmentText(entry.gameCommitment)}.`);
                     return messages;
 
                 case GAME_IMPLICATION:
-                    let formValue;
-                    if(subFormulas[0].eval(structure, variables) === gameCommitment){
-                        form = subFormulas[0];
-                        formValue = oppositeTruthValue;
-                    } else if(subFormulas[1].eval(structure, variables) !== gameCommitment){
-                        form = subFormulas[1];
-                        formValue = truthValue;
-                    } else if (!randomNumbers[0]) {
-                        form = subFormulas[0];
-                        formValue = oppositeTruthValue;
-                    } else {
-                        form = subFormulas[1];
-                        formValue = truthValue;
-                    }
-                    messages.push(`Potom ${form.toString()} je ${formValue}.`);
+                    messages.push(`Potom ${entry.nextValue.formula} je ${this.getCommitmentText(entry.nextValue.commitment)}.`);
                     return messages;
 
                 case PLAYER_EQUIVALENCE:
-                    {
-                        const ltr = new Implication(subFormulas[0], subFormulas[1]);
-                        const rtl = new Implication(subFormulas[1], subFormulas[0]);
-                        messages.push(`Ktorá z nasledujúcich formúl je potom ${truthValue}?`);
-                        messages.push(`1. Formula ${ltr.toString()}.`);
-                        messages.push(`2. Formula ${rtl.toString()}.`);
-                        return messages;
-                    }
+                    messages.push(`Ktorá z nasledujúcich formúl je potom ${this.getCommitmentText(entry.gameCommitment)}?`);
+                    messages.push(`1. Formula ${subFormulas[0].formula}.`);
+                    messages.push(`2. Formula ${subFormulas[1].formula}.`);
+                    return messages;
 
                 case GAME_EQUIVALENCE:
-                    {
-                        const ltr = new Implication(subFormulas[0], subFormulas[1]);
-                        const rtl = new Implication(subFormulas[1], subFormulas[0]);
-                        let form;
-                        if(ltr.eval(structure, variables) !== gameCommitment) {
-                            form = ltr;
-                        } else if(rtl.eval(structure, variables) !== gameCommitment) {
-                            form = rtl;
-                        } else if (!randomNumbers[0]) {
-                            form = ltr;
-                        } else {
-                            form = rtl;
-                        }
-                        messages.push(`Potom ${form} je ${truthValue}.`);
-                        return messages;
-                    }
+                    messages.push(`Potom ${entry.nextValue.formula} je ${this.getCommitmentText(entry.nextValue.commitment)}.`);
+                    return messages;
             }
         }
     }

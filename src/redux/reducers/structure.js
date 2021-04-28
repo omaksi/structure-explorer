@@ -496,7 +496,8 @@ function insertNewInputs(state, language) {
     language.functions.parsed.forEach(f => {
       let functionName = f.name + "/" + f.arity;
       if (!state.functions[functionName]) {
-        state.functions[functionName] = functionDefaultInput()
+        state.functions[functionName] = functionDefaultInput();
+        checkFunctionValue(state, functionName);
       }
     });
 }
@@ -543,10 +544,6 @@ function checkPredicateValue(state, predicateName) {
 }
 
 function checkFunctionValue(state, functionName) {
-  if (state.functions[functionName].parsed.length === 0) {
-    state.functions[functionName].errorMessage = FUNCTION_NOT_FULL_DEFINED;
-    return;
-  }
   let arity = functionName.split("/")[1];
   state.functions[functionName].errorMessage =
       validateStructureFunctions(state.functions[functionName].parsed, state.domain.parsed, arity);

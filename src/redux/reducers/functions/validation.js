@@ -98,6 +98,7 @@ export function validateStructurePredicates(predicateValues, domainValues, arity
 export function validateStructureFunctions(functionValues, domainValues, arity){
     let message = '';
     let usedParams = [];
+    arity = parseInt(arity);
     functionValues.forEach(tuple => {
         let params = tuple.slice(0, tuple.length - 1); //takes just the arguments of the function
         let stringParams = params.join(",");
@@ -105,8 +106,8 @@ export function validateStructureFunctions(functionValues, domainValues, arity){
             message = FUNCTION_ALREADY_DEFINED(params);
             return;
         }
-        if(params.length !== parseInt(arity)){
-            message = `Počet parametrov ${params} nezodpovedá arite funkcie`;
+        if(params.length !== arity){
+            message = `Prvok ${tuple.length == 1 ? tuple : `(${tuple})`} nezodpovedá arite funkčného symbolu, prvky interpretácie musia byť ${arity + 1}-tice`;
             return;
         }
         let illegalItems = tuple.filter(t => !domainValues.includes(t));
@@ -118,7 +119,7 @@ export function validateStructureFunctions(functionValues, domainValues, arity){
     });
 
     if(message === '') {
-        if (functionValues.length !== Math.pow(domainValues.length, parseInt(arity))) {
+        if (functionValues.length !== Math.pow(domainValues.length, arity)) {
             message = FUNCTION_NOT_FULL_DEFINED;
         }
     }

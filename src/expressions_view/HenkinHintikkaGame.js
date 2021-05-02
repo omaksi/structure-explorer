@@ -4,10 +4,9 @@ import Container from "./Container";
 import MessageAreaContainer from "./MessageAreaContainer";
 import {Form, Button, DropdownButton, ButtonGroup, Dropdown} from "react-bootstrap";
 import {
-    ATOM, GAME_EQUIVALENCE, GAME_IMPLICATION,
+    ATOM,
     GAME_OPERATOR,
     GAME_QUANTIFIER,
-    NEGATION, PLAYER_EQUIVALENCE, PLAYER_IMPLICATION,
     PLAYER_OPERATOR,
     PLAYER_QUANTIFIER
 } from "../constants/gameConstants";
@@ -38,7 +37,7 @@ export class HenkinHintikkaGame extends React.Component {
                             </GameMessageBubble>).concat(
                         history.userMessages.map(message => <UserMessageBubble onClick={() => this.props.goBack(this.props.index, index)}>{message}</UserMessageBubble>))
                     )}
-                    {this.generateMessage(this.props.formula.gameHistory[this.props.formula.gameHistory.length - 1])
+                    {this.generateMessage(this.props.formula.gameHistory[this.props.formula.gameHistory.length - 1], this.props.formula.variableIndex)
                                         .map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
                 </MessageAreaContainer>
                 <Form.Group>
@@ -153,7 +152,7 @@ export class HenkinHintikkaGame extends React.Component {
     }
 
     getChoice(entry){
-        let messages = this.generateMessage(entry);
+        const messages = this.generateMessage(entry);
         if(entry.gameCommitment === null){
             return this.chooseCommitment(messages);
         } else {
@@ -161,32 +160,27 @@ export class HenkinHintikkaGame extends React.Component {
                 case ATOM:
                     return this.chooseEndGame();
                 case PLAYER_OPERATOR:
-                    return this.chooseFormula(entry, entry.gameCommitment, entry.gameCommitment, messages);
-                case PLAYER_IMPLICATION:
-                    return this.chooseFormula(entry, !entry.gameCommitment, entry.gameCommitment, messages);
+                    const subFormulasCommitment = entry.gameValue.getSubFormulasCommitment(entry.gameCommitment);
+                    return this.chooseFormula(entry, subFormulasCommitment[0], subFormulasCommitment[1], messages);
                 case PLAYER_QUANTIFIER:
                     return this.chooseDomainValue(entry, messages);
-                case PLAYER_EQUIVALENCE:
-                    return this.chooseImplication(messages, entry.gameValue, entry.gameCommitment);
-                case NEGATION:
                 case GAME_OPERATOR:
                 case GAME_QUANTIFIER:
-                case GAME_IMPLICATION:
-                case GAME_EQUIVALENCE:
                     return this.chooseOk(messages);
             }
         }
     }
 
-    generateMessage(entry){
-        let varName = 'n' + entry.gameVariables.size;
+    generateMessage(entry, variableIndex){
+        let varName = 'n' + variableIndex;
         let messages = [];
         if(entry.gameCommitment === null){
             messages.push(FIRST_QUESTION(entry.gameValue))
             return messages;
         } else {
             const structure = this.props.structureObject;
-            let subFormulas = entry.gameValue.getSubFormulas(structure, entry.gameVariables);
+            const subFormulas = entry.gameValue.getSubFormulas();
+            const subFormulasCommitment = entry.gameValue.getSubFormulasCommitment(entry.gameCommitment);
             messages.push(ENTRY_SENTENCE(entry.gameValue.toString(), this.getCommitmentText(entry.gameCommitment)));
             switch(entry.gameValue.getType(entry.gameCommitment)){
                 case ATOM:
@@ -217,14 +211,10 @@ export class HenkinHintikkaGame extends React.Component {
                     }
                     return messages;
 
-                case NEGATION:
-                    messages.push('Potom ' + entry.nextValue.formula + ' je ' + this.getCommitmentText(entry.nextValue.commitment));
-                    return messages;
-
                 case PLAYER_OPERATOR:
-                    messages.push(`Ktorá z jej priamych podformúl je ${this.getCommitmentText(entry.gameCommitment)}?`);
-                    messages.push('1. ' + subFormulas[0].formula);
-                    messages.push('2. ' + subFormulas[1].formula);
+                    messages.push('Ktorý z nasledujúcich prípadov nastáva?');
+                    messages.push(`1. Podformula ${subFormulas[0]} je ${this.getCommitmentText(subFormulasCommitment[0])}.`);
+                    messages.push(`2. Podformula ${subFormulas[1]} je ${this.getCommitmentText(subFormulasCommitment[1])}.`);
                     return messages;
 
                 case GAME_OPERATOR:
@@ -241,26 +231,6 @@ export class HenkinHintikkaGame extends React.Component {
                 case GAME_QUANTIFIER:
                     messages.push(`Potom je ${this.getCommitmentText(entry.nextValue.commitment)} aj formula ${entry.nextValue.formula},`);
                     messages.push(`keď premennou ${entry.nextValue.variables[0]} označíme prvok ${entry.nextValue.variables[1]}.`);
-                    return messages;
-
-                case PLAYER_IMPLICATION:
-                    messages.push('Ktorý z nasledujúcich prípadov nastáva?');
-                    messages.push(`1. Podformula ${subFormulas[0].formula} je ${this.getCommitmentText(!entry.gameCommitment)}.`);
-                    messages.push(`2. Podformula ${subFormulas[1].formula} je ${this.getCommitmentText(entry.gameCommitment)}.`);
-                    return messages;
-
-                case GAME_IMPLICATION:
-                    messages.push(`Potom ${entry.nextValue.formula} je ${this.getCommitmentText(entry.nextValue.commitment)}.`);
-                    return messages;
-
-                case PLAYER_EQUIVALENCE:
-                    messages.push(`Ktorá z nasledujúcich formúl je potom ${this.getCommitmentText(entry.gameCommitment)}?`);
-                    messages.push(`1. Formula ${subFormulas[0].formula}.`);
-                    messages.push(`2. Formula ${subFormulas[1].formula}.`);
-                    return messages;
-
-                case GAME_EQUIVALENCE:
-                    messages.push(`Potom ${entry.nextValue.formula} je ${this.getCommitmentText(entry.nextValue.commitment)}.`);
                     return messages;
             }
         }

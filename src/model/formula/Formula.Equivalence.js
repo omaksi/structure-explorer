@@ -1,5 +1,8 @@
 import Formula from "./Formula";
-import {ATOM, GAME_EQUIVALENCE, PLAYER_EQUIVALENCE} from "../../constants/gameConstants";
+import {
+    GAME_OPERATOR,
+    PLAYER_OPERATOR
+} from "../../constants/gameConstants";
 import Implication from "./Formula.Implication";
 
 /**
@@ -48,19 +51,28 @@ class Equivalence extends Formula {
     }
 
     getType(commitment){
-        return commitment ? GAME_EQUIVALENCE : PLAYER_EQUIVALENCE;
+        return commitment ? GAME_OPERATOR : PLAYER_OPERATOR;
     }
 
-    getSubFormulas(structureObject, variableObject){
-        let rightImpl = new Implication(this.subLeft, this.subRight);
-        let leftImpl = new Implication(this.subRight, this.subLeft);
-        return [{formula: leftImpl, eval: leftImpl.eval(structureObject, variableObject)},
-                {formula: rightImpl, eval: rightImpl.eval(structureObject, variableObject)}];
+    getSubFormulas(){
+        let toRightImpl = new Implication(this.subLeft, this.subRight);
+        let toLeftImpl = new Implication(this.subRight, this.subLeft);
+        return [toRightImpl, toLeftImpl];
     }
 
     setVariable(from, to){
         this.subLeft.setVariable(from, to);
         this.subRight.setVariable(from, to);
+    }
+
+    getSubFormulasCommitment(commitment){
+        return [commitment, commitment];
+    }
+
+    getVariables(){
+        const leftVariables = this.subLeft.getVariables();
+        const rightVariables = this.subRight.getVariables()
+        return leftVariables.concat(rightVariables);
     }
 }
 

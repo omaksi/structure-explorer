@@ -55,18 +55,24 @@ class ExistentialQuant extends Formula {
     return commitment ? PLAYER_QUANTIFIER : GAME_QUANTIFIER;
   }
 
-  getSubFormulas(structureObject, variableObject){
-    let varCopy = new Map(variableObject);
-    let arrayCommitments = [];
-    for(let value of structureObject.domain) {
-      varCopy.set(this.variableName, value);
-      arrayCommitments.push({value: value, eval: this.subFormula.eval(structureObject, varCopy)})
-    }
-    return arrayCommitments;
+  getSubFormulas(){
+    return [this.subFormula];
   }
 
-  setVariable(from, to){
-    this.subFormula.setVariable(from, to);
+  setVariable(from, to) {
+    if (this.variableName !== from) {
+      this.subFormula.setVariable(from, to);
+    }
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [commitment];
+  }
+
+  getVariables(){
+    const variables = this.subFormula.getVariables();
+    variables.push(this.variableName);
+    return variables;
   }
 }
 

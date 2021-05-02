@@ -25,12 +25,20 @@ class Formula extends Expression {
     return '';
   }
 
-  getSubFormulas(structureObject, variableObject) {
+  getSubFormulas() {
     return [];
   }
 
   setVariable(from, to){
     //nothing
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [];
+  };
+
+  getVariables(){
+    return [];
   }
 }
 

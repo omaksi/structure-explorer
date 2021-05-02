@@ -1,5 +1,5 @@
 import Formula from "./Formula";
-import {NEGATION} from "../../constants/gameConstants";
+import {GAME_OPERATOR} from "../../constants/gameConstants";
 
 /**
  * Represent negation
@@ -42,15 +42,23 @@ class Negation extends Formula {
   }
 
   getType(commitment){
-    return NEGATION;
+    return GAME_OPERATOR;
   }
 
-  getSubFormulas(structureObject, variableObject){
-    return [{formula: this.subFormula, eval: this.subFormula.eval(structureObject, variableObject)}];
+  getSubFormulas(){
+    return [this.subFormula];
   }
 
   setVariable(from, to){
     this.subFormula.setVariable(from, to);
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [!commitment];
+  }
+
+  getVariables(){
+    return this.subFormula.getVariables();
   }
 }
 

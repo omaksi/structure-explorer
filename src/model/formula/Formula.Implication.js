@@ -1,5 +1,5 @@
 import Formula from "./Formula";
-import {GAME_IMPLICATION, PLAYER_IMPLICATION} from "../../constants/gameConstants";
+import {GAME_OPERATOR, PLAYER_OPERATOR} from "../../constants/gameConstants";
 
 /**
  * Represent implication
@@ -47,17 +47,29 @@ class Implication extends Formula {
   }
 
   getType(commitment){
-    return commitment ? PLAYER_IMPLICATION : GAME_IMPLICATION;
+    return commitment ? PLAYER_OPERATOR : GAME_OPERATOR;
   }
 
-  getSubFormulas(structureObject, variableObject){
-    return [{formula: this.subLeft, eval: this.subLeft.eval(structureObject, variableObject)},
-            {formula: this.subRight, eval: this.subRight.eval(structureObject, variableObject)}];
+  getSubFormulas(){
+    return [this.subLeft, this.subRight];
   }
 
   setVariable(from, to){
     this.subLeft.setVariable(from, to);
     this.subRight.setVariable(from, to);
+  }
+
+  getSubFormulasCommitment(commitment){
+    if(commitment){
+      return [false, true];
+    }
+    return [true, false];
+  }
+
+  getVariables(){
+    const leftVariables = this.subLeft.getVariables();
+    const rightVariables = this.subRight.getVariables()
+    return leftVariables.concat(rightVariables);
   }
 }
 

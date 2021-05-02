@@ -50,14 +50,23 @@ class Disjunction extends Formula {
     return commitment ? PLAYER_OPERATOR : GAME_OPERATOR;
   }
 
-  getSubFormulas(structureObject, variableObject){
-    return [{formula: this.subLeft, eval: this.subLeft.eval(structureObject, variableObject)},
-            {formula: this.subRight, eval: this.subRight.eval(structureObject, variableObject)}];
+  getSubFormulas(){
+    return [this.subLeft, this.subRight];
   }
 
   setVariable(from, to){
     this.subLeft.setVariable(from, to);
     this.subRight.setVariable(from, to);
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [commitment, commitment];
+  }
+
+  getVariables(){
+    const leftVariables = this.subLeft.getVariables();
+    const rightVariables = this.subRight.getVariables()
+    return leftVariables.concat(rightVariables);
   }
 }
 

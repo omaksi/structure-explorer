@@ -167,12 +167,13 @@ function game(expression, action, state, variablesObject){
             expression.gameEnabled = !expression.gameEnabled;
             expression.gameHistory = new Array();
             variables = new Map(variablesObject);
+            expression.variableIndex = setValidVariableIndex(expression.parsed, 1, variables);
             addToHistory(expression, expression.parsed, null, null, variables, [], []);
           }
           return;
 
     case SET_GAME_COMMITMENT:
-          nextValue = getNextStepForGame(lastEntry.gameValue, action.commitment, state, lastEntry.gameVariables);
+          nextValue = getNextStepForGame(lastEntry.gameValue, action.commitment, getStructureObject(state), lastEntry.gameVariables, expression);
           addToHistory(expression, lastEntry.gameValue, action.commitment, nextValue, lastEntry.gameVariables, action.gameMessages, action.userMessages);
           return;
 
@@ -181,24 +182,24 @@ function game(expression, action, state, variablesObject){
           if(lastEntry.gameValue.getType(lastEntry.gameCommitment) === GAME_QUANTIFIER){
             variables.set(lastEntry.nextValue.variables[0], lastEntry.nextValue.variables[1]);
           }
-
-          nextValue = getNextStepForGame(lastEntry.nextValue.formula, lastEntry.nextValue.commitment, state, variables);
+          nextValue = getNextStepForGame(lastEntry.nextValue.formula, lastEntry.nextValue.commitment, getStructureObject(state), variables, expression);
           addToHistory(expression, lastEntry.nextValue.formula, lastEntry.nextValue.commitment, nextValue, variables, action.gameMessages, action.userMessages);
           return;
 
     case SET_GAME_DOMAIN_CHOICE:
           variables = new Map(lastEntry.gameVariables);
-          let varName = 'n' + variables.size;
+          let varName = 'n' + expression.variableIndex;
           variables.set(varName, action.value);
-          gameValue = lastEntry.gameValue.createCopy();
+          gameValue = lastEntry.gameValue.subFormula.createCopy();
           gameValue.setVariable(lastEntry.gameValue.variableName, varName);
-          nextValue = getNextStepForGame(gameValue.subFormula, lastEntry.gameCommitment, state, variables);
-          addToHistory(expression, gameValue.subFormula, lastEntry.gameCommitment, nextValue, variables, action.gameMessages, action.userMessages);
+          setValidVariableIndex(gameValue, expression.variableIndex, variables);
+          nextValue = getNextStepForGame(gameValue, lastEntry.gameCommitment, getStructureObject(state), variables, expression);
+          addToHistory(expression, gameValue, lastEntry.gameCommitment, nextValue, variables, action.gameMessages, action.userMessages);
           return;
 
     case SET_GAME_NEXT_FORMULA:
           gameValue = action.formula.createCopy();
-          nextValue = getNextStepForGame(gameValue, action.commitment, state, lastEntry.gameVariables);
+          nextValue = getNextStepForGame(gameValue, action.commitment, getStructureObject(state), lastEntry.gameVariables, expression);
           addToHistory(expression, gameValue, action.commitment, nextValue, lastEntry.gameVariables, action.gameMessages, action.userMessages);
           return;
 
@@ -206,6 +207,7 @@ function game(expression, action, state, variablesObject){
           expression.gameHistory = new Array();
           expression.showVariables = false;
           expression.gameEnabled = false;
+          expression.variableIndex = 1;
           return;
 
     case GET_VARIABLES:
@@ -320,51 +322,50 @@ function addToHistory(expression, gameValue, commitment, nextFormula, gameVariab
   ));
 }
 
-function getNextStepForGame(gameValue, commitment, state, variableObject){
-    let subFormulas = gameValue.getSubFormulas(getStructureObject(state), variableObject);
-    let randomFormula = Math.floor(Math.random() * 2);
-    let randomDomainValue = Math.floor(Math.random() * getStructureObject(state).domain.size);
-    switch (gameValue.getType(commitment)){
-      case NEGATION:
-        return {formula: subFormulas[0].formula, commitment: !commitment};
-      case GAME_OPERATOR:
-      case GAME_EQUIVALENCE:
-        if(subFormulas[0].eval !== commitment){
-          return {formula: subFormulas[0].formula, commitment};
-        } else if(subFormulas[1].eval !== commitment){
-          return {formula: subFormulas[1].formula, commitment};
-        }
-        return {formula: subFormulas[randomFormula].formula, commitment};
-
-      case GAME_IMPLICATION:
-        if(subFormulas[0].eval === commitment){
-          return {formula: subFormulas[0].formula, commitment: !commitment};
-        } else if(subFormulas[1].eval !== commitment){
-          return {formula: subFormulas[1].formula, commitment};
-        } else if(randomFormula == 0){
-          return {formula: subFormulas[0].formula, commitment: !commitment};
-        }
-        return {formula: subFormulas[1].formula, commitment};
-
-      case GAME_QUANTIFIER:
-        let variables = new Map(variableObject);
-        for(let valueAndCommitment of subFormulas){
-          if(valueAndCommitment.eval !== commitment){
-            let varName = 'n' + variables.size;
-            gameValue = gameValue.createCopy();
-            gameValue.setVariable(gameValue.variableName, varName);
-            variables.set(varName, valueAndCommitment.value);
-            return {formula: gameValue.subFormula, commitment, variables: [varName, valueAndCommitment.value]};
+function getNextStepForGame(gameValue, commitment, structureObject, variableObject, expression){
+    if(gameValue.getType(commitment) === GAME_OPERATOR){
+        const subFormulas = gameValue.getSubFormulas();
+        const subFormulasEval = subFormulas.map(formula => formula.eval(structureObject, variableObject));
+        const subFormulasCommitment = gameValue.getSubFormulasCommitment(commitment);
+        const randomFormula = Math.floor(Math.random() * subFormulas.length);
+        for(let i = 0; i < subFormulas.length; i++){
+          if(subFormulasCommitment[i] !== subFormulasEval[i]){
+            return {formula: subFormulas[i], commitment: subFormulasCommitment[i], variables: variableObject}
           }
         }
-        let varName = 'n' + variables.size;
-        gameValue = gameValue.createCopy();
-        gameValue.setVariable(gameValue.variableName, varName);
-        variables.set(varName, subFormulas[randomDomainValue].value);
-        return {formula: gameValue.subFormula, commitment, variables: [varName, subFormulas[randomDomainValue].value]};
-      default:
-        return null;
+        return {formula: subFormulas[randomFormula], commitment: subFormulasCommitment[randomFormula], variables: variableObject}
+    } else if(gameValue.getType(commitment) === GAME_QUANTIFIER){
+        const domain = Array.from(structureObject.domain);
+        const randomDomainValue = Math.floor(Math.random() * domain.length);
+        let variables = new Map(variableObject);
+        const varName = 'n' + expression.variableIndex;
+        console.log(varName);
+        let tmpGameValue;
+        for(let value of domain){
+          tmpGameValue = gameValue.subFormula.createCopy();
+          tmpGameValue.setVariable(gameValue.variableName, varName);
+          variables.set(varName, value);
+          if(tmpGameValue.eval(structureObject, variables) !== commitment){
+            expression.variableIndex = setValidVariableIndex(tmpGameValue, expression.variableIndex, variables);
+            return {formula: tmpGameValue, commitment: commitment, variables: [varName, value]};
+          }
+        }
+
+        tmpGameValue = gameValue.subFormula.createCopy();
+        tmpGameValue.setVariable(gameValue.variableName, varName);
+        variables.set(varName, domain[randomDomainValue]);
+        expression.variableIndex = setValidVariableIndex(tmpGameValue, expression.variableIndex, variables);
+        return {formula: tmpGameValue, commitment: commitment, variables: [varName, domain[randomDomainValue]]};
     }
+    return null;
+}
+
+function setValidVariableIndex(formula, variableIndex, variables){
+    const variablesInFormula = formula.getVariables();
+    while(variablesInFormula.includes('n' + variableIndex) || variables.has('n' + variableIndex)){
+        variableIndex++;
+    }
+    return variableIndex;
 }
 
 

@@ -48,13 +48,23 @@ class EqualityAtom extends Formula {
     return ATOM;
   }
 
-  getSubFormulas(structureObject, variableObject){
+  getSubFormulas(){
     return [];
   }
 
   setVariable(from, to){
     this.subLeft.setVariable(from, to);
     this.subRight.setVariable(from, to);
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [];
+  }
+
+  getVariables(){
+    const leftVariables = this.subLeft.getVariables();
+    const rightVariables = this.subRight.getVariables()
+    return leftVariables.concat(rightVariables);
   }
 }
 

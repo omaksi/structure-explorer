@@ -68,12 +68,20 @@ class PredicateAtom extends Formula {
     return ATOM;
   }
 
-  getSubFormulas(structureObject, variableObject){
+  getSubFormulas(){
     return [];
   }
 
   setVariable(from, to){
     this.terms.forEach(term => term.setVariable(from, to));
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [];
+  }
+
+  getVariables(){
+    return this.terms.map(term => term.getVariables()).flat();
   }
 }
 

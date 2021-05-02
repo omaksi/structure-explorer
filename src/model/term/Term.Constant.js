@@ -49,6 +49,10 @@ class Constant extends Term {
     //nothing
   }
 
+  getVariables(){
+    return [this.name];
+  }
+
 }
 
 export default Constant;

@@ -48,6 +48,10 @@ class Variable extends Term {
       this.name = to;
     }
   }
+
+  getVariables(){
+    return [this.name];
+  }
 }
 
 export default Variable;

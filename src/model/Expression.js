@@ -18,6 +18,9 @@ class Expression {
     return null;
   }
 
+  getVariables(){
+    return null;
+  }
 }
 
 export default Expression;

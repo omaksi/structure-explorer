@@ -24,6 +24,10 @@ class Term extends Expression {
   setVariable(from, to){
     //nothing
   }
+
+  getVariables(){
+    return [];
+  }
 }
 
 export default Term;

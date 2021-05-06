@@ -11,12 +11,21 @@ import {
     PLAYER_QUANTIFIER
 } from "../constants/gameConstants";
 import {
+    COULD_NOT_WON,
+    COULD_WON,
     ENTRY_SENTENCE,
-    EVALUATED_EQUALITY, EVALUATED_INEQUALITY,
+    EVALUATED_EQUALITY,
+    EVALUATED_INEQUALITY,
     EVALUATED_PREDICATE_IN,
     EVALUATED_PREDICATE_NOT_IN,
-    FIRST_QUESTION
-} from "../constants/messages";
+    FIRST_FORMULA_OPTION,
+    FIRST_QUESTION, LOSS,
+    OPERATOR_ANSWER, OPERATOR_QUESTION,
+    QUANTIFIER_ANSWER_1,
+    QUANTIFIER_ANSWER_2,
+    QUANTIFIER_QUESTION,
+    SECOND_FORMULA_OPTION, WIN_1, WIN_2
+} from "../constants/gameMessages";
 import {UserMessageBubble} from "./UserMessageBubble";
 import PredicateAtom from "../model/formula/Formula.PredicateAtom";
 import Implication from "../model/formula/Formula.Implication";
@@ -186,51 +195,38 @@ export class HenkinHintikkaGame extends React.Component {
                 case ATOM:
                     const initial = this.props.formula.gameHistory[1];
                     if(entry.gameCommitment === entry.gameValue.eval(structure, entry.gameVariables)){
-                        messages.push('Vyhral/a si! ' + entry.gameValue + ' je naozaj ' + this.getCommitmentText(entry.gameCommitment)
-                            + ', pretože ' + this.getWinningEvaluatedFormula(entry.gameValue, structure, entry.gameVariables, entry.gameCommitment));
-                        messages.push(`Tvoj úvodný predpoklad,
-                            že formula ${initial.gameValue}
-                            je ${this.getCommitmentText(initial.gameCommitment)},
-                            bol správny.`)
+                        messages.push(WIN_1(entry.gameValue, this.getCommitmentText(entry.gameCommitment),
+                            this.getWinningEvaluatedFormula(entry.gameValue, structure, entry.gameVariables, entry.gameCommitment)));
+                        messages.push(WIN_2(initial.gameValue,this.getCommitmentText(initial.gameCommitment)));
                     } else {
-                        messages.push('Prehral/a si! ' + entry.gameValue + ' je ' + this.getCommitmentText(!entry.gameCommitment)
-                            + ', pretože ' + this.getLoosingEvaluatedFormula(entry.gameValue, structure, entry.gameVariables, entry.gameCommitment));
+                        messages.push(LOSS(entry.gameValue,this.getCommitmentText(!entry.gameCommitment),
+                            this.getLoosingEvaluatedFormula(entry.gameValue, structure, entry.gameVariables, entry.gameCommitment)));
                         if(initial.gameValue.eval(structure, initial.gameVariables) === initial.gameCommitment){
-                            messages.push(`Mohol/mohla si však vyhrať.
-                                Tvoj úvodný predpoklad,
-                                že formula ${initial.gameValue}
-                                je ${this.getCommitmentText(initial.gameCommitment)},
-                                je správny.
-                                Nájdi chybnú odpoveď a zmeň ju!`);
+                            messages.push(COULD_WON(initial.gameValue, this.getCommitmentText(initial.gameCommitment)));
                         } else {
-                            messages.push(`Tvoj úvodný predpoklad,
-                                že formula ${initial.gameValue}
-                                je ${this.getCommitmentText(initial.gameCommitment)},
-                                je chybný.`)
+                            messages.push(COULD_NOT_WON(initial.gameValue, this.getCommitmentText(initial.gameCommitment)));
                         }
                     }
                     return messages;
 
                 case PLAYER_OPERATOR:
-                    messages.push('Ktorý z nasledujúcich prípadov nastáva?');
-                    messages.push(`1. Podformula ${subFormulas[0]} je ${this.getCommitmentText(subFormulasCommitment[0])}.`);
-                    messages.push(`2. Podformula ${subFormulas[1]} je ${this.getCommitmentText(subFormulasCommitment[1])}.`);
+                    messages.push(OPERATOR_QUESTION());
+                    messages.push(FIRST_FORMULA_OPTION(subFormulas[0], this.getCommitmentText(subFormulasCommitment[0])));
+                    messages.push(SECOND_FORMULA_OPTION(subFormulas[1], this.getCommitmentText(subFormulasCommitment[1])));
                     return messages;
 
                 case GAME_OPERATOR:
-                    messages.push(`Potom ${entry.nextValue.formula} je ${this.getCommitmentText(entry.nextValue.commitment)}.`);
+                    messages.push(OPERATOR_ANSWER(entry.nextValue.formula, this.getCommitmentText(entry.nextValue.commitment)));
                     return messages;
 
                 case PLAYER_QUANTIFIER:
-                    let form = entry.gameValue.subFormula.createCopy();
-                    form.substitute(entry.gameValue.variableName, varName);
-                    messages.push(`Ktorý prvok z domény má premenná ${varName} označovať, 
-                                    aby bola formula ${form} ${this.getCommitmentText(entry.gameCommitment)}?`);
+                    const form = entry.gameValue.subFormula.substitute(entry.gameValue.variableName, varName);
+                    messages.push(QUANTIFIER_QUESTION(varName, form, this.getCommitmentText(entry.gameCommitment)));
                     return messages;
 
                 case GAME_QUANTIFIER:
-                    messages.push(`Potom je ${this.getCommitmentText(entry.nextValue.commitment)} aj formula ${entry.nextValue.formula},`);
-                    messages.push(`keď premennou ${entry.nextValue.variables[0]} označíme prvok ${entry.nextValue.variables[1]}.`);
+                    messages.push(QUANTIFIER_ANSWER_1(this.getCommitmentText(entry.nextValue.commitment), entry.nextValue.formula));
+                    messages.push(QUANTIFIER_ANSWER_2(entry.nextValue.variables[0], entry.nextValue.variables[1]));
                     return messages;
             }
         }

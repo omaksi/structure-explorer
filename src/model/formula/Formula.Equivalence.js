@@ -55,14 +55,13 @@ class Equivalence extends Formula {
     }
 
     getSubFormulas(){
-        let toRightImpl = new Implication(this.subLeft, this.subRight);
-        let toLeftImpl = new Implication(this.subRight, this.subLeft);
+        const toRightImpl = new Implication(this.subLeft, this.subRight);
+        const toLeftImpl = new Implication(this.subRight, this.subLeft);
         return [toRightImpl, toLeftImpl];
     }
 
-    setVariable(from, to){
-        this.subLeft.setVariable(from, to);
-        this.subRight.setVariable(from, to);
+    substitute(from, to){
+        return new Equivalence(this.subLeft.substitute(from, to), this.subRight.substitute(from, to));
     }
 
     getSubFormulasCommitment(commitment){
@@ -70,9 +69,7 @@ class Equivalence extends Formula {
     }
 
     getVariables(){
-        const leftVariables = this.subLeft.getVariables();
-        const rightVariables = this.subRight.getVariables()
-        return leftVariables.concat(rightVariables);
+        return this.subLeft.getVariables().concat(this.subRight.getVariables());
     }
 }
 

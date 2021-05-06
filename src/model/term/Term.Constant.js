@@ -41,12 +41,11 @@ class Constant extends Term {
   }
 
   createCopy(){
-    let name = this.name;
-    return new Constant(name);
+    return new Constant(this.name);
   }
 
-  setVariable(from, to){
-    //nothing
+  substitute(from, to){
+    return this.createCopy();
   }
 
   getVariables(){

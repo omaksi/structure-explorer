@@ -18,8 +18,12 @@ class Expression {
     return null;
   }
 
+  substitute(from, to){
+    //nothing
+  }
+
   getVariables(){
-    return null;
+    return [];
   }
 }
 

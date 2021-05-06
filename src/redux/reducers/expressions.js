@@ -191,7 +191,7 @@ function game(expression, action, state, variablesObject){
           let varName = 'n' + expression.variableIndex;
           variables.set(varName, action.value);
           gameValue = lastEntry.gameValue.subFormula.createCopy();
-          gameValue.setVariable(lastEntry.gameValue.variableName, varName);
+          gameValue.substitute(lastEntry.gameValue.variableName, varName);
           setValidVariableIndex(gameValue, expression.variableIndex, variables);
           nextValue = getNextStepForGame(gameValue, lastEntry.gameCommitment, getStructureObject(state), variables, expression);
           addToHistory(expression, gameValue, lastEntry.gameCommitment, nextValue, variables, action.gameMessages, action.userMessages);
@@ -343,7 +343,7 @@ function getNextStepForGame(gameValue, commitment, structureObject, variableObje
         let tmpGameValue;
         for(let value of domain){
           tmpGameValue = gameValue.subFormula.createCopy();
-          tmpGameValue.setVariable(gameValue.variableName, varName);
+          tmpGameValue.substitute(gameValue.variableName, varName);
           variables.set(varName, value);
           if(tmpGameValue.eval(structureObject, variables) !== commitment){
             expression.variableIndex = setValidVariableIndex(tmpGameValue, expression.variableIndex, variables);
@@ -352,7 +352,7 @@ function getNextStepForGame(gameValue, commitment, structureObject, variableObje
         }
 
         tmpGameValue = gameValue.subFormula.createCopy();
-        tmpGameValue.setVariable(gameValue.variableName, varName);
+        tmpGameValue.substitute(gameValue.variableName, varName);
         variables.set(varName, domain[randomDomainValue]);
         expression.variableIndex = setValidVariableIndex(tmpGameValue, expression.variableIndex, variables);
         return {formula: tmpGameValue, commitment: commitment, variables: [varName, domain[randomDomainValue]]};

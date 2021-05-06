@@ -223,7 +223,7 @@ export class HenkinHintikkaGame extends React.Component {
 
                 case PLAYER_QUANTIFIER:
                     let form = entry.gameValue.subFormula.createCopy();
-                    form.setVariable(entry.gameValue.variableName, varName);
+                    form.substitute(entry.gameValue.variableName, varName);
                     messages.push(`Ktorý prvok z domény má premenná ${varName} označovať, 
                                     aby bola formula ${form} ${this.getCommitmentText(entry.gameCommitment)}?`);
                     return messages;

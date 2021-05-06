@@ -43,10 +43,11 @@ class Variable extends Term {
     return new Variable(name);
   }
 
-  setVariable(from, to){
+  substitute(from, to){
     if(this.name === from){
-      this.name = to;
+      return new Variable(to);
     }
+    return this.createCopy();
   }
 
   getVariables(){

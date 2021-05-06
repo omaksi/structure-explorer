@@ -59,10 +59,11 @@ class UniversalQuant extends Formula {
     return [this.subFormula];
   }
 
-  setVariable(from, to){
+  substitute(from, to){
     if (this.variableName !== from) {
-      this.subFormula.setVariable(from, to);
+      return new UniversalQuant(to, this.subFormula.substitute(from, to));
     }
+    return this.createCopy();
   }
 
   getSubFormulasCommitment(commitment){

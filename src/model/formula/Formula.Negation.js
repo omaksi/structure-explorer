@@ -49,8 +49,8 @@ class Negation extends Formula {
     return [this.subFormula];
   }
 
-  setVariable(from, to){
-    this.subFormula.setVariable(from, to);
+  substitute(from, to){
+    return new Negation(this.subFormula.substitute(from, to));
   }
 
   getSubFormulasCommitment(commitment){

@@ -54,22 +54,16 @@ class Implication extends Formula {
     return [this.subLeft, this.subRight];
   }
 
-  setVariable(from, to){
-    this.subLeft.setVariable(from, to);
-    this.subRight.setVariable(from, to);
+  substitute(from, to){
+    return new Implication(this.subLeft.substitute(from, to), this.subRight.substitute(from, to));
   }
 
   getSubFormulasCommitment(commitment){
-    if(commitment){
-      return [false, true];
-    }
-    return [true, false];
+    return [!commitment, commitment];
   }
 
   getVariables(){
-    const leftVariables = this.subLeft.getVariables();
-    const rightVariables = this.subRight.getVariables()
-    return leftVariables.concat(rightVariables);
+    return this.subLeft.getVariables().concat(this.subRight.getVariables());
   }
 }
 

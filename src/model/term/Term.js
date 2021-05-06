@@ -21,7 +21,7 @@ class Term extends Expression {
     return new Term();
   }
 
-  setVariable(from, to){
+  substitute(from, to){
     //nothing
   }
 

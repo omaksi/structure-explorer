@@ -50,7 +50,7 @@ export class HenkinHintikkaGame extends React.Component {
                                         .map(message => <GameMessageBubble>{message}</GameMessageBubble>)}
                 </MessageAreaContainer>
                 <Form.Group>
-                    {this.getChoice(this.props.formula.gameHistory[this.props.formula.gameHistory.length - 1])}
+                    {this.getChoice(this.props.formula.gameHistory[this.props.formula.gameHistory.length - 1], this.props.formula.variableIndex)}
                 </Form.Group>
                 {this.toggleVariables(this.props.formula.gameHistory[this.props.formula.gameHistory.length - 1])}
             </Container>
@@ -95,14 +95,14 @@ export class HenkinHintikkaGame extends React.Component {
     chooseFormula(entry, leftCommitment, rightCommitment, messages) {
         let leftStringCommitment = this.getCommitmentText(leftCommitment);
         let rightStringCommitment = this.getCommitmentText(rightCommitment);
-        let leftUserMessage = [entry.gameValue.subLeft.toString() + ' je ' + leftStringCommitment];
-        let rightUserMessage = [entry.gameValue.subRight.toString() + ' je ' + rightStringCommitment];
+        let leftUserMessage = [entry.currentFormula.subLeft.toString() + ' je ' + leftStringCommitment];
+        let rightUserMessage = [entry.currentFormula.subRight.toString() + ' je ' + rightStringCommitment];
         return (
             <div className={"d-flex justify-content-center"}>
-                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, entry.gameValue.subLeft, leftCommitment, messages, leftUserMessage)}>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, entry.currentFormula.subLeft, leftCommitment, messages, leftUserMessage)}>
                     {leftUserMessage}
                 </Button>
-                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, entry.gameValue.subRight, rightCommitment, messages, rightUserMessage)}>
+                <Button size='sm' variant="outline-primary" className={"rounded mr-3"} onClick={() => this.props.setGameNextFormula(this.props.index, entry.currentFormula.subRight, rightCommitment, messages, rightUserMessage)}>
                     {rightUserMessage}
                 </Button>
                 {this.writeVariables()}
@@ -110,8 +110,8 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    chooseDomainValue(entry, messages){
-        let varName = 'n' + entry.gameVariables.size;
+    chooseDomainValue(entry, messages, variableIndex){
+        let varName = 'n' + variableIndex;
         return (
             <div className={"d-flex justify-content-center"}>
                 <DropdownButton size='sm' variant="outline-primary" className={"rounded mr-3"} alignRight as={ButtonGroup} title="Vyber prvok z domény">
@@ -124,9 +124,9 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    chooseImplication(messages, gameValue, commitment){
-        let leftImplication = new Implication(gameValue.subLeft, gameValue.subRight);
-        let rightImplication = new Implication(gameValue.subRight, gameValue.subLeft);
+    chooseImplication(messages, currentFormula, commitment){
+        let leftImplication = new Implication(currentFormula.subLeft, currentFormula.subRight);
+        let rightImplication = new Implication(currentFormula.subRight, currentFormula.subLeft);
         let leftUserMessage = [leftImplication.toString() + ' je ' + this.getCommitmentText(commitment)];
         let rightUserMessage = [rightImplication.toString() + ' je ' + this.getCommitmentText(commitment)];
         return (
@@ -160,19 +160,19 @@ export class HenkinHintikkaGame extends React.Component {
         );
     }
 
-    getChoice(entry){
+    getChoice(entry, variableIndex){
         const messages = this.generateMessage(entry);
         if(entry.gameCommitment === null){
             return this.chooseCommitment(messages);
         } else {
-            switch(entry.gameValue.getType(entry.gameCommitment)){
+            switch(entry.currentFormula.getType(entry.gameCommitment)){
                 case ATOM:
                     return this.chooseEndGame();
                 case PLAYER_OPERATOR:
-                    const subFormulasCommitment = entry.gameValue.getSubFormulasCommitment(entry.gameCommitment);
+                    const subFormulasCommitment = entry.currentFormula.getSubFormulasCommitment(entry.gameCommitment);
                     return this.chooseFormula(entry, subFormulasCommitment[0], subFormulasCommitment[1], messages);
                 case PLAYER_QUANTIFIER:
-                    return this.chooseDomainValue(entry, messages);
+                    return this.chooseDomainValue(entry, messages, variableIndex);
                 case GAME_OPERATOR:
                 case GAME_QUANTIFIER:
                     return this.chooseOk(messages);
@@ -184,27 +184,27 @@ export class HenkinHintikkaGame extends React.Component {
         let varName = 'n' + variableIndex;
         let messages = [];
         if(entry.gameCommitment === null){
-            messages.push(FIRST_QUESTION(entry.gameValue))
+            messages.push(FIRST_QUESTION(entry.currentFormula))
             return messages;
         } else {
             const structure = this.props.structureObject;
-            const subFormulas = entry.gameValue.getSubFormulas();
-            const subFormulasCommitment = entry.gameValue.getSubFormulasCommitment(entry.gameCommitment);
-            messages.push(ENTRY_SENTENCE(entry.gameValue.toString(), this.getCommitmentText(entry.gameCommitment)));
-            switch(entry.gameValue.getType(entry.gameCommitment)){
+            const subFormulas = entry.currentFormula.getSubFormulas();
+            const subFormulasCommitment = entry.currentFormula.getSubFormulasCommitment(entry.gameCommitment);
+            messages.push(ENTRY_SENTENCE(entry.currentFormula.toString(), this.getCommitmentText(entry.gameCommitment)));
+            switch(entry.currentFormula.getType(entry.gameCommitment)){
                 case ATOM:
                     const initial = this.props.formula.gameHistory[1];
-                    if(entry.gameCommitment === entry.gameValue.eval(structure, entry.gameVariables)){
-                        messages.push(WIN_1(entry.gameValue, this.getCommitmentText(entry.gameCommitment),
-                            this.getWinningEvaluatedFormula(entry.gameValue, structure, entry.gameVariables, entry.gameCommitment)));
-                        messages.push(WIN_2(initial.gameValue,this.getCommitmentText(initial.gameCommitment)));
+                    if(entry.gameCommitment === entry.currentFormula.eval(structure, entry.gameVariables)){
+                        messages.push(WIN_1(entry.currentFormula, this.getCommitmentText(entry.gameCommitment),
+                            this.getWinningEvaluatedFormula(entry.currentFormula, structure, entry.gameVariables, entry.gameCommitment)));
+                        messages.push(WIN_2(initial.currentFormula,this.getCommitmentText(initial.gameCommitment)));
                     } else {
-                        messages.push(LOSS(entry.gameValue,this.getCommitmentText(!entry.gameCommitment),
-                            this.getLoosingEvaluatedFormula(entry.gameValue, structure, entry.gameVariables, entry.gameCommitment)));
-                        if(initial.gameValue.eval(structure, initial.gameVariables) === initial.gameCommitment){
-                            messages.push(COULD_WON(initial.gameValue, this.getCommitmentText(initial.gameCommitment)));
+                        messages.push(LOSS(entry.currentFormula,this.getCommitmentText(!entry.gameCommitment),
+                            this.getLoosingEvaluatedFormula(entry.currentFormula, structure, entry.gameVariables, entry.gameCommitment)));
+                        if(initial.currentFormula.eval(structure, initial.gameVariables) === initial.gameCommitment){
+                            messages.push(COULD_WON(initial.currentFormula, this.getCommitmentText(initial.gameCommitment)));
                         } else {
-                            messages.push(COULD_NOT_WON(initial.gameValue, this.getCommitmentText(initial.gameCommitment)));
+                            messages.push(COULD_NOT_WON(initial.currentFormula, this.getCommitmentText(initial.gameCommitment)));
                         }
                     }
                     return messages;
@@ -216,59 +216,59 @@ export class HenkinHintikkaGame extends React.Component {
                     return messages;
 
                 case GAME_OPERATOR:
-                    messages.push(OPERATOR_ANSWER(entry.nextValue.formula, this.getCommitmentText(entry.nextValue.commitment)));
+                    messages.push(OPERATOR_ANSWER(entry.nextMove.formula, this.getCommitmentText(entry.nextMove.commitment)));
                     return messages;
 
                 case PLAYER_QUANTIFIER:
-                    const form = entry.gameValue.subFormula.substitute(entry.gameValue.variableName, varName);
+                    const form = entry.currentFormula.subFormula.substitute(entry.currentFormula.variableName, varName);
                     messages.push(QUANTIFIER_QUESTION(varName, form, this.getCommitmentText(entry.gameCommitment)));
                     return messages;
 
                 case GAME_QUANTIFIER:
-                    messages.push(QUANTIFIER_ANSWER_1(this.getCommitmentText(entry.nextValue.commitment), entry.nextValue.formula));
-                    messages.push(QUANTIFIER_ANSWER_2(entry.nextValue.variables[0], entry.nextValue.variables[1]));
+                    messages.push(QUANTIFIER_ANSWER_1(this.getCommitmentText(entry.nextMove.commitment), entry.nextMove.formula));
+                    messages.push(QUANTIFIER_ANSWER_2(entry.nextMove.variables[0], entry.nextMove.variables[1]));
                     return messages;
             }
         }
     }
 
-    getWinningEvaluatedFormula(gameValue, structure, variables, gameCommitment){
-        if(gameValue instanceof PredicateAtom){
+    getWinningEvaluatedFormula(currentFormula, structure, variables, gameCommitment){
+        if(currentFormula instanceof PredicateAtom){
             if(gameCommitment) {
-                return EVALUATED_PREDICATE_IN(this.getEvaluatedPredicateFormula(gameValue, structure, variables), gameValue.name);
+                return EVALUATED_PREDICATE_IN(this.getEvaluatedPredicateFormula(currentFormula, structure, variables), currentFormula.name);
             } else {
-                return EVALUATED_PREDICATE_NOT_IN(this.getEvaluatedPredicateFormula(gameValue, structure, variables), gameValue.name);
+                return EVALUATED_PREDICATE_NOT_IN(this.getEvaluatedPredicateFormula(currentFormula, structure, variables), currentFormula.name);
             }
         } else {
             if(gameCommitment) {
-                return EVALUATED_EQUALITY(gameValue.subLeft.eval(structure, variables), gameValue.subRight.eval(structure, variables));
+                return EVALUATED_EQUALITY(currentFormula.subLeft.eval(structure, variables), currentFormula.subRight.eval(structure, variables));
             } else {
-                return EVALUATED_INEQUALITY(gameValue.subLeft.eval(structure, variables), gameValue.subRight.eval(structure, variables));
+                return EVALUATED_INEQUALITY(currentFormula.subLeft.eval(structure, variables), currentFormula.subRight.eval(structure, variables));
             }
         }
     }
 
-    getLoosingEvaluatedFormula(gameValue, structure, variables, gameCommitment){
-        if(gameValue instanceof PredicateAtom){
+    getLoosingEvaluatedFormula(currentFormula, structure, variables, gameCommitment){
+        if(currentFormula instanceof PredicateAtom){
             if(gameCommitment) {
-                return EVALUATED_PREDICATE_NOT_IN(this.getEvaluatedPredicateFormula(gameValue, structure, variables), gameValue.name);
+                return EVALUATED_PREDICATE_NOT_IN(this.getEvaluatedPredicateFormula(currentFormula, structure, variables), currentFormula.name);
             } else {
-                return EVALUATED_PREDICATE_IN(this.getEvaluatedPredicateFormula(gameValue, structure, variables), gameValue.name);
+                return EVALUATED_PREDICATE_IN(this.getEvaluatedPredicateFormula(currentFormula, structure, variables), currentFormula.name);
             }
         } else {
             if(gameCommitment) {
-                return EVALUATED_INEQUALITY(gameValue.subLeft.eval(structure, variables), gameValue.subRight.eval(structure, variables));
+                return EVALUATED_INEQUALITY(currentFormula.subLeft.eval(structure, variables), currentFormula.subRight.eval(structure, variables));
             } else {
-                return EVALUATED_EQUALITY(gameValue.subLeft.eval(structure, variables), gameValue.subRight.eval(structure, variables));
+                return EVALUATED_EQUALITY(currentFormula.subLeft.eval(structure, variables), currentFormula.subRight.eval(structure, variables));
             }
         }
     }
 
-    getEvaluatedPredicateFormula(gameValue, structure, variables){
-        const res = gameValue.terms
+    getEvaluatedPredicateFormula(currentFormula, structure, variables){
+        const res = currentFormula.terms
             .map(term => term.eval(structure, variables))
             .join(', ');
-        if (gameValue.terms.length > 1) {
+        if (currentFormula.terms.length > 1) {
             return `(${res})`;
         }
         return res;

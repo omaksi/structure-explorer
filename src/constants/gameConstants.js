@@ -12,10 +12,10 @@ export const defaultHintikkaGameData = () => ({
     variableIndex: 1
 });
 
-export const gameEntry = (gameCommitment, gameVariables, gameValue, nextValue, gameMessages, userMessages) => ({
+export const gameEntry = (gameCommitment, gameVariables, currentFormula, nextMove, gameMessages, userMessages) => ({
     gameCommitment: gameCommitment,
-    gameValue: gameValue,
-    nextValue: nextValue,
+    currentFormula: currentFormula,
+    nextMove: nextMove,
     gameVariables: gameVariables,
     gameMessages: gameMessages,
     userMessages: userMessages

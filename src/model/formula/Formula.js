@@ -29,8 +29,16 @@ class Formula extends Expression {
     return [];
   }
 
-  setVariable(from, to){
+  substitute(from, to){
     //nothing
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [];
+  };
+
+  getVariables(){
+    return [];
   }
 }
 

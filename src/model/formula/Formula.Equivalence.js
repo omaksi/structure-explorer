@@ -1,5 +1,9 @@
 import Formula from "./Formula";
-import {ATOM, GAME_EQUIVALENCE, PLAYER_EQUIVALENCE} from "../../constants/gameConstants";
+import {
+    GAME_OPERATOR,
+    PLAYER_OPERATOR
+} from "../../constants/gameConstants";
+import Implication from "./Formula.Implication";
 
 /**
  * Represent equality symbol
@@ -47,16 +51,25 @@ class Equivalence extends Formula {
     }
 
     getType(commitment){
-        return commitment ? GAME_EQUIVALENCE : PLAYER_EQUIVALENCE;
+        return commitment ? GAME_OPERATOR : PLAYER_OPERATOR;
     }
 
     getSubFormulas(){
-        return [this.subLeft, this.subRight];
+        const toRightImpl = new Implication(this.subLeft, this.subRight);
+        const toLeftImpl = new Implication(this.subRight, this.subLeft);
+        return [toRightImpl, toLeftImpl];
     }
 
-    setVariable(from, to){
-        this.subLeft.setVariable(from, to);
-        this.subRight.setVariable(from, to);
+    substitute(from, to){
+        return new Equivalence(this.subLeft.substitute(from, to), this.subRight.substitute(from, to));
+    }
+
+    getSubFormulasCommitment(commitment){
+        return [commitment, commitment];
+    }
+
+    getVariables(){
+        return this.subLeft.getVariables().concat(this.subRight.getVariables());
     }
 }
 

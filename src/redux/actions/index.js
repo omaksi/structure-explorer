@@ -362,8 +362,7 @@ export const continueGame = (index, gameMessages, userMessages, randomNumbers) =
   type: 'CONTINUE_GAME',
   index,
   gameMessages,
-  userMessages,
-  randomNumbers
+  userMessages
 });
 export const setGameDomainChoice = (index, value, gameMessages, userMessages) => ({
   type: 'SET_GAME_DOMAIN_CHOICE',

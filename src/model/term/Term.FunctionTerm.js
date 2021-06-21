@@ -61,8 +61,12 @@ class FunctionTerm extends Term {
     return new FunctionTerm(name, terms);
   }
 
-  setVariable(from, to){
-    this.terms.forEach(term => term.setVariable(from, to));
+  substitute(from, to){
+    return new FunctionTerm(this.name, this.terms.map(term => term.substitute(from, to)));
+  }
+
+  getVariables(){
+    return this.terms.flatMap(term => term.getVariables());
   }
 }
 

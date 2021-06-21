@@ -52,9 +52,16 @@ class EqualityAtom extends Formula {
     return [];
   }
 
-  setVariable(from, to){
-    this.subLeft.setVariable(from, to);
-    this.subRight.setVariable(from, to);
+  substitute(from, to){
+    return new EqualityAtom(this.subLeft.substitute(from, to), this.subRight.substitute(from, to));
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [];
+  }
+
+  getVariables(){
+    return this.subLeft.getVariables().concat(this.subRight.getVariables());;
   }
 }
 

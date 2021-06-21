@@ -3,7 +3,7 @@ import {
   defaultHintikkaGameData, GAME_EQUIVALENCE,
   GAME_IMPLICATION,
   GAME_OPERATOR,
-  GAME_QUANTIFIER,
+  GAME_QUANTIFIER, gameEntry,
   NEGATION
 } from "../../constants/gameConstants";
 import Implication from "../../model/formula/Formula.Implication";
@@ -58,6 +58,7 @@ import {getStructureObject} from "../selectors/structureObject";
 import {parseExpression} from "./functions/parsers";
 import produce from "immer";
 import {getValuationObject} from "../selectors/valuationObject";
+import {last} from "mathjs/es/utils/array";
 
 export function defaultState(){
   return {
@@ -137,146 +138,89 @@ const expressionsReducer = produce((expressions, action, state) => {
       return;
 
     case INITIATE_GAME:
-      if(!expressions.formulas[action.index].parsed){
-        return;
-      }
-      expressions.formulas[action.index].gameEnabled = !expressions.formulas[action.index].gameEnabled;
-      expressions.formulas[action.index].gameValue = expressions.formulas[action.index].parsed.createCopy();
-      expressions.formulas[action.index].gameCommitment = null;
-      expressions.formulas[action.index].gameHistory = [];
-      expressions.formulas[action.index].showVariables = false;
-      expressions.formulas[action.index].gameVariables = new Map(variablesObject);
-      return;
-
     case SET_GAME_COMMITMENT:
-      expressions.formulas[action.index].gameCommitment = action.commitment;
-      addToHistory(expressions, action.index, action.gameMessages, action.userMessages);
-      return;
-
     case CONTINUE_GAME:
-      addToHistory(expressions, action.index, action.gameMessages, action.userMessages);
-      let formulas = expressions.formulas[action.index].gameValue.getSubFormulas();
-      switch(expressions.formulas[action.index].gameValue.getType(expressions.formulas[action.index].gameCommitment)){
-        case NEGATION:
-          expressions.formulas[action.index].gameCommitment = !expressions.formulas[action.index].gameCommitment;
-          expressions.formulas[action.index].gameValue = formulas[0].createCopy();
-          break;
-        case GAME_OPERATOR:
-          if(formulas[0].eval(getStructureObject(state), expressions.formulas[action.index].gameVariables) !== expressions.formulas[action.index].gameCommitment){
-            expressions.formulas[action.index].gameValue = formulas[0].createCopy();
-          } else if(formulas[1].eval(getStructureObject(state), expressions.formulas[action.index].gameVariables) !== expressions.formulas[action.index].gameCommitment){
-            expressions.formulas[action.index].gameValue = formulas[1].createCopy();
-          } else {
-            expressions.formulas[action.index].gameValue = formulas[action.randomNumbers[0]].createCopy();
-          }
-          break;
-        case GAME_IMPLICATION:
-          if(formulas[0].eval(getStructureObject(state), expressions.formulas[action.index].gameVariables) === expressions.formulas[action.index].gameCommitment){
-            expressions.formulas[action.index].gameValue = formulas[0].createCopy();
-            expressions.formulas[action.index].gameCommitment = !expressions.formulas[action.index].gameCommitment;
-          } else if(formulas[1].eval(getStructureObject(state), expressions.formulas[action.index].gameVariables) !== expressions.formulas[action.index].gameCommitment){
-            expressions.formulas[action.index].gameValue = formulas[1].createCopy();
-          } else {
-            if(action.randomNumbers[0] === 0){
-              expressions.formulas[action.index].gameValue = formulas[0].createCopy();
-              expressions.formulas[action.index].gameCommitment = !expressions.formulas[action.index].gameCommitment;
-            } else {
-              expressions.formulas[action.index].gameValue = formulas[1].createCopy();
-            }
-          }
-          break;
-        case GAME_QUANTIFIER:
-          let varName = 'n' + expressions.formulas[action.index].gameVariables.size;
-          expressions.formulas[action.index].gameValue = expressions.formulas[action.index].gameValue.createCopy();
-          expressions.formulas[action.index].gameValue.setVariable(expressions.formulas[action.index].gameValue.variableName, varName);
-          let structureObject = getStructureObject(state);
-          let noCounterExample = true;
-          for (let item of structureObject.domain) {
-            expressions.formulas[action.index].gameVariables.set(varName, item);
-            if (expressions.formulas[action.index].gameValue.subFormula.eval(structureObject, expressions.formulas[action.index].gameVariables)
-                !== expressions.formulas[action.index].gameCommitment) {
-              noCounterExample = false;
-              break;
-            }
-          }
-          if(noCounterExample){
-            expressions.formulas[action.index].gameVariables.set(varName, Array.from(structureObject.domain)[action.randomNumbers[1]]);
-          }
-          expressions.formulas[action.index].gameValue = expressions.formulas[action.index].gameValue.subFormula;
-          break;
-        case GAME_EQUIVALENCE:
-          let leftImplication = new Implication(expressions.formulas[action.index].gameValue.subLeft, expressions.formulas[action.index].gameValue.subRight);
-          let rightImplication = new Implication(expressions.formulas[action.index].gameValue.subRight, expressions.formulas[action.index].gameValue.subLeft);
-          if(leftImplication.eval(getStructureObject(state), expressions.formulas[action.index].gameVariables) !== expressions.formulas[action.index].gameCommitment){
-            expressions.formulas[action.index].gameValue = leftImplication;
-          } if(rightImplication.eval(getStructureObject(state), expressions.formulas[action.index].gameVariables) !== expressions.formulas[action.index].gameCommitment){
-            expressions.formulas[action.index].gameValue = rightImplication;
-          } else {
-            if(action.randomNumbers[0] === 0){
-              expressions.formulas[action.index].gameValue = leftImplication;
-            } else {
-              expressions.formulas[action.index].gameValue = rightImplication;
-            }
-          }
-          break;
-        default:
-          break;
-      }
-      return;
-
     case SET_GAME_DOMAIN_CHOICE:
-      addToHistory(expressions, action.index, action.gameMessages, action.userMessages);
-      let varName = 'n' + expressions.formulas[action.index].gameVariables.size;
-      expressions.formulas[action.index].gameVariables.set(varName, action.value);
-      expressions.formulas[action.index].gameValue = expressions.formulas[action.index].gameValue.createCopy();
-      expressions.formulas[action.index].gameValue.setVariable(expressions.formulas[action.index].gameValue.variableName, varName);
-      expressions.formulas[action.index].gameValue = expressions.formulas[action.index].gameValue.subFormula;
-      return;
-
     case SET_GAME_NEXT_FORMULA:
-      addToHistory(expressions, action.index, action.gameMessages, action.userMessages);
-      expressions.formulas[action.index].gameValue = action.formula.createCopy();
-      expressions.formulas[action.index].gameCommitment = action.commitment;
-      return;
-
     case END_GAME:
-      expressions.formulas[action.index].gameEnabled = false;
-      expressions.formulas[action.index].gameCommitment = null;
-      expressions.formulas[action.index].gameHistory = [];
-      expressions.formulas[action.index].gameValue = null;
-      return;
-
     case GET_VARIABLES:
-      expressions.formulas[action.index].showVariables = !expressions.formulas[action.index].showVariables;
-      return;
-
     case GO_BACK:
-      expressions.formulas[action.index].gameValue = expressions.formulas[action.index].gameHistory[action.historyIndex].gameValue.createCopy();
-      expressions.formulas[action.index].gameVariables = new Map(expressions.formulas[action.index].gameHistory[action.historyIndex].gameVariables);
-      if(action.historyIndex === 0){
-        expressions.formulas[action.index].gameCommitment = null;
-      } else {
-        expressions.formulas[action.index].gameCommitment = expressions.formulas[action.index].gameHistory[action.historyIndex].gameCommitment;
-      }
-      let newHistory = [];
-      for(let i = 0; i < expressions.formulas[action.index].gameHistory.length; i++){
-          if(i < action.historyIndex){
-            newHistory.push({
-              gameCommitment: expressions.formulas[action.index].gameHistory[i].gameCommitment,
-              gameValue: expressions.formulas[action.index].gameHistory[i].gameValue.createCopy(),
-              gameVariables: new Map(expressions.formulas[action.index].gameHistory[i].gameVariables),
-              gameMessages: expressions.formulas[action.index].gameHistory[i].gameMessages,
-              userMessages: expressions.formulas[action.index].gameHistory[i].userMessages
-            })
-          }
-      }
-      expressions.formulas[action.index].gameHistory = newHistory;
+      game(expressions.formulas[action.index], action, state, variablesObject);
       return;
 
     default:
       return;
   }
 })
+
+function game(expression, action, state, variablesObject){
+  let nextMove;
+  let currentFormula;
+  let variables;
+  let lastEntry;
+  if(expression.gameHistory.length > 0) {
+     lastEntry = expression.gameHistory[expression.gameHistory.length - 1];
+  }
+  switch (action.type) {
+    case INITIATE_GAME:
+          if(expression.parsed) {
+            expression.gameEnabled = !expression.gameEnabled;
+            expression.gameHistory = new Array();
+            variables = new Map(variablesObject);
+            expression.variableIndex = setValidVariableIndex(expression.parsed, 1, variables);
+            addToHistory(expression, expression.parsed, null, null, variables, [], []);
+          }
+          return;
+
+    case SET_GAME_COMMITMENT:
+          nextMove = getNextStepForGame(lastEntry.currentFormula, action.commitment, getStructureObject(state), lastEntry.gameVariables, expression);
+          addToHistory(expression, lastEntry.currentFormula, action.commitment, nextMove, lastEntry.gameVariables, action.gameMessages, action.userMessages);
+          return;
+
+    case CONTINUE_GAME:
+          variables = new Map(lastEntry.gameVariables);
+          if(lastEntry.currentFormula.getType(lastEntry.gameCommitment) === GAME_QUANTIFIER){
+            variables.set(lastEntry.nextMove.variables[0], lastEntry.nextMove.variables[1]);
+          }
+          nextMove = getNextStepForGame(lastEntry.nextMove.formula, lastEntry.nextMove.commitment, getStructureObject(state), variables, expression);
+          addToHistory(expression, lastEntry.nextMove.formula, lastEntry.nextMove.commitment, nextMove, variables, action.gameMessages, action.userMessages);
+          return;
+
+    case SET_GAME_DOMAIN_CHOICE:
+          variables = new Map(lastEntry.gameVariables);
+          let varName = 'n' + expression.variableIndex;
+          variables.set(varName, action.value);
+          currentFormula = lastEntry.currentFormula.subFormula.substitute(lastEntry.currentFormula.variableName, varName);
+          setValidVariableIndex(currentFormula, expression.variableIndex, variables);
+          nextMove = getNextStepForGame(currentFormula, lastEntry.gameCommitment, getStructureObject(state), variables, expression);
+          addToHistory(expression, currentFormula, lastEntry.gameCommitment, nextMove, variables, action.gameMessages, action.userMessages);
+          return;
+
+    case SET_GAME_NEXT_FORMULA:
+          currentFormula = action.formula.createCopy();
+          nextMove = getNextStepForGame(currentFormula, action.commitment, getStructureObject(state), lastEntry.gameVariables, expression);
+          addToHistory(expression, currentFormula, action.commitment, nextMove, lastEntry.gameVariables, action.gameMessages, action.userMessages);
+          return;
+
+    case END_GAME:
+          expression.gameHistory = new Array();
+          expression.showVariables = false;
+          expression.gameEnabled = false;
+          expression.variableIndex = 1;
+          return;
+
+    case GET_VARIABLES:
+          expression.showVariables = !expression.showVariables;
+          return;
+
+    case GO_BACK:
+          expression.gameHistory = expression.gameHistory.slice(0, action.historyIndex);
+          return;
+
+    default:
+          return;
+    }
+}
 
 function addExpression(expressions, expressionType) {
   if (expressionType === FORMULA) {
@@ -366,16 +310,59 @@ function lockExpressionValue(expressions, expressionType, expressionIndex) {
   }
 }
 
-function addToHistory(expressions, index, gameMessages, userMessages){
-  let gameValueCopy = expressions.formulas[index].gameValue != null ? expressions.formulas[index].gameValue.createCopy() : null;
-  let entry = {
-    gameCommitment: expressions.formulas[index].gameCommitment,
-    gameValue: gameValueCopy,
-    gameVariables: new Map(expressions.formulas[index].gameVariables),
-    gameMessages: gameMessages,
-    userMessages: userMessages
-  };
-  expressions.formulas[index].gameHistory.push(entry);
+function addToHistory(expression, currentFormula, commitment, nextFormula, gameVariables, gameMessages, userMessages){
+  expression.gameHistory.push(gameEntry(
+        commitment,
+        gameVariables,
+        currentFormula.createCopy(),
+        nextFormula,
+        gameMessages,
+        userMessages
+  ));
 }
+
+function getNextStepForGame(currentFormula, commitment, structureObject, variableObject, expression){
+    if(currentFormula.getType(commitment) === GAME_OPERATOR){
+        const subFormulas = currentFormula.getSubFormulas();
+        const subFormulasEval = subFormulas.map(formula => formula.eval(structureObject, variableObject));
+        const subFormulasCommitment = currentFormula.getSubFormulasCommitment(commitment);
+        const randomFormula = Math.floor(Math.random() * subFormulas.length);
+        for(let i = 0; i < subFormulas.length; i++){
+          if(subFormulasCommitment[i] !== subFormulasEval[i]){
+            return {formula: subFormulas[i], commitment: subFormulasCommitment[i], variables: variableObject}
+          }
+        }
+        return {formula: subFormulas[randomFormula], commitment: subFormulasCommitment[randomFormula], variables: variableObject}
+    } else if(currentFormula.getType(commitment) === GAME_QUANTIFIER){
+        const domain = Array.from(structureObject.domain);
+        const randomDomainValue = Math.floor(Math.random() * domain.length);
+        let variables = new Map(variableObject);
+        const varName = 'n' + expression.variableIndex;
+        let tmpFormula;
+        for(let value of domain){
+          tmpFormula = currentFormula.subFormula.substitute(currentFormula.variableName, varName);
+          variables.set(varName, value);
+          if(tmpFormula.eval(structureObject, variables) !== commitment){
+            expression.variableIndex = setValidVariableIndex(tmpFormula, expression.variableIndex, variables);
+            return {formula: tmpFormula, commitment: commitment, variables: [varName, value]};
+          }
+        }
+
+        tmpFormula = currentFormula.subFormula.substitute(currentFormula.variableName, varName);
+        variables.set(varName, domain[randomDomainValue]);
+        expression.variableIndex = setValidVariableIndex(tmpFormula, expression.variableIndex, variables);
+        return {formula: tmpFormula, commitment: commitment, variables: [varName, domain[randomDomainValue]]};
+    }
+    return null;
+}
+
+function setValidVariableIndex(formula, variableIndex, variables){
+    const variablesInFormula = formula.getVariables();
+    while(variablesInFormula.includes('n' + variableIndex) || variables.has('n' + variableIndex)){
+        variableIndex++;
+    }
+    return variableIndex;
+}
+
 
 export default expressionsReducer;

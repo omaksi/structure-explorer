@@ -54,9 +54,16 @@ class Disjunction extends Formula {
     return [this.subLeft, this.subRight];
   }
 
-  setVariable(from, to){
-    this.subLeft.setVariable(from, to);
-    this.subRight.setVariable(from, to);
+  substitute(from, to){
+    return new Disjunction(this.subLeft.substitute(from, to), this.subRight.substitute(from, to));
+  }
+
+  getSubFormulasCommitment(commitment){
+    return [commitment, commitment];
+  }
+
+  getVariables(){
+    return this.subLeft.getVariables().concat(this.subRight.getVariables());
   }
 }
 

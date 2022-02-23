@@ -18,7 +18,7 @@
     "closest": "^0.0.1",
     "dagre": "^0.8.5",
     "fibers": "^5.0.0",
-    "immer": "^9.0.1",
+    "immer": "^9.0.6",
     "lodash": "latest",
     "mathjs": "^7.0.0",
     "minimist": "^1.2.5",

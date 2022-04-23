@@ -102,7 +102,7 @@ const Expressions = (props) => (
                                        onChange={(e) => props.onInputChange(e.target.value, index, expression.expressionType)}
                                        id={expression.expressionType.toLowerCase() + '-' + index}
                                        disabled={item.inputLocked}
-                                       isInvalid={item.errorMessage.length >0}
+                                       isInvalid={item.errorMessage && item.errorMessage.message && item.errorMessage.message.length >0}
                                        onFocus={() => {
                                            props.diagramModel.clearSelection();
                                        }}
@@ -117,7 +117,7 @@ const Expressions = (props) => (
                                  locked={item.inputLocked}/>
                            ) : null}
                          </InputGroup.Append>
-                         <Form.Control.Feedback type={"invalid"}>{item.errorMessage}</Form.Control.Feedback>
+                         <Form.Control.Feedback type={"invalid"}>{item.errorMessage.message}</Form.Control.Feedback>
                      </InputGroup>
                  </Form.Group>
                <Form.Row>

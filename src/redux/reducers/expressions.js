@@ -284,7 +284,7 @@ function evalExpression(state, expression, variables) {
   try {
     expression.expressionValue = expression.parsed.eval(getStructureObject(state), variables);
   } catch (e) {
-    expression.errorMessage = e;
+    expression.errorMessage = e.message;
     expression.expressionValue = null;
   }
 }

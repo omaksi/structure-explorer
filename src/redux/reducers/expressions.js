@@ -284,7 +284,11 @@ function evalExpression(state, expression, variables) {
   try {
     expression.expressionValue = expression.parsed.eval(getStructureObject(state), variables);
   } catch (e) {
-    expression.errorMessage = e.message;
+    if (e instanceof Error) {
+      expression.errorMessage = e.message;
+    } else if ( typeof e === String) {
+      expression.errorMessage = e;
+    }
     expression.expressionValue = null;
   }
 }
